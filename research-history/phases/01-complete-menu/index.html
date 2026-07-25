@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 完整長菜單與 inline detail 研究快照。" />
+    <title>01 Complete menu — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">01 · Accepted substrate</p>
+          <h1>Complete menu</h1>
+          <p class="lede">完整長頁、分類跳轉與原地細節。這個版本解決完整性與返回位置，但刻意保留長頁線性。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究時間線</a>
+      </header>
+
+      <p class="study-note">
+        研究提示：先不要點分類。只往下滑，感受離開 viewport 後，前面看過的料理如何依賴記憶。接著使用分類導覽與 inline detail，觀察它改善了什麼、沒有改善什麼。
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="完整長菜單互動快照">
+        <div class="phone-screen">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>●●● 100%</span></div>
+
+          <header>
+            <h2 class="restaurant-name">潮巷小館</h2>
+            <p class="restaurant-copy">以台灣家常風味、日式洋食與適合分享的熱菜組成的虛構休閒餐廳。</p>
+            <p class="restaurant-meta">
+              <span>30 道料理</span><span>6 個分類</span><span>NT$120–NT$560</span>
+            </p>
+          </header>
+
+          <nav class="category-nav" aria-label="菜單分類">
+            <a href="#personal"><strong>個人主餐</strong><small>8 道</small></a>
+            <a href="#rice"><strong>飯麵類</strong><small>6 道</small></a>
+            <a href="#shared"><strong>分享料理</strong><small>6 道</small></a>
+            <a href="#small"><strong>小食</strong><small>4 道</small></a>
+            <a href="#drinks"><strong>飲料</strong><small>4 道</small></a>
+            <a href="#desserts"><strong>甜點</strong><small>2 道</small></a>
+          </nav>
+
+          <section id="personal" class="menu-section">
+            <header>
+              <div><h2>個人主餐</h2><p>附主食或可單人完成的一份主菜。</p></div>
+              <strong>8 道</strong>
+            </header>
+
+            <details class="menu-row">
+              <summary><span><span class="menu-row-title">炙烤味噌雞腿定食</span><br /><span class="menu-row-copy">味噌醬、烤蔬菜、漬物</span></span><span class="menu-row-price">NT$320</span></summary>
+              <div class="menu-detail"><p>味噌醬炙烤去骨雞腿，搭配季節烤蔬菜與漬物。</p><dl><dt>份量</dt><dd>一人份</dd><dt>主食</dt><dd>白飯／十穀飯</dd><dt>資料</dt><dd>商家確認</dd></dl><button class="small-action" type="button">選這道</button></div>
+            </details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">檸香鹽麴鮭魚定食</span><br /><span class="menu-row-copy">檸檬、嫩葉沙拉、烤南瓜</span></span><span class="menu-row-price">NT$360</span></summary><div class="menu-detail"><p>鹽麴醃鮭魚搭配檸檬、嫩葉沙拉與烤南瓜。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">黑蒜胡椒牛小排</span><br /><span class="menu-row-copy">黑蒜、粗粒胡椒、薯泥</span></span><span class="menu-row-price">NT$390</span></summary><div class="menu-detail"><p>黑蒜醬與粗粒黑胡椒收汁，搭配炒菇與薯泥。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">塔香三杯杏鮑菇定食</span><br /><span class="menu-row-copy">杏鮑菇、老薑、九層塔</span></span><span class="menu-row-price">NT$290</span></summary><div class="menu-detail"><p>杏鮑菇、老薑與九層塔快炒，醬香濃但不厚重。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">川味麻婆豆腐鍋</span><br /><span class="menu-row-copy">花椒、豆瓣、嫩豆腐 · 售完</span></span><span class="menu-row-price">NT$280</span></summary><div class="menu-detail"><p>目前售完；仍留在完整菜單中。</p></div></details>
+          </section>
+
+          <section id="rice" class="menu-section">
+            <header><div><h2>飯麵類</h2><p>以飯、麵或燉飯為核心的單人主食。</p></div><strong>6 道</strong></header>
+            <details class="menu-row"><summary><span><span class="menu-row-title">炙燒叉燒溫泉蛋飯</span><br /><span class="menu-row-copy">叉燒、溫泉蛋、甜醬油</span></span><span class="menu-row-price">NT$260</span></summary><div class="menu-detail"><p>炙燒叉燒、溫泉蛋、青蔥與甜醬油鋪在熱飯上。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">松露野菇燉飯</span><br /><span class="menu-row-copy">野菇、帕瑪森、松露</span></span><span class="menu-row-price">NT$300</span></summary><div class="menu-detail"><p>綜合野菇、帕瑪森與松露香氣收進偏濃稠的燉飯。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">海老明太子奶油烏龍</span><br /><span class="menu-row-copy">蝦仁、明太子、奶油</span></span><span class="menu-row-price">NT$320</span></summary><div class="menu-detail"><p>蝦仁、明太子與奶油醬包裹彈牙烏龍麵。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">青花椒雞絲拌麵</span><br /><span class="menu-row-copy">青花椒油、脆黃瓜</span></span><span class="menu-row-price">NT$250</span></summary><div class="menu-detail"><p>雞絲、青花椒油與脆黃瓜拌入細麵，香麻而清爽。</p></div></details>
+          </section>
+
+          <section id="shared" class="menu-section">
+            <header><div><h2>分享料理</h2><p>適合多人搭配飯麵與小食一起共享。</p></div><strong>6 道</strong></header>
+            <details class="menu-row"><summary><span><span class="menu-row-title">山椒烤雞半隻</span><br /><span class="menu-row-copy">山椒、柑橘、烤根莖</span></span><span class="menu-row-price">NT$520</span></summary><div class="menu-detail"><p>半隻雞以山椒、柑橘與香草慢烤，附烤根莖蔬菜。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">紹興奶油蝦</span><br /><span class="menu-row-copy">紹興酒、蒜末、奶油</span></span><span class="menu-row-price">NT$480</span></summary><div class="menu-detail"><p>蝦仁以紹興酒、蒜末與奶油快速收汁。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">蒜酥椒鹽軟殼蟹</span><br /><span class="menu-row-copy">蒜酥、蔥花、椒鹽</span></span><span class="menu-row-price">NT$460</span></summary><div class="menu-detail"><p>整隻軟殼蟹酥炸後拌入蒜酥、蔥花與椒鹽。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">豆豉蒸鱸魚</span><br /><span class="menu-row-copy">豆豉、薑絲、清蒸</span></span><span class="menu-row-price">NT$560</span></summary><div class="menu-detail"><p>鱸魚片與豆豉、薑絲清蒸，保留魚肉水分。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">宮保杏鮑菇</span><br /><span class="menu-row-copy">乾辣椒、花生、甜鹹辣</span></span><span class="menu-row-price">NT$340</span></summary><div class="menu-detail"><p>杏鮑菇、乾辣椒與花生快炒，帶甜鹹辣味。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">季節時蔬豆腐煲</span><br /><span class="menu-row-copy">時蔬、豆腐、菇類 · 售完</span></span><span class="menu-row-price">NT$380</span></summary><div class="menu-detail"><p>目前售完；仍保留在完整分類中。</p></div></details>
+          </section>
+
+          <section id="small" class="menu-section">
+            <header><div><h2>小食</h2><p>可作為開胃菜、配菜或加點的小份料理。</p></div><strong>4 道</strong></header>
+            <details class="menu-row"><summary><span><span class="menu-row-title">剝皮辣椒炸雞</span><br /><span class="menu-row-copy">剝皮辣椒、九層塔</span></span><span class="menu-row-price">NT$220</span></summary><div class="menu-detail"><p>雞腿塊酥炸後拌入剝皮辣椒與九層塔。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">胡麻龍鬚菜</span><br /><span class="menu-row-copy">胡麻醬、白芝麻</span></span><span class="menu-row-price">NT$160</span></summary><div class="menu-detail"><p>汆燙龍鬚菜搭配自製胡麻醬與白芝麻。</p></div></details>
+          </section>
+
+          <section id="drinks" class="menu-section">
+            <header><div><h2>飲料</h2><p>茶、氣泡飲與奶茶。</p></div><strong>4 道</strong></header>
+            <details class="menu-row"><summary><span><span class="menu-row-title">桂花烏龍冷泡茶</span><br /><span class="menu-row-copy">桂花、烏龍茶韻</span></span><span class="menu-row-price">NT$120</span></summary><div class="menu-detail"><p>桂花香氣與烏龍茶韻清爽收尾。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">黑糖檸檬氣泡飲</span><br /><span class="menu-row-copy">黑糖、檸檬、氣泡</span></span><span class="menu-row-price">NT$140</span></summary><div class="menu-detail"><p>黑糖糖漿、檸檬汁與氣泡水調成酸甜口感。</p></div></details>
+          </section>
+
+          <section id="desserts" class="menu-section">
+            <header><div><h2>甜點</h2><p>適合餐後單獨享用的小份甜點。</p></div><strong>2 道</strong></header>
+            <details class="menu-row"><summary><span><span class="menu-row-title">焦糖烤布蕾</span><br /><span class="menu-row-copy">香草蛋奶、焦糖脆殼</span></span><span class="menu-row-price">NT$150</span></summary><div class="menu-detail"><p>香草蛋奶布蕾覆上現烤焦糖脆殼。</p></div></details>
+            <details class="menu-row"><summary><span><span class="menu-row-title">柚香豆乳奶酪</span><br /><span class="menu-row-copy">豆乳、柚子、清爽</span></span><span class="menu-row-price">NT$160</span></summary><div class="menu-detail"><p>豆乳奶酪搭配柚子醬與少量海鹽。</p></div></details>
+          </section>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>這個快照要證明什麼？</h2>
+          <p>它不是要證明長頁是答案，而是建立後續方向必須超越的可信基線。</p>
+        </div>
+        <div class="timeline">
+          <article class="phase-card"><h3>有效</h3><p>所有內容可被確認存在；分類導航不過濾；detail 原地開啟。</p></article>
+          <article class="phase-card"><h3>限制</h3><p>遠離 viewport 的料理只能靠記憶；跨分類比較仍要上下往返。</p></article>
+          <article class="phase-card"><h3>保留</h3><p>canonical document、inline detail、scroll／focus continuity 與 truthful states。</p></article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
