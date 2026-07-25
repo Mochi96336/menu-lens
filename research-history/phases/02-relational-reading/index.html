@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens Relational Prototype C 研究快照。" />
+    <title>02 Relational reading — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../evidence.css" />
+    <script src="../../menu-fixture.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">02 · Rejected as main flow</p>
+          <h1>Relational reading</h1>
+          <p class="lede">Prototype C：先指定一道 Anchor，再選份量或準備節奏，讓其餘料理顯示相對關係。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究時間線</a>
+      </header>
+
+      <p class="study-note">
+        研究提示：先嘗試直接讀料理，再依提示選一個比較基準。切換比較軸後，觀察前一個維度如何消失，以及你是否需要先理解「Anchor」與「軸」才能開始。
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="Relational Prototype C 互動快照">
+        <div class="phone-screen">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>●●● 100%</span></div>
+
+          <header>
+            <h2 class="restaurant-name">潮巷小館</h2>
+            <p class="restaurant-copy">分享料理 · 六道同分類料理</p>
+          </header>
+
+          <div class="evidence-controls" aria-labelledby="relation-controls-title">
+            <p id="relation-controls-title" class="evidence-control-label">比較設定</p>
+            <div class="axis-switch" role="group" aria-label="比較軸">
+              <button type="button" data-axis="portion" aria-pressed="true">份量</button>
+              <button type="button" data-axis="preparation" aria-pressed="false">準備節奏</button>
+            </div>
+            <div class="relation-state" aria-live="polite">
+              <strong id="relation-state-title">尚未選擇比較基準</strong>
+              <span id="relation-state-copy">請先在下方選一道料理作為 Anchor。</span>
+            </div>
+          </div>
+
+          <section aria-labelledby="relation-ledger-title">
+            <div class="menu-section">
+              <header>
+                <div>
+                  <h2 id="relation-ledger-title">分享料理</h2>
+                  <p>固定順序 · 絕對值與相對關係同時顯示</p>
+                </div>
+                <strong>6 道</strong>
+              </header>
+            </div>
+            <div id="relation-ledger" class="relation-ledger"></div>
+          </section>
+
+          <p class="archive-source-note">
+            此快照刻意保留控制成本。低可信與未提供狀態只用來重現當時的 truthful-evidence grammar；正式資料來源仍是 repository 的 canonical reference menu。
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const menu = window.menuLensResearchMenu;
+        const products = menu.products.filter((product) => product.categoryId === "shared-dishes");
+        const ledger = document.querySelector("#relation-ledger");
+        const title = document.querySelector("#relation-state-title");
+        const copy = document.querySelector("#relation-state-copy");
+        const axisButtons = [...document.querySelectorAll("[data-axis]")];
+        let axis = "portion";
+        let anchorId = null;
+
+        const money = (price) => `NT$${price}`;
+
+        const evidenceLabel = (evidence) => {
+          if (!evidence) return "未提供";
+          if (evidence.confidence === "low") return "低可信";
+          return evidence.source === "merchant_confirmed" ? "商家確認" : "分類預設";
+        };
+
+        const relationLabel = (product, anchor) => {
+          if (!anchor) return "先選基準";
+          if (product.id === anchor.id) return "基準";
+          const productEvidence = product[axis];
+          const anchorEvidence = anchor[axis];
+          if (!productEvidence || !anchorEvidence) return "無法比較";
+          const delta = productEvidence.value - anchorEvidence.value;
+          if (delta === 0) return "相近";
+          if (axis === "portion") return delta > 0 ? "較大" : "較小";
+          return delta > 0 ? "較慢" : "較快";
+        };
+
+        const axisLabel = () => (axis === "portion" ? "份量" : "準備節奏");
+
+        const render = () => {
+          const anchor = products.find((product) => product.id === anchorId) ?? null;
+          if (anchor) {
+            title.textContent = `比較基準：${anchor.name}`;
+            copy.textContent = `目前軸：${axisLabel()}。切換 Anchor 或軸會重新解釋整張表。`;
+          } else {
+            title.textContent = "尚未選擇比較基準";
+            copy.textContent = `目前軸：${axisLabel()}。請先在下方選一道料理作為 Anchor。`;
+          }
+
+          ledger.innerHTML = products
+            .map((product) => {
+              const evidence = product[axis];
+              const absolute = evidence?.label ?? "未提供";
+              const isAnchor = product.id === anchorId;
+              return `
+                <article class="relation-row" data-anchor="${String(isAnchor)}">
+                  <div class="relation-identity">
+                    <div class="relation-name-line">
+                      <span class="relation-name">${product.name}</span>
+                      <span class="relation-price">${money(product.price)}</span>
+                    </div>
+                    <span class="relation-copy">${product.description}</span>
+                  </div>
+                  <div class="relation-values">
+                    <span class="relation-absolute">${absolute}</span>
+                    <span class="relation-result">${relationLabel(product, anchor)}</span>
+                    <span class="relation-evidence">${evidenceLabel(evidence)}</span>
+                  </div>
+                  <button
+                    class="anchor-button"
+                    type="button"
+                    data-anchor-id="${product.id}"
+                    aria-pressed="${String(isAnchor)}"
+                  >${isAnchor ? "目前基準" : "設為比較基準"}</button>
+                </article>`;
+            })
+            .join("");
+
+          ledger.querySelectorAll("[data-anchor-id]").forEach((button) => {
+            button.addEventListener("click", () => {
+              anchorId = button.dataset.anchorId;
+              render();
+            });
+          });
+        };
+
+        axisButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            axis = button.dataset.axis;
+            axisButtons.forEach((candidate) => {
+              candidate.setAttribute("aria-pressed", String(candidate === button));
+            });
+            render();
+          });
+        });
+
+        render();
+      })();
+    </script>
+  </body>
+</html>
