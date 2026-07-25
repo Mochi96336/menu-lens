@@ -10,4 +10,8 @@ await Promise.all([
     new URL("src/styles/menu-workspace.css", root),
     new URL("dist/src/styles/menu-workspace.css", root),
   ),
+  copyFile(
+    new URL("src/styles/candidate-comparison.css", root),
+    new URL("dist/src/styles/candidate-comparison.css", root),
+  ),
 ]);
