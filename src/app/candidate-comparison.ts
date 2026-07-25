@@ -50,7 +50,6 @@ export type CandidateComparisonView = Readonly<{
   render: (candidates: CandidateState, comparison: CandidateComparisonState) => void;
   focusHeading: () => void;
   announceLimit: () => void;
-  resetStatus: (candidates: CandidateState, comparison: CandidateComparisonState) => void;
 }>;
 
 export const createCandidateComparison = (
@@ -66,7 +65,6 @@ export const createCandidateComparison = (
   const header = element("header", "candidate-comparison__header");
   const backButton = element("button", "candidate-comparison__back", "回到考慮項目") as HTMLButtonElement;
   backButton.type = "button";
-  backButton.addEventListener("click", onBack);
   const eyebrow = element("p", "eyebrow", "考慮項目比較");
   const heading = element("h2", "candidate-comparison__title", "比較考慮項目");
   heading.tabIndex = -1;
@@ -130,6 +128,13 @@ export const createCandidateComparison = (
     );
   };
 
+  backButton.addEventListener("click", () => {
+    onBack();
+    if (renderedCandidates && renderedComparison) {
+      resetStatus(renderedCandidates, renderedComparison);
+    }
+  });
+
   const render = (
     candidates: CandidateState,
     comparison: CandidateComparisonState,
@@ -179,6 +184,5 @@ export const createCandidateComparison = (
     render,
     focusHeading: () => heading.focus({ preventScroll: true }),
     announceLimit: () => { status.textContent = "最多比較 3 道，請先取消一項。"; },
-    resetStatus,
   };
 };
