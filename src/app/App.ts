@@ -1,13 +1,20 @@
 import type { CategoryId, Menu, ProductId } from "../domain/menu-types.js";
 import type { SemanticAxis } from "../customer/menu-anchor-axis.js";
+import {
+  createCandidateComparisonModel,
+  isComparisonSelected,
+} from "../customer/candidate-comparison.js";
 import { createCandidateWorkspaceModel } from "../customer/candidate-workspace.js";
 import {
+  closeCandidateComparison,
   closeCandidateWorkspace,
   createInitialMenuAppState,
+  openCandidateComparison,
   openCandidateWorkspace,
   removeAppCandidate,
   showCandidateInMenu,
   toggleAppCandidate,
+  toggleAppComparison,
   updateAppReading,
   type MenuAppState,
 } from "../customer/menu-app-state.js";
@@ -26,6 +33,7 @@ import {
   showAllCategories,
   showMenuOverview,
 } from "../customer/menu-reading.js";
+import { createCandidateComparison, type CandidateComparisonView } from "./candidate-comparison.js";
 import { createCandidateWorkspace, type CandidateWorkspaceView } from "./candidate-workspace.js";
 import { createMenuOverview, type MenuOverviewView } from "./menu-overview.js";
 
@@ -49,7 +57,11 @@ export const mountMenuApp = (root: HTMLElement, menu: Menu): void => {
   let state: MenuAppState = createInitialMenuAppState(menu);
   let overview: MenuOverviewView;
   let candidateWorkspace: CandidateWorkspaceView;
+  let candidateComparison: CandidateComparisonView;
   let candidateReturnContext:
+    | Readonly<{ scrollY: number; focusElement: HTMLElement | null }>
+    | null = null;
+  let comparisonReturnContext:
     | Readonly<{ scrollY: number; focusElement: HTMLElement | null }>
     | null = null;
 
@@ -57,15 +69,24 @@ export const mountMenuApp = (root: HTMLElement, menu: Menu): void => {
     const count = candidateCount(menu, state.candidates);
     overview.render(state.reading, state.candidates, count);
     candidateWorkspace.render(state.candidates);
+    candidateComparison.render(state.candidates, state.comparison);
 
     overview.element.hidden = state.surface.kind !== "menu";
     candidateWorkspace.element.hidden = state.surface.kind !== "candidates";
+    candidateComparison.element.hidden = state.surface.kind !== "comparison";
+
     if (state.surface.kind === "menu") {
       overview.element.removeAttribute("inert");
       candidateWorkspace.element.setAttribute("inert", "");
-    } else {
+      candidateComparison.element.setAttribute("inert", "");
+    } else if (state.surface.kind === "candidates") {
       overview.element.setAttribute("inert", "");
       candidateWorkspace.element.removeAttribute("inert");
+      candidateComparison.element.setAttribute("inert", "");
+    } else {
+      overview.element.setAttribute("inert", "");
+      candidateWorkspace.element.setAttribute("inert", "");
+      candidateComparison.element.removeAttribute("inert");
     }
   };
 
@@ -160,6 +181,48 @@ export const mountMenuApp = (root: HTMLElement, menu: Menu): void => {
     candidateReturnContext = null;
   };
 
+  const openComparison = (): void => {
+    const nextState = openCandidateComparison(state, menu);
+    if (nextState === state) return;
+    comparisonReturnContext = {
+      scrollY: window.scrollY,
+      focusElement: document.activeElement instanceof HTMLElement ? document.activeElement : null,
+    };
+    state = nextState;
+    render();
+    window.scrollTo({ top: 0, behavior: "instant" });
+    candidateComparison.focusHeading();
+  };
+
+  const closeComparison = (): void => {
+    const returnContext = comparisonReturnContext;
+    state = closeCandidateComparison(state);
+    render();
+    if (returnContext) {
+      window.scrollTo({ top: returnContext.scrollY, behavior: "instant" });
+      if (returnContext.focusElement?.isConnected) {
+        returnContext.focusElement.focus({ preventScroll: true });
+      } else {
+        candidateWorkspace.focusComparisonEntry();
+      }
+    } else {
+      candidateWorkspace.focusComparisonEntry();
+    }
+    comparisonReturnContext = null;
+  };
+
+  const toggleComparison = (productId: ProductId): void => {
+    const before = state.comparison;
+    const wasSelected = isComparisonSelected(before, productId);
+    const nextState = toggleAppComparison(state, menu, productId);
+    if (nextState === state && !wasSelected && before.productIds.length >= 3) {
+      candidateComparison.announceLimit();
+      return;
+    }
+    state = nextState;
+    render();
+  };
+
   const removeCandidateFromWorkspace = (productId: ProductId): void => {
     const orderedProductIds = createCandidateWorkspaceModel(menu, state.candidates).groups.flatMap(
       (group) => group.products.map((product) => product.id),
@@ -222,6 +285,12 @@ export const mountMenuApp = (root: HTMLElement, menu: Menu): void => {
     closeCandidates,
     locateCandidateInMenu,
     removeCandidateFromWorkspace,
+    openComparison,
+  );
+  candidateComparison = createCandidateComparison(
+    menu,
+    closeComparison,
+    toggleComparison,
   );
 
   const shell = element("div", "menu-shell");
@@ -251,7 +320,7 @@ export const mountMenuApp = (root: HTMLElement, menu: Menu): void => {
 
   const workspace = element("div", "reading-workspace");
   workspace.id = "complete-menu";
-  workspace.append(overview.element, candidateWorkspace.element);
+  workspace.append(overview.element, candidateWorkspace.element, candidateComparison.element);
   headerInner.append(summaryCopy, metrics);
   header.append(headerInner);
   shell.append(header, workspace);
@@ -297,4 +366,6 @@ export const mountMenuApp = (root: HTMLElement, menu: Menu): void => {
     },
     { passive: true },
   );
+
+  void createCandidateComparisonModel;
 };
