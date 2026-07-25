@@ -35,7 +35,7 @@ It prevents parallel conversations from redefining the product, retaining failed
         → [passed for current scope] Prototype C — Anchor + explicit shared axis
     → [passed for current scope] CND1 — Attached Candidate marks
     → [passed for current scope] CND2 — Candidate review workspace
-    → [planned, implementation not started] CMP1 — Bounded Candidate comparison
+    → [implemented, awaiting review] CMP1 — Bounded Candidate comparison
     → [blocked] Decision / Configuration / Current order
 → [deferred] continuity and table state
 → [deferred] thin alternative lenses
@@ -51,10 +51,10 @@ It prevents parallel conversations from redefining the product, retaining failed
 | Domain and reference data | Complete | types, validation, fictional menu, incomplete metadata | canonical local dataset |
 | Formative evaluation | Complete | tasks, observations, events, falsification signals | observation contract |
 | Relational menu research | Passed for current scope | stable ledger and A/B/C evidence | accepted C reading substrate |
-| CND1 Attached Candidate marks | Passed for current scope | row-attached reversible Candidate membership only | accepted consideration state |
+| CND1 Attached Candidate marks | Passed for current scope | row-attached reversible Candidate membership | accepted consideration state |
 | CND2 Candidate review workspace | Passed for current scope | derived retrieval, revisit, removal, exact menu return | accepted Candidate collection surface |
-| CMP1 Bounded Candidate comparison | Planned, implementation not started | explicit 2–3 Candidate selection and difference-only evidence | reviewed plan required before code |
-| Decision / Configuration / Current order | Blocked | transaction-boundary states | accepted comparison first |
+| CMP1 Bounded Candidate comparison | Implemented, awaiting review | explicit 2–3 Candidate selection and difference-only evidence | reviewable bounded comparison surface |
+| Decision / Configuration / Current order | Blocked | transaction-boundary states | explicit CMP1 disposition first |
 | Continuity and table state | Deferred | submitted rounds and coarse composition | stable decision spine first |
 | Alternative lenses | Deferred | quick, shared-table, featured | stable decision spine first |
 | Merchant authoring | Deferred | defaults, exceptions, confidence preview | proven semantic value first |
@@ -63,7 +63,7 @@ It prevents parallel conversations from redefining the product, retaining failed
 
 ## Authoritative entry points
 
-Read before CMP1 work:
+Read before CMP1 review:
 
 1. `README.md`
 2. `docs/product-contract.md`
@@ -75,7 +75,7 @@ Read before CMP1 work:
 8. `docs/demo-scope.md`
 9. `docs/evaluation-plan.md`
 
-Active planning record:
+Active implementation record:
 
 ```text
 docs/candidate-comparison-plan.md
@@ -90,17 +90,6 @@ docs/prototype-c-anchor-axis-plan.md
 docs/candidate-marks-plan.md
 docs/candidate-workspace-plan.md
 ```
-
-## Passed substrate — M1 shared ledger
-
-M1 established one stable table surface per category:
-
-- sequence, Product name, bounded evidence, and price use shared columns;
-- sold-out and incomplete-data states remain visible;
-- canonical order and one continuous reading order remain stable;
-- Products do not receive separate card identities.
-
-This remains the coordinate plane for Prototype C and CND1 Candidate marks.
 
 ## Relational prototype dispositions
 
@@ -118,11 +107,11 @@ Useful:
 
 Insufficient:
 
-- price duplicated the visible numeric column;
+- price duplicated the visible numeric price column;
 - only one dimension remained visible;
 - axis switching retained memory work.
 
-The obsolete A selector UI was removed. Its pure projection remains tested as historical evidence.
+The obsolete selector UI was removed. Its pure projection remains as historical evidence.
 
 ### Prototype B — Anchor-only relation
 
@@ -153,7 +142,7 @@ C preserves one Anchor and exact price deltas while the user explicitly selects 
 
 Accepted evidence:
 
-- complete active-axis projection across every canonical row;
+- complete active-axis projection across canonical rows;
 - formal absolute labels or `未提供`;
 - exact price deltas and visible equality;
 - stable canonical order and four-column ledger;
@@ -166,7 +155,7 @@ Evidence boundary:
 
 - acceptance is a current-scope product disposition;
 - unfamiliar-participant evidence is not claimed;
-- learnability and measured task improvement remain unproven limitations.
+- learnability and measured task improvement remain unproven.
 
 ## CND1 — Attached Candidate marks
 
@@ -174,11 +163,7 @@ Evidence boundary:
 [passed for current scope]
 ```
 
-Question:
-
-> Can a diner preserve several serious possibilities directly on the canonical menu without mistaking them for an order, losing menu position, or creating a second Product list?
-
-Implemented state boundary:
+State boundary:
 
 ```text
 Product
@@ -187,31 +172,11 @@ Product
 
 Candidate membership has no quantity, configuration, modifier selections, order total, submission state, recommendation rank, notes, or ownership.
 
-Implemented surface:
-
-```text
-four-column canonical ledger
-+ fixed relation lane
-+ fixed Candidate/status lane
-+ one noninteractive Candidate count
-```
-
 Available rows expose one persistent `考慮` toggle. Membership is expressed through `aria-pressed` and pressed styling. Sold-out rows remain visible and cannot be newly marked.
 
-Candidate membership survives overview, category focus and changes, all-expanded mode, every Anchor transition, semantic-axis switching, and same-category reopening.
+Candidate membership survives overview, category focus, all-expanded mode, every Anchor transition, semantic-axis switching, and same-category reopening.
 
-### CND1 final corrections
-
-The final review corrected:
-
-1. stale ProductIds affecting count;
-2. Candidate-dependent Product-name weight;
-3. repeated live-region mutations on unrelated renders;
-4. changing labels on an `aria-pressed` toggle;
-5. an unused row-wide `data-candidate` mirror;
-6. a premature detached Candidate-list projection.
-
-A code-derived Chromium proxy at 320px and 390px found zero Candidate on/off geometry differences. Typecheck, tests, structure contracts, and static build pass.
+Final review corrected stale ProductId counting, Candidate-dependent Product typography, repeated live-region announcements, changing toggle labels, an unused row state mirror, and a premature detached-list projection.
 
 ## CND2 — Candidate review workspace
 
@@ -219,11 +184,7 @@ A code-derived Chromium proxy at 320px and 390px found zero Candidate on/off geo
 [passed for current scope]
 ```
 
-Question:
-
-> Can a diner retrieve, review, revisit, and dismiss Candidates collected across the canonical menu without losing the previous menu position or mistaking the workspace for an order?
-
-### Implemented boundary
+Boundary:
 
 ```text
 canonical Category and Product references
@@ -231,129 +192,46 @@ canonical Category and Product references
 → derived Candidate review workspace
 ```
 
-CND2 stores no Product copies, Candidate insertion order, ranking, score, comparison selection, quantity, configuration, totals, or order state.
+The workspace stores no Product copies, Candidate insertion order, ranking, score, quantity, Configuration, totals, or order state.
 
-App state adds only:
+Implemented behavior:
 
-```text
-surface.kind = menu | candidates
-```
+- one fixed-geometry `查看考慮項目` entry;
+- compact canonical grouped document;
+- exactly two row actions: `在菜單中查看` and `移出考慮`;
+- exact ordinary Back restoration;
+- canonical Product locator;
+- deterministic removal focus;
+- in-place empty state;
+- one active and interactive `main` surface.
 
-Scroll and DOM focus return context remain in the App controller rather than pure state.
+Final review corrected unavailable Back focus, sold-out locator focus, hidden workspace rebuilds, hidden-status geometry, inherited smooth scrolling, and a stale CSS branch.
 
-### Entry and active surface
+Evidence boundary:
 
-The menu heading contains one fixed-geometry `查看考慮項目` button when canonical Candidate count is nonzero.
-
-The canonical menu and Candidate workspace remain mounted as sibling `main` surfaces. Exactly one is visible and interactive; the hidden surface is inert.
-
-No router, URL state, modal, dialog, sheet, rail, overlay, second sticky Candidate bar, or fixed footer exists.
-
-### Workspace content
-
-The workspace is a compact grouped document.
-
-Allowed row evidence:
-
-- canonical category name;
-- Product name;
-- current formatted price;
-- ordinary cues;
-- sold-out and incomplete-data labels;
-- `在菜單中查看`;
-- `移出考慮`.
-
-Not present:
-
-- Prototype C Anchor-relative projections;
-- workspace semantic-axis controls;
-- comparison fields or matrix;
-- score, rank, match, winner, quantity, modifiers, total, checkout, or order language.
-
-### Return, locator, removal
-
-Ordinary `回到完整菜單` restores:
-
-- prior expansion mode;
-- active category;
-- Anchor and semantic axis;
-- captured scroll position;
-- prior focus origin when still available.
-
-Workspace opening and ordinary Back use explicit instant scrolling rather than inheriting global smooth scrolling.
-
-After the final Candidate is removed, the original entry becomes unavailable; Back therefore focuses the stable Candidate summary.
-
-`在菜單中查看` uses existing `focusCategory()` behavior, reveals the canonical row, and focuses its existing Candidate toggle. Sold-out Products fall back to the canonical relation lane because they have no Candidate toggle.
-
-`移出考慮` changes only Candidate membership. It preserves reading state, active Anchor, surface, Product data, and every order boundary.
-
-Focus recovery follows canonical workspace order:
-
-```text
-next removal action
-→ previous removal action
-→ empty-state heading
-```
-
-Removing the final Candidate leaves an in-place empty workspace. CND2 does not add `clear all`.
-
-### Final re-review corrections
-
-Implementation and review corrected:
-
-1. final-removal Back focus targeting an unavailable entry;
-2. sold-out locator focus targeting a nonexistent Candidate toggle;
-3. hidden workspace DOM rebuilding during unrelated menu renders;
-4. status-lane geometry relying on the `hidden` attribute;
-5. `behavior: "auto"` inheriting global smooth scrolling and weakening exact return;
-6. an unused hidden-status CSS branch.
-
-### Accepted evidence
-
-- canonical derived references and ordering;
-- duplicate and stale ProductId handling;
-- sold-out Candidate visibility;
-- surface open/close continuity;
-- reading and Candidate reference preservation;
-- active-Anchor independence;
-- final-removal empty state;
-- canonical Product locator rules;
-- deterministic focus and instant-scroll code paths;
-- one active `main` contract;
-- Typecheck, tests, and static build.
-
-Evidence not claimed:
-
-- complete branch-runtime Chromium verification at 320px and 390px;
-- real-device fit;
-- unfamiliar-participant comprehension;
-- measured comparison or usability benefit.
-
-These limitations remain recorded but do not block the current-scope disposition.
+- complete runtime Chromium verification at 320px and 390px is not claimed;
+- real-device fit and unfamiliar-participant comprehension remain unproven.
 
 ## CMP1 — Bounded Candidate comparison
 
 ```text
-[planned, implementation not started]
+[implemented, awaiting review]
 ```
 
-### Question
+Research question:
 
 > Can a diner reduce repeated memory work across two or three serious Candidates using a bounded, truthful comparison without mistaking comparison selection for commitment or losing the Candidate workspace?
 
-### Planned boundary
+### Implemented boundary
 
 ```text
 canonical Products
 + Candidate ProductId membership
-+ reversible comparison selection
++ identity-only comparison selection
 → bounded comparison projection
 ```
 
-Comparison selection is identity-only and distinct from Candidate membership.
-
-Proposed state:
+Comparison state:
 
 ```ts
 type CandidateComparisonState = Readonly<{
@@ -361,62 +239,47 @@ type CandidateComparisonState = Readonly<{
 }>;
 ```
 
-Proposed surface state:
+App surface:
 
 ```text
 surface.kind = menu | candidates | comparison
 ```
 
-Selection rules:
+Selection contains only current Candidates, no duplicates, at most three ProductIds, and canonical Product order. Opening comparison never preselects Products. Candidate removal sanitizes selection; re-adding a Candidate does not reselect it.
 
-- only current Candidates;
-- no duplicates;
-- canonical Product order;
-- maximum three Products;
-- no arbitrary replacement at the limit;
-- Candidate removal sanitizes selection;
-- comparison toggling never changes Candidate membership.
+### Entry and surface grammar
 
-### Entry and selection
-
-CND2 row actions remain unchanged.
-
-The Candidate workspace header gains one fixed-geometry `比較考慮項目` entry when at least two Candidates exist.
-
-Opening:
-
-- preserves menu reading, Anchor, Candidate, comparison, and Candidate-to-menu return state;
-- sanitizes prior comparison selection against current Candidates;
-- preserves an empty, one-, two-, or three-item selection;
-- begins empty on the first open;
-- never silently preselects Products;
-- captures Candidate-workspace scroll and focus for exact return.
-
-The comparison surface lists all current Candidates in canonical order with stable native `aria-pressed` buttons labeled `比較`.
-
-### Mobile comparison grammar
-
-CMP1 does not use a wide Product-column matrix.
-
-At 320px and 390px it uses vertical dimension blocks:
+CND2 Product rows retain their two actions. CMP1 adds one Candidate-workspace header action:
 
 ```text
-價格
-Product A                NT$320
-Product B                NT$360
-
-份量
-Product A                一人份
-Product B                約 2–3 人
+比較考慮項目
 ```
 
-This keeps two or three values simultaneous within one dimension without horizontal scrolling or unreadably narrow Product columns.
+Pure transitions enforce:
 
-### Bounded dimensions
+```text
+menu
+→ Candidate workspace
+→ comparison
+→ Candidate workspace
+→ exact previous menu context
+```
 
-Allowed fixed-priority dimensions:
+Comparison cannot open directly from the menu. Comparison selection changes only on the active comparison surface. Candidate locator and Candidate-workspace transitions cannot bypass comparison Back.
 
-1. price;
+The mount root is a neutral `div`; menu, Candidate workspace, and comparison remain mounted sibling `main` surfaces with exactly one visible and interactive.
+
+### Comparison grammar
+
+Every Candidate appears in canonical order with one persistent `比較` button using `aria-pressed`.
+
+A fourth selection is a no-op and uses one bounded status message. The transient limit warning resets while comparison is hidden, so reopening shows the real selection summary.
+
+CMP1 uses vertical dimension blocks rather than a wide Product-column matrix.
+
+Fixed-priority dimensions:
+
+1. exact price;
 2. portion class;
 3. meal role;
 4. preparation class;
@@ -424,32 +287,9 @@ Allowed fixed-priority dimensions:
 6. coarse traits;
 7. required customization presence.
 
-Price is always shown.
+Price is always visible. Semantic dimensions appear only for meaningful value differences or missing/low-confidence evidence. Equal complete dimensions and all-missing dimensions are omitted.
 
-Semantic dimensions appear only when values differ or selected evidence includes missing or low-confidence data. Equal complete dimensions and all-missing dimensions are omitted.
-
-Required customization appears only when selected Products differ and shows only:
-
-```text
-有必選項目
-無必選項目
-```
-
-No modifier names, options, prices, or controls appear.
-
-### Evidence truthfulness
-
-Semantic projection reuses canonical category defaults and Product overrides.
-
-Evidence states:
-
-```text
-known
-low confidence
-missing
-```
-
-Required labels include:
+Evidence distinguishes:
 
 ```text
 商家確認
@@ -458,41 +298,93 @@ Required labels include:
 未提供
 ```
 
-Missing data must not appear as a negative Product property, and low-confidence data must not look identical to confirmed data.
+Required customization shows only `有必選項目` or `無必選項目`; modifier names, options, prices, defaults, and controls remain absent.
 
-### Explicit exclusions
+### Empty and reduced states
 
-CMP1 does not add:
+```text
+0 selected   選擇 2–3 道考慮項目開始比較。
+1 selected   再選 1 道即可比較。
+2–3 selected render bounded evidence
+```
 
-- winner selection;
-- `決定點這道`;
-- quantity;
-- modifier selection;
-- Configuration;
-- Current order;
-- total or submission;
-- score, rank, recommendation, best-value badge, or automatic preselection;
-- Product descriptions or exhaustive specifications;
-- modal, sheet, carousel, fixed footer, horizontal matrix, routing, persistence, backend, or analytics.
+If the Candidate set falls below two while comparison remains active, the surface states that at least two Candidates are required and does not silently navigate away.
+
+### Test-first implementation
+
+Added:
+
+```text
+src/customer/candidate-comparison.ts
+src/customer/candidate-comparison.test.ts
+src/customer/candidate-comparison-surface.test.ts
+src/customer/menu-semantic-labels.ts
+src/app/candidate-comparison.ts
+src/styles/candidate-comparison.css
+scripts/candidate-comparison-review.test.mjs
+scripts/candidate-comparison-geometry.test.mjs
+```
+
+Tests cover selection bounds, canonical order and references, Candidate independence, stale and reduced state, missing and low-confidence evidence, sold-out Candidates, nested surface grammar, focus and instant scroll paths, neutral landmarks, and exclusion of Decision and transaction mechanics.
+
+### Narrow reverse-review corrections
+
+1. historical CND2 tests still forbade all comparison state;
+2. one static return assertion depended on a variable name rather than behavior;
+3. comparison could open directly from menu;
+4. other pure transitions could bypass nested surface grammar;
+5. Candidate changes could rebuild selectors but skip evidence;
+6. reduced Candidate count could produce impossible one-selection guidance;
+7. invalid toggle actions briefly caused sanitation side effects;
+8. semantic labels were initially duplicated rather than genuinely shared;
+9. the three-item warning could persist after leaving and reopening;
+10. an unused projection import and suppression remained in App;
+11. the application mount root created nested main landmarks.
+
+### Geometry and evidence boundary
+
+CSS-derived geometry contract:
+
+```text
+viewport     name column   value column   selector copy   focus inset
+320px        161.0px       123.0px        228.0px         7.6px
+390px        201.6px       152.4px        298.0px         7.6px
+```
+
+This is not complete runtime-browser evidence. The execution container could not launch a minimal headless Chromium process, and PR CI does not publish a downloadable Pages artifact.
+
+Passing evidence:
+
+- Typecheck;
+- domain and app-state tests;
+- projection and surface tests;
+- structure, accessibility, focus, scroll, and geometry contracts;
+- static build.
+
+Evidence not claimed:
+
+- reduced memory work for unfamiliar users;
+- natural comprehension of comparison selection;
+- improved or faster decisions;
+- real-device fit;
+- conventional-interface superiority.
 
 ### Current gate
 
-Implementation must not begin until `docs/candidate-comparison-plan.md` receives explicit product-owner approval.
-
-Designer review, tests, geometry evidence, and CI may later support a current-scope disposition, but no unfamiliar-participant memory reduction, comprehension, decision-quality, speed, real-device, or conventional-interface claim may be inferred from implementation evidence alone.
+CMP1 awaits explicit product-owner disposition. Do not begin the next state until CMP1 is accepted, revised, or rejected.
 
 ## Blocked later work
 
-Until CMP1 receives an explicit disposition, do not begin:
+CMP1 implementation does not authorize:
 
+- winner selection or `決定點這道`;
 - explicit Decision;
 - Configuration;
 - Current order;
-- quantity or modifiers;
-- totals or submission;
-- recommendation, ranking, or filtering;
-- shared-table composition;
-- checkout.
+- quantity or modifier selection;
+- totals, cart, checkout, or submission;
+- recommendation, ranking, filtering, or table composition;
+- routing, persistence, backend, analytics, or conventional baseline work.
 
 ## Constraints
 
@@ -501,7 +393,7 @@ Until CMP1 receives an explicit disposition, do not begin:
 - no alternative lens implementation;
 - no merchant CMS;
 - no remote analytics;
-- no generic state machine, repository abstraction, plugin system, dynamic comparison-field registry, or design-system package;
+- no generic state machine, repository abstraction, plugin system, comparison-field registry, or design-system package;
 - preserve canonical Product and category order;
 - preserve `Product ≠ Candidate ≠ comparison selection ≠ DraftOrderItem ≠ ConfiguredOrderItem ≠ SubmittedOrderRound`;
 - do not count visual polish or desktop-only behavior as proof.
@@ -510,4 +402,4 @@ Until CMP1 receives an explicit disposition, do not begin:
 
 None.
 
-Prototype C, CND1, CND2, and the CMP1 plan refine existing product invariants without changing `docs/product-contract.md`.
+Prototype C, CND1, CND2, and CMP1 implement existing product invariants without changing `docs/product-contract.md`.
