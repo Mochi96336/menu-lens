@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens Ledger-first digital document 研究快照。" />
+    <title>05 Ledger document — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../evidence.css" />
+    <script src="../../menu-fixture.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">05 · Useful partial solution</p>
+          <h1>Ledger document</h1>
+          <p class="lede">六個分類、30 道料理永久展開；靠密度、共享欄位與 inline detail 改善閱讀，但不處理長頁本身。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究時間線</a>
+      </header>
+
+      <p class="study-note">
+        研究提示：先比較同分類的三道料理，再從分享料理移到飲料或甜點。這個版本刻意不提供分類收合、搜尋、mini-map 或多尺度捷徑，以便觀察「更好的長頁」仍需付出的移動與回想成本。
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="Ledger-first 完整長菜單互動快照">
+        <div class="phone-screen">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>●●● 100%</span></div>
+
+          <header id="ledger-top">
+            <h2 class="restaurant-name">潮巷小館</h2>
+            <p class="restaurant-copy">以台灣家常風味、日式洋食與適合分享的熱菜組成的虛構休閒餐廳。</p>
+            <p class="restaurant-meta"><span>30 道料理</span><span>6 個分類</span><span>NT$120–NT$560</span></p>
+          </header>
+
+          <nav id="ledger-nav" class="category-nav" aria-label="菜單分類目錄"></nav>
+
+          <div class="ledger-observer" aria-live="polite">
+            <span>研究觀察：目前分類</span>
+            <strong id="current-ledger-category">個人主餐</strong>
+            <small>所有分類與料理仍永久展開；此列只回報位置，不提供額外產品導航。</small>
+          </div>
+
+          <div id="ledger-root"></div>
+
+          <p class="archive-source-note">
+            研究快照使用 30 道固定資料。分類目錄只會捲動到長頁中的既有位置，不會過濾、收合或替換內容。
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const menu = window.menuLensResearchMenu;
+        const nav = document.querySelector("#ledger-nav");
+        const root = document.querySelector("#ledger-root");
+        const currentCategory = document.querySelector("#current-ledger-category");
+        const money = (price) => `NT$${price}`;
+        const sourceLabel = (evidence) => {
+          if (!evidence) return "未提供";
+          if (evidence.confidence === "low") return "低可信";
+          return evidence.source === "merchant_confirmed" ? "商家確認" : "分類預設";
+        };
+
+        nav.innerHTML = menu.categories
+          .map((category) => {
+            const count = menu.products.filter((product) => product.categoryId === category.id).length;
+            return `<a href="#ledger-${category.id}"><strong>${category.name}</strong><small>${count} 道</small></a>`;
+          })
+          .join("");
+
+        root.innerHTML = menu.categories
+          .map((category) => {
+            const products = menu.products.filter((product) => product.categoryId === category.id);
+            return `
+              <section id="ledger-${category.id}" class="ledger-category" data-category-name="${category.name}">
+                <header>
+                  <h2>${category.name}</h2>
+                  <span class="ledger-count">${products.length} 道</span>
+                  <p>${category.description} · ${category.priceRange}</p>
+                </header>
+                ${products
+                  .map((product) => {
+                    const soldOut = product.availability === "sold_out";
+                    return `
+                      <details class="ledger-row">
+                        <summary>
+                          <span>
+                            <span class="ledger-product-name">${product.name}</span>
+                            <span class="ledger-product-copy">${product.description}</span>
+                            ${soldOut ? '<span class="ledger-sold-out">目前售完</span>' : ""}
+                          </span>
+                          <span class="ledger-cue">${product.cue}</span>
+                          <span class="ledger-price">${money(product.price)}</span>
+                        </summary>
+                        <div class="ledger-detail">
+                          <p>${product.description}</p>
+                          <dl>
+                            <dt>份量</dt><dd>${product.portion?.label ?? "未提供"} · ${sourceLabel(product.portion)}</dd>
+                            <dt>準備節奏</dt><dd>${product.preparation?.label ?? "未提供"} · ${sourceLabel(product.preparation)}</dd>
+                            <dt>必選規格</dt><dd>${product.requiredConfiguration}</dd>
+                            <dt>供應狀態</dt><dd>${soldOut ? "目前售完，仍保留在完整菜單" : "可供應"}</dd>
+                          </dl>
+                        </div>
+                      </details>`;
+                  })
+                  .join("")}
+              </section>`;
+          })
+          .join("");
+
+        const details = [...root.querySelectorAll("details")];
+        details.forEach((detail) => {
+          detail.addEventListener("toggle", () => {
+            if (!detail.open) return;
+            details.forEach((candidate) => {
+              if (candidate !== detail) candidate.open = false;
+            });
+          });
+        });
+
+        const sections = [...root.querySelectorAll(".ledger-category")];
+        if ("IntersectionObserver" in window) {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              const visible = entries
+                .filter((entry) => entry.isIntersecting)
+                .sort((a, b) => Math.abs(a.boundingClientRect.top) - Math.abs(b.boundingClientRect.top))[0];
+              if (visible) currentCategory.textContent = visible.target.dataset.categoryName;
+            },
+            { rootMargin: "-20% 0px -65% 0px", threshold: [0, 0.01] },
+          );
+          sections.forEach((section) => observer.observe(section));
+        }
+      })();
+    </script>
+  </body>
+</html>
