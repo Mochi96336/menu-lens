@@ -62,15 +62,17 @@ export const toggleAppCandidate = (
 
 export const removeAppCandidate = (
   state: MenuAppState,
-  menu: Menu,
   productId: ProductId,
 ): MenuAppState => {
   const candidates = removeCandidate(state.candidates, productId);
   if (candidates === state.candidates) return state;
+  const productIds = state.comparison.productIds.filter((entry) => entry !== productId);
   return {
     ...state,
     candidates,
-    comparison: sanitizeCandidateComparison(state.comparison, menu, candidates),
+    comparison: productIds.length === state.comparison.productIds.length
+      ? state.comparison
+      : { productIds },
   };
 };
 
@@ -91,7 +93,7 @@ export const openCandidateComparison = (
   state: MenuAppState,
   menu: Menu,
 ): MenuAppState => {
-  if (state.surface.kind !== "candidates" || candidateCount(menu, state.candidates) < 2) return state;
+  if (state.surface.kind === "comparison" || candidateCount(menu, state.candidates) < 2) return state;
   return {
     ...state,
     comparison: sanitizeCandidateComparison(state.comparison, menu, state.candidates),
