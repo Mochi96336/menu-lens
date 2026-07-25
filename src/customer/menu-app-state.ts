@@ -53,30 +53,14 @@ export const toggleAppCandidate = (
 ): MenuAppState => {
   const candidates = toggleCandidate(state.candidates, menu, productId);
   if (candidates === state.candidates) return state;
-  const comparison = sanitizeCandidateComparison(state.comparison, menu, candidates);
-  return { ...state, candidates, comparison };
-};
-
-export const removeAppCandidate = (
-  state: MenuAppState,
-  productId: ProductId,
-): MenuAppState => {
-  const candidates = removeCandidate(state.candidates, productId);
-  if (candidates === state.candidates) return state;
   return {
     ...state,
     candidates,
-    comparison: sanitizeCandidateComparison(state.comparison, menuForStateSanitize(state, candidates), candidates),
+    comparison: sanitizeCandidateComparison(state.comparison, menu, candidates),
   };
 };
 
-const menuForStateSanitize = (state: MenuAppState, candidates: CandidateState): Menu => {
-  void state;
-  void candidates;
-  throw new Error("removeAppCandidate requires menu for comparison sanitation");
-};
-
-export const removeAppCandidateFromMenu = (
+export const removeAppCandidate = (
   state: MenuAppState,
   menu: Menu,
   productId: ProductId,
@@ -108,10 +92,9 @@ export const openCandidateComparison = (
   menu: Menu,
 ): MenuAppState => {
   if (state.surface.kind !== "candidates" || candidateCount(menu, state.candidates) < 2) return state;
-  const comparison = sanitizeCandidateComparison(state.comparison, menu, state.candidates);
   return {
     ...state,
-    comparison,
+    comparison: sanitizeCandidateComparison(state.comparison, menu, state.candidates),
     surface: { kind: "comparison" },
   };
 };
