@@ -1,5 +1,11 @@
 import type { Menu, ProductId } from "../domain/menu-types.js";
 import {
+  createEmptyCandidateComparisonState,
+  sanitizeCandidateComparison,
+  toggleCandidateComparison,
+  type CandidateComparisonState,
+} from "./candidate-comparison.js";
+import {
   candidateCount,
   createEmptyCandidateState,
   isCandidate,
@@ -15,17 +21,20 @@ import {
 
 export type MenuSurface =
   | Readonly<{ kind: "menu" }>
-  | Readonly<{ kind: "candidates" }>;
+  | Readonly<{ kind: "candidates" }>
+  | Readonly<{ kind: "comparison" }>;
 
 export type MenuAppState = Readonly<{
   reading: MenuReadingState;
   candidates: CandidateState;
+  comparison: CandidateComparisonState;
   surface: MenuSurface;
 }>;
 
 export const createInitialMenuAppState = (menu: Menu): MenuAppState => ({
   reading: createInitialMenuReadingState(menu),
   candidates: createEmptyCandidateState(),
+  comparison: createEmptyCandidateComparisonState(),
   surface: { kind: "menu" },
 });
 
@@ -43,9 +52,9 @@ export const toggleAppCandidate = (
   productId: ProductId,
 ): MenuAppState => {
   const candidates = toggleCandidate(state.candidates, menu, productId);
-  return candidates === state.candidates
-    ? state
-    : { ...state, candidates };
+  if (candidates === state.candidates) return state;
+  const comparison = sanitizeCandidateComparison(state.comparison, menu, candidates);
+  return { ...state, candidates, comparison };
 };
 
 export const removeAppCandidate = (
@@ -53,9 +62,32 @@ export const removeAppCandidate = (
   productId: ProductId,
 ): MenuAppState => {
   const candidates = removeCandidate(state.candidates, productId);
-  return candidates === state.candidates
-    ? state
-    : { ...state, candidates };
+  if (candidates === state.candidates) return state;
+  return {
+    ...state,
+    candidates,
+    comparison: sanitizeCandidateComparison(state.comparison, menuForStateSanitize(state, candidates), candidates),
+  };
+};
+
+const menuForStateSanitize = (state: MenuAppState, candidates: CandidateState): Menu => {
+  void state;
+  void candidates;
+  throw new Error("removeAppCandidate requires menu for comparison sanitation");
+};
+
+export const removeAppCandidateFromMenu = (
+  state: MenuAppState,
+  menu: Menu,
+  productId: ProductId,
+): MenuAppState => {
+  const candidates = removeCandidate(state.candidates, productId);
+  if (candidates === state.candidates) return state;
+  return {
+    ...state,
+    candidates,
+    comparison: sanitizeCandidateComparison(state.comparison, menu, candidates),
+  };
 };
 
 export const openCandidateWorkspace = (
@@ -67,9 +99,41 @@ export const openCandidateWorkspace = (
     : { ...state, surface: { kind: "candidates" } };
 
 export const closeCandidateWorkspace = (state: MenuAppState): MenuAppState =>
-  state.surface.kind === "menu"
+  state.surface.kind !== "candidates"
     ? state
     : { ...state, surface: { kind: "menu" } };
+
+export const openCandidateComparison = (
+  state: MenuAppState,
+  menu: Menu,
+): MenuAppState => {
+  if (state.surface.kind !== "candidates" || candidateCount(menu, state.candidates) < 2) return state;
+  const comparison = sanitizeCandidateComparison(state.comparison, menu, state.candidates);
+  return {
+    ...state,
+    comparison,
+    surface: { kind: "comparison" },
+  };
+};
+
+export const closeCandidateComparison = (state: MenuAppState): MenuAppState =>
+  state.surface.kind !== "comparison"
+    ? state
+    : { ...state, surface: { kind: "candidates" } };
+
+export const toggleAppComparison = (
+  state: MenuAppState,
+  menu: Menu,
+  productId: ProductId,
+): MenuAppState => {
+  const comparison = toggleCandidateComparison(
+    state.comparison,
+    menu,
+    state.candidates,
+    productId,
+  );
+  return comparison === state.comparison ? state : { ...state, comparison };
+};
 
 export const showCandidateInMenu = (
   state: MenuAppState,
