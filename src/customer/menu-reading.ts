@@ -1,7 +1,6 @@
 import type {
   Category,
   CategoryId,
-  CoarseTrait,
   MealRole,
   Menu,
   MetadataConfidence,
@@ -19,6 +18,11 @@ import {
   type AnchorAxisRelation,
   type SemanticAxis,
 } from "./menu-anchor-axis.js";
+import {
+  coarseTraitLabels,
+  mealRoleLabels,
+  portionClassLabels,
+} from "./menu-semantic-labels.js";
 
 export type MenuExpansion =
   | Readonly<{ kind: "overview" }>
@@ -84,29 +88,6 @@ const moneyFormatter = new Intl.NumberFormat("zh-TW", {
   maximumFractionDigits: 0,
 });
 
-const roleLabels: Record<MealRole, string> = {
-  personal_main: "個人主餐",
-  shared_main: "分享主菜",
-  side: "小食或配菜",
-  staple: "飯麵主食",
-  drink: "飲品",
-  dessert: "甜點",
-};
-
-const portionLabels: Record<PortionClass, string> = {
-  small: "小份",
-  one_person: "一人份",
-  two_to_three: "約 2–3 人",
-  large_shared: "多人分享",
-};
-
-const traitLabels: Record<CoarseTrait, string> = {
-  light: "清爽",
-  rich: "濃郁",
-  spicy: "辣味",
-  vegetarian: "素食",
-};
-
 export const formatPrice = (price: number): string => moneyFormatter.format(price);
 
 const categoryProducts = (menu: Menu, categoryId: CategoryId): ReadonlyArray<Product> =>
@@ -163,9 +144,9 @@ const productCues = (
       ? semantics.traits.value[0]
       : undefined;
 
-  const portionCue = trustedPortion ? portionLabels[trustedPortion] : null;
-  const roleCue = trustedRole ? roleLabels[trustedRole] : null;
-  const traitCue = trustedTrait ? traitLabels[trustedTrait] : null;
+  const portionCue = trustedPortion ? portionClassLabels[trustedPortion] : null;
+  const roleCue = trustedRole ? mealRoleLabels[trustedRole] : null;
+  const traitCue = trustedTrait ? coarseTraitLabels[trustedTrait] : null;
   const primaryCue = portionCue ?? roleCue ?? traitCue;
 
   if (traitCue && traitCue !== primaryCue) return { primaryCue, secondaryCue: traitCue };
@@ -201,7 +182,7 @@ const categoryStructuralSummary = (
   products: ReadonlyArray<Product>,
 ): string => {
   const role = dominantMealRole(menu, products);
-  if (role) return `以${roleLabels[role]}為主`;
+  if (role) return `以${mealRoleLabels[role]}為主`;
   if (category.description) return category.description;
   return `${products.filter((product) => product.availability === "available").length} 道目前供應`;
 };
