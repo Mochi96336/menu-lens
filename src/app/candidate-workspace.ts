@@ -28,6 +28,7 @@ export type CandidateWorkspaceView = Readonly<{
   render: (state: CandidateState) => void;
   focusHeading: () => void;
   focusRemoval: (productId: ProductId) => void;
+  focusComparisonEntry: () => void;
 }>;
 
 export const createCandidateWorkspace = (
@@ -36,6 +37,7 @@ export const createCandidateWorkspace = (
   onBack: () => void,
   onLocateProduct: (productId: ProductId) => void,
   onRemoveCandidate: (productId: ProductId) => void,
+  onOpenComparison: () => void,
 ): CandidateWorkspaceView => {
   const root = element("main", "candidate-workspace");
   root.id = "candidate-workspace";
@@ -54,7 +56,16 @@ export const createCandidateWorkspace = (
     "candidate-workspace__hint",
     "尚未點餐，可隨時移除或回菜單查看。",
   );
-  header.append(backButton, eyebrow, heading, hint);
+  const comparisonEntryRow = element("div", "candidate-workspace__comparison-entry-row");
+  const comparisonEntry = element(
+    "button",
+    "candidate-workspace__comparison-entry",
+    "比較考慮項目",
+  ) as HTMLButtonElement;
+  comparisonEntry.type = "button";
+  comparisonEntry.addEventListener("click", onOpenComparison);
+  comparisonEntryRow.append(comparisonEntry);
+  header.append(backButton, eyebrow, heading, hint, comparisonEntryRow);
 
   const groups = element("div", "candidate-workspace__groups");
   root.append(header, groups);
@@ -68,6 +79,13 @@ export const createCandidateWorkspace = (
     const workspace = createCandidateWorkspaceModel(menu, state);
     heading.textContent = workspace.count === 0 ? "尚無考慮項目" : `考慮中的 ${workspace.count} 道`;
     root.dataset.empty = String(workspace.count === 0);
+    const comparisonUnavailable = workspace.count < 2;
+    comparisonEntry.disabled = comparisonUnavailable;
+    comparisonEntry.dataset.empty = String(comparisonUnavailable);
+    comparisonEntry.setAttribute(
+      "aria-label",
+      comparisonUnavailable ? "至少需要 2 道考慮項目才能比較" : `比較 ${workspace.count} 道考慮項目`,
+    );
     removeButtons.clear();
     groups.replaceChildren();
 
@@ -140,5 +158,6 @@ export const createCandidateWorkspace = (
     render,
     focusHeading: () => heading.focus({ preventScroll: true }),
     focusRemoval: (productId) => removeButtons.get(productId)?.focus({ preventScroll: true }),
+    focusComparisonEntry: () => comparisonEntry.focus({ preventScroll: true }),
   };
 };
