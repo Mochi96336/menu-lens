@@ -113,11 +113,11 @@ export const toggleCandidateComparison = (
   candidates: CandidateState,
   productId: ProductId,
 ): CandidateComparisonState => {
-  const clean = sanitizeCandidateComparison(state, menu, candidates);
   const isCurrentCandidate = canonicalCandidates(menu, candidates).some(
     (product) => product.id === productId,
   );
-  if (!isCurrentCandidate) return clean;
+  if (!isCurrentCandidate) return state;
+  const clean = sanitizeCandidateComparison(state, menu, candidates);
   if (isComparisonSelected(clean, productId)) {
     return { productIds: clean.productIds.filter((entry) => entry !== productId) };
   }
