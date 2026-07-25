@@ -1,10 +1,13 @@
 import type { Menu } from "../domain/menu-types.js";
 import { createCandidateComparisonModel } from "./candidate-comparison.js";
 import {
+  closeCandidateComparison,
   createInitialMenuAppState,
   openCandidateComparison,
   openCandidateWorkspace,
+  showCandidateInMenu,
   toggleAppCandidate,
+  toggleAppComparison,
 } from "./menu-app-state.js";
 
 const menu: Menu = {
@@ -23,6 +26,9 @@ state = toggleAppCandidate(state, menu, "b");
 if (openCandidateComparison(state, menu) !== state) {
   throw new Error("CMP1 must not bypass the Candidate workspace surface");
 }
+if (toggleAppComparison(state, menu, "a") !== state) {
+  throw new Error("comparison selection must not change outside the comparison surface");
+}
 const workspace = openCandidateWorkspace(state, menu);
 const comparison = openCandidateComparison(workspace, menu);
 if (comparison.surface.kind !== "comparison") {
@@ -30,6 +36,20 @@ if (comparison.surface.kind !== "comparison") {
 }
 if (comparison.reading !== workspace.reading || comparison.candidates !== workspace.candidates) {
   throw new Error("CMP1 opening must preserve reading and Candidate references");
+}
+if (openCandidateWorkspace(comparison, menu) !== comparison) {
+  throw new Error("Candidate workspace opening must not bypass comparison Back");
+}
+if (showCandidateInMenu(comparison, menu, "a") !== comparison) {
+  throw new Error("Candidate locator must not bypass comparison Back");
+}
+const selected = toggleAppComparison(comparison, menu, "a");
+if (selected.comparison.productIds.join(",") !== "a") {
+  throw new Error("comparison selection must change on the active comparison surface");
+}
+const returned = closeCandidateComparison(selected);
+if (returned.surface.kind !== "candidates") {
+  throw new Error("comparison Back must restore the Candidate workspace surface");
 }
 
 const externallyReduced = createCandidateComparisonModel(
@@ -44,4 +64,4 @@ if (externallyReduced.dimensions.length !== 0) {
   throw new Error("CMP1 must not render comparison evidence with fewer than two Candidates");
 }
 
-console.log("✓ CMP1 surface origin and reduced-Candidate contract");
+console.log("✓ CMP1 nested surface and reduced-Candidate contract");
