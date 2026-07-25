@@ -2,6 +2,7 @@ import type { Menu, ProductId } from "../domain/menu-types.js";
 import {
   createCandidateComparisonModel,
   isComparisonSelected,
+  type CandidateComparisonModel,
   type CandidateComparisonState,
   type ComparisonEvidence,
 } from "../customer/candidate-comparison.js";
@@ -36,11 +37,20 @@ const evidenceSupport = (evidence: ComparisonEvidence): string | null => {
   return source;
 };
 
+const selectionStatusText = (model: CandidateComparisonModel): string => {
+  if (model.candidates.length < 2) return "至少需要 2 道考慮項目才能比較";
+  const count = model.selectedProducts.length;
+  if (count === 0) return "尚未選擇 · 最多 3 道";
+  if (count === 1) return "已選 1 / 3 道 · 再選 1 道即可比較";
+  return `已選 ${count} / 3 道`;
+};
+
 export type CandidateComparisonView = Readonly<{
   element: HTMLElement;
   render: (candidates: CandidateState, comparison: CandidateComparisonState) => void;
   focusHeading: () => void;
   announceLimit: () => void;
+  resetStatus: (candidates: CandidateState, comparison: CandidateComparisonState) => void;
 }>;
 
 export const createCandidateComparison = (
@@ -111,6 +121,15 @@ export const createCandidateComparison = (
     });
   };
 
+  const resetStatus = (
+    candidates: CandidateState,
+    comparison: CandidateComparisonState,
+  ): void => {
+    status.textContent = selectionStatusText(
+      createCandidateComparisonModel(menu, candidates, comparison),
+    );
+  };
+
   const render = (
     candidates: CandidateState,
     comparison: CandidateComparisonState,
@@ -130,14 +149,7 @@ export const createCandidateComparison = (
 
     renderedComparison = comparison;
     const model = createCandidateComparisonModel(menu, candidates, comparison);
-    const count = model.selectedProducts.length;
-    if (comparisonChanged) {
-      status.textContent = count === 0
-        ? "尚未選擇 · 最多 3 道"
-        : count === 1
-          ? "已選 1 / 3 道 · 再選 1 道即可比較"
-          : `已選 ${count} / 3 道`;
-    }
+    status.textContent = selectionStatusText(model);
     evidence.replaceChildren();
     if (model.guidance) {
       evidence.append(element("p", "candidate-comparison__guidance", model.guidance));
@@ -167,5 +179,6 @@ export const createCandidateComparison = (
     render,
     focusHeading: () => heading.focus({ preventScroll: true }),
     announceLimit: () => { status.textContent = "最多比較 3 道，請先取消一項。"; },
+    resetStatus,
   };
 };
