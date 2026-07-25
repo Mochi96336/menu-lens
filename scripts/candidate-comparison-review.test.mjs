@@ -28,7 +28,8 @@ assertIncludes(comparisonDomainSource, 'const dimensionOrder: ReadonlyArray<Comp
 assertIncludes(comparisonDomainSource, '"price", "portion", "meal_role", "preparation", "shareability", "traits", "required_customization"', "CMP1 dimensions must remain bounded");
 assertIncludes(appSource, 'candidateComparison.element.hidden = state.surface.kind !== "comparison";', "exactly one of three main surfaces must be active");
 assertIncludes(appSource, 'candidateComparison.element.setAttribute("inert", "");', "hidden comparison surface must be inert");
-assertIncludes(appSource, 'window.scrollTo({ top: comparisonReturnContext.scrollY, behavior: "instant" });', "comparison Back must restore workspace scroll instantly");
+assertIncludes(appSource, "const returnContext = comparisonReturnContext;", "comparison Back must read its own browser return context");
+assertIncludes(appSource, 'window.scrollTo({ top: returnContext.scrollY, behavior: "instant" });', "comparison Back must restore workspace scroll instantly");
 assertIncludes(appSource, "workspace.append(overview.element, candidateWorkspace.element, candidateComparison.element);", "all three sibling surfaces must remain mounted");
 assertIncludes(comparisonCss, ".candidate-comparison__dimension-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(6.8rem, 42%);", "mobile dimension rows need bounded readable columns");
 assertIncludes(comparisonCss, ".candidate-comparison__selector-action { inline-size: 3.5rem; block-size: 1.7rem;", "pressed and unpressed selectors must share fixed dimensions");
