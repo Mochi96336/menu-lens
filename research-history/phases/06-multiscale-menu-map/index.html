@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 多尺度菜單地圖研究快照。" />
+    <title>06 Multi-scale menu map — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">06 · Active hypothesis</p>
+          <h1>Multi-scale menu map</h1>
+          <p class="lede">完整結構始終可見，完整內容依全店、分類與料理三個閱讀尺度展開。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究時間線</a>
+      </header>
+
+      <p class="study-note">
+        任務：先不要點任何分類，說出這間店的菜單規模、分類與價格帶。再依序查看「分享料理」中的宮保杏鮑菇，以及「飲料」中的桂花烏龍冷泡茶。觀察切換後是否仍知道自己在整份菜單中的位置。
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="多尺度菜單地圖互動快照">
+        <div class="phone-screen">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>●●● 100%</span></div>
+
+          <header>
+            <h2 class="restaurant-name">潮巷小館</h2>
+            <p class="restaurant-copy">台灣家常風味、日式洋食與適合分享的熱菜。</p>
+            <p class="restaurant-meta"><span>30 道料理</span><span>6 個分類</span><span>NT$120–NT$560</span></p>
+          </header>
+
+          <div class="workspace-topbar">
+            <strong id="scale-label">全店尺度</strong>
+            <button id="collapse-all" class="small-action" type="button" disabled>回到全店概覽</button>
+          </div>
+
+          <div class="scale-map" id="scale-map">
+            <section class="scale-category" data-category="personal" data-expanded="false">
+              <button type="button" aria-expanded="false" aria-controls="products-personal">
+                <span><span class="scale-category-title">個人主餐 · 8 道</span><br /><span class="scale-category-copy">定食、肉類、魚類、蔬食 · 一人份</span></span>
+                <span class="scale-category-price">NT$280–390</span>
+              </button>
+              <div class="scale-products" id="products-personal">
+                <details class="scale-product"><summary><span><strong>炙烤味噌雞腿定食</strong><br /><span class="menu-row-copy">味噌醬、烤蔬菜、漬物</span></span><span>NT$320</span></summary><div class="menu-detail"><p>味噌醬炙烤去骨雞腿，搭配季節烤蔬菜與漬物。</p><dl><dt>份量</dt><dd>一人份</dd><dt>主食</dt><dd>需選白飯或十穀飯</dd></dl></div></details>
+                <details class="scale-product"><summary><span><strong>檸香鹽麴鮭魚定食</strong><br /><span class="menu-row-copy">檸檬、嫩葉沙拉、烤南瓜</span></span><span>NT$360</span></summary><div class="menu-detail"><p>鹽麴醃鮭魚搭配檸檬、嫩葉沙拉與烤南瓜。</p></div></details>
+                <details class="scale-product"><summary><span><strong>黑蒜胡椒牛小排</strong><br /><span class="menu-row-copy">黑蒜、粗粒胡椒、薯泥</span></span><span>NT$390</span></summary><div class="menu-detail"><p>黑蒜醬與粗粒黑胡椒收汁，搭配炒菇與薯泥。</p></div></details>
+                <details class="scale-product"><summary><span><strong>塔香三杯杏鮑菇定食</strong><br /><span class="menu-row-copy">杏鮑菇、老薑、九層塔</span></span><span>NT$290</span></summary><div class="menu-detail"><p>杏鮑菇、老薑與九層塔快炒，醬香濃但不厚重。</p></div></details>
+                <details class="scale-product"><summary><span><strong>川味麻婆豆腐鍋</strong><br /><span class="menu-row-copy">花椒、豆瓣、嫩豆腐 · 售完</span></span><span>NT$280</span></summary><div class="menu-detail"><p>目前售完；仍可確認它存在於此分類。</p></div></details>
+              </div>
+            </section>
+
+            <section class="scale-category" data-category="rice" data-expanded="false">
+              <button type="button" aria-expanded="false" aria-controls="products-rice">
+                <span><span class="scale-category-title">飯麵類 · 6 道</span><br /><span class="scale-category-copy">飯、燉飯、烏龍、拌麵、湯麵</span></span>
+                <span class="scale-category-price">NT$240–320</span>
+              </button>
+              <div class="scale-products" id="products-rice">
+                <details class="scale-product"><summary><span><strong>炙燒叉燒溫泉蛋飯</strong><br /><span class="menu-row-copy">叉燒、溫泉蛋、甜醬油</span></span><span>NT$260</span></summary><div class="menu-detail"><p>炙燒叉燒、溫泉蛋、青蔥與甜醬油鋪在熱飯上。</p></div></details>
+                <details class="scale-product"><summary><span><strong>松露野菇燉飯</strong><br /><span class="menu-row-copy">野菇、帕瑪森、松露</span></span><span>NT$300</span></summary><div class="menu-detail"><p>綜合野菇、帕瑪森與松露香氣收進偏濃稠的燉飯。</p></div></details>
+                <details class="scale-product"><summary><span><strong>海老明太子奶油烏龍</strong><br /><span class="menu-row-copy">蝦仁、明太子、奶油</span></span><span>NT$320</span></summary><div class="menu-detail"><p>蝦仁、明太子與奶油醬包裹彈牙烏龍麵。</p></div></details>
+              </div>
+            </section>
+
+            <section class="scale-category" data-category="shared" data-expanded="false">
+              <button type="button" aria-expanded="false" aria-controls="products-shared">
+                <span><span class="scale-category-title">分享料理 · 6 道</span><br /><span class="scale-category-copy">雞、蝦、魚、軟殼蟹、蔬食 · 約 2–4 人</span></span>
+                <span class="scale-category-price">NT$340–560</span>
+              </button>
+              <div class="scale-products" id="products-shared">
+                <details class="scale-product"><summary><span><strong>山椒烤雞半隻</strong><br /><span class="menu-row-copy">山椒、柑橘、烤根莖 · 約 3–4 人</span></span><span>NT$520</span></summary><div class="menu-detail"><p>半隻雞以山椒、柑橘與香草慢烤，附烤根莖蔬菜。</p><dl><dt>份量</dt><dd>約 3–4 人</dd><dt>節奏</dt><dd>較久</dd></dl></div></details>
+                <details class="scale-product"><summary><span><strong>紹興奶油蝦</strong><br /><span class="menu-row-copy">紹興酒、蒜末、奶油 · 約 2–3 人</span></span><span>NT$480</span></summary><div class="menu-detail"><p>蝦仁以紹興酒、蒜末與奶油快速收汁。</p></div></details>
+                <details class="scale-product"><summary><span><strong>蒜酥椒鹽軟殼蟹</strong><br /><span class="menu-row-copy">蒜酥、蔥花、椒鹽 · 約 2–3 人</span></span><span>NT$460</span></summary><div class="menu-detail"><p>整隻軟殼蟹酥炸後拌入蒜酥、蔥花與椒鹽。</p></div></details>
+                <details class="scale-product"><summary><span><strong>豆豉蒸鱸魚</strong><br /><span class="menu-row-copy">豆豉、薑絲、清蒸 · 約 2–3 人</span></span><span>NT$560</span></summary><div class="menu-detail"><p>鱸魚片與豆豉、薑絲清蒸，保留魚肉水分。</p></div></details>
+                <details class="scale-product"><summary><span><strong>宮保杏鮑菇</strong><br /><span class="menu-row-copy">乾辣椒、花生、甜鹹辣 · 約 2–3 人</span></span><span>NT$340</span></summary><div class="menu-detail"><p>杏鮑菇、乾辣椒與花生快炒，帶甜鹹辣味。</p><dl><dt>份量</dt><dd>約 2–3 人</dd><dt>特徵</dt><dd>素食、微辣</dd><dt>必選規格</dt><dd>辣度</dd></dl><button class="small-action" type="button">選這道</button></div></details>
+                <details class="scale-product"><summary><span><strong>季節時蔬豆腐煲</strong><br /><span class="menu-row-copy">時蔬、豆腐、菇類 · 售完</span></span><span>NT$380</span></summary><div class="menu-detail"><p>目前售完；分類結構與品項仍然可見。</p></div></details>
+              </div>
+            </section>
+
+            <section class="scale-category" data-category="small" data-expanded="false">
+              <button type="button" aria-expanded="false" aria-controls="products-small">
+                <span><span class="scale-category-title">小食 · 4 道</span><br /><span class="scale-category-copy">炸物、蔬菜、小份配菜</span></span>
+                <span class="scale-category-price">NT$160–220</span>
+              </button>
+              <div class="scale-products" id="products-small">
+                <details class="scale-product"><summary><span><strong>剝皮辣椒炸雞</strong><br /><span class="menu-row-copy">剝皮辣椒、九層塔</span></span><span>NT$220</span></summary><div class="menu-detail"><p>雞腿塊酥炸後拌入剝皮辣椒與九層塔。</p></div></details>
+                <details class="scale-product"><summary><span><strong>胡麻龍鬚菜</strong><br /><span class="menu-row-copy">胡麻醬、白芝麻</span></span><span>NT$160</span></summary><div class="menu-detail"><p>汆燙龍鬚菜搭配自製胡麻醬與白芝麻。</p></div></details>
+              </div>
+            </section>
+
+            <section class="scale-category" data-category="drinks" data-expanded="false">
+              <button type="button" aria-expanded="false" aria-controls="products-drinks">
+                <span><span class="scale-category-title">飲料 · 4 道</span><br /><span class="scale-category-copy">茶、氣泡飲、果味冰茶、奶茶</span></span>
+                <span class="scale-category-price">NT$120–160</span>
+              </button>
+              <div class="scale-products" id="products-drinks">
+                <details class="scale-product"><summary><span><strong>桂花烏龍冷泡茶</strong><br /><span class="menu-row-copy">桂花、烏龍茶韻、清爽</span></span><span>NT$120</span></summary><div class="menu-detail"><p>桂花香氣與烏龍茶韻清爽收尾。</p><dl><dt>溫度</dt><dd>冷飲／熱飲</dd><dt>特徵</dt><dd>清爽</dd></dl></div></details>
+                <details class="scale-product"><summary><span><strong>黑糖檸檬氣泡飲</strong><br /><span class="menu-row-copy">黑糖、檸檬、氣泡</span></span><span>NT$140</span></summary><div class="menu-detail"><p>黑糖糖漿、檸檬汁與氣泡水調成酸甜口感。</p></div></details>
+                <details class="scale-product"><summary><span><strong>紫蘇梅番茄冰茶</strong><br /><span class="menu-row-copy">紫蘇梅、番茄、紅茶</span></span><span>NT$150</span></summary><div class="menu-detail"><p>紫蘇梅、番茄汁與紅茶混合，帶鹹酸果香。</p></div></details>
+                <details class="scale-product"><summary><span><strong>海鹽焦糖奶茶</strong><br /><span class="menu-row-copy">焦糖奶茶、海鹽奶蓋</span></span><span>NT$160</span></summary><div class="menu-detail"><p>焦糖奶茶加上海鹽奶蓋，甜鹹濃厚。</p></div></details>
+              </div>
+            </section>
+
+            <section class="scale-category" data-category="desserts" data-expanded="false">
+              <button type="button" aria-expanded="false" aria-controls="products-desserts">
+                <span><span class="scale-category-title">甜點 · 2 道</span><br /><span class="scale-category-copy">烤布蕾、豆乳奶酪</span></span>
+                <span class="scale-category-price">NT$150–160</span>
+              </button>
+              <div class="scale-products" id="products-desserts">
+                <details class="scale-product"><summary><span><strong>焦糖烤布蕾</strong><br /><span class="menu-row-copy">香草蛋奶、焦糖脆殼</span></span><span>NT$150</span></summary><div class="menu-detail"><p>香草蛋奶布蕾覆上現烤焦糖脆殼。</p></div></details>
+                <details class="scale-product"><summary><span><strong>柚香豆乳奶酪</strong><br /><span class="menu-row-copy">豆乳、柚子、海鹽</span></span><span>NT$160</span></summary><div class="menu-detail"><p>豆乳奶酪搭配柚子醬與少量海鹽。</p></div></details>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>這個快照仍可能失敗</h2>
+          <p>多尺度不是預設答案。它必須證明展開成本真的低於長頁的滑動與記憶成本。</p>
+        </div>
+        <div class="timeline">
+          <article class="phase-card"><h3>要驗證</h3><p>未點擊時是否足以理解全店；跨分類切換後是否仍保有空間地標。</p></article>
+          <article class="phase-card"><h3>可能失敗</h3><p>分類摘要像 dashboard cards、展開造成跳動、使用者不相信壓縮分類包含完整內容。</p></article>
+          <article class="phase-card"><h3>直接對照</h3><p>必須和 Complete menu 長頁使用相同尋找、比較、返回與回想任務比較。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const categories = [...document.querySelectorAll(".scale-category")];
+      const collapseAll = document.querySelector("#collapse-all");
+      const scaleLabel = document.querySelector("#scale-label");
+
+      function setExpanded(target) {
+        categories.forEach((category) => {
+          const expanded = category === target;
+          category.dataset.expanded = String(expanded);
+          category.querySelector(":scope > button").setAttribute("aria-expanded", String(expanded));
+          if (!expanded) {
+            category.querySelectorAll("details[open]").forEach((detail) => detail.removeAttribute("open"));
+          }
+        });
+        collapseAll.disabled = !target;
+        scaleLabel.textContent = target
+          ? `分類尺度 · ${target.querySelector(".scale-category-title").textContent}`
+          : "全店尺度";
+        if (target) target.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+
+      categories.forEach((category) => {
+        category.querySelector(":scope > button").addEventListener("click", () => {
+          const isExpanded = category.dataset.expanded === "true";
+          setExpanded(isExpanded ? null : category);
+        });
+      });
+
+      collapseAll.addEventListener("click", () => setExpanded(null));
+    </script>
+  </body>
+</html>
