@@ -80,7 +80,7 @@ export const openCandidateWorkspace = (
   state: MenuAppState,
   menu: Menu,
 ): MenuAppState =>
-  state.surface.kind === "candidates" || candidateCount(menu, state.candidates) === 0
+  state.surface.kind !== "menu" || candidateCount(menu, state.candidates) === 0
     ? state
     : { ...state, surface: { kind: "candidates" } };
 
@@ -111,6 +111,7 @@ export const toggleAppComparison = (
   menu: Menu,
   productId: ProductId,
 ): MenuAppState => {
+  if (state.surface.kind !== "comparison") return state;
   const comparison = toggleCandidateComparison(
     state.comparison,
     menu,
@@ -125,7 +126,7 @@ export const showCandidateInMenu = (
   menu: Menu,
   productId: ProductId,
 ): MenuAppState => {
-  if (!isCandidate(state.candidates, productId)) return state;
+  if (state.surface.kind !== "candidates" || !isCandidate(state.candidates, productId)) return state;
   const product = menu.products.find((entry) => entry.id === productId);
   if (!product) return state;
   return {
