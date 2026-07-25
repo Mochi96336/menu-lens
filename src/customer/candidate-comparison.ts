@@ -113,15 +113,15 @@ export const toggleCandidateComparison = (
   candidates: CandidateState,
   productId: ProductId,
 ): CandidateComparisonState => {
+  const clean = sanitizeCandidateComparison(state, menu, candidates);
   const isCurrentCandidate = canonicalCandidates(menu, candidates).some(
     (product) => product.id === productId,
   );
-  if (!isCurrentCandidate) return state;
-  const clean = sanitizeCandidateComparison(state, menu, candidates);
+  if (!isCurrentCandidate) return clean;
   if (isComparisonSelected(clean, productId)) {
     return { productIds: clean.productIds.filter((entry) => entry !== productId) };
   }
-  if (clean.productIds.length >= 3) return state;
+  if (clean.productIds.length >= 3) return clean;
   const selected = new Set([...clean.productIds, productId]);
   return {
     productIds: menu.products
@@ -228,15 +228,16 @@ export const createCandidateComparisonModel = (
   const selectedSet = new Set(clean.productIds);
   const selectedProducts = candidateProducts.filter((product) => selectedSet.has(product.id));
   if (selectedProducts.length < 2) {
+    const guidance = candidateProducts.length < 2
+      ? "至少需要 2 道考慮項目才能比較。"
+      : selectedProducts.length === 0
+        ? "選擇 2–3 道考慮項目開始比較。"
+        : "再選 1 道即可比較。";
     return {
       candidates: candidateProducts,
       selectedProducts,
       dimensions: [],
-      guidance: selectedProducts.length === 0
-        ? candidateProducts.length < 2
-          ? "至少需要 2 道考慮項目才能比較。"
-          : "選擇 2–3 道考慮項目開始比較。"
-        : "再選 1 道即可比較。",
+      guidance,
     };
   }
 
