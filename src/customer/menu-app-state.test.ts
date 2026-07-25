@@ -52,14 +52,16 @@ const assertCandidatesPreserved = (
   message: string,
 ): void => {
   assert(after.candidates === before.candidates, `${message}: Candidate state reference must be preserved`);
+  assert(after.comparison === before.comparison, `${message}: comparison state reference must be preserved`);
   assert(isCandidate(after.candidates, candidateProduct.id), `${message}: shared Candidate must remain`);
   assert(isCandidate(after.candidates, otherProduct.id), `${message}: cross-category Candidate must remain`);
 };
 
-test("initial app state keeps reading, Candidate, and surface state separate", () => {
+test("initial app state keeps reading, Candidate, comparison, and surface state separate", () => {
   const state = createInitialMenuAppState(referenceMenu);
   assert(state.reading.expansion.kind === "overview", "reading must begin in overview");
   assert(state.candidates.productIds.length === 0, "Candidates must begin empty");
+  assert(state.comparison.productIds.length === 0, "comparison selection must begin empty");
   assert(state.surface.kind === "menu", "the canonical menu must be the initial active surface");
   assert(!(state as Record<string, unknown>).quantity, "app state must not add quantity");
   assert(!(state as Record<string, unknown>).order, "app state must not add order state");
@@ -70,6 +72,7 @@ test("Candidate toggle changes membership without altering reading or surface st
   const added = toggleAppCandidate(initial, referenceMenu, candidateProduct.id);
   assert(added.reading === initial.reading, "Candidate add must preserve reading reference");
   assert(added.surface === initial.surface, "Candidate add must preserve surface reference");
+  assert(added.comparison === initial.comparison, "Candidate add must not select it for comparison");
   assert(isCandidate(added.candidates, candidateProduct.id), "Candidate add must change membership");
   const removed = toggleAppCandidate(added, referenceMenu, candidateProduct.id);
   assert(removed.reading === added.reading, "Candidate removal must preserve reading reference");
@@ -129,7 +132,7 @@ test("Candidates survive every Prototype C Anchor and axis transition", () => {
   assert(isCandidate(clearedAnchor.candidates, otherProduct.id), "clearing Anchor must preserve the remaining Candidate");
 });
 
-test("same-category reopen preserves both Candidate membership and explicit axis", () => {
+test("same-category reopen preserves Candidate membership, comparison state, and explicit axis", () => {
   const state = withTwoCandidates();
   const focused = updateAppReading(state, focusCategory(state.reading, referenceMenu, sharedCategoryId));
   const selecting = updateAppReading(focused, beginAnchorSelection(focused.reading));
@@ -146,7 +149,7 @@ test("workspace cannot open without a canonical Candidate", () => {
   assert(openCandidateWorkspace(initial, referenceMenu) === initial, "empty Candidate state must not open the workspace");
 });
 
-test("workspace open and close preserve complete reading and Candidate references", () => {
+test("workspace open and close preserve complete reading, Candidate, and comparison references", () => {
   const candidates = withTwoCandidates();
   const focused = updateAppReading(candidates, focusCategory(candidates.reading, referenceMenu, sharedCategoryId));
   const selecting = updateAppReading(focused, beginAnchorSelection(focused.reading));
@@ -156,10 +159,12 @@ test("workspace open and close preserve complete reading and Candidate reference
   assert(opened.surface.kind === "candidates", "workspace open must activate the Candidate surface");
   assert(opened.reading === preparation.reading, "workspace open must preserve complete reading reference");
   assert(opened.candidates === preparation.candidates, "workspace open must preserve Candidate reference");
+  assert(opened.comparison === preparation.comparison, "workspace open must preserve comparison reference");
   const closed = closeCandidateWorkspace(opened);
   assert(closed.surface.kind === "menu", "workspace close must restore the menu surface");
   assert(closed.reading === opened.reading, "workspace close must preserve complete reading reference");
   assert(closed.candidates === opened.candidates, "workspace close must preserve Candidate reference");
+  assert(closed.comparison === opened.comparison, "workspace close must preserve comparison reference");
 });
 
 test("explicit workspace removal preserves reading, surface, and an active Anchor", () => {
@@ -188,6 +193,7 @@ test("show in menu uses existing category-focus rules and preserves Candidate me
   const located = showCandidateInMenu(opened, referenceMenu, otherProduct.id);
   assert(located.surface.kind === "menu", "Product locator must return to the menu surface");
   assert(located.candidates === opened.candidates, "Product locator must preserve Candidate reference");
+  assert(located.comparison === opened.comparison, "Product locator must preserve comparison reference");
   assert(
     located.reading.expansion.kind === "category" && located.reading.expansion.categoryId === otherProduct.categoryId,
     "Product locator must focus the canonical destination category",
@@ -199,10 +205,10 @@ test("show in menu uses existing category-focus rules and preserves Candidate me
   );
 });
 
-test("app state introduces no Comparison, Decision, Configuration, quantity, total, or order state", () => {
+test("app state introduces no Decision, Configuration, quantity, total, or order state", () => {
   const serialized = JSON.stringify(openCandidateWorkspace(withTwoCandidates(), referenceMenu)).toLowerCase();
-  ["comparison", "decision", "configuration", "quantity", "total", "draftorder", "currentorder", "submitted"].forEach((term) =>
-    assert(!serialized.includes(term), `${term} must remain absent from CND2 state`),
+  ["decision", "configuration", "quantity", "total", "draftorder", "currentorder", "submitted"].forEach((term) =>
+    assert(!serialized.includes(term), `${term} must remain absent from CMP1 state`),
   );
 });
 
