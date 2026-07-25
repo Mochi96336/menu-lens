@@ -1,9 +1,6 @@
 import type { CategoryId, Menu, ProductId } from "../domain/menu-types.js";
 import type { SemanticAxis } from "../customer/menu-anchor-axis.js";
-import {
-  createCandidateComparisonModel,
-  isComparisonSelected,
-} from "../customer/candidate-comparison.js";
+import { isComparisonSelected } from "../customer/candidate-comparison.js";
 import { createCandidateWorkspaceModel } from "../customer/candidate-workspace.js";
 import {
   closeCandidateComparison,
@@ -366,6 +363,4 @@ export const mountMenuApp = (root: HTMLElement, menu: Menu): void => {
     },
     { passive: true },
   );
-
-  void createCandidateComparisonModel;
 };
