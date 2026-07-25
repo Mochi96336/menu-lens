@@ -3,6 +3,7 @@ import {
   closeCandidateComparison,
   createInitialMenuAppState,
   openCandidateComparison,
+  openCandidateWorkspace,
   removeAppCandidate,
   toggleAppCandidate,
   toggleAppComparison,
@@ -169,15 +170,17 @@ test("zero or one selected Product produces guidance but no evidence", () => {
   assert(one.dimensions.length === 0 && one.guidance === "再選 1 道即可比較。", "one selection needs bounded guidance");
 });
 
-test("app surface opens only with two Candidates and preserves explicit empty selection", () => {
+test("app surface opens only from Candidate workspace and preserves explicit empty selection", () => {
   let app = createInitialMenuAppState(menu);
   app = toggleAppCandidate(app, menu, "p1");
   assert(openCandidateComparison(app, menu) === app, "comparison must not open with one Candidate");
   app = toggleAppCandidate(app, menu, "p2");
-  const opened = openCandidateComparison(app, menu);
+  assert(openCandidateComparison(app, menu) === app, "comparison must not bypass the Candidate workspace");
+  const workspace = openCandidateWorkspace(app, menu);
+  const opened = openCandidateComparison(workspace, menu);
   assert(opened.surface.kind === "comparison", "comparison surface must open with two Candidates");
   assert(opened.comparison.productIds.length === 0, "first open must remain explicitly empty");
-  assert(opened.reading === app.reading && opened.candidates === app.candidates, "open must preserve reading and Candidate references");
+  assert(opened.reading === workspace.reading && opened.candidates === workspace.candidates, "open must preserve reading and Candidate references");
   const selected = toggleAppComparison(opened, menu, "p2");
   assert(selected.comparison.productIds.join(",") === "p2", "app comparison toggle must update only comparison state");
   assert(selected.candidates === opened.candidates, "comparison toggle must preserve Candidate membership");
@@ -190,6 +193,7 @@ test("removing a Candidate sanitizes only its comparison selection", () => {
   let app = createInitialMenuAppState(menu);
   app = toggleAppCandidate(app, menu, "p1");
   app = toggleAppCandidate(app, menu, "p2");
+  app = openCandidateWorkspace(app, menu);
   app = openCandidateComparison(app, menu);
   app = toggleAppComparison(app, menu, "p1");
   app = toggleAppComparison(app, menu, "p2");
