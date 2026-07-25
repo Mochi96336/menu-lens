@@ -84,8 +84,6 @@ export const createCandidateComparison = (
   let renderedComparison: CandidateComparisonState | null = null;
 
   const renderSelectors = (candidates: CandidateState): void => {
-    if (renderedCandidates === candidates) return;
-    renderedCandidates = candidates;
     selectorButtons.clear();
     selectorRows.replaceChildren();
     const membership = new Set(candidates.productIds);
@@ -117,13 +115,19 @@ export const createCandidateComparison = (
     candidates: CandidateState,
     comparison: CandidateComparisonState,
   ): void => {
-    renderSelectors(candidates);
+    const candidatesChanged = renderedCandidates !== candidates;
+    const comparisonChanged = renderedComparison !== comparison;
+    if (!candidatesChanged && !comparisonChanged) return;
+
+    if (candidatesChanged) {
+      renderSelectors(candidates);
+      renderedCandidates = candidates;
+    }
     selectorButtons.forEach((button, productId) => {
       const selected = isComparisonSelected(comparison, productId);
       button.setAttribute("aria-pressed", String(selected));
     });
-    if (renderedComparison === comparison && renderedCandidates === candidates) return;
-    const comparisonChanged = renderedComparison !== comparison;
+
     renderedComparison = comparison;
     const model = createCandidateComparisonModel(menu, candidates, comparison);
     const count = model.selectedProducts.length;
