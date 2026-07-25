@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 手機菜單閱讀問題的設計演進、失敗方向與可重用成果。" />
+    <title>Menu Lens — Design Evolution and Failed Directions</title>
+    <link rel="stylesheet" href="./history.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要內容</a>
+
+    <header class="masthead site-shell">
+      <p class="eyebrow">Menu Lens research archive</p>
+      <h1>設計演進與失敗方向</h1>
+      <p class="lede">
+        一份可閱讀、可操作的研究時間線。它保留每個階段當時真正想解的問題、使用者必須付出的操作、失敗原因，以及仍值得帶往下一輪的成果。
+      </p>
+      <div class="meta-row" aria-label="研究檔案資訊">
+        <span class="pill">6 個時期</span>
+        <span class="pill">3 個代表性互動快照</span>
+        <span class="pill">同一份 reference menu</span>
+        <span class="pill">非正式產品介面</span>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="section site-shell" aria-labelledby="timeline-title">
+        <div class="section-heading">
+          <p class="eyebrow">Timeline</p>
+          <h2 id="timeline-title">從長菜單，到決策工作流，再回到閱讀尺度</h2>
+          <p>
+            每張卡都使用同一套問題：它處理了什麼、又把負擔搬到哪裡。舊 prototype 不會被事後美化，否則就無法理解它為什麼被拒絕。
+          </p>
+        </div>
+
+        <div class="timeline">
+          <article class="phase-card">
+            <div>
+              <div class="phase-index">01 · BASELINE</div>
+              <h3>Complete menu</h3>
+              <span class="status accepted">Accepted substrate</span>
+            </div>
+            <p>完整長頁、分類跳轉與 inline detail，建立可信的完整性與返回位置。</p>
+            <ul>
+              <li>保留：完整結構、inline detail、focus／scroll continuity</li>
+              <li>未解：長頁線性、跨分類比較與全貌</li>
+            </ul>
+            <footer>
+              <a class="button" href="./phases/01-complete-menu/">開啟互動快照</a>
+            </footer>
+          </article>
+
+          <article class="phase-card">
+            <div>
+              <div class="phase-index">02 · EXPERIMENT</div>
+              <h3>Relational reading</h3>
+              <span class="status rejected">Rejected as main flow</span>
+            </div>
+            <p>透過 Anchor 與 semantic axis，把多道料理投影成相對差異。</p>
+            <ul>
+              <li>保留：shared columns、truthful evidence</li>
+              <li>失敗：必須先理解基準與比較軸，排版問題變成查詢操作</li>
+            </ul>
+            <footer>
+              <span class="ghost-button" aria-disabled="true">快照待補</span>
+            </footer>
+          </article>
+
+          <article class="phase-card">
+            <div>
+              <div class="phase-index">03 · WORKFLOW</div>
+              <h3>Candidate workspace</h3>
+              <span class="status rejected">Rejected as default flow</span>
+            </div>
+            <p>讓使用者在購物車之前保存幾道「認真考慮」的料理。</p>
+            <ul>
+              <li>保留：identity-only state、可逆性、return context</li>
+              <li>失敗：把短期考慮變成清單管理</li>
+            </ul>
+            <footer>
+              <a class="button" href="./phases/03-candidate-comparison/">開啟流程快照</a>
+            </footer>
+          </article>
+
+          <article class="phase-card">
+            <div>
+              <div class="phase-index">04 · WORKFLOW</div>
+              <h3>Bounded comparison</h3>
+              <span class="status rejected">Product-invalid</span>
+            </div>
+            <p>Candidate 之外再建立 2–3 道的比較 membership，技術上嚴謹但流程重複。</p>
+            <ul>
+              <li>保留：bounded projection、canonical order</li>
+              <li>失敗：加入考慮後仍須逐道再按一次比較</li>
+            </ul>
+            <footer>
+              <a class="button" href="./phases/03-candidate-comparison/#comparison">在同一快照體驗</a>
+            </footer>
+          </article>
+
+          <article class="phase-card">
+            <div>
+              <div class="phase-index">05 · PARTIAL</div>
+              <h3>Ledger document</h3>
+              <span class="status partial">Useful partial solution</span>
+            </div>
+            <p>以密集分類段落、欄位對齊和 inline detail 取代商品卡與比較按鈕。</p>
+            <ul>
+              <li>保留：row grammar、alignment、同分類掃描</li>
+              <li>未解：仍是一條更漂亮的長頁</li>
+            </ul>
+            <footer>
+              <span class="ghost-button" aria-disabled="true">快照待補</span>
+            </footer>
+          </article>
+
+          <article class="phase-card">
+            <div>
+              <div class="phase-index">06 · CURRENT HYPOTHESIS</div>
+              <h3>Multi-scale menu map</h3>
+              <span class="status active">Active hypothesis</span>
+            </div>
+            <p>完整結構始終可見，內容依全店、分類與料理三個閱讀尺度展開。</p>
+            <ul>
+              <li>嘗試：全貌、地標、局部閱讀與空間記憶</li>
+              <li>尚未證明：展開成本是否低於長頁成本</li>
+            </ul>
+            <footer>
+              <a class="button" href="./phases/06-multiscale-menu-map/">開啟互動快照</a>
+            </footer>
+          </article>
+        </div>
+      </section>
+
+      <section class="section site-shell" aria-labelledby="comparison-title">
+        <div class="section-heading">
+          <p class="eyebrow">At a glance</p>
+          <h2 id="comparison-title">重點對照</h2>
+          <p>這張表是快速複習入口：不是哪個版本看起來最好，而是每個版本究竟改變了哪一種負擔。</p>
+        </div>
+
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">時期</th>
+                <th scope="col">主要解法</th>
+                <th scope="col">處理了什麼</th>
+                <th scope="col">沒處理／新增什麼</th>
+                <th scope="col">結論</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Complete menu</td>
+                <td>完整長頁＋inline detail</td>
+                <td>完整性、位置保存、細節返回</td>
+                <td>線性、跨分類比較、全貌與局部分離</td>
+                <td><span class="status accepted">保留基線</span></td>
+              </tr>
+              <tr>
+                <td>Relational</td>
+                <td>Anchor＋semantic axis</td>
+                <td>相對差異、證據來源、shared columns</td>
+                <td>理解基準與操作比較軸</td>
+                <td><span class="status rejected">拒絕主流程</span></td>
+              </tr>
+              <tr>
+                <td>Candidate</td>
+                <td>保存候選＋獨立工作區</td>
+                <td>跨分類回看、與購物車分離</td>
+                <td>清單管理與新術語</td>
+                <td><span class="status rejected">拒絕主流程</span></td>
+              </tr>
+              <tr>
+                <td>Comparison</td>
+                <td>Candidate 外再選 2–3 道</td>
+                <td>bounded truthful differences</td>
+                <td>重複選擇與 surface transition</td>
+                <td><span class="status rejected">產品不通過</span></td>
+              </tr>
+              <tr>
+                <td>Ledger</td>
+                <td>密集對齊菜單文件</td>
+                <td>同分類掃描、卡片密度、資訊位置</td>
+                <td>仍是長頁線性</td>
+                <td><span class="status partial">部分保留</span></td>
+              </tr>
+              <tr>
+                <td>Multi-scale</td>
+                <td>全店／分類／料理尺度</td>
+                <td>嘗試保留全貌、地標與局部內容</td>
+                <td>展開負擔與摘要可信度未驗證</td>
+                <td><span class="status active">Active</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section site-shell" aria-labelledby="rules-title">
+        <div class="section-heading">
+          <p class="eyebrow">Archive rules</p>
+          <h2 id="rules-title">怎麼閱讀這些快照</h2>
+        </div>
+        <div class="timeline">
+          <article class="phase-card">
+            <h3>同一份內容</h3>
+            <p>三個快照使用相同餐廳、分類與代表料理。差異來自 UI，不是內容被換掉。</p>
+          </article>
+          <article class="phase-card">
+            <h3>忠實保留缺點</h3>
+            <p>Candidate 版本仍保留「考慮 → 工作區 → 比較 → 再次選取」，讓流程成本可以被親自感受。</p>
+          </article>
+          <article class="phase-card">
+            <h3>不是產品 fallback</h3>
+            <p>快照是封閉的 HTML／CSS／原生 JavaScript 研究證據，不共用正式 app state，也不保存資料。</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="research-footer site-shell">
+      <p>Menu Lens research archive · 所有方向都必須接受直接任務比較，而不是靠概念敘述取得通過。</p>
+    </footer>
+  </body>
+</html>
