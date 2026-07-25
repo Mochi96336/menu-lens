@@ -1,4 +1,5 @@
 import type { Menu } from "../domain/menu-types.js";
+import { createCandidateComparisonModel } from "./candidate-comparison.js";
 import {
   createInitialMenuAppState,
   openCandidateComparison,
@@ -31,4 +32,16 @@ if (comparison.reading !== workspace.reading || comparison.candidates !== worksp
   throw new Error("CMP1 opening must preserve reading and Candidate references");
 }
 
-console.log("✓ CMP1 surface origin contract");
+const externallyReduced = createCandidateComparisonModel(
+  menu,
+  { productIds: ["a"] },
+  { productIds: ["a"] },
+);
+if (externallyReduced.guidance !== "至少需要 2 道考慮項目才能比較。") {
+  throw new Error("CMP1 must prioritize Candidate shortage over one-selection guidance");
+}
+if (externallyReduced.dimensions.length !== 0) {
+  throw new Error("CMP1 must not render comparison evidence with fewer than two Candidates");
+}
+
+console.log("✓ CMP1 surface origin and reduced-Candidate contract");
