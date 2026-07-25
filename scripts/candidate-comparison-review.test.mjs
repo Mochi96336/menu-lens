@@ -15,6 +15,11 @@ const assertIncludes = (source, fragment, message) => {
   if (!source.includes(fragment.replace(/\s+/g, " ").trim())) throw new Error(message);
 };
 
+if (indexSource.includes('<main id="app">')) {
+  throw new Error("the mount root must not create a main landmark around the active surface main");
+}
+
+assertIncludes(indexSource, '<div id="app"></div>', "the application mount root must remain a neutral container");
 assertIncludes(workspaceSource, '"比較考慮項目"', "Candidate workspace must expose one bounded comparison entry");
 assertIncludes(workspaceSource, "focusComparisonEntry:", "comparison Back needs a stable workspace focus target");
 assertIncludes(comparisonSource, 'const root = element("main", "candidate-comparison");', "CMP1 must be a sibling document main");
@@ -24,6 +29,7 @@ assertIncludes(comparisonSource, 'button.setAttribute("aria-pressed", String(sel
 assertIncludes(comparisonSource, "const selectorButtons = new Map<ProductId, HTMLButtonElement>();", "selector DOM nodes must persist across selection updates");
 assertIncludes(comparisonSource, 'status.setAttribute("aria-live", "polite");', "CMP1 needs one bounded selection live region");
 assertIncludes(comparisonSource, 'className = "candidate-comparison__dimension"', "comparison must use vertical dimension blocks");
+assertIncludes(comparisonSource, "resetStatus(renderedCandidates, renderedComparison);", "transient selection-limit status must reset while comparison is hidden");
 assertIncludes(comparisonDomainSource, 'const dimensionOrder: ReadonlyArray<ComparisonDimensionKey> = [', "dimension order must be fixed and explicit");
 assertIncludes(comparisonDomainSource, '"price", "portion", "meal_role", "preparation", "shareability", "traits", "required_customization"', "CMP1 dimensions must remain bounded");
 assertIncludes(appSource, 'candidateComparison.element.hidden = state.surface.kind !== "comparison";', "exactly one of three main surfaces must be active");
