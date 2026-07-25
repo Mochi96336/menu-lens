@@ -2,16 +2,19 @@
 
 This file is the current coordination view for Menu Lens.
 
-It exists to prevent parallel conversations from redefining the product, duplicating work, or expanding the demo before the decision spine is coherent.
+It exists to prevent parallel conversations from redefining the product, carrying rejected experiments forward, or expanding the demo before the active UI question is answered.
 
 ## Coordination rules
 
 - The core conversation owns product-contract changes and cross-workstream conflict resolution.
-- Each implementation conversation should own one bounded outcome, not a collection of screens or technologies.
-- Workstreams should modify only the files needed for their outcome.
-- Cross-cutting discoveries should be recorded and returned to the core conversation rather than silently expanding scope.
-- Conventional-interface comparison is parked until the Menu Lens interaction is coherent enough to evaluate on its own.
-- Prefer fewer moving parts, fewer dependencies, and fewer abstractions while the product model is still being tested.
+- Each implementation conversation owns one bounded outcome.
+- Cross-cutting discoveries must be recorded instead of silently expanding scope.
+- A technically valid state boundary does not automatically justify a customer-facing control or surface.
+- Comparison should first be attempted through layout, proximity, alignment, and density.
+- Failed or insufficient interaction experiments remain research evidence and must not accumulate in the active path.
+- Conventional-interface comparison remains parked.
+- Prefer fewer moving parts, dependencies, and abstractions while the product model is still being tested.
+- Passing one slice does not automatically authorize the next transaction state.
 
 ## Current sequence
 
@@ -19,177 +22,230 @@ It exists to prevent parallel conversations from redefining the product, duplica
 [complete] foundation memory
 → [complete] domain schema and reference dataset
 → [complete] formative evaluation protocol
-→ [active] customer decision spine
-    [complete] complete menu + inline detail
-    → [next] Candidate + comparison
-    → Decision + Configuration + Current order
-→ continuity and table state
-→ thin alternative lenses
-→ merchant-authoring test
-→ decide whether a conventional baseline is useful
+→ [complete] first complete-menu + inline-detail baseline
+→ [rejected] PR #4 explicit decision-workflow direction
+→ [active planning] digital menu document UI
+→ [blocked] bounded implementation prototype
+→ [blocked] Decision / Configuration / Current order
+→ [deferred] continuity and table state
+→ [deferred] thin alternative lenses
+→ [deferred] merchant-authoring test
+→ [parked] conventional baseline decision
 ```
 
 ## Workstream status
 
-| Workstream | Status | Scope | Depends on | Primary output |
-|---|---|---|---|---|
-| Foundation memory | Complete | product contract, glossary, workstream boundaries, handoff protocol | existing design core | stable cross-conversation reference |
-| Domain and reference data | Complete | types, validation, 30-product fictional menu, incomplete metadata cases | product contract | local typed dataset and tests |
-| Formative evaluation | Complete | task scripts, observation notes, lightweight local events, falsification signals | product contract | protocol that shapes implementation |
-| Customer decision spine | In progress | full menu → inline detail → candidates → comparison → decision → configuration → current order | domain dataset and formative protocol | one complete interactive flow |
-| Continuity and table state | Deferred | scroll restoration, preserved candidates, submitted rounds, coarse table composition | customer decision spine | continuity behavior over the same state model |
-| Alternative lenses | Deferred | thin quick, shared-table, and featured views | stable decision spine | views over the same canonical menu |
-| Merchant authoring | Deferred | category defaults, exceptions, confidence, incomplete-data preview | proven useful semantic fields | small authoring test, not production CMS |
-| Conventional baseline | Parked | credible conventional ordering flow using the same data | coherent Menu Lens demo and explicit study need | optional comparison condition |
-| Production integration | Out of scope | payment, POS, KDS, inventory, auth, deployment operations | none in current demo | none |
+| Workstream | Status | Scope | Primary output |
+|---|---|---|---|
+| Foundation memory | Complete | product contract, glossary, boundaries, handoff | stable shared memory |
+| Domain and reference data | Complete | types, validation, fictional menu, incomplete metadata | canonical local dataset |
+| Formative evaluation | Complete | tasks, observations, events, falsification signals | observation contract |
+| Complete-menu baseline | Complete | overview, stable full menu, category navigation, inline detail | runnable main baseline |
+| PR #4 interaction family | Rejected as active direction | Anchor, semantic axes, Candidate, separate comparison | negative research evidence |
+| Digital menu document UI | Active planning | layout-first overview, dense rows, inline detail, continuity | reviewed UI direction |
+| Replacement implementation prototype | Blocked | bounded changes to the main baseline | explicit direction approval first |
+| Decision / Configuration / Current order | Blocked | transaction-boundary states | stable reading direction first |
+| Continuity and table state | Deferred | submitted rounds and coarse composition | stable decision spine first |
+| Alternative lenses | Deferred | quick, shared-table, featured | stable menu document first |
+| Merchant authoring | Deferred | defaults, exceptions, confidence preview | proven semantic value first |
+| Conventional baseline | Parked | conventional comparison condition | explicit later research need |
+| Production integration | Out of scope | payment, POS, KDS, auth, live inventory | none |
+
+## Authoritative entry points
+
+Read before any new customer UI work:
+
+1. `README.md`
+2. `docs/product-contract.md`
+3. `docs/glossary.md`
+4. `docs/workstreams.md`
+5. `docs/menu-document-ui-direction.md`
+6. `docs/problem-framing.md`
+7. `docs/merchant-data-strategy.md`
+8. `docs/evaluation-plan.md`
+9. `docs/demo-scope.md`
+
+Active planning record:
+
+```text
+docs/menu-document-ui-direction.md
+```
+
+Historical interaction documents may inform review, but they do not authorize implementation that conflicts with the current disposition.
 
 ## Completed foundation work
 
-A new conversation can determine, without relying on chat history:
+The repository already provides:
 
-- what Menu Lens is investigating
-- which states must remain distinct
-- which terminology to use
-- which workstream is currently allowed to proceed
-- which work is deferred or out of scope
-- how to report changes and unresolved questions
+- canonical TypeScript menu and order-state types;
+- runtime validation for the local dataset boundary;
+- one fictional restaurant with 30 Products and six Categories;
+- required and optional modifier examples;
+- personal and shared portion examples;
+- sold-out Products that remain in the canonical collection;
+- intentionally incomplete semantic metadata;
+- metadata source and confidence representation;
+- focused compile-time and runtime invariant tests;
+- one runnable static client on `main`;
+- restaurant overview and complete-menu trust cues;
+- all Categories and Products in one stable document;
+- category navigation that moves without filtering or replacing Products;
+- inline Product detail resolved by stable `ProductId`;
+- keyboard open, Escape close, focus return, and reduced-motion behavior.
 
-The authoritative entry points are:
+## Rejected direction: PR #4
 
-- `docs/product-contract.md`
-- `docs/glossary.md`
-- `docs/workstreams.md`
-- `docs/handoff.md`
-
-The domain and reference-data workstream now provides:
-
-- canonical TypeScript menu and order-state types
-- runtime validation for the local dataset boundary
-- one fictional restaurant with 30 products
-- required and optional modifier examples
-- personal and shared portion examples
-- sold-out products that remain in the canonical collection
-- intentionally incomplete semantic metadata
-- metadata source and confidence representation
-- focused compile-time and runtime invariant tests
-
-The formative-evaluation workstream now provides:
-
-- four moderated task scripts for overview, consideration, comparison, and Configuration
-- neutral moderator and think-aloud guidance
-- observable success, failure, and falsification signals
-- a bounded local event vocabulary
-- observation and session-summary templates
-- explicit criteria for redesigning, simplifying, or removing a feature
-
-The first customer-facing slice now provides:
-
-- one static local client using the validated canonical menu
-- restaurant overview and complete-menu trust cues
-- all six categories and all 30 products in one stable document
-- category navigation that moves without filtering or replacing products
-- inline product detail resolved by stable `ProductId`
-- sold-out and incomplete-metadata behavior
-- keyboard open, Escape close, and focus return
-- reduced-motion-aware category scrolling
-- focused menu-reading tests and a static build path
-
-## Active workstream: customer decision spine
-
-### Goal
-
-Implement one coherent mobile-first interaction using the canonical reference menu:
+PR #4 explored:
 
 ```text
-complete menu
-→ inline detail
-→ Candidate
-→ comparison
-→ explicit Decision
-→ Configuration
-→ Current order
-```
-
-### Progress
-
-```text
-[complete] complete menu + inline detail
-→ [next] Candidate + comparison
-→ [pending] explicit Decision + Configuration + Current order
-```
-
-### Required outputs
-
-- **Complete:** one client application
-- **Complete:** complete-menu overview with stable category navigation
-- **Complete:** inline product detail without losing browsing context
-- **Next:** Candidate add, remove, and workspace behavior
-- **Next:** comparison for genuine Candidate differences
-- **Pending:** explicit transition from consideration to Decision
-- **Pending:** Configuration only after Decision
-- **Pending:** Current order clearly separated from Candidates
-- **Pending:** local-only observation events aligned with `docs/evaluation-plan.md`
-- focused tests for every implemented state transition and preserved invariant
-
-### Constraints
-
-- no backend, database, authentication, payment, POS, or KDS integration
-- no conventional baseline
-- no Quick, Shared-table, or Featured lens implementation
-- no merchant CMS
-- no remote analytics
-- no generic state-machine, repository, plugin, or design-system framework
-- do not add abstractions for deferred work
-- preserve `Product ≠ Candidate ≠ DraftOrderItem ≠ ConfiguredOrderItem ≠ SubmittedOrderRound`
-
-## Next implementation slice: Candidate and comparison
-
-### Goal
-
-Extend the existing complete-menu client from reading into reversible consideration:
-
-```text
-Product
-→ Candidate
+relational reading
+→ Anchor selection
+→ semantic-axis selection
+→ Candidate marking
 → Candidate workspace
-→ comparison
+→ separate comparison membership
+→ comparison surface
 ```
 
-### Required behavior
+The direction was rejected as the active product foundation because it converted a menu-reading problem into a formal decision workflow.
 
-- add an available Product as a Candidate using stable `ProductId`
-- remove a Candidate without affecting the canonical menu
-- keep Candidate separate from Current order and purchase commitment
-- do not request quantity or modifiers when adding a Candidate
-- keep browsing context while opening and closing the Candidate workspace
-- compare a small set of genuine Candidate differences using only supported metadata
-- omit unsupported comparison fields instead of guessing
-- return from comparison without clearing Candidates or changing the complete menu
-- add the bounded local events already defined for Candidate and comparison observation
-- add focused state and interaction tests
+The branch remains useful for:
+
+- negative research evidence;
+- state-boundary and canonical-identity lessons;
+- truthful missing and confidence states;
+- focus, scroll, hidden-surface, and accessibility lessons;
+- examples of technically correct interactions that did not demonstrate sufficient customer value.
+
+Do not continue product implementation on `agent/menu-map-atlas`.
+
+Do not merge Candidate, Anchor, semantic-axis, or comparison-surface UI into the replacement baseline merely because those components already exist.
+
+## Active workstream: digital menu document UI
+
+### Goal
+
+Define a mobile-first interface that behaves like a well-composed digital menu document:
+
+```text
+restaurant overview
+→ visible menu structure
+→ complete menu document
+→ inline Product detail
+```
+
+The default interface should support understanding and nearby comparison without requiring a decision mode.
+
+### Required direction
+
+- useful restaurant and menu overview before interaction;
+- a compact category map that behaves as a table of contents, not filters;
+- one stable complete-menu document;
+- Category sections as the primary visual grouping;
+- dense aligned Product rows rather than isolated cards;
+- comparison through proximity, shared columns, hierarchy, and repeated information positions;
+- at most one or two high-value cues in collapsed rows;
+- inline reversible detail;
+- sold-out and incomplete-data states that remain visible;
+- restrained transaction affordances;
+- mobile grammar tested at 320px and 390px;
+- desktop widening that preserves the same information architecture.
 
 ### Explicit exclusions
 
-- no `DraftOrderItem` creation
-- no Configuration form
-- no quantity controls
-- no modifier selection
-- no order total
-- no Current order
-- no submitted rounds
-- no persistence, URL state, router, backend, or remote analytics
-- no alternative lenses
+- Candidate state or saved-item workflow;
+- Candidate workspace;
+- explicit comparison membership;
+- dedicated comparison surface;
+- Anchor or semantic-axis controls;
+- recommendation, ranking, filtering, or questionnaire flow;
+- quantity or modifier controls;
+- Decision, Current order, totals, checkout, or submission;
+- persistence, URL state, router, backend, or remote analytics;
+- alternative lenses;
+- generic layout engine, state-machine framework, plugin system, or design-system package.
 
-### Completion gate
+### Planning outputs
 
-The next slice is complete when a tester can:
+The active planning document must define:
 
-1. preserve two or more possible products as Candidates
-2. continue browsing the same complete menu
-3. open a clearly separate Candidate workspace
-4. compare supported differences without seeing invented metadata
-5. remove or retain Candidates reversibly
-6. return to the original browsing context
-7. avoid interpreting Candidate as a placed order
+- product question;
+- primary user jobs;
+- UI principles;
+- information architecture;
+- mobile row and detail grammar;
+- desktop widening behavior;
+- first prototype variants;
+- recommended starting point;
+- implementation scope and exclusions;
+- direct evaluation tasks;
+- success and falsification signals;
+- open questions requiring prototype evidence.
 
-It does not need Decision, Configuration, Current order, continuity persistence, alternative lenses, merchant tooling, production integration, or a baseline comparison before completion.
+These outputs are recorded in `docs/menu-document-ui-direction.md`.
+
+### Approval gate
+
+The direction is ready for implementation only after an explicit product-owner disposition answers:
+
+1. Does the proposed UI return to the original menu-reading problem?
+2. Is comparison primarily achieved by layout rather than additional workflow?
+3. Can the first prototype remain one bounded modification of the `main` baseline?
+4. Are Candidate and dedicated comparison features genuinely absent from the default path?
+5. Are the first evaluation tasks capable of falsifying the direction?
+
+Approval authorizes only the first menu-document prototype.
+
+## Replacement implementation prototype
+
+```text
+[blocked]
+```
+
+When authorized, the first implementation slice should include only:
+
+1. compact restaurant header;
+2. visible category map with counts and bounded price information;
+3. one continuous complete-menu document;
+4. strong Category section hierarchy;
+5. aligned dense Product rows;
+6. one or two bounded row cues;
+7. inline Product detail;
+8. sold-out and incomplete-data states;
+9. exact close and return continuity;
+10. 320px, 390px, and desktop geometry checks.
+
+It should begin from current `main`, not PR #4.
+
+## Blocked later work
+
+The active planning or first replacement prototype does not authorize:
+
+- Candidate or comparison workflow revival;
+- explicit Decision;
+- Configuration;
+- Current order;
+- quantity or modifier selection;
+- totals, cart, checkout, or submission;
+- recommendation, ranking, filtering, or table composition;
+- routing, persistence, backend, analytics, or conventional baseline work.
+
+## Constraints
+
+- no backend, database, authentication, payment, POS, or KDS integration;
+- no conventional baseline;
+- no alternative lens implementation;
+- no merchant CMS;
+- no remote analytics;
+- no generic state machine, repository abstraction, plugin system, layout engine, or design-system package;
+- preserve canonical Product and Category order;
+- preserve domain separation between Product, order intent, Configuration, and submitted order state;
+- do not expose every domain distinction as a customer control;
+- do not count visual polish or desktop-only behavior as proof;
+- do not treat implementation completeness as evidence of product usefulness.
+
+## Contract impact
+
+The replacement direction narrows the immediate UI investigation and parks Candidate and dedicated comparison workflows.
+
+Before implementation begins, `docs/product-contract.md`, `docs/interaction-model.md`, `docs/demo-scope.md`, and `docs/evaluation-plan.md` should be reviewed for language that still assumes Candidate and comparison are mandatory steps. Any invariant or research-question change must be explicitly recorded rather than inferred from this workstream document alone.
