@@ -93,7 +93,7 @@ export const openCandidateComparison = (
   state: MenuAppState,
   menu: Menu,
 ): MenuAppState => {
-  if (state.surface.kind === "comparison" || candidateCount(menu, state.candidates) < 2) return state;
+  if (state.surface.kind !== "candidates" || candidateCount(menu, state.candidates) < 2) return state;
   return {
     ...state,
     comparison: sanitizeCandidateComparison(state.comparison, menu, state.candidates),
