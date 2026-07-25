@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "npm run build && node scripts/serve.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "node scripts/clean.mjs && tsc && node dist/src/domain/menu-validation.test.js && node dist/src/customer/menu-relations.test.js && node dist/src/customer/menu-anchor-relations.test.js && node dist/src/customer/menu-anchor-axis.test.js && node dist/src/customer/menu-reading.test.js && node dist/src/customer/menu-candidates.test.js && node dist/src/customer/candidate-workspace.test.js && node dist/src/customer/candidate-comparison.test.js && node dist/src/customer/candidate-comparison-surface.test.js && node dist/src/customer/menu-app-state.test.js && node scripts/menu-workspace-contract.test.mjs && node scripts/candidate-workspace-review.test.mjs && node scripts/candidate-comparison-review.test.mjs",
+    "test": "node scripts/clean.mjs && tsc && node dist/src/domain/menu-validation.test.js && node dist/src/customer/menu-relations.test.js && node dist/src/customer/menu-anchor-relations.test.js && node dist/src/customer/menu-anchor-axis.test.js && node dist/src/customer/menu-reading.test.js && node dist/src/customer/menu-candidates.test.js && node dist/src/customer/candidate-workspace.test.js && node dist/src/customer/candidate-comparison.test.js && node dist/src/customer/candidate-comparison-surface.test.js && node dist/src/customer/menu-app-state.test.js && node scripts/menu-workspace-contract.test.mjs && node scripts/candidate-workspace-review.test.mjs && node scripts/candidate-comparison-review.test.mjs && node scripts/candidate-comparison-geometry.test.mjs",
     "build": "node scripts/clean.mjs && tsc && node scripts/build-static.mjs"
   },
   "devDependencies": {
