@@ -42,25 +42,39 @@ jobs:
             git diff-tree --no-commit-id --name-status -r "$sha"
           done < archive-output/pr4-commits.tsv > archive-output/pr4-files-by-commit.txt
 
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-
-      - name: Validate final PR4 head
-        run: |
-          npm run typecheck
-          npm test
-          npm run build
-
-      - name: Package final original build
+      - name: Build original milestone snapshots
         shell: bash
         run: |
           set -euo pipefail
-          tar -czf archive-output/pr4-final-dist.tar.gz -C dist .
+          mkdir -p archive-worktrees archive-output/milestones
+          cat > archive-output/milestones.tsv <<'EOF'
+          01-complete-menu|087619c3cac4e7b019d58265b6233b3ff04e28f2|PR #3 complete menu baseline
+          02-prototype-c|b554f8a4784188d414ee2d82a434a0e1515d3579|Prototype C accepted before Candidate implementation
+          03a-candidate-marks|53963f4ad15a145e3d8f8e1e25d0a5a5e4b925c2|CND1 accepted before Candidate workspace planning
+          03b-candidate-workspace|5251bfcd6eafab132617891ed7bc98d6d3a551ca|CND2 accepted before comparison planning
+          04-bounded-comparison|923be38046b28baf9ba4687a020290bd6a0afbf4|CMP1 final implementation review before direction rejection
+          EOF
+
+          while IFS='|' read -r slug sha label; do
+            worktree="archive-worktrees/$slug"
+            echo "Building $slug at $sha — $label"
+            git worktree add --detach "$worktree" "$sha"
+            (
+              cd "$worktree"
+              npm install --no-audit --no-fund
+              npm run typecheck
+              npm test
+              npm run build
+            )
+            tar -czf "archive-output/milestones/$slug.tar.gz" -C "$worktree/dist" .
+            printf '%s\t%s\t%s\n' "$slug" "$sha" "$label" >> archive-output/milestone-builds.tsv
+            git worktree remove --force "$worktree"
+          done < archive-output/milestones.tsv
 
       - name: Upload archive evidence
         uses: actions/upload-artifact@v4
         with:
-          name: pr4-history-and-final-build
+          name: pr4-history-and-milestone-builds
           path: archive-output
           if-no-files-found: error
           retention-days: 7
