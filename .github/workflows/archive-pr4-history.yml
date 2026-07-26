@@ -3,6 +3,8 @@ name: Archive PR4 history
 on:
   push:
     branches: [agent/archive-pr4-history]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
