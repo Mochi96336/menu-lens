@@ -1,10 +1,10 @@
 # Menu Lens — Design Evolution and Failed Directions
 
-手機菜單閱讀問題的設計演進、失敗方向與可重用成果。
+手機菜單閱讀問題的設計演進、原始實作、失敗方向與可重用成果。
 
 ## 文件目的
 
-這份檔案不是目前產品規格，也不是替任何舊 prototype 辯護。它讓第一次接觸 repository 的人能快速回答：
+這份檔案不是目前產品規格，也不是替舊 prototype 辯護。它讓第一次接觸 repository 的人快速回答：
 
 1. 每個時期想解決什麼；
 2. 使用者必須做哪些操作；
@@ -12,7 +12,7 @@
 4. 哪些負擔只是被搬到別處；
 5. 為什麼通過、部分保留或拒絕；
 6. 哪些成果仍可重用；
-7. 哪些方向不應在沒有新證據時重做。
+7. 目前看到的畫面是歷史原件、後來重建，還是新假設。
 
 HTML 研究入口位於：
 
@@ -20,16 +20,28 @@ HTML 研究入口位於：
 /research-history/
 ```
 
-目前共有五個可操作快照，覆蓋六個研究時期：
+## 三種證據必須分開
+
+### Original implementation
+
+由固定歷史 commit 執行該 commit 自己的：
 
 ```text
-01 完整長菜單
-→ 02 Relational Prototype C
-→ 03 Candidate workspace
-→ 04 Bounded comparison（包含於 03）
-→ 05 Ledger-first document
-→ 06 Multi-scale menu map
+npm install
+npm run typecheck
+npm test
+npm run build
 ```
+
+再將完整 `dist` 凍結到 `research-history/originals/`。這是當時真正執行過的 HTML、JavaScript、CSS 與資料。
+
+### Interpretive reconstruction
+
+後來為了說明流程或使用同一組任務比較而重新製作。可以保留，但不能取代歷史原件。
+
+### New hypothesis
+
+當時沒有既存可執行 HTML，後來才提出或補做的方向。
 
 ## 原始問題
 
@@ -48,7 +60,7 @@ HTML 研究入口位於：
 |---|---|---|---|---|
 | 01 Complete menu | 完整長頁＋分類跳轉＋inline detail | 完整性、分類定位、細節返回 | 長頁線性、跨分類比較、全貌與局部分離 | **Accepted substrate** |
 | 02 Relational reading | Anchor＋semantic axis＋相對投影 | 相對差異、固定欄位、證據來源 | 必須先理解基準與比較軸 | **Rejected as main flow** |
-| 03 Candidate workspace | 菜單標記＋候選工作區 | 可逆保存、與購物車分離、跨分類回看 | 將短期考慮正式化成狀態管理 | **Rejected as default flow** |
+| 03 Candidate workspace | Candidate marks＋獨立工作區 | 可逆保存、與購物車分離、跨分類回看 | 將短期考慮正式化成狀態管理 | **Rejected as default flow** |
 | 04 Bounded comparison | Candidate 之外再選 2–3 道 | 真實差異、上限、canonical order | 已保留仍須再選一次 | **Technically coherent, product-invalid** |
 | 05 Ledger document | 密集表列＋對齊價格／線索＋inline detail | 同分類掃描、卡片密度、資訊位置 | 仍是一條更漂亮的長頁 | **Useful partial solution** |
 | 06 Multi-scale map | 全店摘要→分類展開→料理細節 | 嘗試保留全貌、地標與局部閱讀 | 展開成本與摘要可信度尚未驗證 | **Active hypothesis** |
@@ -79,7 +91,9 @@ HTML 研究入口位於：
 - 離開 viewport 後依賴記憶；
 - 跨分類比較與遠距返回仍脆弱。
 
-**Disposition**：**Accepted substrate**。保留完整性、inline detail 與 continuity，但不能把長文件本身當作線性問題的完整答案。
+**Disposition**：**Accepted substrate**。
+
+**Original**：PR #3，commit `087619c3cac4e7b019d58265b6233b3ff04e28f2`。
 
 ## 02 — Relational reading
 
@@ -91,7 +105,7 @@ HTML 研究入口位於：
 → 其他料理顯示相對差異
 ```
 
-Prototype C 同時保留 canonical order、絕對值、價格、相對關係與 evidence label。
+Prototype C 同時保留 canonical order、精確價差、絕對 semantic class、價格與 evidence label。
 
 **有效成果**
 
@@ -106,7 +120,9 @@ Prototype C 同時保留 canonical order、絕對值、價格、相對關係與 
 - 一般排版應直接提供的差異被包裝成控制；
 - 認知負擔從記憶轉移到操作與術語。
 
-**Disposition**：**Rejected as main flow**。shared columns 與 truthful evidence 可重用；Anchor／axis 不應作為普通閱讀必要步驟。
+**Disposition**：**Rejected as main flow**。
+
+**Original**：PR #4，commit `b554f8a4784188d414ee2d82a434a0e1515d3579`。這個節點已完成 Prototype C，尚未開始 Candidate implementation。
 
 ## 03 — Candidate marks + workspace
 
@@ -134,6 +150,11 @@ Prototype C 同時保留 canonical order、絕對值、價格、相對關係與 
 
 **Disposition**：**Rejected as default flow**。
 
+兩個原始節點分開保存：
+
+- CND1 Candidate marks：`53963f4ad15a145e3d8f8e1e25d0a5a5e4b925c2`，尚未加入 workspace；
+- CND2 Candidate workspace：`5251bfcd6eafab132617891ed7bc98d6d3a551ca`，尚未加入 comparison。
+
 ## 04 — Bounded Candidate comparison
 
 **問題**：如何讓兩至三道 Candidate 以 truthful、bounded 的方式比較？
@@ -155,7 +176,9 @@ Prototype C 同時保留 canonical order、絕對值、價格、相對關係與 
 
 **失敗原因**：使用者已經表達「我在考慮這幾道」，卻仍須再次表達「我要比較這幾道」。
 
-**Disposition**：**Technically coherent, product-invalid**。這是工程正確不等於產品有效的主要反例。
+**Disposition**：**Technically coherent, product-invalid**。
+
+**Original**：PR #4，commit `923be38046b28baf9ba4687a020290bd6a0afbf4`。這是 CMP1 final implementation review，早於整體方向拒絕。
 
 ## 05 — Ledger-first digital document
 
@@ -185,7 +208,9 @@ Prototype C 同時保留 canonical order、絕對值、價格、相對關係與 
 - 全貌與當前分類仍難同時存在；
 - 跨分類跳躍與空間記憶仍脆弱。
 
-**Disposition**：**Useful partial solution**。row grammar、alignment 與 inline detail 可重用，但完整長 ledger 不等於核心問題已解。
+**Disposition**：**Useful partial solution**。
+
+**Source type**：**New reconstruction**。當時只有方向文件與視覺討論，沒有可恢復的歷史 HTML。
 
 ## 06 — Multi-scale menu map
 
@@ -215,32 +240,42 @@ Prototype C 同時保留 canonical order、絕對值、價格、相對關係與 
 - 是否會退化成 dashboard cards；
 - 是否真的改善跨分類回想與返回。
 
-**Disposition**：**Active hypothesis**。不得以概念新穎取代直接任務比較。
+**Disposition**：**Active hypothesis**。
+
+**Source type**：**New hypothesis**。
 
 ## HTML 快照與來源
 
-| 快照 | 路徑 | 目的 | 忠實保留的問題 |
-|---|---|---|---|
-| Complete menu | `research-history/phases/01-complete-menu/` | 長頁與 inline detail 基線 | viewport 限制、跨分類距離 |
-| Relational Prototype C | `research-history/phases/02-relational-reading/` | 體驗 Anchor／axis 相對投影 | 先理解再操作，軸切換覆蓋前一維度 |
-| Candidate + comparison | `research-history/phases/03-candidate-comparison/` | 體驗候選與再次比較選取 | 術語、重複選擇、surface transition |
-| Ledger document | `research-history/phases/05-ledger-document/` | 觀察密集對齊長頁 | 30 道永久展開、跨分類線性 |
-| Multi-scale map | `research-history/phases/06-multiscale-menu-map/` | 測試完整結構＋局部展開 | 展開成本、摘要可信度、空間穩定性 |
+### Frozen originals
 
-研究專用共用資料位於：
+| 原始快照 | 路徑 | PR | Commit |
+|---|---|---:|---|
+| Complete menu | `research-history/originals/01-complete-menu/` | #3 | `087619c3` |
+| Prototype C | `research-history/originals/02-prototype-c/` | #4 | `b554f8a4` |
+| Candidate marks | `research-history/originals/03a-candidate-marks/` | #4 | `53963f4a` |
+| Candidate workspace | `research-history/originals/03b-candidate-workspace/` | #4 | `5251bfcd` |
+| Bounded comparison | `research-history/originals/04-bounded-comparison/` | #4 | `923be380` |
 
-```text
-research-history/menu-fixture.js
-```
+完整來源說明見 `docs/research-history/original-snapshot-provenance.md`。
 
-它只服務封閉 snapshot；canonical source 仍是 `data/reference-menu.ts`。
+### Reconstructions and hypotheses
+
+| 快照 | 路徑 | 類型 |
+|---|---|---|
+| Complete menu explanation | `research-history/phases/01-complete-menu/` | Interpretive reconstruction |
+| Relational explanation | `research-history/phases/02-relational-reading/` | Interpretive reconstruction |
+| Candidate + comparison explanation | `research-history/phases/03-candidate-comparison/` | Interpretive reconstruction |
+| Ledger document | `research-history/phases/05-ledger-document/` | New reconstruction |
+| Multi-scale map | `research-history/phases/06-multiscale-menu-map/` | New hypothesis |
+
+研究專用共用資料位於 `research-history/menu-fixture.js`；canonical source 仍是 `data/reference-menu.ts`。
 
 ## Repository 時期對照
 
 - PR #3：Complete menu + inline detail 基線；
 - PR #4：Relational、Candidate 與 bounded comparison 實驗，整體方向已拒絕；
 - PR #5：digital menu document 重新定向文件；
-- PR #6：研究時間線與互動快照檔案。
+- PR #6：研究時間線、frozen originals、重建證據與新假設。
 
 ## 跨階段可重用成果
 
@@ -267,7 +302,7 @@ research-history/menu-fixture.js
 
 ## 下一步：直接比較，不再新增概念
 
-使用相同內容與相同任務比較 Complete menu、Ledger 與 Multi-scale：
+使用相同內容與相同任務比較原始 Complete menu、Ledger reconstruction 與 Multi-scale hypothesis：
 
 1. 在首屏說出餐廳類型、分類數與價格帶；
 2. 比較同分類三道料理；
