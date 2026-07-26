@@ -3,12 +3,10 @@ name: Archive PR4 history
 on:
   push:
     branches: [agent/archive-pr4-history]
-  pull_request:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -17,10 +15,18 @@ jobs:
   archive:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out complete history
+      - name: Check out complete historical source
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          path: source
+
+      - name: Check out research archive target
+        uses: actions/checkout@v6
+        with:
+          ref: agent/research-history
+          fetch-depth: 0
+          path: target
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -33,32 +39,33 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p archive-output
-          git fetch origin main
-          merge_base="$(git merge-base origin/main HEAD)"
-          printf 'merge_base\t%s\nhead\t%s\n' "$merge_base" "$(git rev-parse HEAD)" > archive-output/metadata.tsv
-          git log --reverse --date=iso-strict --format='%H%x09%ad%x09%s' "$merge_base"..HEAD > archive-output/pr4-commits.tsv
+          git -C source fetch origin main
+          merge_base="$(git -C source merge-base origin/main HEAD)"
+          printf 'merge_base\t%s\nhead\t%s\n' "$merge_base" "$(git -C source rev-parse HEAD)" > archive-output/metadata.tsv
+          git -C source log --reverse --date=iso-strict --format='%H%x09%ad%x09%s' "$merge_base"..HEAD > archive-output/pr4-commits.tsv
           while IFS=$'\t' read -r sha date subject; do
             printf '\n## %s\t%s\t%s\n' "$sha" "$date" "$subject"
-            git diff-tree --no-commit-id --name-status -r "$sha"
+            git -C source diff-tree --no-commit-id --name-status -r "$sha"
           done < archive-output/pr4-commits.tsv > archive-output/pr4-files-by-commit.txt
 
-      - name: Build original milestone snapshots
+      - name: Build and freeze original milestone snapshots
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p archive-worktrees archive-output/milestones
+          mkdir -p worktrees archive-output/milestones target/research-history/originals target/docs/research-history
           cat > archive-output/milestones.tsv <<'EOF'
-          01-complete-menu|087619c3cac4e7b019d58265b6233b3ff04e28f2|PR #3 complete menu baseline
-          02-prototype-c|b554f8a4784188d414ee2d82a434a0e1515d3579|Prototype C accepted before Candidate implementation
-          03a-candidate-marks|53963f4ad15a145e3d8f8e1e25d0a5a5e4b925c2|CND1 accepted before Candidate workspace planning
-          03b-candidate-workspace|5251bfcd6eafab132617891ed7bc98d6d3a551ca|CND2 accepted before comparison planning
-          04-bounded-comparison|923be38046b28baf9ba4687a020290bd6a0afbf4|CMP1 final implementation review before direction rejection
+          01-complete-menu|087619c3cac4e7b019d58265b6233b3ff04e28f2|PR #3 complete menu baseline|3
+          02-prototype-c|b554f8a4784188d414ee2d82a434a0e1515d3579|Prototype C accepted before Candidate implementation|4
+          03a-candidate-marks|53963f4ad15a145e3d8f8e1e25d0a5a5e4b925c2|CND1 accepted before Candidate workspace planning|4
+          03b-candidate-workspace|5251bfcd6eafab132617891ed7bc98d6d3a551ca|CND2 accepted before comparison planning|4
+          04-bounded-comparison|923be38046b28baf9ba4687a020290bd6a0afbf4|CMP1 final implementation review before direction rejection|4
           EOF
 
-          while IFS='|' read -r slug sha label; do
-            worktree="archive-worktrees/$slug"
+          while IFS='|' read -r slug sha label pr; do
+            worktree="$GITHUB_WORKSPACE/worktrees/$slug"
+            destination="$GITHUB_WORKSPACE/target/research-history/originals/$slug"
             echo "Building $slug at $sha — $label"
-            git worktree add --detach "$worktree" "$sha"
+            git -C source worktree add --detach "$worktree" "$sha"
             (
               cd "$worktree"
               npm install --no-audit --no-fund
@@ -66,10 +73,61 @@ jobs:
               npm test
               npm run build
             )
+            rm -rf "$destination"
+            mkdir -p "$destination"
+            cp -a "$worktree/dist/." "$destination/"
+            cat > "$destination/ORIGIN.txt" <<EOF
+          source_type=original_implementation
+          repository=a20030824/menu-lens
+          pull_request=$pr
+          commit=$sha
+          label=$label
+          build_command=npm_run_build
+          frozen_by=agent/archive-pr4-history
+          EOF
             tar -czf "archive-output/milestones/$slug.tar.gz" -C "$worktree/dist" .
-            printf '%s\t%s\t%s\n' "$slug" "$sha" "$label" >> archive-output/milestone-builds.tsv
-            git worktree remove --force "$worktree"
+            printf '%s\t%s\t%s\t%s\n' "$slug" "$sha" "$label" "$pr" >> archive-output/milestone-builds.tsv
+            git -C source worktree remove --force "$worktree"
           done < archive-output/milestones.tsv
+
+          cp archive-output/pr4-commits.tsv target/docs/research-history/pr4-commits.tsv
+          cp archive-output/pr4-files-by-commit.txt target/docs/research-history/pr4-files-by-commit.txt
+          cp archive-output/milestone-builds.tsv target/docs/research-history/original-milestones.tsv
+
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          rows=[]
+          for line in Path('archive-output/milestone-builds.tsv').read_text().splitlines():
+              slug, sha, label, pr = line.split('\t')
+              rows.append({
+                  'slug': slug,
+                  'sourceType': 'original_implementation',
+                  'repository': 'a20030824/menu-lens',
+                  'pullRequest': int(pr),
+                  'commit': sha,
+                  'label': label,
+                  'path': f'/research-history/originals/{slug}/',
+              })
+          Path('target/research-history/originals/manifest.json').write_text(
+              json.dumps({'snapshots': rows}, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Commit frozen originals to PR6 branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C target config user.name "github-actions[bot]"
+          git -C target config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C target add research-history/originals docs/research-history/pr4-commits.tsv docs/research-history/pr4-files-by-commit.txt docs/research-history/original-milestones.tsv
+          if git -C target diff --cached --quiet; then
+            echo "Original milestone snapshots already match the archive branch."
+          else
+            git -C target commit -m "research: preserve original UI milestone builds"
+            git -C target push origin HEAD:agent/research-history
+          fi
 
       - name: Upload archive evidence
         uses: actions/upload-artifact@v4
