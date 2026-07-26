@@ -14,13 +14,13 @@
       <p class="eyebrow">Menu Lens research archive</p>
       <h1>設計演進與失敗方向</h1>
       <p class="lede">
-        一份可閱讀、可操作的研究時間線。它必須清楚區分當時真正執行過的原始介面、後來為比較而重建的說明性版本，以及尚未驗證的新假設。
+        一份可閱讀、可操作的研究時間線。原始實作直接由當時固定 commit 重建；後來為說明而製作的版本與新假設則另外標示，不再混為一談。
       </p>
       <div class="meta-row" aria-label="研究檔案資訊">
         <span class="pill">6 個時期</span>
-        <span class="pill">原始實作與重建分開標示</span>
+        <span class="pill">5 個 frozen original builds</span>
+        <span class="pill">3 個說明性重建／新假設</span>
         <span class="pill">同一份 reference menu</span>
-        <span class="pill">非正式產品介面</span>
       </div>
     </header>
 
@@ -28,23 +28,21 @@
       <section class="section site-shell" aria-labelledby="evidence-title">
         <div class="section-heading">
           <p class="eyebrow">Evidence types</p>
-          <h2 id="evidence-title">先看清楚：不是每個 HTML 都是歷史原件</h2>
-          <p>
-            原始實作必須能連回當時的 branch、PR 與固定 commit。說明性重建只能幫助理解流程，不能取代當時真實的版面、操作與程式。新原型則只代表後來提出的假設。
-          </p>
+          <h2 id="evidence-title">先確認你正在看哪一種證據</h2>
+          <p>原始畫面、後來重建與新方向可以並存，但用途不同。每個原始版本都必須能追溯到 PR、branch、固定 commit 與當時的 build。</p>
         </div>
         <div class="timeline">
           <article class="phase-card">
             <h3>Original implementation</h3>
-            <p>直接來自當時實際執行的 source 或 build，附固定 PR 與 commit。這才是歷史畫面本身。</p>
+            <p>從指定歷史 commit 執行原本的 typecheck、test 與 build，再將完整 dist 凍結保存。這是當時真正執行過的畫面。</p>
           </article>
           <article class="phase-card">
             <h3>Interpretive reconstruction</h3>
-            <p>後來為了說明或比較而重做。可以保留，但必須明寫「重建」，不得冒充原始畫面。</p>
+            <p>後來為了說明流程或做公平比較而重建。它可以幫助理解，但不能取代歷史原件。</p>
           </article>
           <article class="phase-card">
             <h3>New hypothesis</h3>
-            <p>當時沒有可執行 HTML，後來才提出或補做。它是研究中的新證據，不是歷史復原。</p>
+            <p>當時沒有可執行 HTML，後來才提出的新方案。它代表目前研究問題，不代表過去曾經完成。</p>
           </article>
         </div>
       </section>
@@ -52,10 +50,8 @@
       <section class="section site-shell" aria-labelledby="timeline-title">
         <div class="section-heading">
           <p class="eyebrow">Timeline</p>
-          <h2 id="timeline-title">從長菜單，到決策工作流，再回到閱讀尺度</h2>
-          <p>
-            每個階段都要同時回答兩件事：它處理了什麼，以及目前可點的畫面到底是原始實作、後來重建，還是新假設。
-          </p>
+          <h2 id="timeline-title">從完整長菜單，到決策工作流，再回到閱讀尺度</h2>
+          <p>優先開啟「原始實作」複習當時成果；說明性重建留作對照教材，不再冒充原始畫面。</p>
         </div>
 
         <div class="timeline">
@@ -65,15 +61,15 @@
               <h3>Complete menu</h3>
               <span class="status accepted">Accepted substrate</span>
             </div>
-            <p><strong>來源：</strong>Original implementation · merged PR #3 · commit <code>087619c</code></p>
+            <p><strong>Original：</strong>merged PR #3 · <code>087619c</code></p>
             <p>完整長頁、分類跳轉與 inline detail，建立可信的完整性與返回位置。</p>
             <ul>
               <li>保留：完整結構、inline detail、focus／scroll continuity</li>
               <li>未解：長頁線性、跨分類比較與全貌</li>
             </ul>
             <footer>
-              <a class="button" href="../">開啟 PR #3 原始實作</a>
-              <a class="ghost-button" href="./phases/01-complete-menu/">查看說明性重建</a>
+              <a class="button" href="./originals/01-complete-menu/">開啟原始實作</a>
+              <a class="ghost-button" href="./phases/01-complete-menu/">說明性重建</a>
             </footer>
           </article>
 
@@ -83,30 +79,35 @@
               <h3>Relational reading</h3>
               <span class="status rejected">Rejected as main flow</span>
             </div>
-            <p><strong>目前可點版本：</strong>Interpretive reconstruction</p>
-            <p><strong>原始來源：</strong>PR #4 Prototype C；代表 commit 尚在從完整歷史中定位。</p>
-            <p>透過 Anchor 與 semantic axis，把六道分享料理投影成相對差異。</p>
+            <p><strong>Original：</strong>PR #4 Prototype C · <code>b554f8a</code>，完成後尚未加入 Candidate。</p>
+            <p>以 Anchor、精確價差與全分類共用 semantic axis 讀取料理關係。</p>
             <ul>
-              <li>保留：shared columns、truthful evidence</li>
-              <li>失敗：必須先理解基準與比較軸，排版問題變成查詢操作</li>
+              <li>保留：shared columns、exact price delta、truthful missing evidence</li>
+              <li>失敗：普通閱讀必須先理解基準與比較軸</li>
             </ul>
-            <footer><a class="button" href="./phases/02-relational-reading/">開啟說明性重建</a></footer>
+            <footer>
+              <a class="button" href="./originals/02-prototype-c/">開啟原始 Prototype C</a>
+              <a class="ghost-button" href="./phases/02-relational-reading/">說明性重建</a>
+            </footer>
           </article>
 
           <article class="phase-card">
             <div>
               <div class="phase-index">03 · WORKFLOW</div>
-              <h3>Candidate workspace</h3>
+              <h3>Candidate marks → workspace</h3>
               <span class="status rejected">Rejected as default flow</span>
             </div>
-            <p><strong>目前可點版本：</strong>Interpretive reconstruction</p>
-            <p><strong>原始來源：</strong>PR #4 CND1／CND2；代表 commit 尚在定位。</p>
-            <p>讓使用者在購物車之前保存幾道「認真考慮」的料理。</p>
+            <p><strong>CND1 Original：</strong><code>53963f4</code>，只有附著在 Product row 的 Candidate marks。</p>
+            <p><strong>CND2 Original：</strong><code>5251bfc</code>，加入獨立 Candidate workspace，尚未加入 comparison。</p>
             <ul>
               <li>保留：identity-only state、可逆性、return context</li>
-              <li>失敗：把短期考慮變成清單管理</li>
+              <li>失敗：把短期考慮轉成清單與工作區管理</li>
             </ul>
-            <footer><a class="button" href="./phases/03-candidate-comparison/">開啟說明性重建</a></footer>
+            <footer>
+              <a class="button" href="./originals/03a-candidate-marks/">開啟 CND1 原始版</a>
+              <a class="button" href="./originals/03b-candidate-workspace/">開啟 CND2 原始版</a>
+              <a class="ghost-button" href="./phases/03-candidate-comparison/">說明性重建</a>
+            </footer>
           </article>
 
           <article class="phase-card">
@@ -115,14 +116,16 @@
               <h3>Bounded comparison</h3>
               <span class="status rejected">Product-invalid</span>
             </div>
-            <p><strong>目前可點版本：</strong>Interpretive reconstruction，與 Phase 03 共用。</p>
-            <p><strong>原始來源：</strong>PR #4 CMP1；最終整合版 head 為 <code>13edc1e</code>。</p>
-            <p>Candidate 之外再建立 2–3 道的比較 membership，技術上嚴謹但流程重複。</p>
+            <p><strong>Original：</strong>PR #4 CMP1 final implementation review · <code>923be38</code>，方向拒絕前的完整比較流程。</p>
+            <p>Candidate 之外再建立 2–3 道 comparison membership，技術上嚴謹但流程重複。</p>
             <ul>
-              <li>保留：bounded projection、canonical order</li>
-              <li>失敗：加入考慮後仍須逐道再按一次比較</li>
+              <li>保留：bounded projection、canonical order、truthful evidence</li>
+              <li>失敗：加入考慮後仍須逐道再次選擇比較</li>
             </ul>
-            <footer><a class="button" href="./phases/03-candidate-comparison/#comparison">在重建版體驗</a></footer>
+            <footer>
+              <a class="button" href="./originals/04-bounded-comparison/">開啟原始 CMP1</a>
+              <a class="ghost-button" href="./phases/03-candidate-comparison/#comparison">說明性重建</a>
+            </footer>
           </article>
 
           <article class="phase-card">
@@ -146,7 +149,7 @@
               <h3>Multi-scale menu map</h3>
               <span class="status active">Active hypothesis</span>
             </div>
-            <p><strong>來源：</strong>New hypothesis。這次討論後才建立，並非早期畫面的原件。</p>
+            <p><strong>來源：</strong>New hypothesis。這次討論後才建立，並非早期畫面的復原。</p>
             <p>完整結構始終可見，內容依全店、分類與料理三個閱讀尺度展開。</p>
             <ul>
               <li>嘗試：全貌、地標、局部閱讀與空間記憶</li>
@@ -161,27 +164,18 @@
         <div class="section-heading">
           <p class="eyebrow">At a glance</p>
           <h2 id="comparison-title">重點對照</h2>
-          <p>這張表是快速複習入口：不是哪個版本看起來最好，而是每個版本究竟改變了哪一種負擔。</p>
+          <p>不是哪一版最好看，而是每一版解掉什麼、又把負擔搬到哪裡。</p>
         </div>
-
         <div class="comparison-table">
           <table>
-            <thead>
-              <tr>
-                <th scope="col">時期</th>
-                <th scope="col">主要解法</th>
-                <th scope="col">處理了什麼</th>
-                <th scope="col">沒處理／新增什麼</th>
-                <th scope="col">結論</th>
-              </tr>
-            </thead>
+            <thead><tr><th>時期</th><th>主要解法</th><th>處理了什麼</th><th>沒處理／新增什麼</th><th>結論</th></tr></thead>
             <tbody>
-              <tr><td>Complete menu</td><td>完整長頁＋inline detail</td><td>完整性、位置保存、細節返回</td><td>線性、跨分類比較、全貌與局部分離</td><td><span class="status accepted">保留基線</span></td></tr>
-              <tr><td>Relational</td><td>Anchor＋semantic axis</td><td>相對差異、證據來源、shared columns</td><td>理解基準與操作比較軸</td><td><span class="status rejected">拒絕主流程</span></td></tr>
-              <tr><td>Candidate</td><td>保存候選＋獨立工作區</td><td>跨分類回看、與購物車分離</td><td>清單管理與新術語</td><td><span class="status rejected">拒絕主流程</span></td></tr>
-              <tr><td>Comparison</td><td>Candidate 外再選 2–3 道</td><td>bounded truthful differences</td><td>重複選擇與 surface transition</td><td><span class="status rejected">產品不通過</span></td></tr>
-              <tr><td>Ledger</td><td>密集對齊菜單文件</td><td>同分類掃描、卡片密度、資訊位置</td><td>仍是長頁線性</td><td><span class="status partial">部分保留</span></td></tr>
-              <tr><td>Multi-scale</td><td>全店／分類／料理尺度</td><td>嘗試保留全貌、地標與局部內容</td><td>展開負擔與摘要可信度未驗證</td><td><span class="status active">Active</span></td></tr>
+              <tr><td>Complete menu</td><td>完整長頁＋inline detail</td><td>完整性、位置保存、細節返回</td><td>線性、跨分類比較</td><td><span class="status accepted">保留基線</span></td></tr>
+              <tr><td>Relational</td><td>Anchor＋shared axis</td><td>相對差異、固定欄位、證據來源</td><td>術語與必要控制</td><td><span class="status rejected">拒絕主流程</span></td></tr>
+              <tr><td>Candidate</td><td>marks＋獨立工作區</td><td>跨分類回看、與購物車分離</td><td>清單管理</td><td><span class="status rejected">拒絕主流程</span></td></tr>
+              <tr><td>Comparison</td><td>另選 2–3 道</td><td>bounded truthful differences</td><td>重複選擇與 surface transition</td><td><span class="status rejected">產品不通過</span></td></tr>
+              <tr><td>Ledger</td><td>密集對齊文件</td><td>同分類掃描、資訊位置</td><td>仍是長頁線性</td><td><span class="status partial">部分保留</span></td></tr>
+              <tr><td>Multi-scale</td><td>全店／分類／料理尺度</td><td>嘗試保留全貌與局部</td><td>展開負擔未驗證</td><td><span class="status active">Active</span></td></tr>
             </tbody>
           </table>
         </div>
@@ -190,21 +184,12 @@
       <section class="section site-shell" aria-labelledby="rules-title">
         <div class="section-heading">
           <p class="eyebrow">Archive rules</p>
-          <h2 id="rules-title">接下來怎麼修正</h2>
+          <h2 id="rules-title">保存規則</h2>
         </div>
         <div class="timeline">
-          <article class="phase-card">
-            <h3>原始版本優先</h3>
-            <p>01 直接開 PR #3 原版。02–04 將從 PR #4 歷史 commit 與 final build 凍結，不再以手刻重建取代。</p>
-          </article>
-          <article class="phase-card">
-            <h3>重建仍可保留</h3>
-            <p>目前的簡化版可作為流程教學與 A/B 任務材料，但必須永久帶有 reconstruction 標籤。</p>
-          </article>
-          <article class="phase-card">
-            <h3>來源必須可追溯</h3>
-            <p>每個原始快照都要記錄 PR、branch、固定 commit、build 方法與是否包含後續功能。</p>
-          </article>
+          <article class="phase-card"><h3>原始版本優先</h3><p>歷史複習先看 frozen original build；重建版只能作為流程說明或比較材料。</p></article>
+          <article class="phase-card"><h3>階段不互相污染</h3><p>Prototype C、CND1、CND2 與 CMP1 分別固定在下一階段開始前的完成節點。</p></article>
+          <article class="phase-card"><h3>來源永久可追溯</h3><p><code>originals/manifest.json</code> 與 <code>docs/research-history/original-milestones.tsv</code> 鎖定 PR、commit 與路徑。</p></article>
         </div>
       </section>
     </main>
