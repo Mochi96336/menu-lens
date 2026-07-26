@@ -1,0 +1,64 @@
+name: Archive PR4 history
+
+on:
+  push:
+    branches: [agent/archive-pr4-history]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out complete history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Record PR4 commit history
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p archive-output
+          git fetch origin main
+          merge_base="$(git merge-base origin/main HEAD)"
+          printf 'merge_base\t%s\nhead\t%s\n' "$merge_base" "$(git rev-parse HEAD)" > archive-output/metadata.tsv
+          git log --reverse --date=iso-strict --format='%H%x09%ad%x09%s' "$merge_base"..HEAD > archive-output/pr4-commits.tsv
+          while IFS=$'\t' read -r sha date subject; do
+            printf '\n## %s\t%s\t%s\n' "$sha" "$date" "$subject"
+            git diff-tree --no-commit-id --name-status -r "$sha"
+          done < archive-output/pr4-commits.tsv > archive-output/pr4-files-by-commit.txt
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Validate final PR4 head
+        run: |
+          npm run typecheck
+          npm test
+          npm run build
+
+      - name: Package final original build
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -czf archive-output/pr4-final-dist.tar.gz -C dist .
+
+      - name: Upload archive evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr4-history-and-final-build
+          path: archive-output
+          if-no-files-found: error
+          retention-days: 7
