@@ -1,0 +1,49 @@
+{
+  "snapshots": [
+    {
+      "slug": "01-complete-menu",
+      "sourceType": "original_implementation",
+      "repository": "a20030824/menu-lens",
+      "pullRequest": 3,
+      "commit": "087619c3cac4e7b019d58265b6233b3ff04e28f2",
+      "label": "PR #3 complete menu baseline",
+      "path": "/research-history/originals/01-complete-menu/"
+    },
+    {
+      "slug": "02-prototype-c",
+      "sourceType": "original_implementation",
+      "repository": "a20030824/menu-lens",
+      "pullRequest": 4,
+      "commit": "b554f8a4784188d414ee2d82a434a0e1515d3579",
+      "label": "Prototype C accepted before Candidate implementation",
+      "path": "/research-history/originals/02-prototype-c/"
+    },
+    {
+      "slug": "03a-candidate-marks",
+      "sourceType": "original_implementation",
+      "repository": "a20030824/menu-lens",
+      "pullRequest": 4,
+      "commit": "53963f4ad15a145e3d8f8e1e25d0a5a5e4b925c2",
+      "label": "CND1 accepted before Candidate workspace planning",
+      "path": "/research-history/originals/03a-candidate-marks/"
+    },
+    {
+      "slug": "03b-candidate-workspace",
+      "sourceType": "original_implementation",
+      "repository": "a20030824/menu-lens",
+      "pullRequest": 4,
+      "commit": "5251bfcd6eafab132617891ed7bc98d6d3a551ca",
+      "label": "CND2 accepted before comparison planning",
+      "path": "/research-history/originals/03b-candidate-workspace/"
+    },
+    {
+      "slug": "04-bounded-comparison",
+      "sourceType": "original_implementation",
+      "repository": "a20030824/menu-lens",
+      "pullRequest": 4,
+      "commit": "923be38046b28baf9ba4687a020290bd6a0afbf4",
+      "label": "CMP1 final implementation review before direction rejection",
+      "path": "/research-history/originals/04-bounded-comparison/"
+    }
+  ]
+}

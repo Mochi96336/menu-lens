@@ -1,0 +1,7 @@
+source_type=original_implementation
+repository=a20030824/menu-lens
+pull_request=4
+commit=b554f8a4784188d414ee2d82a434a0e1515d3579
+label=Prototype C accepted before Candidate implementation
+build_command=npm_run_build
+frozen_by=agent/archive-pr4-history

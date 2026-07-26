@@ -1,0 +1,7 @@
+source_type=original_implementation
+repository=a20030824/menu-lens
+pull_request=4
+commit=5251bfcd6eafab132617891ed7bc98d6d3a551ca
+label=CND2 accepted before comparison planning
+build_command=npm_run_build
+frozen_by=agent/archive-pr4-history
