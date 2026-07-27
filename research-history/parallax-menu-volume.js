@@ -225,12 +225,6 @@
     focusField(Number(target.dataset.categoryTarget));
   });
 
-  stage.addEventListener("wheel", (event) => {
-    event.preventDefault();
-    state.spread = clamp(state.spread - event.deltaY * .0012, .02, 1);
-    render();
-  }, { passive: false });
-
   stage.addEventListener("keydown", (event) => {
     const step = event.shiftKey ? 12 : 6;
     let handled = true;

@@ -67,12 +67,24 @@
     groups.forEach((group) => {
       const columns = Math.ceil(Math.sqrt(group.length));
       const rows = Math.ceil(group.length / columns);
+      const baseX = 8 + group[0].coordinates[definition.x] * 84;
+      const baseY = 92 - group[0].coordinates[definition.y] * 84;
       group.forEach((item, index) => {
         const column = index % columns;
         const row = Math.floor(index / columns);
+        const columnOffset = baseX < 22
+          ? column
+          : baseX > 78
+            ? column - (columns - 1)
+            : column - (columns - 1) / 2;
+        const rowOffset = baseY > 78
+          ? -row
+          : baseY < 22
+            ? row
+            : row - (rows - 1) / 2;
         offsets.set(item.product.id, {
-          x: (column - (columns - 1) / 2) * 5.8,
-          y: (row - (rows - 1) / 2) * 3.2,
+          x: columnOffset * 5.8,
+          y: rowOffset * 3.2,
         });
       });
     });
