@@ -131,4 +131,6 @@ The active workstream is spatial interaction exploration. Prototypes are organiz
 
 The canonical catalog is [`research-history/prototype-registry.js`](research-history/prototype-registry.js). It records each node's family, parent, status, executable path, and required assets; the research archive and validator both consume it. See [`docs/workstreams.md`](docs/workstreams.md) for current work, [`docs/research-history/spatial-exploration.md`](docs/research-history/spatial-exploration.md) for mechanism notes, and [`docs/research-history/product-direction-review.md`](docs/research-history/product-direction-review.md) for explicitly sourced product review.
 
+GitHub Pages currently publishes `research-history/` as the site root. This is a publication choice for the active research archive, not a decision to replace the product baseline in `src/`.
+
 Candidate, comparison, Decision, Configuration, and Current order implementation remain paused while the current spatial variants are refined.
