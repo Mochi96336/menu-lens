@@ -142,6 +142,13 @@
       assets: { styles: ["history.css", "paper-menu-field.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js"] },
     },
     {
+      id: "12A", slug: "semantic-paper-field", title: "Semantic Paper Field", family: "matrix-paper", parentId: "12",
+      kind: "spatial-prototype", status: "active-variant", statusLabel: "active semantic-scale variant",
+      path: "phases/12a-semantic-paper-field/index.html", validationProfile: "paper-field-variant",
+      summary: "保留 12 的固定 2 × 3 紙面與 camera，只讓 overview、near 與 reading 顯示不同資訊層級。",
+      assets: { styles: ["history.css", "paper-menu-field.css", "semantic-paper-field.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "semantic-paper-field.js"] },
+    },
+    {
       id: "13", slug: "static-loupe", title: "Static Loupe", family: "matrix-paper", parentId: "12",
       kind: "spatial-prototype", status: "reviewed-stop", statusLabel: "reviewed; stop extending",
       path: "phases/13-static-loupe/index.html", validationProfile: "paper-field-variant",

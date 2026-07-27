@@ -60,7 +60,7 @@
         <div class="section-heading">
           <p class="eyebrow">Object catalog</p>
           <h2 id="architecture-title">一個 ID，就是一個研究物件</h2>
-          <p>家族只作標籤，不包住或合併版本。03A、03B、18、18A、25、25P、25B 都各自保留身份、父系、狀態與入口；字母後綴不是同一張卡片的模式。</p>
+          <p>家族只作標籤，不包住或合併版本。03A、03B、12A、18、18A、25、25P、25B 都各自保留身份、父系、狀態與入口；字母後綴不是同一張卡片的模式。</p>
         </div>
         <div id="prototype-registry" class="prototype-object-grid" aria-live="polite"></div>
       </section>
@@ -179,6 +179,13 @@
             <p><strong>探索問題：</strong>若矩陣單位改為分類版面，X／Y 只代表紙面位置，縮小的全張菜單是否仍能提供空間記憶？</p>
             <p><strong>原地縮放：</strong>分類不換位；整張 sheet 依被選分類的原始座標平移與放大。</p>
             <footer><a class="button" href="./phases/12-paper-menu-field/">開啟 12</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">12A / semantic paper field</p><h3>Semantic Paper Field</h3><span class="status active">active 12 variant</span></div>
+            <p><strong>單一變因：</strong>只改 overview、near 與 reading 顯示的資訊層級；2×3 紙面與 camera 完全沿用 12。</p>
+            <p><strong>尺度分工：</strong>全張看分類、數量、價位與密度；放大後看料理名稱、價格與狀態；detail 再提供 description 與 metadata。</p>
+            <footer><a class="button" href="./phases/12a-semantic-paper-field/">開啟 12A</a></footer>
           </article>
 
           <article class="phase-card">
@@ -333,6 +340,7 @@
               <tr><td>10</td><td>09 的單一菜序、完整 fixture</td><td>固定全貌上的可拖曳 fisheye 鏡頭</td><td>局部放大是否以位置扭曲換取了太多可讀性</td></tr>
               <tr><td>11</td><td>分類與料理 canonical order</td><td>固定 6 × 8 格位、整列伸縮</td><td>矩陣是否像菜單，以及空格是否提供有效資訊</td></tr>
               <tr><td>12</td><td>完整分類與 30 道 fixture</td><td>無語意紙面座標、整張 sheet 原位縮放</td><td>不可讀的微型全貌是否仍提供有用的密度與位置感</td></tr>
+              <tr><td>12A</td><td>12 的固定 2×3 紙面、category anchor 與 camera</td><td>overview／near／reading 的資訊層級</td><td>summary 與 density 是否仍保有完整菜單感，而不變成 dashboard</td></tr>
               <tr><td>13</td><td>12 的固定紙面與分類座標</td><td>可拖曳局部放大層</td><td>複視與遮擋是否小於全紙縮放成本</td></tr>
               <tr><td>14</td><td>分類順序與相鄰關係</td><td>帶有摺線的面板展開</td><td>紙面連續感是否真有別於 accordion</td></tr>
               <tr><td>15</td><td>紙張外框與分類象限</td><td>二維欄列局部拉伸</td><td>移動邊界是否破壞位置記憶</td></tr>
