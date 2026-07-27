@@ -1,6 +1,10 @@
 # Menu Lens
 
-Menu Lens is a decision-first restaurant menu prototype.
+Menu Lens is an executable research archive for mobile restaurant-menu reading.
+
+The current public artifact is the [Research History](https://a20030824.github.io/menu-lens/): a catalog of complete-menu, relational, horizontal, matrix, landscape-paper, and depth prototypes built from the same 30-product fixture. Each prototype remains a distinct research object with its own status and lineage.
+
+This publication does not select a production UI or turn the archive into an ordering product. The product baseline remains in `src/`, while Candidate, comparison, Decision, Configuration, and Current order work stays paused during spatial exploration.
 
 It explores a simple problem: most QR ordering interfaces begin with transaction mechanics—product cards, modifiers, cart, and checkout—before helping people understand the menu, compare possibilities, or coordinate a table.
 
@@ -10,7 +14,7 @@ Menu Lens separates three layers that are often collapsed into one:
 2. **Decision workspace** — What am I considering? How do the options differ? What has the table already chosen, and what may still be missing?
 3. **Transaction system** — Which specifications, quantities, order rounds, and payment actions are required to complete the order?
 
-The first demo focuses on the space before the cart:
+The long-term product frame focuses on the space before the cart:
 
 ```text
 browse → consider → compare → decide → configure → order
@@ -47,7 +51,9 @@ The initial implementation investigates only three primary questions:
 
 A conventional comparison interface is deliberately parked. The project should first make the Menu Lens interaction internally coherent and observable before deciding whether a formal baseline is useful.
 
-## Initial demo scope
+## Product direction (currently paused)
+
+The following flow remains the intended product direction, not the current GitHub Pages experience.
 
 ### Primary customer flow
 
@@ -129,7 +135,7 @@ The cross-conversation foundation, domain dataset, formative protocol, and first
 
 The active workstream is spatial interaction exploration. Prototypes are organized into six families—document, relational, horizontal, matrix-paper, 18-derived landscape, and depth—rather than maintained as another numbered list in this README.
 
-The canonical catalog is [`research-history/prototype-registry.js`](research-history/prototype-registry.js). It records each node's family, parent, status, executable path, and required assets; the research archive and validator both consume it. See [`docs/workstreams.md`](docs/workstreams.md) for current work, [`docs/research-history/spatial-exploration.md`](docs/research-history/spatial-exploration.md) for mechanism notes, and [`docs/research-history/product-direction-review.md`](docs/research-history/product-direction-review.md) for explicitly sourced product review.
+The canonical catalog is [`research-history/prototype-registry.js`](research-history/prototype-registry.js). It records each object's family, parent, status, executable path, and required assets; the research archive and validator both consume it. See [`docs/workstreams.md`](docs/workstreams.md) for current work, [`docs/research-history/spatial-exploration.md`](docs/research-history/spatial-exploration.md) for mechanism notes, and [`docs/research-history/product-direction-review.md`](docs/research-history/product-direction-review.md) for explicitly sourced product review.
 
 GitHub Pages currently publishes `research-history/` as the site root. This is a publication choice for the active research archive, not a decision to replace the product baseline in `src/`.
 
