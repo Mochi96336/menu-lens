@@ -79,6 +79,10 @@
   let pointerState = null;
   let suppressClick = false;
 
+  const focusCurrentProductSummary = () => {
+    products[focusIndex]?.querySelector("summary")?.focus({ preventScroll: true });
+  };
+
   const updateProductFocus = (nextIndex, options = {}) => {
     const layout = computeProductLayout(products.length, nextIndex);
     if (layout.focusIndex !== focusIndex && options.preserveOpen !== true) {
@@ -249,9 +253,14 @@
 
   stage.addEventListener("keydown", (event) => {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    const summaryHadFocus = Boolean(event.target.closest?.("summary"));
     event.preventDefault();
-    if (lens === "category") updateCategoryFocus(focusCategoryIndex + (event.key === "ArrowLeft" ? -1 : 1));
-    else updateProductFocus(focusIndex + (event.key === "ArrowLeft" ? -1 : 1));
+    if (lens === "category") {
+      updateCategoryFocus(focusCategoryIndex + (event.key === "ArrowLeft" ? -1 : 1));
+    } else {
+      updateProductFocus(focusIndex + (event.key === "ArrowLeft" ? -1 : 1));
+      if (summaryHadFocus) focusCurrentProductSummary();
+    }
   });
 
   document.addEventListener("keydown", (event) => {
