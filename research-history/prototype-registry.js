@@ -219,6 +219,13 @@
       assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "weighted-pinch-sheet.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
     },
     {
+      id: "22C", slug: "camera-only-focus", title: "Camera-only Focus", family: "landscape", parentId: "18",
+      kind: "spatial-prototype", status: "active-variant", statusLabel: "controlled camera variant",
+      path: "phases/22c-camera-only/index.html", validationProfile: "paper-field-variant",
+      summary: "18 上只在分類聚焦時將 camera 對準所在紙欄；欄寬、列高、字級與 padding 不變。",
+      assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "camera-only-focus.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
+    },
+    {
       id: "23", slug: "collapsible-landscape", title: "Tracked Focus Landscape", family: "landscape", parentId: "22",
       kind: "spatial-prototype", status: "active-variant", statusLabel: "active variant",
       path: "phases/23-collapsible-landscape/index.html", validationProfile: "paper-field-variant",
