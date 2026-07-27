@@ -219,6 +219,13 @@
       assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "weighted-pinch-sheet.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
     },
     {
+      id: "22A", slug: "row-only-weighted-focus", title: "Row-only Weighted Focus", family: "landscape", parentId: "18",
+      kind: "spatial-prototype", status: "active-variant", statusLabel: "controlled row-only variant",
+      path: "phases/22a-row-only/index.html", validationProfile: "paper-field-variant",
+      summary: "只將焦點分類的 row weight 乘以 1.8；外欄、camera、字級、padding 與 paired content 維持 18。",
+      assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "row-only-weighted-focus.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
+    },
+    {
       id: "23", slug: "collapsible-landscape", title: "Tracked Focus Landscape", family: "landscape", parentId: "22",
       kind: "spatial-prototype", status: "active-variant", statusLabel: "active variant",
       path: "phases/23-collapsible-landscape/index.html", validationProfile: "paper-field-variant",

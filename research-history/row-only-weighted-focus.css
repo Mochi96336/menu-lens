@@ -1,0 +1,44 @@
+.row-only-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.row-only-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.row-only-sheet {
+  width: 46rem;
+  min-width: 46rem;
+}
+
+/* Preserve 18's initial typography and padding exactly. */
+.row-only-viewport .paper-category__header {
+  gap: .35rem;
+  padding: .42rem .5rem;
+}
+
+.row-only-viewport .paper-category__header > span { font-size: .52rem; }
+.row-only-viewport .paper-category__header strong { font-size: .84rem; }
+.row-only-viewport .paper-category__header small { font-size: .5rem; }
+
+.row-only-viewport .paper-product {
+  gap: .35rem;
+  padding-inline: .5rem;
+  font-size: .64rem;
+  line-height: 1.2;
+}
+
+.row-only-viewport .paper-product strong { font-size: .58rem; }
+
+.row-only-sheet .landscape-column {
+  transition: grid-template-rows 220ms cubic-bezier(.2, .75, .25, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row-only-sheet .landscape-column {
+    transition: none;
+  }
+}
