@@ -15,7 +15,7 @@
       <p class="eyebrow">Menu Lens / research record</p>
       <h1>手機菜單閱讀研究檔案</h1>
       <p class="lede">
-        保存當時真正做過的畫面，也保存後來再次碰到的相似問題。這裡不把版本排成必然進步史；05、06 保留為回訪，08–24 並列探索不同空間模型，也另外保存產品方向評價。
+        保存當時真正做過的畫面，也保存後來再次碰到的相似問題。這裡不把版本排成必然進步史；05、06 保留為回訪，08–24 與受控 child variants 並列探索不同空間模型，也另外保存產品方向評價。
       </p>
       <div class="meta-row" aria-label="研究檔案資訊">
         <span class="pill">5 個原始歷史節點</span>
@@ -31,7 +31,7 @@
           <p class="eyebrow">How to read</p>
           <h2 id="read-title">不是進步階梯，而是三條互相靠近的路線</h2>
           <p>
-            01–04 是有固定 commit 的歷史實作。05、06 是後來回訪舊問題的 prototype；07 記錄常見市場 baseline；08–24 展開不同的空間模型。直接評價另存為產品方向紀錄，不假裝成參與者研究。
+            01–04 是有固定 commit 的歷史實作。05、06 是後來回訪舊問題的 prototype；07 記錄常見市場 baseline；08–24 與字母 child variants 展開不同的空間模型。直接評價另存為產品方向紀錄，不假裝成參與者研究。
           </p>
         </div>
         <div class="timeline">
@@ -51,7 +51,7 @@
             <p class="phase-index">Line C</p>
             <h3>空間互動探索</h3>
             <p>把常見橫向分類分頁記為 baseline，不重建；直接探索分類能否在同一張連續 spread 上保持固定位置並局部展寬。</p>
-            <p><strong>07 baseline → 08–17 spatial models → 18 / 18A paper references → 19–24 landscape objects → 25 reset → 25P / 25B / 26 depth objects</strong></p>
+            <p><strong>07 baseline → 08–17 spatial models → 18 / 18A paper references → 19–24 landscape objects → 22B controlled child → 25 reset → 25P / 25B / 26 depth objects</strong></p>
           </article>
         </div>
       </section>
@@ -60,7 +60,7 @@
         <div class="section-heading">
           <p class="eyebrow">Object catalog</p>
           <h2 id="architecture-title">一個 ID，就是一個研究物件</h2>
-          <p>家族只作標籤，不包住或合併版本。03A、03B、18、18A、25、25P、25B 都各自保留身份、父系、狀態與入口；字母後綴不是同一張卡片的模式。</p>
+          <p>家族只作標籤，不包住或合併版本。03A、03B、18、18A、22B、25、25P、25B 都各自保留身份、父系、狀態與入口；字母後綴不是同一張卡片的模式。</p>
         </div>
         <div id="prototype-registry" class="prototype-object-grid" aria-live="polite"></div>
       </section>
@@ -136,7 +136,7 @@
           <p class="eyebrow">Current spatial exploration</p>
           <h2 id="spatial-title">07 記錄慣例，08–26 依家族展開空間機制</h2>
           <p>
-            07 只標記市場常見的橫向分類導覽；08–21 測試分類欄、長軌道、焦點鏡頭、產品矩陣與紙面形變。22–24 保留為 18 的平面變體；25 否決語意深度前提，26 開始把第三維當成可直接操控的排版空間。
+            07 只標記市場常見的橫向分類導覽；08–21 測試分類欄、長軌道、焦點鏡頭、產品矩陣與紙面形變。22–24 與受控 child variants 保留為 18 的平面變體；25 否決語意深度前提，26 開始把第三維當成可直接操控的排版空間。
           </p>
         </div>
         <div class="timeline">
@@ -259,6 +259,13 @@
           </article>
 
           <article class="phase-card">
+            <div><p class="phase-index">22B / column-only control</p><h3>Column-only Focus</h3><span class="status active">controlled 18 child</span></div>
+            <p><strong>唯一變因：</strong>選中分類所在紙欄由 1 展為 1.65；8:6／6:4／4:2 列高保持不動。</p>
+            <p><strong>控制邊界：</strong>不做 camera tracking、row weighting、字級放大、padding 調整或 paired-category collapse。</p>
+            <footer><a class="button" href="./phases/22b-column-only/">開啟 22B</a></footer>
+          </article>
+
+          <article class="phase-card">
             <div><p class="phase-index">23 / tracked focus landscape</p><h3>Tracked Focus Landscape</h3><span class="status active">active 22 extension</span></div>
             <p><strong>折疊差異：</strong>沿用 22 的 1.65 欄寬與 camera，但把同欄另一分類收成 2.2rem 標頭。</p>
             <p><strong>閱讀焦點：</strong>選中分類取得整欄高度，料理字級同步放大；再次點選回到完整 3×2。</p>
@@ -344,6 +351,7 @@
               <tr><td>20</td><td>三欄×上下兩分類</td><td>保留分隔線的三片紙面折疊</td><td>CSS 透視是否足以建立可信的摺紙關係</td></tr>
               <tr><td>21</td><td>固定三欄紙面與四分類可見量</td><td>A+B／B+C 重疊窗口</td><td>雙欄密度是否仍足以閱讀單一道料理</td></tr>
               <tr><td>22</td><td>18 的固定紙寬與完整 3×2 內容</td><td>1.8× 列高、1.65× 焦點欄寬與 camera tracking</td><td>鄰居保持完整時，焦點是否已足夠清楚</td></tr>
+              <tr><td>22B</td><td>18 的固定紙寬、基礎列高與完整 paired content</td><td>焦點紙欄 1 → 1.65</td><td>水平空間本身是否足以改善名稱與價格掃讀</td></tr>
               <tr><td>23</td><td>22 的欄寬變化與 camera tracking</td><td>同欄鄰居收成 2.2rem 標頭，焦點字級放大</td><td>犧牲鄰居內容能否換到更好的單欄閱讀</td></tr>
               <tr><td>24</td><td>18 的 3×2 拓撲與分類順序</td><td>14:10:6 欄寬、料理直排、價格欄內壓底</td><td>內容比例是否改善直排密度與字級</td></tr>
               <tr><td>25</td><td>完整 fixture 與維度研究問題</td><td>停止把分類內序號當共同 Z 軸</td><td>哪些分支值得成為獨立可比較物件</td></tr>

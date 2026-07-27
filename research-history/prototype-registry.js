@@ -219,6 +219,13 @@
       assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "weighted-pinch-sheet.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
     },
     {
+      id: "22B", slug: "column-only-focus", title: "Column-only Focus", family: "landscape", parentId: "18",
+      kind: "spatial-prototype", status: "active-variant", statusLabel: "controlled column variant",
+      path: "phases/22b-column-only/index.html", validationProfile: "paper-field-variant",
+      summary: "18 上只將焦點紙欄由 1 展為 1.65；列高、camera、字級與 padding 不變。",
+      assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "column-only-focus.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
+    },
+    {
       id: "23", slug: "collapsible-landscape", title: "Tracked Focus Landscape", family: "landscape", parentId: "22",
       kind: "spatial-prototype", status: "active-variant", statusLabel: "active variant",
       path: "phases/23-collapsible-landscape/index.html", validationProfile: "paper-field-variant",
