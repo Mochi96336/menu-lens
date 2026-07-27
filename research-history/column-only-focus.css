@@ -1,7 +1,9 @@
 .column-only-viewport {
   overflow-x: auto;
   overflow-y: hidden;
-  scroll-snap-type: x proximity;
+  /* Native snap re-centers flex items when their widths change. 22B keeps the
+     camera fixed during focus/reset and settles only after explicit navigation. */
+  scroll-snap-type: none;
   scrollbar-width: none;
 }
 
