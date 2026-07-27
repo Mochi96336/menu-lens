@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 10A Local Fisheye：只讓焦點與左右兩道鄰居形變，固定遠方料理寬度。" />
+    <title>10A Local Fisheye — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../fisheye-ribbon.css" />
+    <link rel="stylesheet" href="../../local-fisheye.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../fisheye-ribbon-renderer.js"></script>
+    <script src="../../local-fisheye.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">10A · Child of 10 Fisheye Ribbon</p>
+          <h1>Local Fisheye</h1>
+          <p class="lede">保留一個 viewport 內的 30 道完整 ribbon，只把料理鏡頭的形變限制在焦點與左右兩道鄰居。遠方料理固定為同一寬度；開頭與尾端缺少的鄰居份額只在現有局部 neighbourhood 內重新分配。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">唯一變因：10 的 category lens、pointer mapping、keyboard、detail 與 canonical order 全部保留；只有 product lens 的正規化範圍由目前實際存在的鄰居改成固定半徑 ±2。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Local Fisheye 互動原型">
+        <div class="phone-screen fisheye-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="fisheye-restaurant">
+            <h2 id="fisheye-restaurant-name" class="restaurant-name"></h2>
+            <p id="fisheye-restaurant-meta" class="restaurant-meta"></p>
+            <p id="fisheye-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="fisheye-toolbar">
+            <button id="fisheye-previous" type="button" aria-label="上一道料理">←</button>
+            <div class="fisheye-location" aria-live="polite">
+              <strong id="fisheye-location-title"></strong>
+              <span id="fisheye-location-meta"></span>
+            </div>
+            <button id="fisheye-next" type="button" aria-label="下一道料理">→</button>
+          </div>
+          <div class="fisheye-lens-switch" aria-label="閱讀尺度">
+            <button id="fisheye-category-lens" type="button" aria-pressed="true">分類鏡頭</button>
+            <button id="fisheye-product-lens" type="button" aria-pressed="false">料理鏡頭</button>
+            <span>柱高＝價格</span>
+          </div>
+          <nav id="fisheye-categories" class="fisheye-categories" aria-label="跳到料理分類"></nav>
+          <p class="local-fisheye-readout">料理鏡頭：focus + 左右 2 道形變；far width 固定 0.8%</p>
+          <div id="fisheye-stage" class="fisheye-stage" data-lens="category" tabindex="0" aria-label="拖曳以移動菜單焦點">
+            <div id="fisheye-track" class="fisheye-track"></div>
+          </div>
+          <p class="fisheye-hint">分類鏡頭與 10 相同；點料理進入局部鏡頭，再點一次看細節。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Parent comparison</p><h2>不是另一套 navigation</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>保留</h3><p>30 products、category lens、pointer X 對應 canonical index、previous／next、keyboard 與 inline detail。</p></article>
+          <article class="phase-card"><h3>只改</h3><p>product lens 先固定所有 far products 為約 0.8% 寬，再只把剩餘空間分給實際存在的 ±2 neighbourhood。</p></article>
+          <article class="phase-card"><h3>邊界</h3><p>開頭或尾端缺少鄰居時，剩餘空間只在 focus 與現有鄰居之間重分配，不再放大全部遠方料理。</p></article>
+          <article class="phase-card"><h3>停止訊號</h3><p>若邊界 focus 過度放大，或局部鏡頭與 parent 無可感知差異，保留結果並停止，不增加第二套 navigation。</p></article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
