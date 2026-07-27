@@ -1,0 +1,7 @@
+source_type=original_implementation
+repository=a20030824/menu-lens
+pull_request=3
+commit=087619c3cac4e7b019d58265b6233b3ff04e28f2
+label=PR #3 complete menu baseline
+build_command=npm_run_build
+frozen_by=agent/archive-pr4-history

@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 20 Tri-fold Matrix：沿三個各含上下兩分類的紙欄折疊 3×2 菜單。" />
+    <title>20 Tri-fold Matrix — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../trifold-matrix.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">20 · Three paper panels</p>
+          <h1>Tri-fold Matrix</h1>
+          <p class="lede">折疊單位不是六個分類，而是三個完整紙欄。每個面板始終保留上下兩分類與中間分隔線，折起時 3×2 拓撲仍可辨認。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">與 14 的差別：14 把分類壓成六條 accordion；20 只沿兩條原始紙面摺線折疊，分類本身沒有變成導覽條。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Tri-fold Matrix 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="trifold-restaurant-name" class="restaurant-name"></h2>
+            <p id="trifold-restaurant-meta" class="restaurant-meta"></p>
+            <p id="trifold-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="trifold-overview" type="button" aria-pressed="true">攤平</button>
+            <button id="trifold-previous" type="button" aria-label="上一個紙面板">←</button>
+            <button id="trifold-next" type="button" aria-label="下一個紙面板">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="trifold-location-title">完整三折頁</strong>
+              <span id="trifold-location-meta">3 面板 × 每面 2 分類</span>
+            </div>
+          </div>
+
+          <div id="trifold-stage" class="trifold-stage" data-mode="overview" tabindex="0" aria-label="橫向切換三折菜單">
+            <div id="trifold-sheet" class="trifold-sheet"></div>
+            <aside id="trifold-detail" class="paper-detail" data-open="false" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="trifold-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="trifold-detail-title"></h3>
+                <p id="trifold-detail-meta" class="paper-detail__meta"></p>
+                <p id="trifold-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">點紙欄或左右滑動展開面板；每個折頁始終保留上下兩個分類區塊。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>折的是三欄紙面，不是六個分類</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>兩條摺線</h3><p>完整 3×2 只有兩條垂直摺線；每片 panel 的上下分類與比例在折疊過程中維持。</p></article>
+          <article class="phase-card"><h3>中央攤平</h3><p>焦點 panel 佔約 78vw 並保持平面；左右 panel 依相對位置旋轉 ±58°。</p></article>
+          <article class="phase-card"><h3>矩陣仍可辨認</h3><p>折起面板仍顯示水平分類分隔線，不退化成只有分類名稱的窄標籤。</p></article>
+          <article class="phase-card"><h3>主要風險</h3><p>CSS 透視能表達摺痕，但沒有真實厚度與遮蔽；若空間關係不可信，仍可能只是裝飾動畫。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const stage = document.querySelector("#trifold-stage");
+      const sheet = document.querySelector("#trifold-sheet");
+      const overviewButton = document.querySelector("#trifold-overview");
+      const previousButton = document.querySelector("#trifold-previous");
+      const nextButton = document.querySelector("#trifold-next");
+      const locationTitle = document.querySelector("#trifold-location-title");
+      const locationMeta = document.querySelector("#trifold-location-meta");
+      const detail = document.querySelector("#trifold-detail");
+      const detailClose = document.querySelector("#trifold-detail-close");
+
+      document.querySelector("#trifold-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#trifold-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#trifold-restaurant-meta").textContent = menu.restaurant.summary;
+
+      const projection = document.createElement("div");
+      projection.innerHTML = window.renderMenuLensPaperField(menu);
+      const projectedCategories = [...projection.querySelectorAll(".paper-category")];
+      const categoryCounts = menu.categories.map((category) => menu.products.filter((product) => product.categoryId === category.id).length);
+      for (let panelIndex = 0; panelIndex < 3; panelIndex += 1) {
+        const firstIndex = panelIndex * 2;
+        const panel = document.createElement("div");
+        panel.className = "trifold-panel";
+        panel.dataset.panelIndex = String(panelIndex);
+        panel.dataset.firstCategoryIndex = String(firstIndex);
+        panel.style.setProperty("--panel-rows", `${categoryCounts[firstIndex]}fr ${categoryCounts[firstIndex + 1]}fr`);
+        panel.append(projectedCategories[firstIndex], projectedCategories[firstIndex + 1]);
+        sheet.append(panel);
+      }
+
+      const panels = [...sheet.querySelectorAll(".trifold-panel")];
+      const categories = [...sheet.querySelectorAll(".paper-category")];
+      const productButtons = [...sheet.querySelectorAll(".paper-product")];
+      categories.forEach((category) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+      });
+      let mode = "overview";
+      let activePanelIndex = 0;
+      let selectedProductIndex = null;
+      let pointerStart = null;
+      let suppressClick = false;
+
+      const closeDetail = (restoreFocus = false) => {
+        detail.dataset.open = "false";
+        productButtons.forEach((button) => delete button.dataset.selected);
+        if (restoreFocus && selectedProductIndex !== null) productButtons[selectedProductIndex]?.focus();
+        selectedProductIndex = null;
+      };
+      const updateState = () => {
+        overviewButton.setAttribute("aria-pressed", String(mode === "overview"));
+        previousButton.disabled = mode === "overview" || activePanelIndex === 0;
+        nextButton.disabled = mode === "overview" || activePanelIndex === panels.length - 1;
+        panels.forEach((panel, index) => {
+          if (mode === "focus" && index === activePanelIndex) panel.dataset.active = "true";
+          else delete panel.dataset.active;
+          if (mode === "overview") {
+            panel.style.setProperty("--panel-angle", "0deg");
+            panel.style.setProperty("--panel-origin", "center");
+          } else if (index < activePanelIndex) {
+            panel.style.setProperty("--panel-angle", "58deg");
+            panel.style.setProperty("--panel-origin", "right");
+          } else if (index > activePanelIndex) {
+            panel.style.setProperty("--panel-angle", "-58deg");
+            panel.style.setProperty("--panel-origin", "left");
+          } else {
+            panel.style.setProperty("--panel-angle", "0deg");
+            panel.style.setProperty("--panel-origin", "center");
+          }
+        });
+        categories.forEach((category) => {
+          const panelIndex = Number(category.closest(".trifold-panel").dataset.panelIndex);
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", String(mode === "focus" && panelIndex === activePanelIndex));
+          category.querySelectorAll(".paper-product").forEach((button) => button.tabIndex = mode === "overview" || panelIndex === activePanelIndex ? 0 : -1);
+        });
+        if (mode === "overview") {
+          locationTitle.textContent = "完整三折頁";
+          locationMeta.textContent = "3 面板 × 每面 2 分類";
+        } else {
+          const firstIndex = Number(panels[activePanelIndex].dataset.firstCategoryIndex);
+          locationTitle.textContent = `${menu.categories[firstIndex].name}／${menu.categories[firstIndex + 1].name}`;
+          locationMeta.textContent = `面板 ${activePanelIndex + 1} / 3 · 相鄰面板折起 58°`;
+        }
+      };
+      const applyGeometry = () => {
+        const width = mode === "overview" ? stage.clientWidth - 20 : stage.clientWidth * 2.35;
+        sheet.style.setProperty("--trifold-width", `${width}px`);
+        void sheet.offsetWidth;
+        const x = mode === "overview"
+          ? 10
+          : stage.clientWidth / 2 - (panels[activePanelIndex].offsetLeft + panels[activePanelIndex].offsetWidth / 2);
+        sheet.style.setProperty("--trifold-x", `${x}px`);
+      };
+      const showOverview = () => {
+        mode = "overview";
+        stage.dataset.mode = mode;
+        closeDetail();
+        applyGeometry();
+        updateState();
+      };
+      const focusPanel = (nextIndex) => {
+        mode = "focus";
+        stage.dataset.mode = mode;
+        closeDetail();
+        activePanelIndex = Math.max(0, Math.min(panels.length - 1, nextIndex));
+        applyGeometry();
+        updateState();
+      };
+      const openDetail = (productIndex, button) => {
+        const product = menu.products[productIndex];
+        selectedProductIndex = productIndex;
+        productButtons.forEach((candidate) => {
+          if (candidate === button) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+        });
+        document.querySelector("#trifold-detail-title").textContent = product.name;
+        document.querySelector("#trifold-detail-meta").textContent = `NT$${product.price} · ${product.cue}${product.availability === "sold_out" ? " · 售完" : ""}`;
+        document.querySelector("#trifold-detail-copy").textContent = product.description;
+        detail.dataset.open = "true";
+      };
+
+      categories.forEach((category) => {
+        const panelIndex = Number(category.closest(".trifold-panel").dataset.panelIndex);
+        category.querySelector(".paper-category__header").addEventListener("click", () => focusPanel(panelIndex));
+      });
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const panelIndex = Number(button.closest(".trifold-panel").dataset.panelIndex);
+          if (mode === "overview" || panelIndex !== activePanelIndex) focusPanel(panelIndex);
+          else openDetail(Number(button.dataset.productIndex), button);
+        });
+      });
+
+      stage.addEventListener("pointerdown", (event) => {
+        if (detail.contains(event.target)) return;
+        if (!event.isPrimary || pointerStart || (event.pointerType === "mouse" && event.button !== 0)) return;
+        pointerStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
+      });
+      stage.addEventListener("pointerup", (event) => {
+        if (!pointerStart || pointerStart.id !== event.pointerId) return;
+        const dx = event.clientX - pointerStart.x;
+        const dy = event.clientY - pointerStart.y;
+        pointerStart = null;
+        if (Math.abs(dx) < 42 || Math.abs(dx) <= Math.abs(dy)) return;
+        suppressClick = true;
+        closeDetail();
+        if (mode === "overview") focusPanel(dx < 0 ? 0 : 2);
+        else focusPanel(activePanelIndex + (dx < 0 ? 1 : -1));
+      });
+      stage.addEventListener("pointercancel", (event) => {
+        if (!pointerStart || pointerStart.id !== event.pointerId) return;
+        pointerStart = null;
+        suppressClick = false;
+      });
+      stage.addEventListener("click", (event) => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        suppressClick = false;
+      }, true);
+
+      overviewButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => { closeDetail(); focusPanel(activePanelIndex - 1); });
+      nextButton.addEventListener("click", () => { closeDetail(); focusPanel(activePanelIndex + 1); });
+      detailClose.addEventListener("click", () => closeDetail(true));
+      stage.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        if (mode === "overview") focusPanel(event.key === "ArrowLeft" ? 0 : 2);
+        else focusPanel(activePanelIndex + (event.key === "ArrowLeft" ? -1 : 1));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.dataset.open === "true") closeDetail(true);
+        else if (mode === "focus") showOverview();
+      });
+      window.addEventListener("resize", () => requestAnimationFrame(applyGeometry));
+
+      requestAnimationFrame(showOverview);
+    </script>
+  </body>
+</html>

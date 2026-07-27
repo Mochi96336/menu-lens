@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 23 Tracked Focus Landscape：沿用 22 的欄寬與鏡頭追蹤，並把同欄鄰居收成標頭。" />
+    <title>23 Tracked Focus Landscape — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../landscape-paper.css" />
+    <link rel="stylesheet" href="../../collapsible-landscape.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../paper-landscape-core.js"></script>
+    <script src="../../spatial-drag.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">23 · 22 + paired-category collapse</p>
+          <h1>Tracked Focus Landscape</h1>
+          <p class="lede">沿用 22 的展寬與 camera tracking，但把同欄另一分類明確收成標頭；焦點分類取得整欄高度與更大的閱讀字級。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">整張紙仍固定 46rem，焦點欄仍為 1.65 份並由 camera 追蹤；差異是同欄另一分類縮成 2.2rem 標頭，焦點料理字級提高到 .8rem。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Tracked Focus Landscape 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="collapse-restaurant-name" class="restaurant-name"></h2>
+            <p id="collapse-restaurant-meta" class="restaurant-meta"></p>
+            <p id="collapse-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar collapse-toolbar">
+            <button id="collapse-reset" type="button" aria-pressed="true" disabled>原比例</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="collapse-location-title">完整 3×2 紙面</strong>
+              <span id="collapse-location-meta">無焦點 · 欄寬 1:1:1</span>
+            </div>
+          </div>
+
+          <div class="landscape-stage collapse-stage">
+            <div id="collapse-viewport" class="landscape-viewport collapse-viewport" tabindex="0" aria-label="可展寬並追蹤焦點的固定紙面">
+              <div id="collapse-sheet" class="landscape-sheet collapse-sheet"></div>
+            </div>
+            <aside id="collapse-detail" class="paper-detail" data-open="false" aria-hidden="true" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="collapse-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="collapse-detail-title"></h3>
+                <p id="collapse-detail-meta" class="paper-detail__meta"></p>
+                <p id="collapse-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">點分類後，鄰居縮成標頭、焦點字級放大、紙欄展寬並由 camera 置中。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>在 22 之上收起同欄鄰居</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>明確展開</h3><p>同欄另一分類縮成 2.2rem 標頭，焦點分類取得整欄剩餘高度。</p></article>
+          <article class="phase-card"><h3>寬度變化</h3><p>焦點欄 flex weight 從 1 提高到 1.65；其他兩欄仍各為 1，紙張總寬不變。</p></article>
+          <article class="phase-card"><h3>鏡頭追蹤</h3><p>欄寬開始變化時與動畫結束後各置中一次，避免焦點在伸縮過程中漂出視窗。</p></article>
+          <article class="phase-card"><h3>單一焦點</h3><p>全紙只保留一個 active category；切換分類會先還原舊欄，再追蹤新欄。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const core = window.MenuLensLandscapeCore;
+      const viewport = document.querySelector("#collapse-viewport");
+      const sheet = document.querySelector("#collapse-sheet");
+      const resetButton = document.querySelector("#collapse-reset");
+      const locationTitle = document.querySelector("#collapse-location-title");
+      const locationMeta = document.querySelector("#collapse-location-meta");
+
+      core.hydrateRestaurant({
+        menu,
+        name: document.querySelector("#collapse-restaurant-name"),
+        meta: document.querySelector("#collapse-restaurant-meta"),
+        copy: document.querySelector("#collapse-restaurant-copy"),
+      });
+
+      const { categories, columns, productButtons } = core.buildLandscape({
+        menu,
+        sheet,
+        columnClass: "landscape-column collapse-column",
+        columnWeight: () => 1,
+      });
+
+      const detail = core.createDishDetail({
+        menu,
+        detail: document.querySelector("#collapse-detail"),
+        closeButton: document.querySelector("#collapse-detail-close"),
+        title: document.querySelector("#collapse-detail-title"),
+        meta: document.querySelector("#collapse-detail-meta"),
+        copy: document.querySelector("#collapse-detail-copy"),
+        productButtons,
+      });
+
+      const scrollBehavior = () =>
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+      let activeCategoryIndex = null;
+      let trackingTimer = null;
+
+      const trackColumn = (column, behavior = scrollBehavior()) => {
+        const targetLeft = column.offsetLeft + column.offsetWidth / 2 - viewport.clientWidth / 2;
+        viewport.scrollTo({ left: Math.max(0, targetLeft), behavior });
+      };
+
+      const setFocus = (nextCategoryIndex) => {
+        activeCategoryIndex = nextCategoryIndex;
+        detail.close();
+        columns.forEach((column, columnIndex) => {
+          const firstIndex = columnIndex * 2;
+          const activeLocalIndex = activeCategoryIndex === null ? -1 : activeCategoryIndex - firstIndex;
+          const tracked = activeLocalIndex === 0 || activeLocalIndex === 1;
+          column.dataset.focused = tracked ? (activeLocalIndex === 0 ? "first" : "second") : "none";
+          column.dataset.tracked = String(tracked);
+          column.style.setProperty("--column-count", tracked ? "1.65" : "1");
+          [...column.querySelectorAll(".paper-category")].forEach((category, localIndex) => {
+            const categoryIndex = firstIndex + localIndex;
+            const focused = categoryIndex === activeCategoryIndex;
+            const collapsed = tracked && !focused;
+            const header = category.querySelector(".paper-category__header");
+            category.dataset.collapsed = String(collapsed);
+            if (focused) category.dataset.focused = "true";
+            else delete category.dataset.focused;
+            header.setAttribute("aria-expanded", String(!collapsed));
+            header.setAttribute("aria-pressed", String(focused));
+            header.setAttribute(
+              "aria-label",
+              `${menu.categories[categoryIndex].name}，${focused ? "恢復完整紙面" : "放大並追蹤這個分類"}`,
+            );
+          });
+        });
+
+        const atOverview = activeCategoryIndex === null;
+        resetButton.disabled = atOverview;
+        resetButton.setAttribute("aria-pressed", String(atOverview));
+        locationTitle.textContent = atOverview ? "完整 3×2 紙面" : `${menu.categories[activeCategoryIndex].name} 聚焦`;
+        locationMeta.textContent = atOverview ? "無焦點 · 欄寬 1:1:1" : "焦點欄 1.65 · camera tracking";
+
+        window.clearTimeout(trackingTimer);
+        if (!atOverview) {
+          const activeColumn = columns[Math.floor(activeCategoryIndex / 2)];
+          requestAnimationFrame(() => trackColumn(activeColumn));
+          trackingTimer = window.setTimeout(() => trackColumn(activeColumn, "auto"), 240);
+        }
+      };
+
+      categories.forEach((category, categoryIndex) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          setFocus(activeCategoryIndex === categoryIndex ? null : categoryIndex);
+        });
+      });
+      productButtons.forEach((button) => button.addEventListener("click", () => {
+        const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+        if (categoryIndex !== activeCategoryIndex) setFocus(categoryIndex);
+        else detail.open(button);
+      }));
+      resetButton.addEventListener("click", () => {
+        setFocus(null);
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.isOpen()) detail.close(true);
+        else resetButton.click();
+      });
+      window.enableMenuLensHorizontalDrag(viewport, {
+        enabled: () => !detail.isOpen(),
+      });
+      setFocus(null);
+    </script>
+  </body>
+</html>

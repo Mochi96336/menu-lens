@@ -1,0 +1,31 @@
+.weighted-elastic-viewport { touch-action: none; cursor: crosshair; }
+.weighted-elastic-viewport.is-dragging { cursor: grabbing; user-select: none; }
+.weighted-elastic-sheet {
+  position: absolute;
+  inset: .65rem;
+  display: grid;
+  grid-template-rows: var(--weighted-rows, 14fr 10fr 6fr);
+  gap: .32rem;
+  padding: .42rem;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-strong);
+  transition: grid-template-rows 220ms cubic-bezier(.2, .75, .25, 1);
+}
+.weighted-elastic-row { min-width: 0; min-height: 0; display: grid; grid-template-columns: var(--weighted-columns); gap: .32rem; transition: grid-template-columns 220ms cubic-bezier(.2, .75, .25, 1); }
+.weighted-elastic-viewport.is-dragging .weighted-elastic-sheet { transition: none; }
+.weighted-elastic-viewport.is-dragging .weighted-elastic-row { transition: none; }
+.weighted-elastic-sheet .paper-category { transition: background 160ms ease, opacity 160ms ease; }
+.weighted-elastic-sheet .paper-category[data-focused="true"] { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); }
+.weighted-elastic-sheet .paper-category:not([data-focused="true"]) { opacity: .8; }
+.weighted-elastic-viewport[data-scale="overview"] .paper-category { opacity: 1; }
+.weighted-elastic-viewport[data-scale="focus"] .paper-category[data-focused="true"] .paper-category__header > span { font-size: .52rem; }
+.weighted-elastic-viewport[data-scale="focus"] .paper-category[data-focused="true"] .paper-category__header strong { font-size: .78rem; }
+.weighted-elastic-viewport[data-scale="focus"] .paper-category[data-focused="true"] .paper-category__header small { font-size: .46rem; }
+.weighted-elastic-viewport[data-scale="focus"] .paper-category[data-focused="true"] .paper-product { padding-inline: .45rem; font-size: .58rem; }
+.weighted-elastic-viewport[data-scale="focus"] .paper-category[data-focused="true"] .paper-product strong { font-size: .53rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .weighted-elastic-sheet,
+  .weighted-elastic-row { transition: none; }
+}

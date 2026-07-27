@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 完整長菜單與 inline detail 研究快照。" />
+    <title>01 Complete menu — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <script src="../../menu-fixture.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">01 · Accepted substrate</p>
+          <h1>Complete menu</h1>
+          <p class="lede">完整長頁、分類跳轉與原地細節。這個版本解決完整性與返回位置，但刻意保留長頁線性。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究時間線</a>
+      </header>
+
+      <p class="study-note">
+        研究提示：先不要點分類。只往下滑，感受離開 viewport 後，前面看過的料理如何依賴記憶。接著使用分類導覽與 inline detail，觀察它改善了什麼、沒有改善什麼。
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="完整長菜單互動快照">
+        <div class="phone-screen">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>●●● 100%</span></div>
+
+          <header>
+            <h2 class="restaurant-name">潮巷小館</h2>
+            <p class="restaurant-copy">以台灣家常風味、日式洋食與適合分享的熱菜組成的虛構休閒餐廳。</p>
+            <p class="restaurant-meta">
+              <span>30 道料理</span><span>6 個分類</span><span>NT$120–NT$560</span>
+            </p>
+          </header>
+
+          <nav id="complete-menu-nav" class="category-nav" aria-label="菜單分類"></nav>
+          <div id="complete-menu-root"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>這個快照要證明什麼？</h2>
+          <p>它不是要證明長頁是答案，而是建立後續方向必須超越的可信基線。</p>
+        </div>
+        <div class="timeline">
+          <article class="phase-card"><h3>有效</h3><p>所有內容可被確認存在；分類導航不過濾；detail 原地開啟。</p></article>
+          <article class="phase-card"><h3>限制</h3><p>遠離 viewport 的料理只能靠記憶；跨分類比較仍要上下往返。</p></article>
+          <article class="phase-card"><h3>保留</h3><p>canonical document、inline detail、scroll／focus continuity 與 truthful states。</p></article>
+        </div>
+      </section>
+    </main>
+    <script>
+      (() => {
+        const menu = window.menuLensResearchMenu;
+        const nav = document.querySelector("#complete-menu-nav");
+        const root = document.querySelector("#complete-menu-root");
+        const escapeHtml = (value) => String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+
+        nav.innerHTML = menu.categories.map((category) => {
+          const count = menu.products.filter((product) => product.categoryId === category.id).length;
+          return `<a href="#complete-${escapeHtml(category.id)}"><strong>${escapeHtml(category.name)}</strong><small>${count} 道</small></a>`;
+        }).join("");
+
+        root.innerHTML = menu.categories.map((category) => {
+          const products = menu.products.filter((product) => product.categoryId === category.id);
+          return `
+            <section id="complete-${escapeHtml(category.id)}" class="menu-section">
+              <header><div><h2>${escapeHtml(category.name)}</h2><p>${escapeHtml(category.description)}</p></div><strong>${products.length} 道</strong></header>
+              ${products.map((product) => {
+                const soldOut = product.availability === "sold_out";
+                return `
+                  <details class="menu-row" data-product-id="${escapeHtml(product.id)}">
+                    <summary><span><span class="menu-row-title">${escapeHtml(product.name)}</span><br /><span class="menu-row-copy">${escapeHtml(product.cue)}${soldOut ? " · 售完" : ""}</span></span><span class="menu-row-price">NT$${escapeHtml(product.price)}</span></summary>
+                    <div class="menu-detail"><p>${escapeHtml(product.description)}</p><dl><dt>份量</dt><dd>${escapeHtml(product.portion?.label ?? "未提供")}</dd><dt>準備節奏</dt><dd>${escapeHtml(product.preparation?.label ?? "未提供")}</dd><dt>必選規格</dt><dd>${escapeHtml(product.requiredConfiguration)}</dd><dt>供應狀態</dt><dd>${soldOut ? "目前售完，仍保留在完整菜單" : "可供應"}</dd></dl></div>
+                  </details>`;
+              }).join("")}
+            </section>`;
+        }).join("");
+
+      })();
+    </script>
+  </body>
+</html>

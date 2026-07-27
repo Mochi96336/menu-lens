@@ -1,0 +1,136 @@
+.vertical-viewport {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.vertical-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.vertical-sheet {
+  width: 46rem;
+  min-width: 46rem;
+}
+
+.vertical-viewport[data-scale="reading"] .vertical-sheet {
+  width: 64rem;
+  min-width: 64rem;
+}
+
+.vertical-category {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.vertical-category .paper-category__header {
+  grid-row: 1;
+  gap: .42rem;
+  padding: .48rem .58rem;
+  writing-mode: horizontal-tb;
+}
+
+.vertical-category .paper-category__header > span { font-size: .56rem; }
+.vertical-category .paper-category__header strong { font-size: .82rem; }
+.vertical-category .paper-category__header small { font-size: .52rem; }
+
+.vertical-category .paper-category__products {
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--product-count), minmax(1.7rem, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  direction: rtl;
+  overflow: hidden;
+}
+
+.vertical-category .paper-product {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: .42rem;
+  min-width: 0;
+  height: 100%;
+  padding: .58rem .18rem;
+  overflow: hidden;
+  border: 0;
+  border-left: 1px dotted var(--line);
+  direction: ltr;
+  line-height: 1.45;
+  text-align: start;
+  text-orientation: upright;
+  writing-mode: vertical-rl;
+}
+
+.vertical-category .paper-product:last-child {
+  border-left: 0;
+}
+
+.vertical-category .paper-product__name {
+  display: block;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+  font-family: "Noto Serif TC", "PMingLiU", Georgia, serif;
+  font-size: .72rem;
+  font-weight: 650;
+  letter-spacing: .08em;
+  text-overflow: ellipsis;
+  text-orientation: upright;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+}
+
+.vertical-category .paper-product strong {
+  display: inline-block;
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+  padding-top: .35rem;
+  border-top: 1px solid var(--line);
+  color: var(--accent);
+  font-size: .58rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  text-align: start;
+  text-combine-upright: all;
+  text-orientation: upright;
+  writing-mode: vertical-rl;
+}
+
+.vertical-category .paper-product[data-availability="sold_out"] .paper-product__name {
+  text-decoration: line-through;
+  text-decoration-color: rgb(139 58 34 / 55%);
+}
+
+.vertical-category .paper-product[data-selected="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.vertical-viewport[data-scale="reading"] .vertical-category .paper-product {
+  gap: .52rem;
+  padding: .72rem .22rem;
+}
+
+.vertical-viewport[data-scale="reading"] .vertical-category .paper-product__name {
+  font-size: .9rem;
+}
+
+.vertical-viewport[data-scale="reading"] .vertical-category .paper-product strong {
+  font-size: .7rem;
+}
+
+.vertical-viewport[data-scale="reading"] .vertical-category .paper-category__header {
+  padding: .58rem .72rem;
+}
+
+.vertical-viewport[data-scale="reading"] .vertical-category .paper-category__header strong {
+  font-size: 1rem;
+}
+
+.vertical-stage .paper-detail {
+  right: .65rem;
+  left: .65rem;
+}

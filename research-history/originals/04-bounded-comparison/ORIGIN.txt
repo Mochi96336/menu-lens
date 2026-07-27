@@ -1,0 +1,7 @@
+source_type=original_implementation
+repository=a20030824/menu-lens
+pull_request=4
+commit=923be38046b28baf9ba4687a020290bd6a0afbf4
+label=CMP1 final implementation review before direction rejection
+build_command=npm_run_build
+frozen_by=agent/archive-pr4-history

@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 15 Elastic Paper：固定紙張外框，讓二維分類版面隨觸控焦點局部拉伸。" />
+    <title>15 Elastic Paper — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../elastic-paper.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">15 · Two-dimensional distortion</p>
+          <h1>Elastic Paper</h1>
+          <p class="lede">紙張外框保持不動，手指經過哪個分類，對應的欄與列就在原位置拉伸；其他分類被壓縮，但仍留在同一張紙裡。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">探索問題：把 10 的一維 fisheye 擴展成二維紙面後，是否能同時保留全貌與可讀局部，還是會徹底破壞位置穩定？</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Elastic Paper 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="elastic-restaurant-name" class="restaurant-name"></h2>
+            <p id="elastic-restaurant-meta" class="restaurant-meta"></p>
+            <p id="elastic-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="elastic-overview" type="button" aria-pressed="true">放鬆</button>
+            <button id="elastic-previous" type="button" aria-label="上一個分類">←</button>
+            <button id="elastic-next" type="button" aria-label="下一個分類">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="elastic-location-title">均勻紙面</strong>
+              <span id="elastic-location-meta">2 欄 × 3 列 · 尚未拉伸</span>
+            </div>
+          </div>
+
+          <div id="elastic-viewport" class="paper-viewport elastic-viewport" data-scale="overview" tabindex="0" aria-label="拖曳以改變紙面焦點">
+            <div id="elastic-sheet" class="elastic-sheet"></div>
+            <aside id="elastic-detail" class="paper-detail" data-open="false" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="elastic-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="elastic-detail-title"></h3>
+                <p id="elastic-detail-meta" class="paper-detail__meta"></p>
+                <p id="elastic-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">在紙面上自由拖曳焦點；點已展開分類中的料理看細節。「放鬆」回到均勻版面。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>外框固定，內部成為彈性座標</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>二維 fisheye</h3><p>焦點所在欄取得 72% 寬度，所在列取得 62% 高度，形成局部閱讀面積。</p></article>
+          <article class="phase-card"><h3>分類仍在原象限</h3><p>每個分類始終位於原本的左／右欄與上／中／下列，不交換順序。</p></article>
+          <article class="phase-card"><h3>連續觸控</h3><p>拖曳焦點穿過紙面時，格線直接跟隨手指切換拉伸方向，不需要逐格按鈕操作。</p></article>
+          <article class="phase-card"><h3>風險</h3><p>外框雖然穩定，內部邊界卻一直移動；紙面記憶可能被連續形變抵消。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const viewport = document.querySelector("#elastic-viewport");
+      const sheet = document.querySelector("#elastic-sheet");
+      const overviewButton = document.querySelector("#elastic-overview");
+      const previousButton = document.querySelector("#elastic-previous");
+      const nextButton = document.querySelector("#elastic-next");
+      const locationTitle = document.querySelector("#elastic-location-title");
+      const locationMeta = document.querySelector("#elastic-location-meta");
+      const detail = document.querySelector("#elastic-detail");
+      const detailClose = document.querySelector("#elastic-detail-close");
+
+      document.querySelector("#elastic-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#elastic-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#elastic-restaurant-meta").textContent = menu.restaurant.summary;
+      sheet.innerHTML = window.renderMenuLensPaperField(menu);
+
+      const categories = [...sheet.querySelectorAll(".paper-category")];
+      const productButtons = [...sheet.querySelectorAll(".paper-product")];
+      categories.forEach((category) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+      });
+      let activeCategoryIndex = null;
+      let selectedProductIndex = null;
+      let pointerState = null;
+      let suppressClick = false;
+
+      const closeDetail = (restoreFocus = false) => {
+        detail.dataset.open = "false";
+        productButtons.forEach((button) => delete button.dataset.selected);
+        if (restoreFocus && selectedProductIndex !== null) {
+          productButtons.find((button) => Number(button.dataset.productIndex) === selectedProductIndex)?.focus();
+        }
+        selectedProductIndex = null;
+      };
+
+      const focusCategory = (nextIndex) => {
+        activeCategoryIndex = Math.max(0, Math.min(categories.length - 1, nextIndex));
+        const activeColumn = activeCategoryIndex % 2;
+        const activeRow = Math.floor(activeCategoryIndex / 2);
+        const columnWeights = activeColumn === 0 ? "72fr 28fr" : "28fr 72fr";
+        const rowWeights = ["19fr", "19fr", "19fr"];
+        rowWeights[activeRow] = "62fr";
+        sheet.style.setProperty("--elastic-columns", columnWeights);
+        sheet.style.setProperty("--elastic-rows", rowWeights.join(" "));
+        viewport.dataset.scale = "focus";
+        overviewButton.setAttribute("aria-pressed", "false");
+
+        categories.forEach((category, index) => {
+          const focused = index === activeCategoryIndex;
+          if (focused) category.dataset.focused = "true";
+          else delete category.dataset.focused;
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", String(focused));
+        });
+        const category = menu.categories[activeCategoryIndex];
+        const count = menu.products.filter((product) => product.categoryId === category.id).length;
+        locationTitle.textContent = category.name;
+        locationMeta.textContent = `${activeCategoryIndex + 1} / ${categories.length} · ${count} 道 · 欄 72%／列 62%`;
+        previousButton.disabled = activeCategoryIndex === 0;
+        nextButton.disabled = activeCategoryIndex === categories.length - 1;
+      };
+
+      const showOverview = () => {
+        activeCategoryIndex = null;
+        sheet.style.setProperty("--elastic-columns", "1fr 1fr");
+        sheet.style.setProperty("--elastic-rows", "1fr 1fr 1fr");
+        viewport.dataset.scale = "overview";
+        overviewButton.setAttribute("aria-pressed", "true");
+        categories.forEach((category) => {
+          delete category.dataset.focused;
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", "false");
+        });
+        locationTitle.textContent = "均勻紙面";
+        locationMeta.textContent = `2 欄 × 3 列 · ${productButtons.length} 道料理`;
+        previousButton.disabled = true;
+        nextButton.disabled = true;
+        closeDetail();
+      };
+
+      const openDetail = (productIndex, button) => {
+        const product = menu.products[productIndex];
+        selectedProductIndex = productIndex;
+        productButtons.forEach((candidate) => {
+          if (candidate === button) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+        });
+        document.querySelector("#elastic-detail-title").textContent = product.name;
+        document.querySelector("#elastic-detail-meta").textContent = `NT$${product.price} · ${product.cue}${product.availability === "sold_out" ? " · 售完" : ""}`;
+        document.querySelector("#elastic-detail-copy").textContent = product.description;
+        detail.dataset.open = "true";
+      };
+
+      const categoryFromPointer = (clientX, clientY) => {
+        const hitCategory = document.elementFromPoint(clientX, clientY)?.closest(".paper-category");
+        if (hitCategory && sheet.contains(hitCategory)) {
+          return Number(hitCategory.dataset.categoryIndex);
+        }
+        const bounds = sheet.getBoundingClientRect();
+        const x = Math.max(0, Math.min(.999, (clientX - bounds.left) / Math.max(1, bounds.width)));
+        const y = Math.max(0, Math.min(.999, (clientY - bounds.top) / Math.max(1, bounds.height)));
+        return Math.floor(y * 3) * 2 + Math.floor(x * 2);
+      };
+
+      categories.forEach((category, index) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          closeDetail();
+          if (activeCategoryIndex === index) showOverview();
+          else focusCategory(index);
+        });
+      });
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+          if (categoryIndex !== activeCategoryIndex) {
+            closeDetail();
+            focusCategory(categoryIndex);
+            return;
+          }
+          openDetail(Number(button.dataset.productIndex), button);
+        });
+      });
+
+      viewport.addEventListener("pointerdown", (event) => {
+        if (detail.contains(event.target)) return;
+        if (!event.isPrimary || pointerState || (event.pointerType === "mouse" && event.button !== 0)) return;
+        pointerState = { id: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false };
+      });
+      viewport.addEventListener("pointermove", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        const distance = Math.hypot(event.clientX - pointerState.startX, event.clientY - pointerState.startY);
+        if (!pointerState.moved && distance < 6) return;
+        if (!pointerState.moved) {
+          pointerState.moved = true;
+          viewport.setPointerCapture(event.pointerId);
+          viewport.classList.add("is-dragging");
+          closeDetail();
+        }
+        event.preventDefault();
+        focusCategory(categoryFromPointer(event.clientX, event.clientY));
+      });
+      const endPointer = (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        if (pointerState.moved) suppressClick = true;
+        pointerState = null;
+        viewport.classList.remove("is-dragging");
+      };
+      viewport.addEventListener("pointerup", endPointer);
+      viewport.addEventListener("pointercancel", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        pointerState = null;
+        suppressClick = false;
+        viewport.classList.remove("is-dragging");
+      });
+      viewport.addEventListener("click", (event) => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        suppressClick = false;
+      }, true);
+
+      overviewButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => {
+        if (activeCategoryIndex === null) return;
+        closeDetail();
+        focusCategory(activeCategoryIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        if (activeCategoryIndex === null) return;
+        closeDetail();
+        focusCategory(activeCategoryIndex + 1);
+      });
+      detailClose.addEventListener("click", () => closeDetail(true));
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.dataset.open === "true") {
+          closeDetail(true);
+          return;
+        }
+        if (activeCategoryIndex !== null) showOverview();
+      });
+
+      showOverview();
+    </script>
+  </body>
+</html>

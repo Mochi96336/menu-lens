@@ -1,0 +1,304 @@
+65b0d73efb43b7b41a6e1a047a0795df9dd23ad7	2026-07-23T07:37:31+08:00	feat: add canonical menu atlas model
+8a05b4608d13582788a2377686024d172ea9dea3	2026-07-23T07:38:56+08:00	feat: render first-screen menu atlas
+d785591d9a645319ad0615e0e64c3f18d94fb98b	2026-07-23T07:39:40+08:00	test: cover menu atlas summaries
+d5a8846e94d6398de3880ea9c2caccd93ddb7797	2026-07-23T07:40:42+08:00	style: define menu atlas layout
+93b56c2ad054ac8fedd33d69217b27610d4bda02	2026-07-23T07:41:06+08:00	build: load menu atlas styles
+760d1a39d826be462e68603a23cc98d2910fd4a7	2026-07-23T07:41:21+08:00	build: include menu atlas stylesheet
+93e6f0fb0b6495e65f73c2695abe1efdbb9b93ba	2026-07-23T07:42:43+08:00	docs: insert menu-map reading model
+970718b81ef192fe00920b9c88b70c4d191975af	2026-07-23T07:45:32+08:00	refactor: remove unused atlas field
+52d5110a278e102b1deeba6d8b50aa929ebe42a1	2026-07-23T14:25:06+08:00	ci: allow bounded Pages preview deployment
+cd80d02f146124586fbcee758290490fe7da5fcc	2026-07-23T15:14:48+08:00	refactor: add menu structure views
+f00fd46ab303dd3dc198b188f28743de5164ed8f	2026-07-23T15:15:24+08:00	refactor: add dense menu field
+0ed2f0b7407fbce505b191598791789d2b3eab36	2026-07-23T15:16:06+08:00	refactor: add category summary inspector
+cc294904e9ec1c348bfa2f2b4616f2c367ef432c	2026-07-23T15:17:13+08:00	refactor: add menu workspace layout
+498ce8c5e7b4ebaa835910539d23371ef01eee91	2026-07-23T15:18:13+08:00	refactor: model menu reading workspace
+e430d0dd99f1810aa37c88339a6386a9f735f241	2026-07-23T15:20:45+08:00	refactor: turn complete menu into reading workspace
+53e06dd3c9879930c80fa46e93961b714f54a6f5	2026-07-23T15:21:35+08:00	test: lock static menu workspace invariants
+60d82662e3aceaf7669de1aaedec1337a9399081	2026-07-23T15:22:23+08:00	refactor: simplify base styles for workspace
+f444585e582f1e2f3cb1733c17a27098a028183b	2026-07-23T15:22:47+08:00	refactor: publish menu workspace shell
+8df8754372d92064abb764804dc9c2c18ab555d8	2026-07-23T15:23:10+08:00	build: publish menu workspace styles
+5393043de89b465f20898a38a1e665270fec1259	2026-07-23T15:23:31+08:00	refactor: remove rejected atlas tile layout
+e17b3f1e5a01058ed4b26094dffbca7c35353d54	2026-07-23T15:25:06+08:00	docs: redefine menu reading workspace checkpoints
+952eec4a250df72b7e1948bbbc392ecd7f149ea2	2026-07-23T15:28:15+08:00	fix: keep mobile category locator visible
+6daa3d9155b721a83fe315c8ce20156337d39e0b	2026-07-23T15:29:07+08:00	fix: avoid passive scroll announcements
+fa3a0a928ac7bea456fb793a27fc8f23f2a7218a	2026-07-23T16:52:26+08:00	refactor: model mobile menu expansion states
+277c4df47e4c4fdba2b8c6fe6fd16f8b80db7cb7	2026-07-23T16:53:03+08:00	test: lock mobile menu expansion invariants
+5862f5e1e02b4ea6e4c805c977bb8b810812e0ab	2026-07-23T16:53:38+08:00	feat: add semantic category zoom view
+bad34f903e0edd748fd098b4e21701d3cd455881	2026-07-23T16:54:15+08:00	feat: add mobile menu overview view
+8079d2b3f112045c907e73eb6bb4377c2ea9a70a	2026-07-23T16:54:44+08:00	refactor: make mobile semantic zoom the primary app flow
+a6f49e5f9ade46a4c15ef7367128a70845296879	2026-07-23T16:55:24+08:00	style: compact the mobile restaurant overview
+fa20f24eb65282d3d57a23497996a4ad915c50ed	2026-07-23T16:56:10+08:00	style: build the mobile semantic menu zoom
+86b7deb0673d7ca9aaf1a2cce0c9786fdc95da10	2026-07-23T16:56:26+08:00	refactor: remove desktop-first menu field
+034860b6b4ceb20faa91136257d7ad37a8370c6d	2026-07-23T16:57:31+08:00	refactor: remove desktop-first menu structure
+98e78b69c3589e2713cd277c9c0959d92b1c2928	2026-07-23T16:57:49+08:00	refactor: remove desktop-first category inspector
+12eef3bb4b5e95c7eac08c56f897a366016b73b1	2026-07-23T17:00:45+08:00	docs: reset menu reading workstream around mobile semantic zoom
+622432ada190c99daf467df2e13bb04e6400dd50	2026-07-23T17:03:02+08:00	fix: preserve in-place category expansion
+4cf081749da8553b6fe5b0c6bbaf9d0ea088b2eb	2026-07-23T17:22:13+08:00	refactor(ui): render expanded categories as menu ledgers
+b2f9662fbfb1a9aaea4fd6553d090c8360c73156	2026-07-23T17:23:11+08:00	refactor(ui): replace product feed with shared ledger columns
+9be2d500f38782120e57c8370dd9149d12c22fa3	2026-07-23T17:26:17+08:00	docs: record M1 ledger revision after Pages review
+8f4bc11a499d164d3146a62b18458d172cea7571	2026-07-23T18:33:02+08:00	feat: model stable product focus and layered detail
+0d15b68b3ffa0a515a6ebbd4e9d9ff70cf250f10	2026-07-23T18:35:10+08:00	test: lock product focus continuity
+f6e8295348c12e046fbf7e5c7ef88f0bb88f9f83	2026-07-23T18:35:55+08:00	feat: make ledger products focusable
+3cdca19af5c92d05c1f4cc79491bdb5d05992b96	2026-07-23T18:36:33+08:00	feat: expose product focus from menu overview
+52b5654f320a62a16580e9f7f729a48f16c791b0	2026-07-23T18:37:28+08:00	feat: add responsive product detail surface
+51ddaf760c5cdace1fb873502d8d7a92c4b2fff4	2026-07-23T18:38:19+08:00	feat: preserve menu context through product focus
+8f0e33c4034e584bca1cb584cdb00d9a74cb122f	2026-07-23T18:39:11+08:00	style: add responsive reading workspace
+1a12b56a46eeae8532f9ce28a0da7519a5cbd129	2026-07-23T18:40:32+08:00	style: add continuity-focused product detail
+678edd433887ec5c1012d0973ee17cef0b7d1647	2026-07-23T18:42:15+08:00	test: remove product-position assumptions
+0b2d8284e5572099e059faa734fcd54d7fb58e14	2026-07-23T18:44:37+08:00	docs: advance menu reading to M2
+ef82d66823451e93a6fa950e49e5ad6e8f1a9c37	2026-07-23T19:04:05+08:00	Fix product focus position restoration
+cc390e6a94f9e0391a757591d3a0bee604d5abfe	2026-07-23T19:04:44+08:00	Keep product detail geometry stable
+5818b9cc52b4c69f24844a8dfe5e73cfd601b372	2026-07-23T19:05:21+08:00	Reserve stable inspector geometry
+127650269981500d9741f73e798eec524be61a39	2026-07-23T19:06:37+08:00	Lock menu ledger geometry during detail
+75514f6aa252172a1cd03c2a68bb10f9e1f158c3	2026-07-23T19:41:14+08:00	Separate product focus from detail
+ce5859e0f347312db9b9856dac1e70f0bf3e6649	2026-07-23T19:41:41+08:00	Add non-modal product focus rail
+3b17af772c261ac02dd33f8ace3d577b72161528	2026-07-23T19:42:13+08:00	Route product selection through focus rail
+816c223ebbdf4d3488689ac48e528b593fd4f28a	2026-07-23T19:43:00+08:00	Test non-modal product focus
+cc5af8e35b96e63c3931516f54b5cb8cab4f9566	2026-07-23T19:45:31+08:00	Style stable product focus rail
+1151afbbdbab6d290f7bd833cf2e9071174c9d7b	2026-07-23T19:48:26+08:00	Define non-modal focus checkpoint
+9548f89ef6820abe2aabe0d9e5a11751d9f91ac8	2026-07-23T19:50:17+08:00	Avoid repeated focus rail announcements
+f05b1b59706c54af58216740499ee306de1699f5	2026-07-23T19:51:10+08:00	Keep focus rail rendering stable
+d3964c93ff5163b14c15cfc0d835463b2333e186	2026-07-23T21:08:10+08:00	docs: record relational menu research
+734c5381ae9cdeec29b96c94c83e660ce11ce892	2026-07-23T21:08:54+08:00	docs: refresh project status and research direction
+f57a0f591149f3773d7659a496e6c7fd364632ef	2026-07-23T21:09:49+08:00	docs: replace stale menu-reading sequence
+030bb08345096f2ba3785fe43e393b9c75cd15c2	2026-07-24T01:48:19+08:00	feat: add axis-only menu projections
+06a471de800d15af08621c2a13c9d16ce42dfdfb	2026-07-24T01:48:42+08:00	test: cover axis-only projections
+9ae96485dc302f7c9b2a9612dcca8a21f80c113a	2026-07-24T01:48:54+08:00	feat: add native category reading control
+8416ff7f22e63df3d080d07311ad5c627b5ee5e2	2026-07-24T01:49:30+08:00	refactor: replace product focus with reading axis state
+e22daecf876941ae37194e1e986ebe3f551ff548	2026-07-24T01:49:56+08:00	test: lock axis reading state invariants
+e597f9e39caa893424da5458b6db538781288285	2026-07-24T01:50:26+08:00	feat: project axes onto stable ledger rows
+caac7ff7e46af5f6f58553ad214d63d3e9cac9b3	2026-07-24T01:50:48+08:00	feat: expose axes only in single-category mode
+80fcc31774f76233577cb2bc1012f4c839ce64bf	2026-07-24T01:51:07+08:00	refactor: remove C1 rail from application flow
+59a92f6d15d58360c9b5357178925ef13029503c	2026-07-24T01:51:25+08:00	style: remove rejected detail workspace column
+48b198be3c84ea87655ffd7c501a5fbe7c94810c	2026-07-24T01:51:54+08:00	style: replace rail geometry with stable axis lane
+be0d614112f663c3f34df6e28230473fa15e53ff	2026-07-24T01:52:03+08:00	test: run menu relation projections
+19a97a5a879eded12df5faddba0a81aaa297f4dd	2026-07-24T01:52:08+08:00	refactor: delete rejected C1 focus rail
+24f8c9150c3a4bd3f63ff659b9bb94bf9355937a	2026-07-24T01:52:14+08:00	refactor: remove rejected detail surface
+3665509c38d2a5e0311512f19e6900001c73a9ab	2026-07-24T01:52:52+08:00	docs: mark axis prototype awaiting review
+ea445cc2974b08a4dcf9fceb686b8e7dd072ad65	2026-07-24T01:53:30+08:00	docs: advance workstream to axis review gate
+ba9699c1f41e895a76ff9dc2a8396547a13a4e5b	2026-07-24T01:54:22+08:00	docs: record axis implementation and Pages gate
+410f6fea9f4e41fc3f417c7b46a9c7e8a4fc94d9	2026-07-24T01:54:41+08:00	ci: validate and deploy axis prototype branch
+db19c3d5af2638ff29385c0b1f7ba09b15c0b8ab	2026-07-24T01:55:50+08:00	ci: expose prototype checks on draft PR
+d995042ca650ef1d9843a06734e35e2924979b66	2026-07-24T01:56:28+08:00	chore: trigger prototype validation
+d0bcdc78a8bc0abfbfc8640918eb12e204a76a23	2026-07-24T01:59:30+08:00	fix: retain complete menu skip target
+a34f2fe9535e2ad1bb4ee0b8e71c759b5455a3e1	2026-07-24T15:49:02+08:00	test(menu): lock axis geometry contract
+af0b9394899390e861e5e65452b4d471959c071b	2026-07-24T15:49:19+08:00	test(menu): run workspace geometry contract
+4ecb6e8a88b49deb1ae442deb6ba6446c087503e	2026-07-24T15:50:05+08:00	test(menu): require useful axes and live unknown evidence
+db97bb6d85271dc59569eb04b0b5c6796cbe2b5d	2026-07-24T15:50:56+08:00	test(menu): require category-local relational axes
+249c930151c24bf8a3b71da81b1140ff6a612981	2026-07-24T15:51:38+08:00	feat(menu): offer only relationally useful axes
+4c31a55ed95c7cac36960ed0a0f41eec57e61d1b	2026-07-24T15:52:49+08:00	feat(menu): expose category-specific reading axes
+e2ed86c101bb72ac25ad143187931ed4593812cb	2026-07-24T15:53:17+08:00	feat(menu): hide non-comparative axis choices
+ff79c615406b69286b4fbe7b44e5baf2a08c2b9e	2026-07-24T15:54:09+08:00	feat(menu): bind controls to useful category axes
+e30faaa64b67b4f9ab4c0d0ad5b3887a10e7dd76	2026-07-24T15:58:19+08:00	testdata(menu): expose one uncertain portion value
+89230e744e908f0dc0756d0d7e43b31e1382521b	2026-07-24T15:59:10+08:00	fix(menu): stabilize axis lane geometry
+81099a07d5fd297aaf788c39bf59bce16c80529c	2026-07-24T16:01:14+08:00	docs: record Prototype A corrective iteration
+619793d63df72827f3c7e2a52e1da724802afc74	2026-07-24T16:02:33+08:00	docs: gate Prototype A on useful relational evidence
+b9c8330ac9f5cfe43e0f218cc6e8a4bc0cc1ca21	2026-07-24T16:04:06+08:00	docs: record Prototype A failure and correction
+58f2d78a936ca27f86387de66029717eb68ab7da	2026-07-24T16:05:19+08:00	docs: record final corrective validation
+598fb1f5d0930e7981953a57e72d2b6088680aa9	2026-07-24T16:05:57+08:00	docs: keep corrective status current
+1bca42b6210227c158feed3e454782c3aab8444b	2026-07-24T16:06:36+08:00	docs: preserve re-review status
+80b7c0820aa6c4753e349d4bc644e2a36779ca76	2026-07-24T19:55:17+08:00	docs: plan isolated anchor relation prototype
+41b1bb24babf6be5713fdec38dd75bbeae8cac77	2026-07-24T20:04:36+08:00	test(menu): define Prototype B anchor relation contract
+bd0fa40844c697c704293c1d22c2389340a566de	2026-07-24T20:05:16+08:00	test(menu): define Prototype B anchor state boundaries
+1928f184a90a75f491e4062bb523b3010d304013	2026-07-24T20:05:27+08:00	test(menu): run Prototype B anchor tests
+20dc222f7ee69b71cf9e5bd395b33092a9fbdaac	2026-07-24T20:06:05+08:00	feat(menu): add bounded anchor relation projection
+78b84528679b7d3020b037a9ec98c1811d8aeb3f	2026-07-24T20:07:12+08:00	feat(menu): add category-local anchor reading state
+44692cab7864905f9dc301c91a846e582cbdb427	2026-07-24T20:07:41+08:00	feat(menu): add fixed-height anchor context control
+87b5ddae2470acc92f46d5733e1e1a25e198de32	2026-07-24T20:08:43+08:00	feat(menu): render anchor selection on the shared ledger
+694f4d0156053181d3b0a7076ca567b7bfb3ab6e	2026-07-24T20:09:12+08:00	feat(menu): wire anchor state through menu overview
+f09c0a2262fa251a01c62eff45b9c5842e04f29f	2026-07-24T20:09:44+08:00	feat(menu): connect Prototype B anchor interaction
+f92fca9d5d1a1207f27c721ba49ed0f2c79695a5	2026-07-24T20:10:40+08:00	feat(menu): reserve stable anchor control geometry
+f3fe433ac4e731f9ca52925821788af39e6acd37	2026-07-24T20:11:14+08:00	test(menu): lock Prototype B structure and geometry
+b653ef7ebf7d3a73a4a26e0da3a0e0eb82562c47	2026-07-24T20:14:20+08:00	test(menu): require the most discriminating anchor evidence
+a6e7427749517a80cabcf38eddd402413e69f878	2026-07-24T20:14:58+08:00	fix(menu): preserve the most discriminating anchor evidence
+9b56c17abb49adc23187b8c0dea8b8ab5b7bec42	2026-07-24T20:18:39+08:00	fix(menu): preserve focus after clearing the anchor
+cb6b923ffd7fd804d4d0d0324851526fc97c97f5	2026-07-24T20:20:04+08:00	docs(menu): record Prototype B implementation and review gate
+a2932d5a1debf9382bf0ba6c278e6c1340550ae0	2026-07-24T20:20:54+08:00	docs(menu): advance current research to Prototype B
+40f9961b44d85766c65d768bc8d261d2cba49644	2026-07-24T20:22:37+08:00	docs(menu): make Prototype B the active review-gated workstream
+c28d58c4bc1f06051fd0624085523aaf9ca204e2	2026-07-24T20:24:08+08:00	docs(menu): record Axis and Anchor research dispositions
+3d60bf1bf8013a071016ccf06ca9110ed738acfb	2026-07-24T20:25:22+08:00	fix(menu): keep the anchor visible in the existing sticky context
+48f4f54ef65db9e740f9aa0d3a9c82c2033abb72	2026-07-24T20:25:59+08:00	test(menu): keep anchor identity in the existing sticky context
+fa7a43e3bc1b9645344d09f116feda110060edce	2026-07-24T20:27:40+08:00	fix(menu): make sticky anchor context title type-safe
+733b76786768c454f0d251945835651c8768c618	2026-07-24T20:28:18+08:00	test(menu): accept the type-safe sticky context title
+cfafa209c19b8dcb5bc11012a5e57adfad3b405d	2026-07-24T20:29:30+08:00	fix(menu): prioritize anchor identity in the sticky context
+acd5b119de69a0dac8d0801a1185ff7a1179f0e5	2026-07-24T20:30:08+08:00	test(menu): require anchor-first sticky context copy
+13bc427d3255c54329d8e77127027b0cacf896e4	2026-07-24T20:31:29+08:00	fix(menu): preserve active anchor narrowing outside callbacks
+1715bdf76ff33dffb3b402124045701e05e4b6dd	2026-07-24T20:45:17+08:00	docs(menu): disposition Prototype B after reverse review
+95d45b165caef9962bfe946791899f191f462832	2026-07-24T20:45:58+08:00	docs(menu): record Prototype B reverse-review disposition
+d327646acd35909e74cc0493290632239e078b90	2026-07-24T20:47:00+08:00	docs(menu): close Prototype B reverse-review gate
+b01f2ad29ec020562656334344109fb1ba81ff52	2026-07-24T20:47:54+08:00	docs(menu): record relational prototype dispositions
+078a75a2089a1de65073f02d2468f17ccaa30206	2026-07-24T21:01:10+08:00	docs(menu): plan Prototype C explicit anchor axis
+47dcff98dcdb6ad9dd31b30603c94e10f69c2a8e	2026-07-24T21:02:04+08:00	docs(menu): advance relational research to Prototype C planning
+1dc8f490b999a23c2507a2ebf0d4536843f4e971	2026-07-24T21:03:11+08:00	docs(menu): make Prototype C planning the active research gate
+d75a15238698cef273dc7b05c0c0b6d18114532d	2026-07-24T21:04:18+08:00	docs(menu): add the explicit-anchor-axis hypothesis
+6d7fad1f18a1b53424a6634c5bce8cd47c57868e	2026-07-24T21:05:58+08:00	docs(menu): link Prototype B disposition to the C plan
+bdb7248c445496d8822f25fb5c895a5dd5ad4aab	2026-07-24T21:44:12+08:00	test(menu): define Prototype C shared-axis projection contract
+4c918687d702d02da07524276c816c9d61faab45	2026-07-24T21:45:13+08:00	test(menu): define Prototype C state and reset boundaries
+86070351caa245accbf24a3a68c4625c030866ba	2026-07-24T21:45:26+08:00	test(menu): run Prototype C anchor-axis tests
+a14599bfa53e5373568fdced2935ee2c9d9d0f7e	2026-07-24T21:46:06+08:00	feat(menu): add complete shared-axis anchor projection
+a82cca573ac09d7a2631cebb8d80eddd0ee12d2a	2026-07-24T21:47:31+08:00	feat(menu): replace automatic anchor semantics with shared-axis state
+84464586cff105c4e5e4bd7f348967683184465e	2026-07-24T21:47:56+08:00	feat(menu): add fixed shared-axis control for Prototype C
+74925234d5a4a5d893695fd657ea647f6baba689	2026-07-24T22:07:02+08:00	feat(menu): render one explicit shared axis across every row
+ac4d51af208922ce5891a23c119555fd824fc3c8	2026-07-24T22:07:30+08:00	feat(menu): expose shared axis in overview and sticky context
+555c5babfb253e9de0810a8922cca8c12845d0ef	2026-07-24T22:07:53+08:00	feat(menu): connect Prototype C shared-axis interaction
+00768d5b77e7de4686303cde55c02e21268cdd38	2026-07-24T22:08:43+08:00	feat(menu): reserve stable Prototype C axis geometry
+1ff83002d62a29dfa7e2887876bdd306ea9f11fb	2026-07-24T22:09:06+08:00	test(menu): lock Prototype C shared-axis structure and geometry
+ffcdf8f22e88e03602d3c91f163291ed09bc8341	2026-07-24T22:13:42+08:00	fix(menu): preserve active anchor narrowing outside row callbacks
+11968aeb2d8eb3a689dfab83417e26045b8b3636	2026-07-24T22:21:47+08:00	chore(ci): capture temporary typecheck diagnostics
+353b486ce7711c0e845f8ae7885fcc9e0373ab3b	2026-07-24T22:24:02+08:00	fix(menu): close shared-axis relation map correctly
+38ae58021511729434b8d30a2ab7ac661ae40e93	2026-07-24T22:24:21+08:00	chore(ci): remove temporary typecheck diagnostics
+50ecf91ff0671dfa5dc6004a37d798e66a6fbe2b	2026-07-24T22:25:00+08:00	test(menu): follow the narrowed active anchor identifier
+6771b8dcd4c92114c70029d90485278e2566df22	2026-07-24T22:28:58+08:00	test(menu): preserve axis when reopening the same category
+282310b1b9cff21e180cd7a7c54476f89bc3d6e3	2026-07-24T22:30:06+08:00	fix(menu): preserve the axis when reopening the same category
+737746ecbbd3233b1b9c0c74e88c190975467ce5	2026-07-24T22:33:50+08:00	docs(menu): record Prototype C implementation and review gate
+b8693a04b3ee5d9974154a03c50ed758da6741e7	2026-07-24T22:34:40+08:00	docs(menu): advance current research to implemented Prototype C
+a09c0c9bc8d9e47cf6ae524c9584a43c299ef6c4	2026-07-24T22:35:41+08:00	docs(menu): make Prototype C the active review-gated workstream
+f1178d7bbb72ed2a5f6b4dac40ce780c9dd78c0b	2026-07-24T22:36:52+08:00	docs(menu): record Prototype C implementation evidence
+356c519a3941f1e00e54443ed422abe8edc612df	2026-07-24T22:37:56+08:00	docs(menu): link Prototype B disposition to implemented C
+bbe0bdc0a847543fd4a95b1d5f01b7a7774a7777	2026-07-24T22:46:41+08:00	test(menu): keep anchor selection focus on the chosen row
+37fd91a72e2ff2b8ac575336d26d89325d05e640	2026-07-24T22:47:56+08:00	fix(menu): keep focus on the selected anchor row
+92f8dd64f5c030fdbf247a4d9696fae3e01edfd2	2026-07-24T22:48:28+08:00	fix(menu): expose row-local focus restoration
+bfd1ba43c97ac26413668da6c7e16db2f081d118	2026-07-24T22:49:02+08:00	fix(menu): retain visible focus after anchor selection
+fb33a1e302ecd163f4c0c4ab48f58240bd449b8b	2026-07-24T22:50:49+08:00	test(menu): require obsolete Prototype A UI removal
+69b9f8eb94f215b4907ac2da7e3be12ee5280dd0	2026-07-24T22:51:03+08:00	refactor(menu): remove obsolete Prototype A selector UI
+13cd2097e3715acad3e1a39576228776f213cd03	2026-07-24T22:53:06+08:00	test(menu): restore Escape cancellation focus to its row
+564c6f1ed8f5ac177bddb71774a492741cbad386	2026-07-24T22:53:44+08:00	fix(menu): preserve row focus when Escape cancels selection
+7df742843e8f95e8673cfee21ba487a814dcc5de	2026-07-24T22:55:49+08:00	docs(menu): record Prototype C focus and cleanup re-review
+fee64acdf81717d83af079122afca903a35f1050	2026-07-24T22:56:29+08:00	docs(menu): note Prototype C focus re-review
+9c8969d9ba8a242b34a8262ceeeb20c6e92d4187	2026-07-24T22:57:28+08:00	docs(menu): add Prototype C focus re-review evidence
+c5759fb568894b454662716ea7bc83afc766e687	2026-07-24T22:58:24+08:00	docs(menu): record Prototype C re-review corrections
+4b762c7d24d0edd697702eff5fbdbebef494caaa	2026-07-24T22:59:20+08:00	docs(menu): clarify active-path cleanup after Prototype B
+c2e747fdb55cd546233f1882aa705aef89d834a3	2026-07-24T23:00:37+08:00	docs(menu): clarify final Prototype C review status
+baf458bd19d47b13e42696316bd6bc043a1736e4	2026-07-24T23:29:37+08:00	docs(candidate): plan attached reversible consideration marks
+ad0e8b1f99ed4b2d8e365a5142fdc46d3bb21644	2026-07-24T23:30:44+08:00	docs(menu): accept Prototype C for the current scope
+9495764c9d7b6cf8670da6ca278c79876ebd3558	2026-07-24T23:31:27+08:00	docs(candidate): advance decision spine to Candidate planning
+4f3e6cedc08d52efdbfc348e97d1ee8138bee1e3	2026-07-24T23:32:25+08:00	docs(candidate): activate Candidate plan after Prototype C
+8f1a7f1f196ac85b98c3e7aa6c06c5661050dc70	2026-07-24T23:33:14+08:00	docs(menu): close relational research with accepted Prototype C
+b554f8a4784188d414ee2d82a434a0e1515d3579	2026-07-24T23:34:15+08:00	docs(menu): align Prototype B record with accepted C handoff
+eaf68191cf2cf982d7cca2e5c5bfc856c11cf264	2026-07-24T23:44:03+08:00	test(menu): define attached Candidate domain contract
+cc1a83e7c462fd9b6780c23a2df05db3c06272f1	2026-07-24T23:44:41+08:00	test(menu): define Candidate continuity across reading transitions
+252de9e88114715a9d8ce3350be607a1f5d79a42	2026-07-24T23:44:54+08:00	test(menu): run Candidate domain and app-state contracts
+c45a95610e40f630941cf21cd8c0b8ab3812feca	2026-07-24T23:45:22+08:00	feat(menu): add bounded Candidate membership domain
+0c04ccbf31a8275ae0f2c462142315735bce00cb	2026-07-24T23:45:38+08:00	feat(menu): separate Candidate state from menu reading state
+2a8e4eeb5a0ed43f78aef3ffaaff972e142a2e6a	2026-07-24T23:46:47+08:00	test(menu): define attached Candidate UI contract
+ae3caad20724eb5bb023b69dc5b7e08a1f7a85a0	2026-07-24T23:47:27+08:00	feat(menu): connect attached Candidate state independently
+9aa42b7a80fce0245aa3ae8645443512b081e611	2026-07-24T23:48:06+08:00	feat(menu): render Candidate count and attached membership
+661d25695478ea447107a2935a9c23f9c5c51a67	2026-07-24T23:49:10+08:00	feat(menu): attach reversible Candidate marks to canonical rows
+5179c643a5a6e706cf7df0c61120f9f88164e1a2	2026-07-24T23:50:12+08:00	feat(menu): reserve stable Candidate mark geometry
+ec518ff1836cc813d0dcf4359abc6343aa03e70e	2026-07-24T23:51:29+08:00	test(menu): preserve Candidate removal across Anchor clear
+d5371259d3f2f37eb7afc0e90804153e02be3029	2026-07-24T23:52:55+08:00	test(menu): count only unique canonical Candidates
+5374259cc9ca6ec0e0253b31ca5a1827e9ec4817	2026-07-24T23:53:42+08:00	test(menu): forbid Candidate-dependent name reflow
+c8eb623abd0ac8b41554f88fae94a67ee2e16f11	2026-07-24T23:54:06+08:00	fix(menu): count only canonical Candidate identities
+9e935f9e6649b3afc97335445da228e8d6e4ea06	2026-07-24T23:54:41+08:00	fix(menu): derive Candidate summary count from canonical menu
+a675557947d1374aa21666fd24a090c3ae48c575	2026-07-24T23:55:17+08:00	fix(menu): receive canonical Candidate count from app state
+c5f0561bdd118b75eac215d659f616e73c251465	2026-07-24T23:56:06+08:00	fix(menu): keep Product-name geometry independent of Candidate state
+cd163dc100ffa86a12dff026b8f50edc13753f5a	2026-07-24T23:58:44+08:00	docs(menu): record CND1 implementation and reverse review
+b8fc778387e64ba83590582e4970ef6e1727f516	2026-07-24T23:59:37+08:00	docs(menu): advance CND1 to implemented review
+3855f8d58421bf1e3e4238a8a6e4cac0b431e6a9	2026-07-25T00:00:21+08:00	docs(menu): make implemented CND1 the active review gate
+d2f0b944c25299c4d25419abb562ec620543e3d1	2026-07-25T00:01:19+08:00	docs(menu): hand relational research to implemented CND1
+deced324d91a01f027cc2926628c4e0544670991	2026-07-25T00:02:13+08:00	docs(menu): point Prototype B history to implemented CND1
+c9d272a1167f4c49fa5b92594dacb5d1438b2076	2026-07-25T00:04:18+08:00	docs(menu): hand accepted Prototype C to implemented CND1
+4b4167b979285cbb52895f70645b4e2cfd9995c5	2026-07-25T00:05:14+08:00	docs(menu): clarify CND1 review boundary
+32f3ec1c5cf90977fe8c49a341352fe4991838f0	2026-07-25T00:05:58+08:00	docs(menu): clarify CND1 product-owner review gate
+eee745731aad8591761957de643efe4dd85ed79e	2026-07-25T00:06:31+08:00	docs(menu): clarify CND1 product-owner review status
+8e9136b227749952b099e8c1507b63a4a92b7830	2026-07-25T00:07:01+08:00	docs(menu): align historical sequence with product-owner review
+87fbac30b40686638b29a09439ffcecd08d35949	2026-07-25T01:06:07+08:00	test(candidate): lock stable toggle naming and bounded announcements
+2a1e9e026cda0642ef3a4eaaee568011751f8763	2026-07-25T01:07:05+08:00	fix(candidate): announce count changes only once
+5e850826a32197fbac38e1f4b17284e940b5f786	2026-07-25T01:08:07+08:00	fix(candidate): keep toggle label stable
+ddf716e881eece42d6eda8df074b62a70719c629	2026-07-25T01:10:36+08:00	test(candidate): reject unused row and list projections
+b2b401f192393dab6f178b34f432afc7f4dafc31	2026-07-25T01:11:29+08:00	refactor(candidate): remove unused row state mirror
+a09e83491f87b8b4f607747a955d74f953d7865a	2026-07-25T01:11:45+08:00	refactor(candidate): defer detached list projection
+555042761844a9b4ca7be7eeeeac696d4abf6c6c	2026-07-25T01:12:22+08:00	test(candidate): keep CND1 coverage membership-only
+d335fa9523749bc14646d3bdbf267947929bd8a8	2026-07-25T01:14:34+08:00	docs(candidate): record final CND1 disposition
+8f7e61c1f2b962536ca210356f8f69024093e4c1	2026-07-25T01:15:16+08:00	docs(candidate): accept CND1 after final review
+78b7f9225378a61de6d07e7d14561655bfed13d2	2026-07-25T01:16:15+08:00	docs(workstreams): advance after CND1 final review
+58ebcf7abb320c31ee3d8db0da32fad3dcac93a9	2026-07-25T01:16:58+08:00	docs(research): close CND1 handoff sequence
+f388417e7936d462fc6aa7eb75f74e28a75e877a	2026-07-25T01:17:42+08:00	docs(prototype-c): close accepted Candidate handoff
+53963f4ad15a145e3d8f8e1e25d0a5a5e4b925c2	2026-07-25T01:18:26+08:00	docs(prototype-b): close historical sequence
+13d7012d5913b981caabeb96c80db302a4f20f94	2026-07-25T03:46:15+08:00	docs(candidate): plan bounded review workspace
+62d7023c63dd85428827344bb5e0da1ccb4f2470	2026-07-25T03:47:28+08:00	docs(readme): activate candidate workspace plan
+dec51a90c71a153d2a24baf7fbf13e438e2e71e2	2026-07-25T03:48:23+08:00	docs(workstreams): activate CND2 review plan
+820627e88fa772a3cb078cb069ca294d7037546d	2026-07-25T03:49:07+08:00	docs(candidate): hand off accepted marks to CND2
+aa50058fc63fe6c675c17fd6d9ee5c0c6cb8ad43	2026-07-25T03:50:59+08:00	docs(candidate): clarify workspace planning gate
+5914cbada6ef9d70071fecb5e2c01226d1581e58	2026-07-25T03:51:48+08:00	docs(candidate): finalize CND2 plan wording
+ec7cf9485099b3e53b6ff1902f26f7515d64bed9	2026-07-25T03:52:41+08:00	docs(candidate): retain final CND2 plan
+5317104fe589b79988665db4e76d29cf4daa8b1d	2026-07-25T03:53:37+08:00	docs(candidate): preserve approved CND2 draft
+8caf4b8c39f2c782b12981e09832c60f5b42f57c	2026-07-25T03:54:25+08:00	docs(candidate): stabilize CND2 plan content
+a17efa45ad2e85776e793dca4899f18ecd127f01	2026-07-25T03:55:09+08:00	docs(candidate): keep CND2 plan stable
+e9cb0afc705b7635f55edfbacf2b2bb8c6c36891	2026-07-25T03:55:56+08:00	docs(candidate): lock CND2 plan
+423f8866f533915307b9612692fe17486f44f030	2026-07-25T04:42:23+08:00	test(candidate): define CND2 workspace derivation
+a8f29f97b96d65ca30cac2a06aa378f091b126cf	2026-07-25T04:43:23+08:00	test(candidate): define CND2 surface transitions
+185be7c0fed2cbfd28aa778ea1cd553def513175	2026-07-25T04:43:38+08:00	test(candidate): run CND2 workspace contracts
+88bab82b758a05f0a37090298778f62555b54f22	2026-07-25T04:45:14+08:00	test(candidate): lock CND2 workspace structure
+eb716088f7afa9424b0ede7fb74ef08ba0f8c35c	2026-07-25T04:45:52+08:00	feat(candidate): derive CND2 workspace model
+f696aecd8067506fa80da68411262c4e635293ab	2026-07-25T04:46:17+08:00	feat(candidate): add CND2 surface transitions
+0813d2c0c8ba8b9ea65e8bd3cf0cdd6c5d63d518	2026-07-25T04:48:00+08:00	feat(candidate): add CND2 review workspace view
+62b118568e5bc38c8ac4ce4232ec930e8cb65d45	2026-07-25T04:49:04+08:00	feat(candidate): expose canonical row locator targets
+2b0d621b7077479910f12dccd85175e201737d48	2026-07-25T04:49:53+08:00	feat(candidate): add CND2 workspace entry
+35493308c03da341bebfe589251f74bdf878f18a	2026-07-25T04:51:00+08:00	feat(candidate): integrate CND2 workspace continuity
+864aa79504b4127f835164d8ecab9965c72480c4	2026-07-25T04:52:36+08:00	style(candidate): add CND2 compact workspace geometry
+096f3cdc62982e75ad869ce24d6e00dd86c28fd8	2026-07-25T04:54:34+08:00	test(candidate): lock CND2 focus edge cases
+db6a7b766151d7d94438510bae7dc598e23c9b3f	2026-07-25T04:54:52+08:00	test(candidate): run CND2 reverse-review contract
+3038f838c7203156ab6328dc9214c87496cd1500	2026-07-25T04:55:36+08:00	fix(candidate): stabilize hidden workspace rendering
+18473e9473c9c0305e61961493951658ab547a56	2026-07-25T04:56:31+08:00	fix(candidate): add stable Back focus fallback
+d7b2dc8e084fad84095a82400ea3c9e73aaf2cec	2026-07-25T04:57:25+08:00	fix(candidate): handle CND2 Back and sold-out locator focus
+0d92b8d6c436b4fce43c44d58e9f9cecb0d029e5	2026-07-25T05:00:13+08:00	docs(candidate): record CND2 implementation
+d04becb8511c0039c0e4779ad9aea2ac1526130f	2026-07-25T05:01:13+08:00	docs(candidate): update repository status for CND2
+9b531893821fd54d44db5e67a74b5320b56a573b	2026-07-25T05:02:26+08:00	docs(candidate): record active CND2 review state
+23634277ff57aee0e3595de347b48088e04a4c65	2026-07-25T05:03:21+08:00	docs(candidate): hand off CND1 to implemented CND2
+00a21a2603ab053d23aa2eb1d3c099a118571f36	2026-07-25T06:03:28+08:00	test(candidate): lock exact workspace scroll restoration
+3f3fa1baf7b511065042fbab20bf44f5835104cf	2026-07-25T06:04:46+08:00	fix(candidate): restore workspace scroll instantly
+6e3716526d083b23f2e709c198e2818198972d95	2026-07-25T06:05:58+08:00	chore(candidate): remove stale hidden status rule
+9b1484365d476a06965c5c4d904477ffc169027d	2026-07-25T06:08:24+08:00	test(candidate): expect instant workspace scroll restoration
+ffd7637c83c8222c926fd729a54b43e6aed0809b	2026-07-25T06:12:46+08:00	docs(candidate): accept CND2 for current scope
+5566b77428eec4c3ec89369e1c70aa7c7266ae81	2026-07-25T06:13:32+08:00	docs(readme): record accepted Candidate workspace
+5251bfcd6eafab132617891ed7bc98d6d3a551ca	2026-07-25T06:14:24+08:00	docs(workstreams): close CND2 review gate
+4ab7684790414eeeae08ac1997ad62f3e9d9c2b9	2026-07-25T06:37:54+08:00	docs(candidate): plan bounded Candidate comparison
+7d12dd40cb2f771e4cde44f983717ea0ba7b8f54	2026-07-25T06:39:05+08:00	docs(readme): add bounded comparison plan
+68c2d5886a8616deac97668095133b490e1264cb	2026-07-25T06:40:31+08:00	docs(workstreams): activate bounded comparison planning
+3c0bf0f1a2baed14917515700523923a992efa6d	2026-07-25T06:43:12+08:00	docs(candidate): make comparison selection fully explicit
+4f9229a6b3c1a40fa14288cf573e59668f9ce7e4	2026-07-25T06:44:19+08:00	docs(workstreams): require explicit comparison selection
+e0592c80dbbee2ba19ff779bb94c36b7ae4210f2	2026-07-25T08:37:28+08:00	test(comparison): add red CMP1 domain and surface contracts
+63596d18039f5ab0703d9bfb4fe587f395de6f40	2026-07-25T08:38:00+08:00	test(comparison): add red CMP1 UI contract
+66fb185fcd061df7f3c22af3269ca44b74c7568f	2026-07-25T08:38:18+08:00	test(comparison): run CMP1 red contracts
+69bdaef1cb6bc19837434025f3af6f38cff63b05	2026-07-25T08:39:26+08:00	feat(comparison): share bounded semantic labels
+8b0c334f44c2a1c896cac6de4c37f4991ae19b15	2026-07-25T08:40:20+08:00	feat(comparison): add bounded selection and projection
+3dbf8aa7bdd62f974ae74183285b4ceaa77105fc	2026-07-25T08:41:07+08:00	feat(comparison): add CMP1 app state transitions
+39f4e197a568c32f36d408eeed56837e6dcc2c29	2026-07-25T08:41:44+08:00	fix(comparison): require menu when removing Candidates
+2165d4e0442dce8e6b165bd8a9bfb929a6e23c16	2026-07-25T08:42:29+08:00	refactor(comparison): sanitize direct Candidate removal locally
+af4e128b08b3657e967daa59694705126ff4c168	2026-07-25T08:43:29+08:00	feat(comparison): add bounded comparison surface
+9085159490476cbe11928ff891101ecdc4c9f8ee	2026-07-25T08:44:18+08:00	feat(comparison): add Candidate workspace entry
+c7a278820caf33758bfb48e14da39d316a713bf0	2026-07-25T08:45:36+08:00	feat(comparison): integrate CMP1 surface continuity
+22101f00549252559ff4f014cc9b1367fe264f47	2026-07-25T08:46:25+08:00	feat(comparison): add mobile-first CMP1 styles
+999925fecd212fe623e1010a859cb31bd6c57d8a	2026-07-25T08:46:43+08:00	feat(comparison): load CMP1 styles
+ded8893040adae1e2becec1966d7f3217a3a815f	2026-07-25T08:47:06+08:00	build(comparison): copy CMP1 stylesheet
+9fa71867d782a1ee5dcd187d7ca436694efbc791	2026-07-25T08:50:43+08:00	test(comparison): update app-state boundary contract
+be7fd03440889f22e4e3554e6d0ee96ebf2ec808	2026-07-25T08:52:57+08:00	test(comparison): assert return behavior not variable naming
+d004759c905b86653e5136c928b33541c53f7ea2	2026-07-25T08:54:41+08:00	test(comparison): require Candidate workspace origin
+45b0d3f16f268cc1b2f6c1dd84e4b528abaa15e3	2026-07-25T08:55:00+08:00	test(comparison): run surface origin contract
+c1345b524cb30362df285a0d0514729aa654851f	2026-07-25T08:55:33+08:00	fix(comparison): require Candidate workspace origin
+4a29de48cbd69f885571654155f0c805c5623c65	2026-07-25T08:56:44+08:00	test(comparison): enforce nested workspace transition
+bca8cfd6a7a2064f8969b7556bccbf53d9310670	2026-07-25T08:59:54+08:00	fix(comparison): rebuild evidence when Candidates change
+1a92b804a445e6c508ffefd02451bb75c0c267b4	2026-07-25T09:01:08+08:00	chore(comparison): remove unused projection import
+bd180ee9fb33c5e2fac87d2d028760dd44aa16fc	2026-07-25T09:04:21+08:00	test(comparison): cover externally reduced Candidate set
+bbacc00056aa30e23e5c5104f6f5cf5ff16b4576	2026-07-25T09:05:27+08:00	fix(comparison): sanitize toggles and prioritize Candidate shortage
+54ae373c0433d8664ec67c4551ae13ad1f1922e7	2026-07-25T09:06:44+08:00	refactor(comparison): reuse shared semantic labels in menu reading
+e4182cb33bc968cbd67d74d9d5abb7966e9d2f31	2026-07-25T09:09:38+08:00	fix(comparison): keep invalid selection actions referential no-ops
+6c19599f3f73af4aaf95c7edaad6c7ca032e6f09	2026-07-25T09:15:19+08:00	fix(comparison): enforce CMP1 surface transition grammar
+c93e73c999a995247daf0b7e83ffd2e5a9bcd2e5	2026-07-25T09:15:50+08:00	test(comparison): lock nested surface transition grammar
+c077e2a94d0359ab00f8c0dbf542db9eadc3a7dd	2026-07-25T09:16:45+08:00	fix(comparison): reset transient limit status while hidden
+12b6eeee8d8d9d8d414bbec047315e59700947a4	2026-07-25T09:17:44+08:00	fix(comparison): clear transient limit status on Back
+00ae496a668c56fdd321bb063a2a96d8b5e47096	2026-07-25T09:19:00+08:00	fix(a11y): remove nested application main landmark
+51625895a6b9c8c67ddac008bfdca6cc28f50970	2026-07-25T09:19:38+08:00	test(comparison): prevent nested main landmarks
+91039af1a0dac9a8289a694bccc5255df7f8e796	2026-07-25T09:21:38+08:00	test(comparison): add CSS-derived narrow-screen geometry contract
+0de207091c027487c5948e5f8d1f0961bd5fb50b	2026-07-25T09:22:26+08:00	test(comparison): run narrow-screen geometry contract
+a2649bb31fd222559c24081f9f24ce14569f97d7	2026-07-25T09:26:45+08:00	docs(comparison): record implemented CMP1 review state
+bcab0997def9615b2e89b401f9b86dbb2a276f4a	2026-07-25T09:27:43+08:00	docs(readme): record implemented CMP1 review state
+923be38046b28baf9ba4687a020290bd6a0afbf4	2026-07-25T09:29:09+08:00	docs(workstreams): move CMP1 to implementation review
+c44175cda831cae094b196cb71bd4676ae649621	2026-07-26T02:58:47+08:00	docs: record PR 4 direction rejection
+13edc1e7d9fc986499d20be6d4dd696bb17381d8	2026-07-26T02:59:31+08:00	docs: mark PR 4 direction rejected
+8ae42d5d06c02416e13ab6abe356a78683f8ad85	2026-07-26T22:59:04+08:00	chore: export PR4 history and final build
+306f328613219c336d896d07e05aa9c55c07f7da	2026-07-26T23:01:15+08:00	chore: run PR4 archive export on pull request
+c9e3472c718c4ef33825a90e46d1bce2cf1ae823	2026-07-26T23:01:30+08:00	docs: mark temporary PR4 archive export
+26e8e7d0d9ef090caee5173234349a2f454a2fcf	2026-07-26T23:04:09+08:00	chore: build original PR3 and PR4 milestone snapshots
+f03142b74788c12f6df7203cf490e974b006260e	2026-07-26T23:14:08+08:00	chore: restore original milestone builds into research archive

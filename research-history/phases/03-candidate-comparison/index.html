@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens Candidate workspace 與 bounded comparison 研究快照。" />
+    <title>03–04 Candidate and comparison — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">03–04 · Rejected workflow</p>
+          <h1>Candidate + comparison</h1>
+          <p class="lede">這個快照刻意保留「考慮 → 工作區 → 比較 → 再次選取」的完整成本，不用後來的知識把它修得更自然。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究時間線</a>
+      </header>
+
+      <p class="study-note">
+        任務：先把宮保杏鮑菇、紹興奶油蝦與豆豉蒸鱸魚加入考慮，接著打開考慮項目並比較其中兩道。注意你總共需要做幾次選擇，以及每次選擇表達的差異是否真的自然。
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="Candidate 與比較互動快照">
+        <div class="phone-screen">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>●●● 100%</span></div>
+
+          <section id="menu-panel" class="workspace-panel" data-active="true" aria-labelledby="menu-title">
+            <header>
+              <h2 id="menu-title" class="restaurant-name">潮巷小館</h2>
+              <p class="restaurant-copy">分享料理 · 6 道</p>
+              <p class="restaurant-meta"><span>所有 Product 仍在完整菜單</span><span>Candidate 不是訂單</span></p>
+            </header>
+
+            <div id="menu-list"></div>
+
+            <div id="candidate-summary" class="summary-bar" hidden>
+              <strong><span id="candidate-count">0</span> 道考慮項目</strong>
+              <button id="open-candidates" class="small-action" type="button">查看考慮項目</button>
+            </div>
+          </section>
+
+          <section id="candidate-panel" class="workspace-panel" data-active="false" aria-labelledby="candidate-title">
+            <div class="workspace-topbar">
+              <button id="back-menu" class="small-action" type="button">← 回到完整菜單</button>
+              <span class="status rejected">Candidate workspace</span>
+            </div>
+            <h2 id="candidate-title">考慮項目</h2>
+            <p class="restaurant-copy">這裡不是購物車。你可以返回料理在完整菜單的位置，或將它移出考慮。</p>
+            <div id="candidate-list"></div>
+            <div class="summary-bar">
+              <span id="candidate-workspace-summary">尚無考慮項目</span>
+              <button id="open-comparison" class="small-action" type="button" disabled>比較考慮項目</button>
+            </div>
+          </section>
+
+          <section id="comparison-panel" class="workspace-panel" data-active="false" aria-labelledby="comparison-title">
+            <div class="workspace-topbar">
+              <button id="back-candidates" class="small-action" type="button">← 回到考慮項目</button>
+              <span class="status rejected">Comparison selection</span>
+            </div>
+            <h2 id="comparison-title">比較考慮項目</h2>
+            <p class="restaurant-copy">即使料理已經在「考慮項目」，仍需在這裡另外選擇 2–3 道才能比較。</p>
+            <div id="comparison-candidates"></div>
+            <p id="selection-status" class="study-note" role="status">選擇 2–3 道考慮項目開始比較。</p>
+            <div id="comparison-output"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>這個快照為什麼被保留？</h2>
+          <p>它是「工程上可證明」與「人實際是否需要」之間落差最清楚的案例。</p>
+        </div>
+        <div class="timeline">
+          <article class="phase-card"><h3>技術上成立</h3><p>Candidate 與 comparison identity 分離、最多三道、無重複、canonical order、移除時同步清理。</p></article>
+          <article class="phase-card"><h3>產品上重複</h3><p>使用者已經把料理加入考慮，仍須打開另一 surface 並逐道再按一次「比較」。</p></article>
+          <article class="phase-card"><h3>研究價值</h3><p>提醒後續工作：清楚的 state boundary 不應自動轉化成每一步都要有一個顯式按鈕。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const products = [
+        { id: "roast-chicken", name: "山椒烤雞半隻", copy: "山椒、柑橘、烤根莖", price: 520, portion: "約 3–4 人", rhythm: "較久", trait: "濃郁、微辣" },
+        { id: "butter-prawns", name: "紹興奶油蝦", copy: "紹興酒、蒜末、奶油", price: 480, portion: "約 2–3 人", rhythm: "一般", trait: "濃郁" },
+        { id: "soft-shell-crab", name: "蒜酥椒鹽軟殼蟹", copy: "蒜酥、蔥花、椒鹽", price: 460, portion: "約 2–3 人", rhythm: "一般", trait: "酥脆、鹹香" },
+        { id: "seabass", name: "豆豉蒸鱸魚", copy: "豆豉、薑絲、清蒸", price: 560, portion: "約 2–3 人", rhythm: "一般", trait: "清爽" },
+        { id: "kung-pao-mushroom", name: "宮保杏鮑菇", copy: "乾辣椒、花生、甜鹹辣", price: 340, portion: "約 2–3 人", rhythm: "一般", trait: "素食、微辣" },
+        { id: "tofu-pot", name: "季節時蔬豆腐煲", copy: "時蔬、豆腐、菇類 · 售完", price: 380, portion: "約 2–3 人", rhythm: "一般", trait: "素食、清爽", soldOut: true }
+      ];
+
+      const state = {
+        candidates: new Set(),
+        comparison: new Set(),
+        surface: "menu"
+      };
+
+      const menuPanel = document.querySelector("#menu-panel");
+      const candidatePanel = document.querySelector("#candidate-panel");
+      const comparisonPanel = document.querySelector("#comparison-panel");
+      const menuList = document.querySelector("#menu-list");
+      const candidateSummary = document.querySelector("#candidate-summary");
+      const candidateCount = document.querySelector("#candidate-count");
+      const candidateList = document.querySelector("#candidate-list");
+      const workspaceSummary = document.querySelector("#candidate-workspace-summary");
+      const openComparison = document.querySelector("#open-comparison");
+      const comparisonCandidates = document.querySelector("#comparison-candidates");
+      const selectionStatus = document.querySelector("#selection-status");
+      const comparisonOutput = document.querySelector("#comparison-output");
+
+      function setSurface(surface) {
+        state.surface = surface;
+        menuPanel.dataset.active = String(surface === "menu");
+        candidatePanel.dataset.active = String(surface === "candidates");
+        comparisonPanel.dataset.active = String(surface === "comparison");
+        document.querySelector("#prototype").scrollIntoView({ block: "start", behavior: "auto" });
+        const activePanel = surface === "menu" ? menuPanel : surface === "candidates" ? candidatePanel : comparisonPanel;
+        const heading = activePanel.querySelector("h2");
+        if (heading) {
+          heading.tabIndex = -1;
+          heading.focus({ preventScroll: true });
+        }
+      }
+
+      function toggleCandidate(id) {
+        const source = document.activeElement?.dataset.candidate ? "menu" : document.activeElement?.dataset.remove ? "candidates" : null;
+        if (state.candidates.has(id)) {
+          state.candidates.delete(id);
+          state.comparison.delete(id);
+        } else {
+          const product = products.find((item) => item.id === id);
+          if (!product?.soldOut) state.candidates.add(id);
+        }
+        render();
+        if (source === "menu") {
+          [...menuList.querySelectorAll("[data-candidate]")].find((button) => button.dataset.candidate === id)?.focus({ preventScroll: true });
+        } else if (source === "candidates") {
+          const nextRemove = candidateList.querySelector("[data-remove]");
+          if (nextRemove) nextRemove.focus({ preventScroll: true });
+          else document.querySelector("#back-menu").focus({ preventScroll: true });
+        }
+      }
+
+      function toggleComparison(id) {
+        if (state.comparison.has(id)) {
+          state.comparison.delete(id);
+        } else if (state.comparison.size < 3) {
+          state.comparison.add(id);
+        } else {
+          selectionStatus.textContent = "最多比較 3 道；第四道不會取代目前選擇。";
+          return;
+        }
+        renderComparison();
+        [...comparisonCandidates.querySelectorAll("[data-compare]")]
+          .find((button) => button.dataset.compare === id)
+          ?.focus({ preventScroll: true });
+      }
+
+      function productById(id) {
+        return products.find((product) => product.id === id);
+      }
+
+      function renderMenu() {
+        menuList.innerHTML = products.map((product) => {
+          const selected = state.candidates.has(product.id);
+          const disabled = product.soldOut ? "disabled" : "";
+          return `
+            <article class="menu-row" id="menu-${product.id}">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.75rem;padding:.85rem 0">
+                <div><div class="menu-row-title">${product.name}</div><div class="menu-row-copy">${product.copy}</div></div>
+                <div class="menu-row-price">NT$${product.price}</div>
+              </div>
+              <div class="action-row" style="padding-bottom:.8rem">
+                <button class="small-action" type="button" data-candidate="${product.id}" aria-pressed="${selected}" ${disabled}>${product.soldOut ? "目前售完" : "考慮"}</button>
+              </div>
+            </article>`;
+        }).join("");
+
+        menuList.querySelectorAll("[data-candidate]").forEach((button) => {
+          button.addEventListener("click", () => toggleCandidate(button.dataset.candidate));
+        });
+
+        candidateCount.textContent = String(state.candidates.size);
+        candidateSummary.hidden = state.candidates.size === 0;
+      }
+
+      function renderCandidates() {
+        const selectedProducts = products.filter((product) => state.candidates.has(product.id));
+        if (selectedProducts.length === 0) {
+          candidateList.innerHTML = "<p class='study-note'>目前沒有考慮項目。工作區仍留在原地，必須使用返回按鈕回到完整菜單。</p>";
+        } else {
+          candidateList.innerHTML = selectedProducts.map((product) => `
+            <article class="menu-row">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.75rem;padding:.85rem 0">
+                <div><div class="menu-row-title">${product.name}</div><div class="menu-row-copy">${product.copy}</div></div>
+                <div class="menu-row-price">NT$${product.price}</div>
+              </div>
+              <div class="action-row" style="padding-bottom:.8rem">
+                <button class="small-action" type="button" data-locate="${product.id}">在菜單中查看</button>
+                <button class="small-action" type="button" data-remove="${product.id}">移出考慮</button>
+              </div>
+            </article>`).join("");
+        }
+
+        candidateList.querySelectorAll("[data-remove]").forEach((button) => {
+          button.addEventListener("click", () => toggleCandidate(button.dataset.remove));
+        });
+        candidateList.querySelectorAll("[data-locate]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const productId = button.dataset.locate;
+            setSurface("menu");
+            const row = document.querySelector(`#menu-${productId}`);
+            row?.scrollIntoView({ block: "center" });
+            row?.querySelector("[data-candidate]")?.focus({ preventScroll: true });
+          });
+        });
+
+        workspaceSummary.textContent = selectedProducts.length > 0 ? `${selectedProducts.length} 道考慮項目` : "尚無考慮項目";
+        openComparison.disabled = selectedProducts.length < 2;
+      }
+
+      function renderComparison() {
+        for (const id of [...state.comparison]) {
+          if (!state.candidates.has(id)) state.comparison.delete(id);
+        }
+
+        const selectedProducts = products.filter((product) => state.candidates.has(product.id));
+        comparisonCandidates.innerHTML = selectedProducts.map((product) => `
+          <article class="menu-row">
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.75rem;padding:.85rem 0">
+              <div><div class="menu-row-title">${product.name}</div><div class="menu-row-copy">已在考慮項目</div></div>
+              <div class="menu-row-price">NT$${product.price}</div>
+            </div>
+            <div class="action-row" style="padding-bottom:.8rem">
+              <button class="small-action" type="button" data-compare="${product.id}" aria-pressed="${state.comparison.has(product.id)}">比較</button>
+            </div>
+          </article>`).join("");
+
+        comparisonCandidates.querySelectorAll("[data-compare]").forEach((button) => {
+          button.addEventListener("click", () => toggleComparison(button.dataset.compare));
+        });
+
+        const compared = products.filter((product) => state.comparison.has(product.id));
+        if (compared.length === 0) {
+          selectionStatus.textContent = "選擇 2–3 道考慮項目開始比較。";
+          comparisonOutput.innerHTML = "";
+          return;
+        }
+        if (compared.length === 1) {
+          selectionStatus.textContent = "再選 1 道即可比較。";
+          comparisonOutput.innerHTML = "";
+          return;
+        }
+
+        selectionStatus.textContent = `正在比較 ${compared.length} 道；Candidate membership 並沒有因此改變。`;
+        const dimension = (title, key, formatter = (value) => value) => `
+          <section class="dimension">
+            <h3>${title}</h3>
+            ${compared.map((product) => `<div class="dimension-value"><span>${product.name}</span><strong>${formatter(product[key])}</strong></div>`).join("")}
+          </section>`;
+        comparisonOutput.innerHTML = [
+          dimension("價格", "price", (value) => `NT$${value}`),
+          dimension("份量", "portion"),
+          dimension("準備節奏", "rhythm"),
+          dimension("料理線索", "trait")
+        ].join("");
+      }
+
+      function render() {
+        renderMenu();
+        renderCandidates();
+        renderComparison();
+      }
+
+      document.querySelector("#open-candidates").addEventListener("click", () => setSurface("candidates"));
+      document.querySelector("#back-menu").addEventListener("click", () => setSurface("menu"));
+      openComparison.addEventListener("click", () => setSurface("comparison"));
+      document.querySelector("#back-candidates").addEventListener("click", () => setSurface("candidates"));
+
+      render();
+    </script>
+  </body>
+</html>

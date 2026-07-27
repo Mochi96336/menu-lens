@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 25 Menu Depth：以價格、份量與準備時間測試具有真實語意的三維菜單投影；既有模型保留作反證。" />
+    <title>25 Menu Depth — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <style>
+      .depth-family { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line-strong); border-left: 1px solid var(--line-strong); }
+      .depth-family article { display: flex; min-height: 16rem; flex-direction: column; padding: 1.1rem; border-right: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); }
+      .depth-family h2 { margin: 0 0 .45rem; font-size: 1.5rem; }
+      .depth-family p { color: var(--muted); }
+      .depth-family footer { margin-top: auto; }
+      .depth-family .active-study { grid-column: 1 / -1; min-height: 13rem; background: #f0e5d9; }
+      .depth-family .active-study h2 { font-size: 2rem; }
+      .coordinate { margin: 1rem 0; padding: 1rem; border: 1px solid var(--line-strong); background: var(--surface); font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; }
+      @media (max-width: 700px) { .depth-family { grid-template-columns: 1fr; } .depth-family .active-study { grid-column: auto; } }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#studies">跳到目前研究</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">25 · Meaning before depth effects</p>
+          <h1>Menu Depth</h1>
+          <p class="lede">不再從 18 擠出造型，也不把資訊層級冒充第三維。現在以每道料理真實存在的價格、份量與準備時間，檢查三維關係能否提供新的選擇判斷。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <div class="coordinate" aria-label="目前三維座標">
+        目前座標：X = 價格 · Y = 份量帶 · Z = 準備時間帶；分類只作顏色識別，不佔用座標軸
+      </div>
+
+      <section id="studies" class="depth-family" aria-label="Menu Depth 目前研究與保留反證">
+        <article class="active-study">
+          <p class="phase-index">25P / active dimensional projection</p>
+          <h2>Price × Portion × Preparation</h2>
+          <p>30 道料理各自佔據同一個三維資料空間；切換時旋轉同一個淺立體，讓未主看的軸保留為可見深度。遮擋區可原地展開菜名與價格。</p>
+          <footer><a class="button" href="./projections.html">開啟 25P</a></footer>
+        </article>
+        <article>
+          <p class="phase-index">reset evidence / rejected semantic-depth model</p>
+          <h2>Menu Sections</h2>
+          <p>30 道料理只渲染一次。Z0→Z+1 可保持錨點，但縮到全貌時位置無法連續；停止的是這個 semantic-depth 模型，不是維度研究。</p>
+          <footer><a class="ghost-button" href="./sections.html">查看連續性證據</a></footer>
+        </article>
+        <article>
+          <p class="phase-index">25B / retained falsification artifact</p>
+          <h2>Menu Volume</h2>
+          <p>把完整 3×2 矩陣沿 Z 軸堆成八層；目前沒有證據顯示各分類第 N 道具有共同語意。</p>
+          <footer><a class="button" href="./volume.html">開啟 25B</a></footer>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

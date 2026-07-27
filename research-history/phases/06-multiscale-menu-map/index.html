@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 多尺度菜單地圖研究快照。" />
+    <title>06 Multi-scale menu map — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../multiscale-menu-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">06 · Active hypothesis</p>
+          <h1>Multi-scale menu map</h1>
+          <p class="lede">完整分類結構始終可見；一次展開一個分類，再於分類內局部展開料理細節。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究時間線</a>
+      </header>
+
+      <p class="study-note">
+        任務：先不要點任何分類，說出這間店的菜單規模、分類與價格帶。再依序查看「分享料理」中的宮保杏鮑菇，以及「飲料」中的桂花烏龍冷泡茶。觀察切換後是否仍知道自己在整份菜單中的位置。
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="多尺度菜單地圖互動快照">
+        <div class="phone-screen">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>●●● 100%</span></div>
+
+          <header>
+            <h2 id="restaurant-name" class="restaurant-name"></h2>
+            <p id="restaurant-copy" class="restaurant-copy"></p>
+            <p id="restaurant-meta" class="restaurant-meta"></p>
+          </header>
+
+          <div class="workspace-topbar">
+            <strong id="scale-label" aria-live="polite">全店尺度</strong>
+            <button id="collapse-all" class="small-action" type="button" disabled>回到全店概覽</button>
+          </div>
+
+          <div class="scale-map" id="scale-map"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>這個快照仍可能失敗</h2>
+          <p>多尺度不是預設答案。它必須證明展開成本真的低於長頁的滑動與記憶成本。</p>
+        </div>
+        <div class="timeline">
+          <article class="phase-card"><h3>要驗證</h3><p>未點擊時是否足以理解全店；跨分類切換後是否仍保有空間地標。</p></article>
+          <article class="phase-card"><h3>可能失敗</h3><p>分類摘要像 dashboard cards、展開造成跳動、使用者不相信壓縮分類包含完整內容。</p></article>
+          <article class="phase-card"><h3>直接對照</h3><p>必須和 Complete menu 長頁使用相同尋找、比較、返回與回想任務比較。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const map = document.querySelector("#scale-map");
+      const collapseAll = document.querySelector("#collapse-all");
+      const scaleLabel = document.querySelector("#scale-label");
+
+      document.querySelector("#restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#restaurant-meta").textContent = menu.restaurant.summary;
+      map.innerHTML = window.renderMenuLensMultiscaleMap(menu);
+
+      const categories = [...map.querySelectorAll(".scale-category")];
+      const details = [...map.querySelectorAll("details")];
+
+      function setExpanded(target) {
+        categories.forEach((category) => {
+          const expanded = category === target;
+          category.dataset.expanded = String(expanded);
+          category.querySelector(":scope > button").setAttribute("aria-expanded", String(expanded));
+          if (!expanded) {
+            category.querySelectorAll("details[open]").forEach((detail) => detail.removeAttribute("open"));
+          }
+        });
+        collapseAll.disabled = !target;
+        scaleLabel.textContent = target
+          ? `分類尺度 · ${target.querySelector(".scale-category-title").textContent}`
+          : "全店尺度";
+
+        if (target) {
+          const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          target.scrollIntoView({ block: "start", behavior: reduceMotion ? "auto" : "smooth" });
+        }
+      }
+
+      categories.forEach((category) => {
+        category.querySelector(":scope > button").addEventListener("click", () => {
+          const isExpanded = category.dataset.expanded === "true";
+          setExpanded(isExpanded ? null : category);
+        });
+      });
+
+      details.forEach((detail) => {
+        detail.addEventListener("toggle", () => {
+          if (!detail.open) return;
+          details.forEach((candidate) => {
+            if (candidate !== detail) candidate.removeAttribute("open");
+          });
+        });
+      });
+
+      collapseAll.addEventListener("click", () => setExpanded(null));
+    </script>
+  </body>
+</html>

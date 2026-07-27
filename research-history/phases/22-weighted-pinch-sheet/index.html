@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 22 Weighted Focus Sheet：在 18 的固定三欄紙面上，以 16 的內容權重放大選中分類。" />
+    <title>22 Weighted Focus Sheet — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../landscape-paper.css" />
+    <link rel="stylesheet" href="../../weighted-pinch-sheet.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../paper-landscape-core.js"></script>
+    <script src="../../spatial-drag.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">22 · 18 + 16 weighted focus</p>
+          <h1>Weighted Focus Sheet</h1>
+          <p class="lede">18 的固定 46rem 紙面保持不動；選中分類把內容權重乘以 1.8，焦點欄同步展為 1.65 份，camera 跟著欄位中心移動。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">這是 18 + 16：8:6、6:4、4:2 是基礎列高，焦點分類以 1.8× 權重放大；其紙欄由 1 增為 1.65，camera 自動置中。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Weighted Focus Sheet 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="pinch-restaurant-name" class="restaurant-name"></h2>
+            <p id="pinch-restaurant-meta" class="restaurant-meta"></p>
+            <p id="pinch-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="pinch-reset" type="button" aria-pressed="true">原比例</button>
+            <button id="pinch-previous" type="button" aria-label="上一個分類">←</button>
+            <button id="pinch-next" type="button" aria-label="下一個分類">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="pinch-location-title">18 原比例</strong>
+              <span id="pinch-location-meta">欄寬 1:1:1 · 列高 8:6／6:4／4:2</span>
+            </div>
+          </div>
+
+          <div class="landscape-stage pinch-stage">
+            <div id="pinch-viewport" class="landscape-viewport pinch-viewport" tabindex="0" aria-label="可依內容權重放大分類的 18 紙面">
+              <div id="pinch-sheet" class="landscape-sheet pinch-sheet"></div>
+            </div>
+            <aside id="pinch-detail" class="paper-detail" data-open="false" aria-hidden="true" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="pinch-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="pinch-detail-title"></h3>
+                <p id="pinch-detail-meta" class="paper-detail__meta"></p>
+                <p id="pinch-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">點分類以 1.8× 權重放大，同時展寬紙欄並追蹤鏡頭；再點一次回到原比例。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>內容權重、欄寬與 camera 同步聚焦</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>18 的來源幾何</h3><p>紙寬固定 46rem，三欄固定 1:1:1；手機只決定目前看見哪一段。</p></article>
+          <article class="phase-card"><h3>16 的加權焦點</h3><p>焦點分類的原始料理數權重乘以 1.8，再和同欄另一分類重新分配高度。</p></article>
+          <article class="phase-card"><h3>欄寬與鏡頭</h3><p>焦點欄由 1 增為 1.65 份；camera 在欄寬動畫開始與結束後都重新置中。</p></article>
+          <article class="phase-card"><h3>主要風險</h3><p>同欄另一分類仍完整存在，焦點取得的高度可能不如 23 的明確展開。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const core = window.MenuLensLandscapeCore;
+      const viewport = document.querySelector("#pinch-viewport");
+      const sheet = document.querySelector("#pinch-sheet");
+      const resetButton = document.querySelector("#pinch-reset");
+      const previousButton = document.querySelector("#pinch-previous");
+      const nextButton = document.querySelector("#pinch-next");
+      const locationTitle = document.querySelector("#pinch-location-title");
+      const locationMeta = document.querySelector("#pinch-location-meta");
+
+      core.hydrateRestaurant({
+        menu,
+        name: document.querySelector("#pinch-restaurant-name"),
+        meta: document.querySelector("#pinch-restaurant-meta"),
+        copy: document.querySelector("#pinch-restaurant-copy"),
+      });
+
+      const { categories, categoryCounts, columns, productButtons } = core.buildLandscape({
+        menu,
+        sheet,
+        columnClass: "landscape-column",
+        columnWeight: () => 1,
+      });
+
+      const detail = core.createDishDetail({
+        menu,
+        detail: document.querySelector("#pinch-detail"),
+        closeButton: document.querySelector("#pinch-detail-close"),
+        title: document.querySelector("#pinch-detail-title"),
+        meta: document.querySelector("#pinch-detail-meta"),
+        copy: document.querySelector("#pinch-detail-copy"),
+        productButtons,
+      });
+
+      categories.forEach((category, categoryIndex) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+        header.setAttribute("aria-label", `${menu.categories[categoryIndex].name}，聚焦這個分類`);
+      });
+
+      const focusFactor = 1.8;
+      let activeCategoryIndex = null;
+      let trackingTimer = null;
+
+      const scrollBehavior = () =>
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+      const trackColumn = (column, behavior = scrollBehavior()) => {
+        const targetLeft = column.offsetLeft + column.offsetWidth / 2 - viewport.clientWidth / 2;
+        viewport.scrollTo({ left: Math.max(0, targetLeft), behavior });
+      };
+
+      const applyRows = () => {
+        columns.forEach((column, columnIndex) => {
+          const firstIndex = columnIndex * 2;
+          const tracked = activeCategoryIndex === firstIndex || activeCategoryIndex === firstIndex + 1;
+          const firstWeight = categoryCounts[firstIndex] * (activeCategoryIndex === firstIndex ? focusFactor : 1);
+          const secondWeight = categoryCounts[firstIndex + 1] * (activeCategoryIndex === firstIndex + 1 ? focusFactor : 1);
+          column.dataset.tracked = String(tracked);
+          column.style.setProperty("--column-count", tracked ? "1.65" : "1");
+          column.style.setProperty("--column-rows", `${firstWeight}fr ${secondWeight}fr`);
+        });
+      };
+
+      const showOverview = () => {
+        window.clearTimeout(trackingTimer);
+        activeCategoryIndex = null;
+        applyRows();
+        resetButton.setAttribute("aria-pressed", "true");
+        previousButton.disabled = true;
+        nextButton.disabled = true;
+        categories.forEach((category, categoryIndex) => {
+          delete category.dataset.focused;
+          const header = category.querySelector(".paper-category__header");
+          header.setAttribute("aria-pressed", "false");
+          header.setAttribute("aria-label", `${menu.categories[categoryIndex].name}，聚焦這個分類`);
+        });
+        locationTitle.textContent = "18 原比例";
+        locationMeta.textContent = "欄寬 1:1:1 · 列高 8:6／6:4／4:2";
+        detail.close();
+      };
+
+      const focusCategory = (categoryIndex) => {
+        activeCategoryIndex = Math.max(0, Math.min(categories.length - 1, categoryIndex));
+        applyRows();
+        resetButton.setAttribute("aria-pressed", "false");
+        previousButton.disabled = activeCategoryIndex === 0;
+        nextButton.disabled = activeCategoryIndex === categories.length - 1;
+        categories.forEach((category, index) => {
+          const focused = index === activeCategoryIndex;
+          if (focused) category.dataset.focused = "true";
+          else delete category.dataset.focused;
+          const header = category.querySelector(".paper-category__header");
+          header.setAttribute("aria-pressed", String(focused));
+          header.setAttribute(
+            "aria-label",
+            `${menu.categories[index].name}，${focused ? "恢復原比例" : "聚焦這個分類"}`,
+          );
+        });
+        const pairStart = Math.floor(activeCategoryIndex / 2) * 2;
+        const focusedWeight = categoryCounts[activeCategoryIndex] * focusFactor;
+        const pairWeight = focusedWeight + categoryCounts[pairStart + (activeCategoryIndex === pairStart ? 1 : 0)];
+        locationTitle.textContent = menu.categories[activeCategoryIndex].name;
+        locationMeta.textContent = `${categoryCounts[activeCategoryIndex]} 道 · 同欄高度約 ${Math.round(focusedWeight / pairWeight * 100)}%`;
+        detail.close();
+        window.clearTimeout(trackingTimer);
+        const activeColumn = columns[Math.floor(activeCategoryIndex / 2)];
+        requestAnimationFrame(() => trackColumn(activeColumn));
+        trackingTimer = window.setTimeout(() => trackColumn(activeColumn, "auto"), 240);
+      };
+
+      categories.forEach((category, categoryIndex) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          if (activeCategoryIndex === categoryIndex) showOverview();
+          else focusCategory(categoryIndex);
+        });
+      });
+
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+          if (categoryIndex !== activeCategoryIndex) {
+            focusCategory(categoryIndex);
+            return;
+          }
+          detail.open(button);
+        });
+      });
+
+      resetButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => {
+        if (activeCategoryIndex !== null) focusCategory(activeCategoryIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        if (activeCategoryIndex !== null) focusCategory(activeCategoryIndex + 1);
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.isOpen()) detail.close(true);
+        else if (activeCategoryIndex !== null) showOverview();
+      });
+
+      window.enableMenuLensHorizontalDrag(viewport, {
+        enabled: () => !detail.isOpen(),
+      });
+      showOverview();
+    </script>
+  </body>
+</html>

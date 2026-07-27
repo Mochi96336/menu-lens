@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 10 Fisheye Ribbon：讓完整橫向菜單留在一個畫面，以可拖曳焦點分配閱讀空間。" />
+    <title>10 Fisheye Ribbon — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../fisheye-ribbon.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../fisheye-ribbon-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">10 · Stretching the horizontal axis</p>
+          <h1>Fisheye Ribbon</h1>
+          <p class="lede">不捲動整條菜單，改為拖曳一個閱讀鏡頭。30 道料理始終同時在場，空間只暫時向焦點與鄰近料理傾斜。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">
+        探索問題：09 的橫向長軌道有空間感，但移動成本太高。若固定整張地圖，只移動「放大位置」，能否保留趣味又更容易掌握所在位置？
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="Fisheye Ribbon 互動原型">
+        <div class="phone-screen fisheye-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+
+          <header class="fisheye-restaurant">
+            <h2 id="fisheye-restaurant-name" class="restaurant-name"></h2>
+            <p id="fisheye-restaurant-meta" class="restaurant-meta"></p>
+            <p id="fisheye-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+
+          <div class="fisheye-toolbar">
+            <button id="fisheye-previous" type="button" aria-label="上一道料理">←</button>
+            <div class="fisheye-location" aria-live="polite">
+              <strong id="fisheye-location-title"></strong>
+              <span id="fisheye-location-meta"></span>
+            </div>
+            <button id="fisheye-next" type="button" aria-label="下一道料理">→</button>
+          </div>
+
+          <div class="fisheye-lens-switch" aria-label="閱讀尺度">
+            <button id="fisheye-category-lens" type="button" aria-pressed="true">分類鏡頭</button>
+            <button id="fisheye-product-lens" type="button" aria-pressed="false">料理鏡頭</button>
+            <span>柱高＝價格</span>
+          </div>
+
+          <nav id="fisheye-categories" class="fisheye-categories" aria-label="跳到料理分類"></nav>
+          <div id="fisheye-stage" class="fisheye-stage" data-lens="category" tabindex="0" aria-label="拖曳以移動菜單焦點">
+            <div id="fisheye-track" class="fisheye-track"></div>
+          </div>
+          <p class="fisheye-hint">下方價格柱以 NT$120–560 為共同尺度；點料理進入鏡頭，再點一次看細節。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Mechanism notes</p>
+          <h2>移動的是空間分配，不是整張菜單</h2>
+        </div>
+        <div class="timeline">
+          <article class="phase-card"><h3>全貌仍在</h3><p>30 道料理永遠共同佔據同一個寬度；遠處縮成價格柱，但不離開畫面。</p></article>
+          <article class="phase-card"><h3>局部伸縮</h3><p>焦點約佔四成寬度，左右一、二格逐層變窄，形成連續的空間變形。</p></article>
+          <article class="phase-card"><h3>直接觸控</h3><p>手指落在哪個水平位置，鏡頭就移向對應的菜序；不需要拖過一條很長的軌道。</p></article>
+          <article class="phase-card"><h3>風險</h3><p>遠端菜名仍不可讀，而且每次伸縮都會改變相鄰位置；這是刻意放大的探索，不預設它會成為主畫面。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const stage = document.querySelector("#fisheye-stage");
+      const track = document.querySelector("#fisheye-track");
+      const categoryNav = document.querySelector("#fisheye-categories");
+      const previousButton = document.querySelector("#fisheye-previous");
+      const nextButton = document.querySelector("#fisheye-next");
+      const locationTitle = document.querySelector("#fisheye-location-title");
+      const locationMeta = document.querySelector("#fisheye-location-meta");
+      const categoryLensButton = document.querySelector("#fisheye-category-lens");
+      const productLensButton = document.querySelector("#fisheye-product-lens");
+
+      document.querySelector("#fisheye-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#fisheye-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#fisheye-restaurant-meta").textContent = menu.restaurant.summary;
+      track.innerHTML = window.renderMenuLensFisheyeRibbon(menu);
+
+      menu.categories.forEach((category) => {
+        const count = menu.products.filter((product) => product.categoryId === category.id).length;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.categoryId = category.id;
+        button.style.setProperty("--category-count", count);
+        button.textContent = category.name;
+        button.title = `${category.name}，${count} 道`;
+        categoryNav.append(button);
+      });
+
+      const products = [...track.querySelectorAll(".fisheye-product")];
+      const categoryButtons = [...categoryNav.querySelectorAll("button")];
+      const productCategoryIndices = menu.products.map((product) =>
+        menu.categories.findIndex((category) => category.id === product.categoryId),
+      );
+      let lens = "category";
+      let focusIndex = 0;
+      let focusCategoryIndex = 0;
+      let pointerState = null;
+      let suppressClick = false;
+
+      const weightForDistance = (distance) => {
+        if (distance === 0) return 18;
+        if (distance === 1) return 6;
+        if (distance === 2) return 2.5;
+        return .35;
+      };
+
+      const updateProductFocus = (nextIndex, options = {}) => {
+        const boundedIndex = Math.max(0, Math.min(products.length - 1, nextIndex));
+        if (boundedIndex !== focusIndex && options.preserveOpen !== true) {
+          products.forEach((product) => product.removeAttribute("open"));
+        }
+        focusIndex = boundedIndex;
+
+        const weights = products.map((_, index) => weightForDistance(Math.abs(index - focusIndex)));
+        const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+        products.forEach((product, index) => {
+          const distance = Math.abs(index - focusIndex);
+          product.style.setProperty("--fisheye-basis", `${(weights[index] / totalWeight) * 100}%`);
+          product.dataset.distance = distance === 0 ? "focus" : distance <= 2 ? "near" : "far";
+          if (distance === 0) product.dataset.focused = "true";
+          else delete product.dataset.focused;
+          delete product.dataset.categoryFocused;
+        });
+
+        const product = menu.products[focusIndex];
+        const category = menu.categories.find((candidate) => candidate.id === product.categoryId);
+        focusCategoryIndex = menu.categories.indexOf(category);
+        locationTitle.textContent = product.name;
+        locationMeta.textContent = `${focusIndex + 1} / ${products.length} · ${category.name}`;
+        previousButton.disabled = focusIndex === 0;
+        nextButton.disabled = focusIndex === products.length - 1;
+        categoryButtons.forEach((button) => {
+          if (button.dataset.categoryId === product.categoryId) button.setAttribute("aria-current", "true");
+          else button.removeAttribute("aria-current");
+        });
+      };
+
+      const updateCategoryFocus = (nextCategoryIndex) => {
+        focusCategoryIndex = Math.max(0, Math.min(menu.categories.length - 1, nextCategoryIndex));
+        const focusedCategory = menu.categories[focusCategoryIndex];
+        focusIndex = menu.products.findIndex((product) => product.categoryId === focusedCategory.id);
+        products.forEach((product) => product.removeAttribute("open"));
+
+        const categoryWeights = menu.categories.map((_, index) => {
+          const distance = Math.abs(index - focusCategoryIndex);
+          if (distance === 0) return 18;
+          if (distance === 1) return 5;
+          if (distance === 2) return 1.5;
+          return .5;
+        });
+        const totalWeight = categoryWeights.reduce((sum, weight) => sum + weight, 0);
+        const categoryCounts = menu.categories.map((category) =>
+          menu.products.filter((product) => product.categoryId === category.id).length,
+        );
+
+        products.forEach((product, index) => {
+          const categoryIndex = productCategoryIndices[index];
+          const productWeight = categoryWeights[categoryIndex] / categoryCounts[categoryIndex];
+          product.style.setProperty("--fisheye-basis", `${(productWeight / totalWeight) * 100}%`);
+          product.dataset.distance = "category";
+          delete product.dataset.focused;
+          if (categoryIndex === focusCategoryIndex) product.dataset.categoryFocused = "true";
+          else delete product.dataset.categoryFocused;
+        });
+
+        const count = categoryCounts[focusCategoryIndex];
+        locationTitle.textContent = focusedCategory.name;
+        locationMeta.textContent = `${focusCategoryIndex + 1} / ${menu.categories.length} · ${count} 道 · ${focusedCategory.priceRange}`;
+        previousButton.disabled = focusCategoryIndex === 0;
+        nextButton.disabled = focusCategoryIndex === menu.categories.length - 1;
+        categoryButtons.forEach((button) => {
+          if (button.dataset.categoryId === focusedCategory.id) button.setAttribute("aria-current", "true");
+          else button.removeAttribute("aria-current");
+        });
+      };
+
+      const setLens = (nextLens, targetIndex) => {
+        lens = nextLens;
+        stage.dataset.lens = lens;
+        categoryLensButton.setAttribute("aria-pressed", String(lens === "category"));
+        productLensButton.setAttribute("aria-pressed", String(lens === "product"));
+        if (lens === "category") {
+          const nextCategory = targetIndex ?? focusCategoryIndex;
+          updateCategoryFocus(nextCategory);
+        } else {
+          const nextProduct = targetIndex ?? focusIndex;
+          updateProductFocus(nextProduct);
+        }
+      };
+
+      const indexFromPointer = (clientX) => {
+        const bounds = stage.getBoundingClientRect();
+        const progress = Math.max(0, Math.min(1, (clientX - bounds.left) / Math.max(1, bounds.width)));
+        const itemCount = lens === "category" ? menu.categories.length : products.length;
+        return Math.round(progress * (itemCount - 1));
+      };
+
+      products.forEach((product, index) => {
+        product.querySelector("summary").addEventListener("click", (event) => {
+          if (suppressClick) {
+            event.preventDefault();
+            suppressClick = false;
+            return;
+          }
+          if (lens === "category") {
+            event.preventDefault();
+            setLens("product", index);
+            return;
+          }
+          if (index !== focusIndex) {
+            event.preventDefault();
+            updateProductFocus(index);
+          }
+        });
+        product.addEventListener("toggle", () => {
+          if (!product.open) return;
+          products.forEach((candidate) => {
+            if (candidate !== product) candidate.removeAttribute("open");
+          });
+        });
+      });
+
+      categoryButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = menu.categories.findIndex((category) => category.id === button.dataset.categoryId);
+          setLens("category", categoryIndex);
+        });
+      });
+
+      categoryLensButton.addEventListener("click", () => setLens("category"));
+      productLensButton.addEventListener("click", () => setLens("product"));
+      previousButton.addEventListener("click", () => {
+        if (lens === "category") updateCategoryFocus(focusCategoryIndex - 1);
+        else updateProductFocus(focusIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        if (lens === "category") updateCategoryFocus(focusCategoryIndex + 1);
+        else updateProductFocus(focusIndex + 1);
+      });
+
+      stage.addEventListener("pointerdown", (event) => {
+        if (!event.isPrimary || pointerState || (event.pointerType === "mouse" && event.button !== 0)) return;
+        pointerState = { id: event.pointerId, startX: event.clientX, startY: event.clientY, axis: null, moved: false };
+      });
+
+      stage.addEventListener("pointermove", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        const dx = event.clientX - pointerState.startX;
+        const dy = event.clientY - pointerState.startY;
+        if (!pointerState.axis && Math.max(Math.abs(dx), Math.abs(dy)) >= 7) {
+          pointerState.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+          if (pointerState.axis === "x") {
+            stage.setPointerCapture(event.pointerId);
+            stage.classList.add("is-dragging");
+          }
+        }
+        if (pointerState.axis !== "x") return;
+        event.preventDefault();
+        pointerState.moved = true;
+        if (lens === "category") updateCategoryFocus(indexFromPointer(event.clientX));
+        else updateProductFocus(indexFromPointer(event.clientX));
+      });
+
+      const endPointer = (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        if (pointerState.moved) suppressClick = true;
+        pointerState = null;
+        stage.classList.remove("is-dragging");
+      };
+      stage.addEventListener("pointerup", endPointer);
+      stage.addEventListener("pointercancel", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        pointerState = null;
+        suppressClick = false;
+        stage.classList.remove("is-dragging");
+      });
+      stage.addEventListener("click", (event) => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        suppressClick = false;
+      }, true);
+
+      stage.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        if (lens === "category") {
+          updateCategoryFocus(focusCategoryIndex + (event.key === "ArrowLeft" ? -1 : 1));
+        } else {
+          updateProductFocus(focusIndex + (event.key === "ArrowLeft" ? -1 : 1));
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        const openProduct = track.querySelector("details[open]");
+        if (!openProduct) return;
+        openProduct.removeAttribute("open");
+        openProduct.querySelector("summary").focus({ preventScroll: true });
+      });
+
+      setLens("category", 0);
+    </script>
+  </body>
+</html>

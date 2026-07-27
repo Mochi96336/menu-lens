@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 手機菜單閱讀研究檔案：原始實作、後續回訪與尚未定論的方向。" />
+    <title>Menu Lens — Research History</title>
+    <link rel="stylesheet" href="./history.css" />
+    <script src="./prototype-registry.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要內容</a>
+
+    <header class="masthead site-shell">
+      <p class="eyebrow">Menu Lens / research record</p>
+      <h1>手機菜單閱讀研究檔案</h1>
+      <p class="lede">
+        保存當時真正做過的畫面，也保存後來再次碰到的相似問題。這裡不把版本排成必然進步史；05、06 保留為回訪，08–24 並列探索不同空間模型，也另外保存產品方向評價。
+      </p>
+      <div class="meta-row" aria-label="研究檔案資訊">
+        <span class="pill">5 個原始歷史節點</span>
+        <span class="pill">2 次後續回訪</span>
+        <span id="registry-count" class="pill">prototype registry</span>
+        <span class="pill">原件與重建分開</span>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="section site-shell" aria-labelledby="read-title">
+        <div class="section-heading">
+          <p class="eyebrow">How to read</p>
+          <h2 id="read-title">不是進步階梯，而是三條互相靠近的路線</h2>
+          <p>
+            01–04 是有固定 commit 的歷史實作。05、06 是後來回訪舊問題的 prototype；07 記錄常見市場 baseline；08–24 展開不同的空間模型。直接評價另存為產品方向紀錄，不假裝成參與者研究。
+          </p>
+        </div>
+        <div class="timeline">
+          <article class="phase-card">
+            <p class="phase-index">Line A</p>
+            <h3>完整菜單閱讀</h3>
+            <p>從完整內容、分類定位與 inline detail 出發，後來回訪密度、欄位對齊與長頁品質。</p>
+            <p><strong>01 Complete menu → 05 Ledger revisit</strong></p>
+          </article>
+          <article class="phase-card">
+            <p class="phase-index">Line B</p>
+            <h3>結構、局部與比較投影</h3>
+            <p>從 overview、Anchor 與 shared axis 出發，延伸到 Candidate、comparison，後來再以尺度與分類展開回訪全貌問題。</p>
+            <p><strong>02 Relational → 03A Candidate marks → 03B Candidate workspace → 04 Comparison → 06 Multi-scale revisit</strong></p>
+          </article>
+          <article class="phase-card">
+            <p class="phase-index">Line C</p>
+            <h3>空間互動探索</h3>
+            <p>把常見橫向分類分頁記為 baseline，不重建；直接探索分類能否在同一張連續 spread 上保持固定位置並局部展寬。</p>
+            <p><strong>07 baseline → 08–17 spatial models → 18 / 18A paper references → 19–24 landscape objects → 25 reset → 25P / 25B / 26 depth objects</strong></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section site-shell" aria-labelledby="architecture-title">
+        <div class="section-heading">
+          <p class="eyebrow">Object catalog</p>
+          <h2 id="architecture-title">一個 ID，就是一個研究物件</h2>
+          <p>家族只作標籤，不包住或合併版本。03A、03B、18、18A、25、25P、25B 都各自保留身份、父系、狀態與入口；字母後綴不是同一張卡片的模式。</p>
+        </div>
+        <div id="prototype-registry" class="prototype-object-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="section site-shell" aria-labelledby="original-title">
+        <div class="section-heading">
+          <p class="eyebrow">Original implementations</p>
+          <h2 id="original-title">歷史原件</h2>
+          <p>以下都是從固定 commit 重新執行當時的 typecheck、test 與 build，再完整凍結的原始輸出。</p>
+        </div>
+        <div class="timeline">
+          <article class="phase-card">
+            <div><p class="phase-index">01 / PR #3 / 087619c</p><h3>Complete menu</h3><span class="status accepted">accepted substrate</span></div>
+            <p>完整長頁、分類跳轉與 inline detail。建立內容完整性與返回位置，也留下長頁線性的問題。</p>
+            <footer><a class="button" href="./originals/01-complete-menu/">開啟原始實作</a><a class="ghost-button" href="./phases/01-complete-menu/">查看簡化重建</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">02 / PR #4 / b554f8a</p><h3>Prototype C</h3><span class="status rejected">later rejected as main flow</span></div>
+            <p>Anchor、精確價差與全分類共用 axis。保存相對閱讀的完整原貌，尚未加入 Candidate。</p>
+            <footer><a class="button" href="./originals/02-prototype-c/">開啟原始實作</a><a class="ghost-button" href="./phases/02-relational-reading/">查看簡化重建</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">03A / PR #4 / 53963f4</p><h3>Candidate marks</h3><span class="status rejected">historical stage</span></div>
+            <p>只有附著在菜單列上的「考慮」狀態，還沒有獨立 workspace。</p>
+            <footer><a class="button" href="./originals/03a-candidate-marks/">開啟 CND1</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">03B / PR #4 / 5251bfc</p><h3>Candidate workspace</h3><span class="status rejected">historical stage</span></div>
+            <p>加入獨立候選工作區、返回與移除流程，尚未加入 comparison。</p>
+            <footer><a class="button" href="./originals/03b-candidate-workspace/">開啟 CND2</a><a class="ghost-button" href="./phases/03-candidate-comparison/">查看流程重建</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">04 / PR #4 / 923be38</p><h3>Bounded comparison</h3><span class="status rejected">product-invalid</span></div>
+            <p>在 Candidate 之外再次選取 2–3 道比較，保存工程完整但產品流程重複的最終狀態。</p>
+            <footer><a class="button" href="./originals/04-bounded-comparison/">開啟原始 CMP1</a></footer>
+          </article>
+        </div>
+      </section>
+
+      <section class="section site-shell" aria-labelledby="revisit-title">
+        <div class="section-heading">
+          <p class="eyebrow">Later revisits / no disposition yet</p>
+          <h2 id="revisit-title">05、06：先收好，不先判決</h2>
+          <p>
+            這兩個版本保留為後續回訪。它們與早期方向的關係值得比較，但目前不標示為進步、重複或失敗；研究問題、畫面與當下限制分開記錄。
+          </p>
+        </div>
+        <div class="timeline">
+          <article class="phase-card">
+            <div><p class="phase-index">05 / later reconstruction</p><h3>Ledger document</h3><span class="status partial">unresolved revisit</span></div>
+            <p><strong>回訪的問題：</strong>在完整菜單不收合的前提下，密度、共享欄位與 inline detail 能把線性閱讀改善到什麼程度？</p>
+            <p><strong>與早期的關係：</strong>沿用 01 的完整長頁與原地細節，但重新處理視覺單位、欄位與捲動質感。</p>
+            <p><strong>目前不判定：</strong>它是 01 的充分 refinement，或只是同一限制的另一種排版。</p>
+            <footer><a class="button" href="./phases/05-ledger-document/">開啟 05</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">06 / new prototype</p><h3>Multi-scale menu map</h3><span class="status active">unresolved revisit</span></div>
+            <p><strong>回訪的問題：</strong>完整結構能否始終在場，而內容依全店、分類與料理尺度局部展開？</p>
+            <p><strong>與早期的關係：</strong>重新碰到 overview、局部焦點與重新投影，和 02–04 有明顯相似，也改用了分類尺度而非 Anchor／Candidate。</p>
+            <p><strong>目前不判定：</strong>它是否只是舊互動家族的換名版本，或存在可測量的新機制。</p>
+            <footer><a class="button" href="./phases/06-multiscale-menu-map/">開啟 06</a></footer>
+          </article>
+        </div>
+      </section>
+
+      <section class="section site-shell" aria-labelledby="spatial-title">
+        <div class="section-heading">
+          <p class="eyebrow">Current spatial exploration</p>
+          <h2 id="spatial-title">07 記錄慣例，08–26 依家族展開空間機制</h2>
+          <p>
+            07 只標記市場常見的橫向分類導覽；08–21 測試分類欄、長軌道、焦點鏡頭、產品矩陣與紙面形變。22–24 保留為 18 的平面變體；25 否決語意深度前提，26 開始把第三維當成可直接操控的排版空間。
+          </p>
+        </div>
+        <div class="timeline">
+          <article class="phase-card">
+            <div><p class="phase-index">07 / market baseline</p><h3>Horizontal Menu Atlas</h3><span class="status partial">not implemented</span></div>
+            <p><strong>熟悉模式：</strong>橫向分類導覽，分類內使用垂直料理清單。</p>
+            <p><strong>目前處理：</strong>保留為市場參照，需要正式 baseline 時才使用相同 fixture 重建。</p>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">08 / new spatial prototype</p><h3>Menu Spread</h3><span class="status active">active hypothesis</span></div>
+            <p><strong>探索問題：</strong>六個分類能否佔據固定位置，聚焦欄原地展寬，而其他欄仍保留為可操作地標？</p>
+            <p><strong>第一輪邊界：</strong>全店 spread、分類 focus、inline product detail；不做自由縮放、Candidate 或下單。</p>
+            <footer><a class="button" href="./phases/08-menu-spread/">開啟 08</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">09 / extreme horizontal prototype</p><h3>Horizontal Ribbon</h3><span class="status active">active hypothesis</span></div>
+            <p><strong>探索問題：</strong>若全部料理共用一條水平座標，是否能形成比分類長頁更穩定的整體位置感？</p>
+            <p><strong>尺度分工：</strong>全店尺度看章節與刻度；閱讀尺度看料理；垂直只展開料理資訊。</p>
+            <footer><a class="button" href="./phases/09-horizontal-ribbon/">開啟 09</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">10 / focus-lens prototype</p><h3>Fisheye Ribbon</h3><span class="status active">active hypothesis</span></div>
+            <p><strong>探索問題：</strong>若完整 30 道固定在一個手機寬度，只移動局部放大的閱讀鏡頭，能否減少 09 的長距離移動？</p>
+            <p><strong>尺度分配：</strong>先用分類鏡頭建立局部，再進入料理鏡頭；焦點與鄰近項目逐層取得不同寬度。</p>
+            <footer><a class="button" href="./phases/10-fisheye-ribbon/">開啟 10</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">11 / matrix prototype</p><h3>Menu Matrix</h3><span class="status active">active hypothesis</span></div>
+            <p><strong>探索問題：</strong>固定六列分類與八欄菜序，能否建立比連續橫帶更穩定的二維位置記憶？</p>
+            <p><strong>列伸縮：</strong>聚焦列展高、其他列壓縮保留；料理細節不推動矩陣格位。</p>
+            <footer><a class="button" href="./phases/11-menu-matrix/">開啟 11</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">12 / paper-space prototype</p><h3>Paper Menu Field</h3><span class="status active">active hypothesis</span></div>
+            <p><strong>探索問題：</strong>若矩陣單位改為分類版面，X／Y 只代表紙面位置，縮小的全張菜單是否仍能提供空間記憶？</p>
+            <p><strong>原地縮放：</strong>分類不換位；整張 sheet 依被選分類的原始座標平移與放大。</p>
+            <footer><a class="button" href="./phases/12-paper-menu-field/">開啟 12</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">13 / fixed-sheet lens</p><h3>Static Loupe</h3><span class="status active">active hypothesis</span></div>
+            <p><strong>探索問題：</strong>若底圖完全不動，只以可拖曳鏡頭放大同一來源座標，微型紙面能否成為真正的導覽地圖？</p>
+            <p><strong>代價：</strong>放大鏡遮住部分底圖，使用者同時看見內容的縮小與放大版本。</p>
+            <footer><a class="button" href="./phases/13-static-loupe/">開啟 13</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">14 / fold topology</p><h3>Folded Menu</h3><span class="status active">active hypothesis</span></div>
+            <p><strong>探索問題：</strong>把分類收合表現成連續摺頁，而非介面 accordion，能否讓相鄰關係更容易理解？</p>
+            <p><strong>機制：</strong>一個面板攤平，其他分類沿摺線留下帶角度的窄紙條。</p>
+            <footer><a class="button" href="./phases/14-folded-menu/">開啟 14</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">15 / elastic paper</p><h3>Elastic Paper</h3><span class="status active">active hypothesis</span></div>
+            <p><strong>探索問題：</strong>若外框固定而內部格線局部拉伸，穩定象限是否足以抵消持續變動的分類邊界？</p>
+            <p><strong>直接觸控：</strong>拖曳焦點穿過紙面；所在欄取得 72%、所在列取得 62%。</p>
+            <footer><a class="button" href="./phases/15-elastic-paper/">開啟 15</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">16 / weighted elastic paper</p><h3>Weighted Elastic Paper</h3><span class="status active">active hypothesis</span></div>
+            <p><strong>修正問題：</strong>八道主餐與兩道甜點不再使用相同聚焦面積；欄、列和焦點都從內容數量計算。</p>
+            <p><strong>結果：</strong>主餐聚焦約佔 45% 紙面，甜點約 17%。</p>
+            <footer><a class="button" href="./phases/16-weighted-elastic-paper/">開啟 16</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">17 / weighted horizontal strip</p><h3>Weighted Horizontal Strip</h3><span class="status active">active hypothesis</span></div>
+            <p><strong>橫向規則：</strong>六分類以 8:6:6:4:4:2 共用同一手機寬度，聚焦只放大原有權重。</p>
+            <p><strong>與 08 不同：</strong>沒有固定 79vw 大欄，也沒有任何水平捲動距離。</p>
+            <footer><a class="button" href="./phases/17-weighted-horizontal-strip/">開啟 17</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">18 / landscape paper</p><h3>Landscape Paper</h3><span class="status active">active hypothesis</span></div>
+            <p><strong>3×2 紙面：</strong>三個紙欄固定等寬，各含上下兩分類；只有欄內列高依料理數配置。</p>
+            <p><strong>橫向閱讀：</strong>整張尺度看全貌，閱讀尺度才攤開紙張並以紙欄 snap。</p>
+            <footer><a class="button" href="./phases/18-landscape-paper/">開啟 18</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">18A / proportional reference</p><h3>Proportional Landscape</h3><span class="status active">reference variant</span></div>
+            <p><strong>單一變因：</strong>18 保持 1:1:1；18A 將三欄依料理總數改為 14:10:6。</p>
+            <p><strong>參照目的：</strong>直接觀察第一欄增加的空間是否值得第三欄被壓窄，不延伸新互動。</p>
+            <footer><a class="button" href="./phases/18a-proportional-landscape/">開啟 18A</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">19 / rigid sheet camera</p><h3>Rigid Horizontal Sheet</h3><span class="status rejected">reviewed branch</span></div>
+            <p><strong>修正誤區：</strong>3×2 紙面固定為 840×560，overview 與 reading 只做等比例縮放；橫向手勢只移動 camera。</p>
+            <p><strong>定位：</strong>上方縮圖持續顯示目前可見來源範圍，分類格不重新計算。</p>
+            <footer><a class="button" href="./phases/19-rigid-horizontal-sheet/">開啟 19</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">20 / tri-fold matrix</p><h3>Tri-fold Matrix</h3><span class="status rejected">reviewed branch</span></div>
+            <p><strong>折疊單位：</strong>三個各含上下兩分類的紙面 panel，而不是六個分類 accordion。</p>
+            <p><strong>矩陣保留：</strong>折起 panel 仍顯示上下分隔線；焦點 panel 攤平、相鄰 panel 旋轉 ±58°。</p>
+            <footer><a class="button" href="./phases/20-trifold-matrix/">開啟 20</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">21 / two-column window</p><h3>Two-column Reading Window</h3><span class="status rejected">reviewed branch</span></div>
+            <p><strong>兩個狀態：</strong>固定三欄紙面只在 A+B 與 B+C 之間移動，一次保留四分類。</p>
+            <p><strong>共同地標：</strong>中間 B 欄在兩個窗口都存在，橫移後仍保留一半可見內容。</p>
+            <footer><a class="button" href="./phases/21-two-column-window/">開啟 21</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">22 / weighted focus sheet</p><h3>Weighted Focus Sheet</h3><span class="status active">18 + 16 variant</span></div>
+            <p><strong>18 的骨架：</strong>46rem 固定紙面與三個等寬紙欄保持不動。</p>
+            <p><strong>16 的焦點：</strong>選中分類以 1.8× 重配列高，所在紙欄展為 1.65 份，camera 跟著置中；同欄鄰居仍完整。</p>
+            <footer><a class="button" href="./phases/22-weighted-pinch-sheet/">開啟 22</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">23 / tracked focus landscape</p><h3>Tracked Focus Landscape</h3><span class="status active">active 22 extension</span></div>
+            <p><strong>折疊差異：</strong>沿用 22 的 1.65 欄寬與 camera，但把同欄另一分類收成 2.2rem 標頭。</p>
+            <p><strong>閱讀焦點：</strong>選中分類取得整欄高度，料理字級同步放大；再次點選回到完整 3×2。</p>
+            <footer><a class="button" href="./phases/23-collapsible-landscape/">開啟 23</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">24 / vertical landscape</p><h3>Vertical Landscape</h3><span class="status active">active 18 variant</span></div>
+            <p><strong>混合排版：</strong>分類標題橫排；菜名與 upright 價格共用同一條直向料理欄，不另起價格排。</p>
+            <p><strong>內容比例：</strong>三欄依料理總數成為 14:10:6；46rem／64rem 紙面都不跟手機寬度連動。</p>
+            <footer><a class="button" href="./phases/24-vertical-landscape/">開啟 24</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">25 / menu dimensions</p><h3>Menu Dimensions</h3><span class="status active">dimension model reset</span></div>
+            <p><strong>第一輪問題：</strong>物理隱喻只把平面擠出厚度；保留的 25B 也沒有可辯護的共同 Z 語意。</p>
+            <p><strong>物件邊界：</strong>25 只保存維度模型重置與分支入口，本身不代表 25P 或 25B。</p>
+            <footer><a class="button" href="./phases/25-menu-depth/">開啟 25</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">25P / real-axis projection</p><h3>Menu Projections</h3><span class="status active">active dimensional projection</span></div>
+            <p><strong>獨立物件：</strong>價格、份量與準備時間形成三張正交投影，30 道料理保持身份連續。</p>
+            <p><strong>父系：</strong>從 25 的維度重置分支，不與 25B 共用畫面或狀態。</p>
+            <footer><a class="button" href="./phases/25-menu-depth/projections.html">開啟 25P</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">25B / retained falsification</p><h3>Menu Volume</h3><span class="status rejected">reviewed stop</span></div>
+            <p><strong>獨立物件：</strong>完整矩陣沿 Z 軸堆成八層，以共同深度切片閱讀。</p>
+            <p><strong>保留原因：</strong>作為第一輪深度模型的反證，不代表 25P 或 26 的結論。</p>
+            <footer><a class="button" href="./phases/25-menu-depth/volume.html">開啟 25B</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">26 / parallax layout volume</p><h3>Parallax Menu Volume</h3><span class="status active">active spatial grammar</span></div>
+            <p><strong>第三維的新角色：</strong>Z 不對應價格、口味或料理順序，只讓六套分類排版交織在同一個物件裡。</p>
+            <p><strong>直接操作：</strong>斜向拖曳讓分類逐漸成形；雙指張開增加視差，合攏則把目前方向壓成接近平面的可讀版面。</p>
+            <footer><a class="button" href="./phases/26-parallax-menu-volume/">開啟 26</a></footer>
+          </article>
+        </div>
+      </section>
+
+      <section class="section site-shell" aria-labelledby="review-title">
+        <div class="section-heading">
+          <p class="eyebrow">Direct product review</p>
+          <h2 id="review-title">評價有獨立來源，不混入機制敘事</h2>
+          <p>09、13–21 的直接評價、停止延伸理由，以及以 18 為母體的決定，記錄在產品方向 review log。這些是專案方向判斷，不是正式使用者研究。</p>
+          <p><code>docs/research-history/product-direction-review.md</code></p>
+        </div>
+      </section>
+
+      <section class="section site-shell" aria-labelledby="compare-title">
+        <div class="section-heading">
+          <p class="eyebrow">Comparison notes</p>
+          <h2 id="compare-title">下一次討論先比差異，不急著選答案</h2>
+        </div>
+        <div class="comparison-table">
+          <table>
+            <thead><tr><th>版本</th><th>持續保留</th><th>新增機制</th><th>仍需確認</th></tr></thead>
+            <tbody>
+              <tr><td>01</td><td>完整內容、分類跳轉、inline detail</td><td>—</td><td>線性距離與跨分類記憶</td></tr>
+              <tr><td>05</td><td>01 的完整長頁骨架</td><td>密集 ledger、欄位對齊</td><td>是否產生任務上的實質改善</td></tr>
+              <tr><td>02</td><td>overview、Anchor 與 shared axis</td><td>分類內精確差異投影</td><td>控制成本是否高於局部判斷收益</td></tr>
+              <tr><td>03A</td><td>02 的完整菜單列</td><td>附著在料理上的 Candidate marks</td><td>標記是否已經形成額外管理工作</td></tr>
+              <tr><td>03B</td><td>03A 的 Candidate 身份</td><td>獨立 Candidate workspace</td><td>工作區是否使閱讀流程分裂</td></tr>
+              <tr><td>04</td><td>03B 的候選集合</td><td>再次選取 2–3 道 bounded comparison</td><td>重複選取造成的產品流程成本</td></tr>
+              <tr><td>06</td><td>overview 與局部展開</td><td>分類尺度、保留其他分類地標</td><td>是否有別於早期投影家族的新效益</td></tr>
+              <tr><td>07</td><td>市場熟悉度</td><td>橫向分類、分類內垂直列表</td><td>只作 baseline，不投入探索實作</td></tr>
+              <tr><td>08</td><td>固定分類順序、完整 fixture</td><td>同一 spread 上原地展寬</td><td>壓縮欄是否仍具有空間意義</td></tr>
+              <tr><td>09</td><td>完整 fixture、canonical order</td><td>所有料理共用水平座標</td><td>水平總距離是否比垂直長頁更可預測</td></tr>
+              <tr><td>10</td><td>09 的單一菜序、完整 fixture</td><td>固定全貌上的可拖曳 fisheye 鏡頭</td><td>局部放大是否以位置扭曲換取了太多可讀性</td></tr>
+              <tr><td>11</td><td>分類與料理 canonical order</td><td>固定 6 × 8 格位、整列伸縮</td><td>矩陣是否像菜單，以及空格是否提供有效資訊</td></tr>
+              <tr><td>12</td><td>完整分類與 30 道 fixture</td><td>無語意紙面座標、整張 sheet 原位縮放</td><td>不可讀的微型全貌是否仍提供有用的密度與位置感</td></tr>
+              <tr><td>13</td><td>12 的固定紙面與分類座標</td><td>可拖曳局部放大層</td><td>複視與遮擋是否小於全紙縮放成本</td></tr>
+              <tr><td>14</td><td>分類順序與相鄰關係</td><td>帶有摺線的面板展開</td><td>紙面連續感是否真有別於 accordion</td></tr>
+              <tr><td>15</td><td>紙張外框與分類象限</td><td>二維欄列局部拉伸</td><td>移動邊界是否破壞位置記憶</td></tr>
+              <tr><td>16</td><td>15 的 2×3 拓撲與直接拖曳</td><td>依料理數量配置基礎與聚焦面積</td><td>內容比例是否過度接近資料圖表</td></tr>
+              <tr><td>17</td><td>六分類同時在場</td><td>無捲動、內容加權的彈性橫帶</td><td>小分類的可點擊寬度是否足夠</td></tr>
+              <tr><td>18</td><td>紙面分區與 canonical order</td><td>比例 3×2 紙張、橫向紙欄閱讀</td><td>少內容紙欄是否需要最低閱讀寬度</td></tr>
+              <tr><td>18A</td><td>18 的分類配對、上下比例與操作</td><td>欄寬依內容改為 14:10:6</td><td>內容比例是否值得犧牲第三欄的最低閱讀寬度</td></tr>
+              <tr><td>19</td><td>18 的 3×2 紙面拓撲</td><td>固定座標、等比例縮放、水平 camera</td><td>單欄閱讀是否過度放大並減少同時資訊</td></tr>
+              <tr><td>20</td><td>三欄×上下兩分類</td><td>保留分隔線的三片紙面折疊</td><td>CSS 透視是否足以建立可信的摺紙關係</td></tr>
+              <tr><td>21</td><td>固定三欄紙面與四分類可見量</td><td>A+B／B+C 重疊窗口</td><td>雙欄密度是否仍足以閱讀單一道料理</td></tr>
+              <tr><td>22</td><td>18 的固定紙寬與完整 3×2 內容</td><td>1.8× 列高、1.65× 焦點欄寬與 camera tracking</td><td>鄰居保持完整時，焦點是否已足夠清楚</td></tr>
+              <tr><td>23</td><td>22 的欄寬變化與 camera tracking</td><td>同欄鄰居收成 2.2rem 標頭，焦點字級放大</td><td>犧牲鄰居內容能否換到更好的單欄閱讀</td></tr>
+              <tr><td>24</td><td>18 的 3×2 拓撲與分類順序</td><td>14:10:6 欄寬、料理直排、價格欄內壓底</td><td>內容比例是否改善直排密度與字級</td></tr>
+              <tr><td>25</td><td>完整 fixture 與維度研究問題</td><td>停止把分類內序號當共同 Z 軸</td><td>哪些分支值得成為獨立可比較物件</td></tr>
+              <tr><td>25P</td><td>30 道料理身份與真實欄位</td><td>價格、份量、準備時間正交投影</td><td>是否只是一般資料 dashboard</td></tr>
+              <tr><td>25B</td><td>完整 3×2 矩陣</td><td>八層共同深度切片</td><td>保留為反證，不再延伸共同序號模型</td></tr>
+              <tr><td>26</td><td>完整 fixture 與可逆操作</td><td>深度作為排版材料與視差</td><td>中間角度是否仍有可讀價值</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="research-footer site-shell">
+      <p>Menu Lens research record · 保存原件、承認回圈、延後結論。</p>
+    </footer>
+    <script>
+      const prototypeRegistry = window.menuLensPrototypeRegistry;
+      const registryCount = document.querySelector("#registry-count");
+      const registryRoot = document.querySelector("#prototype-registry");
+      const executableCount = prototypeRegistry.prototypes.filter((prototype) => prototype.path).length;
+      registryCount.textContent = `${prototypeRegistry.prototypes.length} 個物件 · ${executableCount} 個可執行`;
+
+      const familyById = new Map(prototypeRegistry.families.map((family) => [family.id, family]));
+      const statusTone = (prototypeStatus) => {
+        if (prototypeStatus === "reviewed-stop" || prototypeStatus === "product-invalid" || prototypeStatus.startsWith("rejected")) return "rejected";
+        if (prototypeStatus.includes("active") || prototypeStatus === "current-substrate" || prototypeStatus === "reference-variant") return "active";
+        return "accepted";
+      };
+      prototypeRegistry.prototypes.forEach((prototype) => {
+        const family = familyById.get(prototype.family);
+        const object = document.createElement("article");
+        object.className = "prototype-object";
+        object.dataset.prototypeId = prototype.id;
+        object.dataset.status = prototype.status;
+
+        const heading = document.createElement("div");
+        heading.className = "prototype-object__heading";
+        const identity = document.createElement("div");
+        const id = document.createElement("p");
+        id.className = "phase-index";
+        id.textContent = prototype.id;
+        const title = document.createElement("h3");
+        title.textContent = prototype.title;
+        identity.append(id, title);
+        const status = document.createElement("span");
+        status.className = `status ${statusTone(prototype.status)}`;
+        status.textContent = prototype.statusLabel;
+        heading.append(identity, status);
+
+        const summary = document.createElement("p");
+        summary.textContent = prototype.summary;
+        const metadata = document.createElement("p");
+        metadata.className = "prototype-object__meta";
+        metadata.textContent = `${family.title} · ${prototype.parentId ? `from ${prototype.parentId}` : "root"} · ${prototype.kind}`;
+        object.append(heading, summary, metadata);
+
+        if (prototype.path) {
+          const footer = document.createElement("footer");
+          const link = document.createElement("a");
+          link.className = "ghost-button";
+          link.href = `./${prototype.path.replace(/index\.html$/, "")}`;
+          link.textContent = `開啟 ${prototype.id}`;
+          footer.append(link);
+          object.append(footer);
+        }
+        registryRoot.append(object);
+      });
+    </script>
+  </body>
+</html>

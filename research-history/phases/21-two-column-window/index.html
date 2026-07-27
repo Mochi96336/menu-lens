@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 21 Two-column Reading Window：同一張 3×2 紙面一次閱讀相鄰兩欄。" />
+    <title>21 Two-column Reading Window — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../two-column-window.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">21 · Overlapping paper windows</p>
+          <h1>Two-column Reading Window</h1>
+          <p class="lede">同一張固定 3×2 紙面一次顯示兩個相鄰紙欄。橫向只有 A+B 與 B+C 兩個窗口，中間欄成為連續的共同地標。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">這不是重新排成兩欄：底層仍是三欄×兩分類的完整紙面，閱讀窗口只在同一紙張上水平移動一個欄寬。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Two-column Reading Window 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="window-restaurant-name" class="restaurant-name"></h2>
+            <p id="window-restaurant-meta" class="restaurant-meta"></p>
+            <p id="window-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="window-overview" type="button" aria-pressed="true">整張</button>
+            <button id="window-previous" type="button" aria-label="向左移動雙欄窗口">←</button>
+            <button id="window-next" type="button" aria-label="向右移動雙欄窗口">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="window-location-title">完整 3×2 紙面</strong>
+              <span id="window-location-meta">三欄全部在場</span>
+            </div>
+          </div>
+          <nav id="window-map" class="window-map" aria-label="雙欄閱讀窗口位置">
+            <span class="window-map__frame" aria-hidden="true"></span>
+          </nav>
+
+          <div id="window-stage" class="window-stage" data-mode="overview" tabindex="0" aria-label="橫向拖曳雙欄閱讀窗口">
+            <div id="two-column-sheet" class="two-column-sheet"></div>
+            <aside id="window-detail" class="paper-detail" data-open="false" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="window-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="window-detail-title"></h3>
+                <p id="window-detail-meta" class="paper-detail__meta"></p>
+                <p id="window-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">閱讀時一次保留四個分類；左右拖曳只在 A+B 與 B+C 兩個固定窗口之間移動。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>移動一欄，保留一欄重疊</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>固定三欄紙面</h3><p>底圖永遠是 900×540、三個等寬紙欄；每欄上下兩分類仍按內容數量分配高度。</p></article>
+          <article class="phase-card"><h3>兩個窗口</h3><p>閱讀 scale 固定讓兩欄剛好進入 viewport，只存在 A+B 與 B+C 兩個 snap state。</p></article>
+          <article class="phase-card"><h3>共同中欄</h3><p>B 欄在兩個狀態中都存在，橫向切換後仍有兩個分類作為連續地標。</p></article>
+          <article class="phase-card"><h3>取捨</h3><p>一次看到四分類更穩定，但單一料理列比 19 小；它用閱讀密度換取跨欄比較與定位。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const stage = document.querySelector("#window-stage");
+      const sheet = document.querySelector("#two-column-sheet");
+      const map = document.querySelector("#window-map");
+      const overviewButton = document.querySelector("#window-overview");
+      const previousButton = document.querySelector("#window-previous");
+      const nextButton = document.querySelector("#window-next");
+      const locationTitle = document.querySelector("#window-location-title");
+      const locationMeta = document.querySelector("#window-location-meta");
+      const detail = document.querySelector("#window-detail");
+      const detailClose = document.querySelector("#window-detail-close");
+
+      document.querySelector("#window-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#window-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#window-restaurant-meta").textContent = menu.restaurant.summary;
+
+      const projection = document.createElement("div");
+      projection.innerHTML = window.renderMenuLensPaperField(menu);
+      const projectedCategories = [...projection.querySelectorAll(".paper-category")];
+      const categoryCounts = menu.categories.map((category) => menu.products.filter((product) => product.categoryId === category.id).length);
+      for (let columnIndex = 0; columnIndex < 3; columnIndex += 1) {
+        const firstIndex = columnIndex * 2;
+        const column = document.createElement("div");
+        column.className = "window-column";
+        column.dataset.columnIndex = String(columnIndex);
+        column.dataset.firstCategoryIndex = String(firstIndex);
+        column.style.setProperty("--column-rows", `${categoryCounts[firstIndex]}fr ${categoryCounts[firstIndex + 1]}fr`);
+        column.append(projectedCategories[firstIndex], projectedCategories[firstIndex + 1]);
+        sheet.append(column);
+
+        const mapButton = document.createElement("button");
+        mapButton.type = "button";
+        mapButton.dataset.windowIndex = String(Math.min(columnIndex, 1));
+        mapButton.innerHTML = `<span>${menu.categories[firstIndex].name}</span><span>${menu.categories[firstIndex + 1].name}</span>`;
+        map.insertBefore(mapButton, map.lastElementChild);
+      }
+
+      const columns = [...sheet.querySelectorAll(".window-column")];
+      const categories = [...sheet.querySelectorAll(".paper-category")];
+      const productButtons = [...sheet.querySelectorAll(".paper-product")];
+      categories.forEach((category) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+      });
+      const mapButtons = [...map.querySelectorAll("button")];
+      let mode = "overview";
+      let activeWindowIndex = 0;
+      let currentScale = 1;
+      let cameraX = 0;
+      let selectedProductIndex = null;
+      let pointerState = null;
+      let suppressClick = false;
+
+      const closeDetail = (restoreFocus = false) => {
+        detail.dataset.open = "false";
+        productButtons.forEach((button) => delete button.dataset.selected);
+        if (restoreFocus && selectedProductIndex !== null) productButtons[selectedProductIndex]?.focus();
+        selectedProductIndex = null;
+      };
+      const pairCameraX = (windowIndex) => {
+        const sourceCenter = windowIndex === 0 ? 300 : 600;
+        return stage.clientWidth / 2 - sourceCenter * currentScale;
+      };
+      const applyTransform = () => {
+        const cameraY = (stage.clientHeight - sheet.offsetHeight * currentScale) / 2;
+        sheet.style.setProperty("--window-transform", `translate(${cameraX}px, ${cameraY}px) scale(${currentScale})`);
+      };
+      const updateState = () => {
+        overviewButton.setAttribute("aria-pressed", String(mode === "overview"));
+        previousButton.disabled = mode === "overview" || activeWindowIndex === 0;
+        nextButton.disabled = mode === "overview" || activeWindowIndex === 1;
+        columns.forEach((column, index) => {
+          const visible = mode === "overview" || index === activeWindowIndex || index === activeWindowIndex + 1;
+          if (visible) column.dataset.visible = "true";
+          else delete column.dataset.visible;
+        });
+        categories.forEach((category) => {
+          const columnIndex = Number(category.closest(".window-column").dataset.columnIndex);
+          const visible = mode === "reading" && (columnIndex === activeWindowIndex || columnIndex === activeWindowIndex + 1);
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", String(visible));
+          category.querySelectorAll(".paper-product").forEach((button) => button.tabIndex = mode === "overview" || visible ? 0 : -1);
+        });
+        if (mode === "overview") {
+          map.style.setProperty("--window-left", "0%");
+          map.style.setProperty("--window-width", "100%");
+          locationTitle.textContent = "完整 3×2 紙面";
+          locationMeta.textContent = "三欄全部在場";
+        } else {
+          map.style.setProperty("--window-left", `${activeWindowIndex * 33.333}%`);
+          map.style.setProperty("--window-width", "66.666%");
+          locationTitle.textContent = activeWindowIndex === 0 ? "紙欄 A + B" : "紙欄 B + C";
+          locationMeta.textContent = `窗口 ${activeWindowIndex + 1} / 2 · 四個分類同時可讀`;
+        }
+      };
+      const showOverview = () => {
+        mode = "overview";
+        stage.dataset.mode = mode;
+        closeDetail();
+        currentScale = Math.min((stage.clientWidth - 20) / sheet.offsetWidth, (stage.clientHeight - 20) / sheet.offsetHeight);
+        cameraX = (stage.clientWidth - sheet.offsetWidth * currentScale) / 2;
+        applyTransform();
+        updateState();
+      };
+      const focusWindow = (nextIndex) => {
+        mode = "reading";
+        stage.dataset.mode = mode;
+        closeDetail();
+        activeWindowIndex = Math.max(0, Math.min(1, nextIndex));
+        currentScale = Math.min((stage.clientWidth - 20) / 600, (stage.clientHeight - 20) / sheet.offsetHeight);
+        cameraX = pairCameraX(activeWindowIndex);
+        applyTransform();
+        updateState();
+      };
+      const openDetail = (productIndex, button) => {
+        const product = menu.products[productIndex];
+        selectedProductIndex = productIndex;
+        productButtons.forEach((candidate) => {
+          if (candidate === button) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+        });
+        document.querySelector("#window-detail-title").textContent = product.name;
+        document.querySelector("#window-detail-meta").textContent = `NT$${product.price} · ${product.cue}${product.availability === "sold_out" ? " · 售完" : ""}`;
+        document.querySelector("#window-detail-copy").textContent = product.description;
+        detail.dataset.open = "true";
+      };
+
+      categories.forEach((category) => {
+        const columnIndex = Number(category.closest(".window-column").dataset.columnIndex);
+        category.querySelector(".paper-category__header").addEventListener("click", () => focusWindow(Math.min(columnIndex, 1)));
+      });
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const columnIndex = Number(button.closest(".window-column").dataset.columnIndex);
+          const visible = mode === "reading" && (columnIndex === activeWindowIndex || columnIndex === activeWindowIndex + 1);
+          if (!visible) focusWindow(Math.min(columnIndex, 1));
+          else openDetail(Number(button.dataset.productIndex), button);
+        });
+      });
+      mapButtons.forEach((button) => button.addEventListener("click", () => focusWindow(Number(button.dataset.windowIndex))));
+
+      stage.addEventListener("pointerdown", (event) => {
+        if (mode !== "reading" || detail.contains(event.target)) return;
+        if (!event.isPrimary || pointerState || (event.pointerType === "mouse" && event.button !== 0)) return;
+        pointerState = { id: event.pointerId, startX: event.clientX, startY: event.clientY, startCameraX: cameraX, axis: null, moved: false };
+      });
+      stage.addEventListener("pointermove", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        const dx = event.clientX - pointerState.startX;
+        const dy = event.clientY - pointerState.startY;
+        if (!pointerState.axis && Math.max(Math.abs(dx), Math.abs(dy)) >= 7) {
+          pointerState.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+          if (pointerState.axis === "x") {
+            stage.setPointerCapture(event.pointerId);
+            stage.classList.add("is-dragging");
+            closeDetail();
+          }
+        }
+        if (pointerState.axis !== "x") return;
+        event.preventDefault();
+        pointerState.moved = true;
+        const leftX = pairCameraX(0);
+        const rightX = pairCameraX(1);
+        cameraX = Math.max(rightX, Math.min(leftX, pointerState.startCameraX + dx));
+        activeWindowIndex = Math.abs(cameraX - leftX) <= Math.abs(cameraX - rightX) ? 0 : 1;
+        applyTransform();
+        updateState();
+      });
+      const endPointer = (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        if (pointerState.moved) suppressClick = true;
+        const shouldSnap = pointerState.axis === "x";
+        pointerState = null;
+        stage.classList.remove("is-dragging");
+        if (shouldSnap) focusWindow(activeWindowIndex);
+      };
+      stage.addEventListener("pointerup", endPointer);
+      stage.addEventListener("pointercancel", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        cameraX = pointerState.startCameraX;
+        pointerState = null;
+        suppressClick = false;
+        activeWindowIndex = Math.abs(cameraX - pairCameraX(0)) <= Math.abs(cameraX - pairCameraX(1)) ? 0 : 1;
+        stage.classList.remove("is-dragging");
+        applyTransform();
+        updateState();
+      });
+      stage.addEventListener("click", (event) => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        suppressClick = false;
+      }, true);
+
+      overviewButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => { closeDetail(); focusWindow(0); });
+      nextButton.addEventListener("click", () => { closeDetail(); focusWindow(1); });
+      detailClose.addEventListener("click", () => closeDetail(true));
+      stage.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        if (mode === "overview") focusWindow(event.key === "ArrowLeft" ? 0 : 1);
+        else focusWindow(activeWindowIndex + (event.key === "ArrowLeft" ? -1 : 1));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.dataset.open === "true") closeDetail(true);
+        else if (mode === "reading") showOverview();
+      });
+      window.addEventListener("resize", () => requestAnimationFrame(() => mode === "overview" ? showOverview() : focusWindow(activeWindowIndex)));
+
+      requestAnimationFrame(showOverview);
+    </script>
+  </body>
+</html>
