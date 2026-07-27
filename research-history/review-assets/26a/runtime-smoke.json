@@ -1,0 +1,75 @@
+[
+  {
+    "initial": {
+      "viewport": "320x720",
+      "categories": 6,
+      "products": 30,
+      "landmarks_visible": "false",
+      "landmarks_aria_hidden": "true",
+      "horizontal_overflow": false,
+      "page_errors": []
+    },
+    "transition": {
+      "visible": "true",
+      "aria_hidden": "true",
+      "origin": "0",
+      "target": "2",
+      "landmark_buttons": 0,
+      "landmark_links": 0,
+      "announcement": "從個人主餐穿越到分享料理；分享料理正在成形，個人主餐仍保留範圍。"
+    },
+    "depth_pair": ["0", "2"],
+    "reset": { "visible": "false", "announcement": "" },
+    "detail_open": "true",
+    "detail_close": "false"
+  },
+  {
+    "initial": {
+      "viewport": "390x844",
+      "categories": 6,
+      "products": 30,
+      "landmarks_visible": "false",
+      "landmarks_aria_hidden": "true",
+      "horizontal_overflow": false,
+      "page_errors": []
+    },
+    "transition": {
+      "visible": "true",
+      "aria_hidden": "true",
+      "origin": "0",
+      "target": "2",
+      "landmark_buttons": 0,
+      "landmark_links": 0,
+      "announcement": "從個人主餐穿越到分享料理；分享料理正在成形，個人主餐仍保留範圍。"
+    },
+    "depth_pair": ["0", "2"],
+    "reset": { "visible": "false", "announcement": "" },
+    "detail_open": "true",
+    "detail_close": "false"
+  },
+  {
+    "initial": {
+      "viewport": "1280x1000",
+      "categories": 6,
+      "products": 30,
+      "landmarks_visible": "false",
+      "landmarks_aria_hidden": "true",
+      "horizontal_overflow": false,
+      "page_errors": []
+    },
+    "transition": {
+      "visible": "true",
+      "aria_hidden": "true",
+      "origin": "0",
+      "target": "2",
+      "landmark_buttons": 0,
+      "landmark_links": 0,
+      "announcement": "從個人主餐穿越到分享料理；分享料理正在成形，個人主餐仍保留範圍。"
+    },
+    "depth_pair": ["0", "2"],
+    "reset": { "visible": "false", "announcement": "" },
+    "detail_open": "true",
+    "detail_close": "false"
+  },
+  { "reduced_motion_transition_duration": "0s" }
+]
