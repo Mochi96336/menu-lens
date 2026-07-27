@@ -128,6 +128,13 @@
       assets: { styles: ["history.css", "fisheye-ribbon.css"], scripts: ["menu-fixture.js", "fisheye-ribbon-renderer.js"] },
     },
     {
+      id: "10A", slug: "local-fisheye", title: "Local Fisheye", family: "horizontal", parentId: "10",
+      kind: "spatial-prototype", status: "active-variant", statusLabel: "active variant",
+      path: "phases/10a-local-fisheye/index.html", validationProfile: "fisheye-local",
+      summary: "料理鏡頭固定 ±2 形變半徑與遠方寬度，邊界剩餘空間只在局部 neighbourhood 內分配。",
+      assets: { styles: ["history.css", "fisheye-ribbon.css", "local-fisheye.css"], scripts: ["menu-fixture.js", "fisheye-ribbon-renderer.js", "local-fisheye.js"] },
+    },
+    {
       id: "11", slug: "menu-matrix", title: "Menu Matrix", family: "matrix-paper", parentId: "10",
       kind: "spatial-prototype", status: "preserved", statusLabel: "preserved experiment",
       path: "phases/11-menu-matrix/index.html", validationProfile: "matrix",
