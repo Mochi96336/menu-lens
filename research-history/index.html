@@ -45,24 +45,24 @@
             <p class="phase-index">Line B</p>
             <h3>結構、局部與比較投影</h3>
             <p>從 overview、Anchor 與 shared axis 出發，延伸到 Candidate、comparison，後來再以尺度與分類展開回訪全貌問題。</p>
-            <p><strong>02 Relational → 03 Candidate → 04 Comparison → 06 Multi-scale revisit</strong></p>
+            <p><strong>02 Relational → 03A Candidate marks → 03B Candidate workspace → 04 Comparison → 06 Multi-scale revisit</strong></p>
           </article>
           <article class="phase-card">
             <p class="phase-index">Line C</p>
             <h3>空間互動探索</h3>
             <p>把常見橫向分類分頁記為 baseline，不重建；直接探索分類能否在同一張連續 spread 上保持固定位置並局部展寬。</p>
-            <p><strong>07 baseline → 08–11 spatial models → 12–18 paper variants → 19–21 reviewed branches → 22–24 landscape variants → 25 reset → 25P real-axis projection / 26 parallax volume</strong></p>
+            <p><strong>07 baseline → 08–17 spatial models → 18 / 18A paper references → 19–24 landscape objects → 25 reset → 25P / 25B / 26 depth objects</strong></p>
           </article>
         </div>
       </section>
 
       <section class="section site-shell" aria-labelledby="architecture-title">
         <div class="section-heading">
-          <p class="eyebrow">Prototype architecture</p>
-          <h2 id="architecture-title">先看家族與父系，再看單一版本</h2>
-          <p>每個方案只在 registry 登記一次：它屬於哪個家族、從哪個版本分支、目前狀態、可執行路徑與依賴資產。新增方案不再重寫一條更長的進步史。</p>
+          <p class="eyebrow">Object catalog</p>
+          <h2 id="architecture-title">一個 ID，就是一個研究物件</h2>
+          <p>家族只作標籤，不包住或合併版本。03A、03B、18、18A、25、25P、25B 都各自保留身份、父系、狀態與入口；字母後綴不是同一張卡片的模式。</p>
         </div>
-        <div id="prototype-registry" class="prototype-families" aria-live="polite"></div>
+        <div id="prototype-registry" class="prototype-object-grid" aria-live="polite"></div>
       </section>
 
       <section class="section site-shell" aria-labelledby="original-title">
@@ -252,35 +252,45 @@
           </article>
 
           <article class="phase-card">
-            <div><p class="phase-index">22 / weighted pinch sheet</p><h3>Weighted Pinch Sheet</h3><span class="status active">active 18 variant</span></div>
-            <p><strong>原生手機能力：</strong>同一張 3×2 紙面以兩指中心連續縮放，放大後可單指二維移動。</p>
-            <p><strong>內容感知：</strong>點分類只是捷徑；建議倍率依 2–8 道料理改變，不再讓所有分類取得相同倍率。</p>
+            <div><p class="phase-index">22 / weighted focus sheet</p><h3>Weighted Focus Sheet</h3><span class="status active">18 + 16 variant</span></div>
+            <p><strong>18 的骨架：</strong>46rem 固定紙面與三個等寬紙欄保持不動。</p>
+            <p><strong>16 的焦點：</strong>選中分類以 1.8× 重配列高，所在紙欄展為 1.65 份，camera 跟著置中；同欄鄰居仍完整。</p>
             <footer><a class="button" href="./phases/22-weighted-pinch-sheet/">開啟 22</a></footer>
           </article>
 
           <article class="phase-card">
-            <div><p class="phase-index">23 / collapsible landscape</p><h3>Collapsible Landscape</h3><span class="status active">active 18 variant</span></div>
-            <p><strong>分類收合：</strong>折疊指的是像 06 一樣收起分類內容，不是摺紙或 3D 動畫。</p>
-            <p><strong>局部規則：</strong>每欄只在自己的上下兩分類間切換；三欄位置與等寬欄位不變。</p>
+            <div><p class="phase-index">23 / tracked focus landscape</p><h3>Tracked Focus Landscape</h3><span class="status active">active 22 extension</span></div>
+            <p><strong>折疊差異：</strong>沿用 22 的 1.65 欄寬與 camera，但把同欄另一分類收成 2.2rem 標頭。</p>
+            <p><strong>閱讀焦點：</strong>選中分類取得整欄高度，料理字級同步放大；再次點選回到完整 3×2。</p>
             <footer><a class="button" href="./phases/23-collapsible-landscape/">開啟 23</a></footer>
           </article>
 
           <article class="phase-card">
             <div><p class="phase-index">24 / vertical landscape</p><h3>Vertical Landscape</h3><span class="status active">active 18 variant</span></div>
-            <p><strong>完整直排：</strong>不只分類標題，分類內料理也由右往左形成直排欄。</p>
-            <p><strong>混合書寫：</strong>價格與浮出的料理說明保留橫排，同時支援雙指縮放。</p>
+            <p><strong>混合排版：</strong>分類標題橫排；菜名與 upright 價格共用同一條直向料理欄，不另起價格排。</p>
+            <p><strong>內容比例：</strong>三欄依料理總數成為 14:10:6；46rem／64rem 紙面都不跟手機寬度連動。</p>
             <footer><a class="button" href="./phases/24-vertical-landscape/">開啟 24</a></footer>
           </article>
 
           <article class="phase-card">
             <div><p class="phase-index">25 / menu dimensions</p><h3>Menu Dimensions</h3><span class="status active">dimension model reset</span></div>
             <p><strong>第一輪問題：</strong>物理隱喻只把平面擠出厚度；保留的 25B 也沒有可辯護的共同 Z 語意。</p>
-            <p><strong>兩條可比較分支：</strong>25P 讓 Z 對應真實準備時間；26 讓 Z 成為排版視差。兩者都不沿用分類內第 N 道的假座標。</p>
-            <footer>
-              <a class="button" href="./phases/25-menu-depth/">開啟 25</a>
-              <a class="button" href="./phases/25-menu-depth/projections.html">25P Projections</a>
-              <a class="button" href="./phases/25-menu-depth/volume.html">25B Volume</a>
-            </footer>
+            <p><strong>物件邊界：</strong>25 只保存維度模型重置與分支入口，本身不代表 25P 或 25B。</p>
+            <footer><a class="button" href="./phases/25-menu-depth/">開啟 25</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">25P / real-axis projection</p><h3>Menu Projections</h3><span class="status active">active dimensional projection</span></div>
+            <p><strong>獨立物件：</strong>價格、份量與準備時間形成三張正交投影，30 道料理保持身份連續。</p>
+            <p><strong>父系：</strong>從 25 的維度重置分支，不與 25B 共用畫面或狀態。</p>
+            <footer><a class="button" href="./phases/25-menu-depth/projections.html">開啟 25P</a></footer>
+          </article>
+
+          <article class="phase-card">
+            <div><p class="phase-index">25B / retained falsification</p><h3>Menu Volume</h3><span class="status rejected">reviewed stop</span></div>
+            <p><strong>獨立物件：</strong>完整矩陣沿 Z 軸堆成八層，以共同深度切片閱讀。</p>
+            <p><strong>保留原因：</strong>作為第一輪深度模型的反證，不代表 25P 或 26 的結論。</p>
+            <footer><a class="button" href="./phases/25-menu-depth/volume.html">開啟 25B</a></footer>
           </article>
 
           <article class="phase-card">
@@ -312,7 +322,10 @@
             <tbody>
               <tr><td>01</td><td>完整內容、分類跳轉、inline detail</td><td>—</td><td>線性距離與跨分類記憶</td></tr>
               <tr><td>05</td><td>01 的完整長頁骨架</td><td>密集 ledger、欄位對齊</td><td>是否產生任務上的實質改善</td></tr>
-              <tr><td>02–04</td><td>overview、局部投影、顯式狀態</td><td>Anchor、Candidate、comparison</td><td>控制與工作區成本</td></tr>
+              <tr><td>02</td><td>overview、Anchor 與 shared axis</td><td>分類內精確差異投影</td><td>控制成本是否高於局部判斷收益</td></tr>
+              <tr><td>03A</td><td>02 的完整菜單列</td><td>附著在料理上的 Candidate marks</td><td>標記是否已經形成額外管理工作</td></tr>
+              <tr><td>03B</td><td>03A 的 Candidate 身份</td><td>獨立 Candidate workspace</td><td>工作區是否使閱讀流程分裂</td></tr>
+              <tr><td>04</td><td>03B 的候選集合</td><td>再次選取 2–3 道 bounded comparison</td><td>重複選取造成的產品流程成本</td></tr>
               <tr><td>06</td><td>overview 與局部展開</td><td>分類尺度、保留其他分類地標</td><td>是否有別於早期投影家族的新效益</td></tr>
               <tr><td>07</td><td>市場熟悉度</td><td>橫向分類、分類內垂直列表</td><td>只作 baseline，不投入探索實作</td></tr>
               <tr><td>08</td><td>固定分類順序、完整 fixture</td><td>同一 spread 上原地展寬</td><td>壓縮欄是否仍具有空間意義</td></tr>
@@ -330,9 +343,13 @@
               <tr><td>19</td><td>18 的 3×2 紙面拓撲</td><td>固定座標、等比例縮放、水平 camera</td><td>單欄閱讀是否過度放大並減少同時資訊</td></tr>
               <tr><td>20</td><td>三欄×上下兩分類</td><td>保留分隔線的三片紙面折疊</td><td>CSS 透視是否足以建立可信的摺紙關係</td></tr>
               <tr><td>21</td><td>固定三欄紙面與四分類可見量</td><td>A+B／B+C 重疊窗口</td><td>雙欄密度是否仍足以閱讀單一道料理</td></tr>
-              <tr><td>22</td><td>18 的比例 3×2 紙面</td><td>原生雙指縮放、內容感知聚焦倍率</td><td>自由 camera 是否比欄位 snap 更容易失去位置</td></tr>
-              <tr><td>23</td><td>18 的欄寬、上下位置與完整 fixture</td><td>每欄局部分類收合</td><td>三個局部狀態是否增加記憶成本</td></tr>
-              <tr><td>24</td><td>18 的面積與分類順序</td><td>料理直排、價格與細節橫排</td><td>直排是否提高密度卻降低現代手機掃描速度</td></tr>
+              <tr><td>22</td><td>18 的固定紙寬與完整 3×2 內容</td><td>1.8× 列高、1.65× 焦點欄寬與 camera tracking</td><td>鄰居保持完整時，焦點是否已足夠清楚</td></tr>
+              <tr><td>23</td><td>22 的欄寬變化與 camera tracking</td><td>同欄鄰居收成 2.2rem 標頭，焦點字級放大</td><td>犧牲鄰居內容能否換到更好的單欄閱讀</td></tr>
+              <tr><td>24</td><td>18 的 3×2 拓撲與分類順序</td><td>14:10:6 欄寬、料理直排、價格欄內壓底</td><td>內容比例是否改善直排密度與字級</td></tr>
+              <tr><td>25</td><td>完整 fixture 與維度研究問題</td><td>停止把分類內序號當共同 Z 軸</td><td>哪些分支值得成為獨立可比較物件</td></tr>
+              <tr><td>25P</td><td>30 道料理身份與真實欄位</td><td>價格、份量、準備時間正交投影</td><td>是否只是一般資料 dashboard</td></tr>
+              <tr><td>25B</td><td>完整 3×2 矩陣</td><td>八層共同深度切片</td><td>保留為反證，不再延伸共同序號模型</td></tr>
+              <tr><td>26</td><td>完整 fixture 與可逆操作</td><td>深度作為排版材料與視差</td><td>中間角度是否仍有可讀價值</td></tr>
             </tbody>
           </table>
         </div>
@@ -347,44 +364,52 @@
       const registryCount = document.querySelector("#registry-count");
       const registryRoot = document.querySelector("#prototype-registry");
       const executableCount = prototypeRegistry.prototypes.filter((prototype) => prototype.path).length;
-      registryCount.textContent = `${prototypeRegistry.prototypes.length} 個節點 · ${executableCount} 個可執行`;
+      registryCount.textContent = `${prototypeRegistry.prototypes.length} 個物件 · ${executableCount} 個可執行`;
 
-      prototypeRegistry.families.forEach((family) => {
-        const familyPrototypes = prototypeRegistry.prototypes.filter((prototype) => prototype.family === family.id);
-        const article = document.createElement("article");
-        article.className = "prototype-family";
+      const familyById = new Map(prototypeRegistry.families.map((family) => [family.id, family]));
+      const statusTone = (prototypeStatus) => {
+        if (prototypeStatus === "reviewed-stop" || prototypeStatus === "product-invalid" || prototypeStatus.startsWith("rejected")) return "rejected";
+        if (prototypeStatus.includes("active") || prototypeStatus === "current-substrate" || prototypeStatus === "reference-variant") return "active";
+        return "accepted";
+      };
+      prototypeRegistry.prototypes.forEach((prototype) => {
+        const family = familyById.get(prototype.family);
+        const object = document.createElement("article");
+        object.className = "prototype-object";
+        object.dataset.prototypeId = prototype.id;
+        object.dataset.status = prototype.status;
 
         const heading = document.createElement("div");
-        heading.className = "prototype-family__heading";
+        heading.className = "prototype-object__heading";
+        const identity = document.createElement("div");
+        const id = document.createElement("p");
+        id.className = "phase-index";
+        id.textContent = prototype.id;
         const title = document.createElement("h3");
-        title.textContent = family.title;
-        const count = document.createElement("span");
-        count.className = "pill";
-        count.textContent = `${familyPrototypes.length} 個節點`;
-        heading.append(title, count);
+        title.textContent = prototype.title;
+        identity.append(id, title);
+        const status = document.createElement("span");
+        status.className = `status ${statusTone(prototype.status)}`;
+        status.textContent = prototype.statusLabel;
+        heading.append(identity, status);
 
         const summary = document.createElement("p");
-        summary.textContent = family.summary;
-        const list = document.createElement("ol");
-        list.className = "prototype-lineage";
-        list.setAttribute("aria-label", `${family.title} prototype lineage`);
+        summary.textContent = prototype.summary;
+        const metadata = document.createElement("p");
+        metadata.className = "prototype-object__meta";
+        metadata.textContent = `${family.title} · ${prototype.parentId ? `from ${prototype.parentId}` : "root"} · ${prototype.kind}`;
+        object.append(heading, summary, metadata);
 
-        familyPrototypes.forEach((prototype) => {
-          const item = document.createElement("li");
-          item.dataset.status = prototype.status;
-          const node = document.createElement(prototype.path ? "a" : "span");
-          if (prototype.path) node.href = `./${prototype.path.replace(/index\.html$/, "")}`;
-          const identity = document.createElement("strong");
-          identity.textContent = `${prototype.id} · ${prototype.title}`;
-          const relation = document.createElement("small");
-          relation.textContent = `${prototype.parentId ? `from ${prototype.parentId}` : "root"} · ${prototype.statusLabel}`;
-          node.append(identity, relation);
-          item.append(node);
-          list.append(item);
-        });
-
-        article.append(heading, summary, list);
-        registryRoot.append(article);
+        if (prototype.path) {
+          const footer = document.createElement("footer");
+          const link = document.createElement("a");
+          link.className = "ghost-button";
+          link.href = `./${prototype.path.replace(/index\.html$/, "")}`;
+          link.textContent = `開啟 ${prototype.id}`;
+          footer.append(link);
+          object.append(footer);
+        }
+        registryRoot.append(object);
       });
     </script>
   </body>

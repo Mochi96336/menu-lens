@@ -25,7 +25,7 @@
         <a class="ghost-button" href="../../">回研究檔案館</a>
       </header>
 
-      <p class="study-note">先拖曳物體尋找不同觀看方向，再用雙指合攏把目前版面壓平。桌面可用方向鍵旋轉、＋／－調整深度；Home 回到初始狀態。</p>
+      <p class="study-note">先拖曳物體尋找不同觀看方向，再用雙指合攏把目前版面壓平；對齊後可直接點料理查看資訊。桌面可用方向鍵旋轉、＋／－調整深度；Home 回到初始狀態。</p>
 
       <section id="prototype" class="phone-frame" aria-label="Parallax Menu Volume 手機互動原型">
         <div class="phone-screen parallax-phone">
@@ -43,27 +43,52 @@
             class="parallax-stage"
             tabindex="0"
             role="application"
-            aria-label="可旋轉的立體菜單。拖曳旋轉，雙指張合改變深度，方向鍵旋轉，加減鍵改變深度。"
+            aria-label="可旋轉的立體菜單。拖曳旋轉，雙指張合改變深度，對齊後點料理查看資訊；方向鍵旋轉，加減鍵改變深度。"
           >
             <div class="parallax-space" aria-hidden="true">
               <span></span><span></span><span></span>
             </div>
             <div id="parallax-volume" class="parallax-volume"></div>
 
+            <div id="parallax-compass" class="parallax-compass" role="img" aria-label="六個觀看方向；目前朝向個人主餐">
+              <div id="parallax-compass-markers" class="parallax-compass__markers"></div>
+              <i id="parallax-compass-cursor" class="parallax-compass__cursor" aria-hidden="true"></i>
+            </div>
+
+            <div id="parallax-reticle" class="parallax-reticle" data-state="locked" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+
+            <div id="parallax-depth-guide" class="parallax-depth-guide" data-visible="false" aria-hidden="true">
+              <span>立體</span>
+              <i><b id="parallax-depth-knob"></b></i>
+              <span>平面</span>
+            </div>
+
+            <aside id="parallax-detail" class="parallax-detail" data-open="false" aria-hidden="true" aria-live="polite">
+              <div>
+                <p id="parallax-detail-category"></p>
+                <h3 id="parallax-detail-title"></h3>
+                <p id="parallax-detail-meta" class="parallax-detail__meta"></p>
+                <p id="parallax-detail-copy" class="parallax-detail__copy"></p>
+              </div>
+              <button id="parallax-detail-close" type="button" aria-label="關閉料理資訊">×</button>
+            </aside>
+
             <div class="parallax-readout" aria-live="polite">
               <div>
-                <span>正在成形</span>
+                <span id="parallax-state-label">可以點料理</span>
                 <strong id="parallax-current-category">個人主餐</strong>
               </div>
               <div class="parallax-readout__metrics">
-                <span id="parallax-alignment">對齊 100%</span>
-                <span id="parallax-depth">深度 58%</span>
+                <span id="parallax-alignment">正面已對齊</span>
+                <span id="parallax-depth">立體</span>
               </div>
               <div class="parallax-meter" aria-hidden="true"><i id="parallax-meter-fill"></i></div>
             </div>
 
-            <button id="parallax-reset" class="parallax-reset" type="button">回正</button>
-            <p class="parallax-gesture" aria-hidden="true">拖曳旋轉 · 兩指張開立體 · 合攏壓平</p>
+            <button id="parallax-reset" class="parallax-reset" type="button">回到正面</button>
+            <p class="parallax-gesture" aria-hidden="true">拖曳旋轉 · 兩指張合深度 · 點料理看資訊</p>
           </div>
         </div>
       </section>

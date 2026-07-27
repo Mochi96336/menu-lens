@@ -65,6 +65,21 @@ const archiveIndex = await readFile(new URL("index.html", archiveRoot), "utf8");
 if (!archiveIndex.includes("prototype-registry.js")) {
   throw new Error("Research archive index must load the canonical prototype registry.");
 }
+for (const objectCatalogContract of [
+  'class="prototype-object-grid"',
+  "object.dataset.prototypeId = prototype.id",
+  "prototypeRegistry.prototypes.forEach((prototype) =>",
+  "`${prototypeRegistry.prototypes.length} 個物件",
+]) {
+  if (!archiveIndex.includes(objectCatalogContract)) {
+    throw new Error(`Research archive must render every exact prototype id as an independent object: ${objectCatalogContract}`);
+  }
+}
+for (const distinctId of ["18", "18A", "25", "25P", "25B"]) {
+  if (!registry.prototypes.some((prototype) => prototype.id === distinctId)) {
+    throw new Error(`Prototype object catalog is missing the distinct id ${distinctId}.`);
+  }
+}
 for (const prototype of registeredSnapshots) {
   const snapshot = prototype.path;
   const href = `./${snapshot.replace(/index\.html$/, "")}`;
@@ -629,15 +644,19 @@ for (const variant of paperVariantSnapshots) {
     "23-collapsible-landscape",
     "24-vertical-landscape",
   ].includes(variant.phase);
+  const isEqualColumnLandscapeVariant = [
+    "22-weighted-pinch-sheet",
+    "23-collapsible-landscape",
+  ].includes(variant.phase);
   const isLandscapeVariant = [
     "22-weighted-pinch-sheet",
     "23-collapsible-landscape",
     "24-vertical-landscape",
   ].includes(variant.phase);
-  if (isLandscapeVariant && snapshot.includes("14:10:6")) {
+  if (isEqualColumnLandscapeVariant && snapshot.includes("14:10:6")) {
     throw new Error(`${variant.label} must inherit 18's source geometry instead of inventing a new width ratio.`);
   }
-  if (isLandscapeVariant && !snapshot.includes("columnWeight: () => 1")) {
+  if (isEqualColumnLandscapeVariant && !snapshot.includes("columnWeight: () => 1")) {
     throw new Error(`${variant.label} must explicitly preserve the 1:1:1 landscape column contract.`);
   }
   if (isLandscapeVariant
@@ -677,13 +696,30 @@ for (const variant of paperVariantSnapshots) {
     && !snapshot.includes('class="landscape-sheet landscape-sheet--equal-columns"')) {
     throw new Error("Landscape Paper must opt into the explicit 1:1:1 column contract.");
   }
-  if (variant.phase === "22-weighted-pinch-sheet"
-    && !snapshot.includes('<script src="../../pinch-sheet.js')) {
-    throw new Error(`${variant.label} must load the shared two-pointer pinch camera.`);
+  if (variant.phase === "22-weighted-pinch-sheet") {
+    for (const reference of [
+      '<script src="../../spatial-drag.js"></script>',
+      "const focusFactor = 1.8",
+      'column.style.setProperty("--column-rows"',
+      'tracked ? "1.65" : "1"',
+      "const trackColumn =",
+    ]) {
+      if (!snapshot.includes(reference)) {
+        throw new Error(`Weighted Focus Sheet must combine 18 with 16's row weighting: ${reference}`);
+      }
+    }
   }
-  if (variant.phase === "23-collapsible-landscape"
-    && !snapshot.includes('<script src="../../spatial-drag.js"></script>')) {
-    throw new Error("Collapsible Landscape must expose horizontal camera movement over its fixed sheet.");
+  if (variant.phase === "23-collapsible-landscape") {
+    for (const reference of [
+      '<script src="../../spatial-drag.js"></script>',
+      'tracked ? "1.65" : "1"',
+      "const trackColumn =",
+      "category.dataset.collapsed = String(collapsed)",
+    ]) {
+      if (!snapshot.includes(reference)) {
+        throw new Error(`Tracked Focus Landscape must preserve 22 and add width plus camera tracking: ${reference}`);
+      }
+    }
   }
   if (variant.phase === "24-vertical-landscape"
     && !snapshot.includes('<script src="../../spatial-drag.js"></script>')) {
@@ -692,6 +728,18 @@ for (const variant of paperVariantSnapshots) {
   if (variant.phase === "24-vertical-landscape"
     && (!variantStyles.includes('data-scale="reading"') || !variantStyles.includes("width: 64rem;"))) {
     throw new Error("Vertical Landscape reading scale must use an intrinsic 64rem sheet.");
+  }
+  if (variant.phase === "24-vertical-landscape"
+    && !snapshot.includes("columnWeight: ({ firstCount, secondCount }) => firstCount + secondCount")) {
+    throw new Error("Vertical Landscape must allocate outer columns by the 14:10:6 product totals.");
+  }
+  if (variant.phase === "24-vertical-landscape"
+    && (!variantStyles.includes(".vertical-category .paper-product__name")
+      || !variantStyles.includes("writing-mode: vertical-rl;")
+      || !variantStyles.includes("text-combine-upright: all;")
+      || !variantStyles.includes("margin-inline-start: auto;")
+      || !variantStyles.includes("font-size: .9rem;"))) {
+    throw new Error("Vertical Landscape must keep readable vertical names with inline upright prices.");
   }
   if (snapshot.includes("選這道")) {
     throw new Error(`${variant.label} reading hypothesis must not contain an order action.`);

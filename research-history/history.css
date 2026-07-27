@@ -109,25 +109,21 @@ h2 { font-family: "Noto Serif TC", "PMingLiU", Georgia, serif; font-weight: 600;
 .phase-card ul { margin: 0; padding-left: 1.1rem; }
 .phase-card footer { align-self: end; display: flex; flex-wrap: wrap; gap: .55rem; padding-top: .4rem; }
 
-.prototype-families { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-.prototype-family { min-width: 0; padding: 1rem; border: 1px solid var(--line-strong); background: var(--surface); }
-.prototype-family:last-child:nth-child(odd) { grid-column: 1 / -1; }
-.prototype-family__heading { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; margin-bottom: .55rem; }
-.prototype-family__heading h3 { margin: 0; font-family: "Noto Serif TC", "PMingLiU", Georgia, serif; font-size: 1.25rem; }
-.prototype-family > p { margin-bottom: .9rem; color: var(--muted); font-size: .88rem; }
-.prototype-lineage { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: .4rem; margin: 0; padding: 0; list-style: none; }
-.prototype-lineage li { min-width: 0; border-left: 3px solid var(--line); background: var(--surface-strong); }
-.prototype-lineage li[data-status="current-substrate"] { border-left-color: var(--ink); }
-.prototype-lineage li[data-status="active-variant"] { border-left-color: var(--accent); }
-.prototype-lineage li[data-status="reviewed-stop"],
-.prototype-lineage li[data-status^="rejected"],
-.prototype-lineage li[data-status="product-invalid"] { opacity: .7; }
-.prototype-lineage a,
-.prototype-lineage li > span { display: grid; gap: .1rem; min-height: 100%; padding: .55rem .65rem; color: inherit; text-decoration: none; }
-.prototype-lineage a:hover { background: var(--accent-soft); }
-.prototype-lineage strong { overflow: hidden; font-size: .78rem; text-overflow: ellipsis; white-space: nowrap; }
-.prototype-lineage small { color: var(--faint); font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: .62rem; }
-
+.prototype-object-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line-strong); border-left: 1px solid var(--line-strong); }
+.prototype-object { min-width: 0; display: flex; flex-direction: column; gap: .7rem; padding: 1rem; border-right: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); background: var(--surface); }
+.prototype-object[data-status="current-substrate"] { box-shadow: inset 0 3px 0 var(--ink); }
+.prototype-object[data-status="active-variant"],
+.prototype-object[data-status="active-hypothesis"],
+.prototype-object[data-status="reference-variant"] { box-shadow: inset 0 3px 0 var(--accent); }
+.prototype-object[data-status="reviewed-stop"],
+.prototype-object[data-status^="rejected"],
+.prototype-object[data-status="product-invalid"] { opacity: .72; }
+.prototype-object__heading { display: flex; align-items: flex-start; justify-content: space-between; gap: .65rem; }
+.prototype-object__heading h3 { margin: .08rem 0 0; font-family: "Noto Serif TC", "PMingLiU", Georgia, serif; font-size: 1.05rem; }
+.prototype-object__heading .status { flex: 0 0 auto; }
+.prototype-object > p { margin: 0; color: var(--muted); font-size: .82rem; }
+.prototype-object__meta { color: var(--faint) !important; font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: .65rem !important; }
+.prototype-object footer { margin-top: auto; padding-top: .25rem; }
 .button, .ghost-button {
   display: inline-flex;
   align-items: center;
@@ -209,14 +205,13 @@ h2 { font-family: "Noto Serif TC", "PMingLiU", Georgia, serif; font-weight: 600;
 .research-footer { padding: 2rem 0 3rem; color: var(--muted); font-size: .88rem; }
 
 @media (max-width: 700px) {
+  .prototype-object-grid { grid-template-columns: 1fr; }
   .site-shell { width: min(100% - 1rem, 1080px); }
   .timeline { grid-template-columns: 1fr; }
   .phase-card, .phase-card:nth-child(even) { padding: 1.15rem 0; border-right: 0; }
   .masthead { padding-top: 2.4rem; }
   h1 { font-size: clamp(2.3rem, 13vw, 4rem); }
   .prototype-header { flex-direction: column; }
-  .prototype-families { grid-template-columns: 1fr; }
-  .prototype-family:last-child:nth-child(odd) { grid-column: auto; }
   .phone-screen { min-height: 100vh; padding: .9rem; }
   .category-nav { grid-template-columns: repeat(2, 1fr); }
 }

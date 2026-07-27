@@ -19,40 +19,23 @@
 }
 
 .collapse-column {
-  transition: grid-template-rows 220ms cubic-bezier(.2, .75, .25, 1);
+  transition:
+    grid-template-rows 220ms cubic-bezier(.2, .75, .25, 1),
+    flex-grow 220ms cubic-bezier(.2, .75, .25, 1);
 }
 
-.collapse-column[data-collapsed="first"] {
-  grid-template-rows: auto minmax(0, 1fr);
+.collapse-column[data-tracked="true"] { box-shadow: inset 0 3px 0 var(--accent); }
+
+.collapse-column[data-focused="first"] {
+  grid-template-rows: minmax(0, 1fr) 2.2rem;
 }
 
-.collapse-column[data-collapsed="second"] {
-  grid-template-rows: minmax(0, 1fr) auto;
-}
-
-.collapse-column .paper-category__header {
-  position: relative;
-  padding-right: 1.65rem;
-}
-
-.collapse-toggle-mark {
-  position: absolute;
-  top: 50%;
-  right: .28rem;
-  display: grid;
-  width: 1rem;
-  height: 1rem;
-  translate: 0 -50%;
-  place-items: center;
-  border: 1px solid var(--line);
-  color: var(--accent);
-  font-size: .62rem;
-  font-weight: 900;
-  line-height: 1;
+.collapse-column[data-focused="second"] {
+  grid-template-rows: 2.2rem minmax(0, 1fr);
 }
 
 .collapse-column .paper-category[data-collapsed="true"] {
-  min-height: 2rem;
+  min-height: 0;
   background: var(--accent-soft);
 }
 
@@ -69,13 +52,22 @@
   color: var(--accent);
 }
 
-.collapse-column .paper-category[data-expanded-room="true"] .paper-category__products {
-  flex: 0 0 auto;
-  grid-auto-rows: var(--stable-row-height);
+.collapse-column .paper-category[data-focused="true"] .paper-category__header {
+  background: var(--accent-soft);
 }
 
-.collapse-column .paper-category[data-expanded-room="true"] .paper-product {
-  min-height: var(--stable-row-height);
+.collapse-column .paper-category[data-focused="true"] .paper-category__header strong {
+  color: var(--accent);
+  font-size: 1rem;
+}
+
+.collapse-column .paper-category[data-focused="true"] .paper-product {
+  padding-inline: .68rem;
+  font-size: .8rem;
+}
+
+.collapse-column .paper-category[data-focused="true"] .paper-product strong {
+  font-size: .72rem;
 }
 
 .collapse-column .paper-product[data-selected="true"] {

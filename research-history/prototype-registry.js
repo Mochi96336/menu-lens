@@ -41,9 +41,9 @@
     {
       id: "landscape",
       title: "18 衍生的橫向 3 × 2 紙面",
-      summary: "以 Landscape Paper 為共同母體，只改變鏡頭、收合或文字流向。",
+      summary: "以 Landscape Paper 為共同母體，分別測試加權焦點、鏡頭追蹤與文字流向。",
       retains: "三個等寬紙欄、上下分類位置、30 道完整內容",
-      varies: "閱讀尺度、局部收合、排字方向",
+      varies: "列高焦點、欄寬與鏡頭、排字方向",
       question: "哪一種變化能增加可讀性，同時不破壞 18 的矩陣感？",
     },
     {
@@ -212,24 +212,24 @@
       assets: { styles: ["history.css", "paper-menu-field.css", "two-column-window.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js"] },
     },
     {
-      id: "22", slug: "weighted-pinch-sheet", title: "Weighted Pinch Sheet", family: "landscape", parentId: "18",
+      id: "22", slug: "weighted-pinch-sheet", title: "Weighted Focus Sheet", family: "landscape", parentId: "18",
       kind: "spatial-prototype", status: "active-variant", statusLabel: "active variant",
       path: "phases/22-weighted-pinch-sheet/index.html", validationProfile: "paper-field-variant",
-      summary: "固定 46rem 紙面只由 camera 縮放；分類定位依料理數量使用相對倍率。",
-      assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "weighted-pinch-sheet.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "pinch-sheet.js"] },
+      summary: "18 加入 16 的 1.8× 內容權重，焦點欄同步展為 1.65 份並由 camera 追蹤。",
+      assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "weighted-pinch-sheet.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
     },
     {
-      id: "23", slug: "collapsible-landscape", title: "Collapsible Landscape", family: "landscape", parentId: "18",
+      id: "23", slug: "collapsible-landscape", title: "Tracked Focus Landscape", family: "landscape", parentId: "22",
       kind: "spatial-prototype", status: "active-variant", statusLabel: "active variant",
       path: "phases/23-collapsible-landscape/index.html", validationProfile: "paper-field-variant",
-      summary: "在固定 46rem 紙面內局部收合分類，以橫向拖曳移動手機 camera。",
+      summary: "沿用 22 的 1.65× 欄寬與 camera tracking，並將同欄鄰居收成標頭、放大焦點字級。",
       assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "collapsible-landscape.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
     },
     {
       id: "24", slug: "vertical-landscape", title: "Vertical Landscape", family: "landscape", parentId: "18",
       kind: "spatial-prototype", status: "active-variant", statusLabel: "active variant",
       path: "phases/24-vertical-landscape/index.html", validationProfile: "paper-field-variant",
-      summary: "46rem／64rem 固定紙面保留橫向 camera；料理直排，價格以 upright 方字緊接菜名。",
+      summary: "46rem／64rem 固定紙面採 14:10:6 欄寬；upright 價格在各自直向料理欄內壓底。",
       assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "vertical-landscape.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
     },
     {
@@ -243,7 +243,7 @@
       id: "25P", slug: "menu-projections", title: "Menu Projections", family: "depth", parentId: "25",
       kind: "spatial-prototype", status: "active-variant", statusLabel: "active dimensional projection",
       path: "phases/25-menu-depth/projections.html", validationProfile: "dimension-projection",
-      summary: "以價格、份量與準備時間建立同一個三維資料空間，讓 30 道料理在三張正交投影間保持身份連續。",
+      summary: "以價格、份量與準備時間建立同一個淺立體資料空間，讓 30 道料理隨軸向旋轉並保持身份連續。",
       assets: { styles: ["history.css", "menu-projections.css"], scripts: ["menu-fixture.js", "menu-projections.js"] },
     },
     {

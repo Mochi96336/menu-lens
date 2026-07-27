@@ -124,7 +124,7 @@ prototype-registry.js
 
 ### Progress
 
-The registry and executable archive retain 25B as a first-pass falsification study. Its shared ordinal slices remain semantically unsupported and are not a recommended direction. Menu Sections preserved the anchor from Z0 to Z+1, but the shorter overview surface forced a large boundary jump, so only the semantic-depth model stops before pinch. The active 25P prototype uses one real data model—price × portion × preparation—and moves the same 30 nodes between three readable orthographic projections. It is a secondary decision lens, not a replacement for the complete menu.
+The registry and executable archive retain 25B as a first-pass falsification study. Its shared ordinal slices remain semantically unsupported and are not a recommended direction. Menu Sections preserved the anchor from Z0 to Z+1, but the shorter overview surface forced a large boundary jump, so only the semantic-depth model stops before pinch. The active 25P prototype uses one real data model—price × portion × preparation—and rotates the same 30 nodes, bounding frame, and axes between three shallow three-dimensional views. It is a secondary decision lens, not a replacement for the complete menu.
 
 ### Required outputs
 

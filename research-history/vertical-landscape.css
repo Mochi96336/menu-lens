@@ -27,13 +27,19 @@
 
 .vertical-category .paper-category__header {
   grid-row: 1;
+  gap: .42rem;
+  padding: .48rem .58rem;
   writing-mode: horizontal-tb;
 }
+
+.vertical-category .paper-category__header > span { font-size: .56rem; }
+.vertical-category .paper-category__header strong { font-size: .82rem; }
+.vertical-category .paper-category__header small { font-size: .52rem; }
 
 .vertical-category .paper-category__products {
   grid-row: 2;
   display: grid;
-  grid-template-columns: repeat(var(--product-count), minmax(0, 1fr));
+  grid-template-columns: repeat(var(--product-count), minmax(1.7rem, 1fr));
   grid-template-rows: minmax(0, 1fr);
   direction: rtl;
   overflow: hidden;
@@ -44,15 +50,15 @@
   flex-direction: row;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: .38rem;
+  gap: .42rem;
   min-width: 0;
-  padding: .4rem .1rem;
+  height: 100%;
+  padding: .58rem .18rem;
   overflow: hidden;
   border: 0;
   border-left: 1px dotted var(--line);
   direction: ltr;
-  font-size: .5rem;
-  line-height: 1.35;
+  line-height: 1.45;
   text-align: start;
   text-orientation: upright;
   writing-mode: vertical-rl;
@@ -67,19 +73,27 @@
   min-height: 0;
   max-height: 100%;
   overflow: hidden;
+  font-family: "Noto Serif TC", "PMingLiU", Georgia, serif;
+  font-size: .72rem;
+  font-weight: 650;
+  letter-spacing: .08em;
   text-overflow: ellipsis;
+  text-orientation: upright;
   white-space: nowrap;
+  writing-mode: vertical-rl;
 }
 
 .vertical-category .paper-product strong {
   display: inline-block;
   flex: 0 0 auto;
-  padding-top: .18rem;
+  margin-inline-start: auto;
+  padding-top: .35rem;
   border-top: 1px solid var(--line);
   color: var(--accent);
-  font-size: .46rem;
+  font-size: .58rem;
   font-variant-numeric: tabular-nums;
-  line-height: 1;
+  line-height: 1.1;
+  text-align: start;
   text-combine-upright: all;
   text-orientation: upright;
   writing-mode: vertical-rl;
@@ -96,12 +110,24 @@
 }
 
 .vertical-viewport[data-scale="reading"] .vertical-category .paper-product {
-  padding-inline: .16rem;
-  font-size: .62rem;
+  gap: .52rem;
+  padding: .72rem .22rem;
+}
+
+.vertical-viewport[data-scale="reading"] .vertical-category .paper-product__name {
+  font-size: .9rem;
 }
 
 .vertical-viewport[data-scale="reading"] .vertical-category .paper-product strong {
-  font-size: .55rem;
+  font-size: .7rem;
+}
+
+.vertical-viewport[data-scale="reading"] .vertical-category .paper-category__header {
+  padding: .58rem .72rem;
+}
+
+.vertical-viewport[data-scale="reading"] .vertical-category .paper-category__header strong {
+  font-size: 1rem;
 }
 
 .vertical-stage .paper-detail {

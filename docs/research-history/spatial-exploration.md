@@ -216,38 +216,40 @@ The shared B column remains visible across both states, so a horizontal move cha
 
 Direct review found no material improvement over 18. The discrete A+B/B+C camera is preserved as evidence but is not a base for another branch.
 
-## 22 — Weighted Pinch Sheet
+## 22 — Weighted Focus Sheet
 
 Status: **playable 18-derived hypothesis**.
 
-22 retains 18's equal-width columns and 8:6, 6:4, 4:2 internal row splits. The sheet never reflows. Two active pointers set a continuous scale around their centroid; after zoom, one pointer pans in both axes.
+22 combines 18's fixed 46rem sheet with 16's content-weighted focus rule. The overview begins at 1:1:1. Selecting a category multiplies its product-count row weight by 1.8, grows its paper column from weight 1 to 1.65, and recenters that column before and after the width transition.
 
-Selecting a category is an optional shortcut, not a required mode. Its suggested target scale ranges from 1.55× for two products to 2.45× for eight products, addressing the review that identical focus magnification ignores content size. A whole-sheet reset is the only additional location control.
+The paired category remains fully rendered. This is the defining constraint of 22: focus changes row height, column width, and camera position without removing any neighboring menu content.
 
-## 23 — Collapsible Landscape
+## 23 — Tracked Focus Landscape
 
 Status: **playable 18-derived hypothesis**.
 
-23 imports the useful part of 06—category content can be collapsed—without turning the full sheet into one mutually exclusive list. Each of 18's three paper columns manages only its own upper/lower pair:
+23 keeps 22's width change and camera tracking, then adds one explicit collapse rule. The sheet remains fixed at 46rem and keeps one global category focus:
 
 ```text
-both categories at proportional height
+1:1:1 overview columns
 → select one category
-selected category collapses to its header at the original edge
-→ its pair keeps the pre-collapse product-row height; freed paper remains blank
-→ select the collapsed category again
-restore the original proportional split
+selected column grows from weight 1 to 1.65
+→ paired category collapses to a 2.2rem header
+→ selected category fills the remaining column and uses larger product type
+→ camera recenters before and after the width transition
+→ select the focused category again
+restore the complete 1:1:1, 3 × 2 overview
 ```
 
-Column widths, left-to-right order, and surviving product-row heights never change. Three columns may hold different local states, which creates flexibility but may add state-recall cost and visible unused paper.
+Only one category can be focused across the sheet. Compared with 22, the tested variable is whether collapsing the paired category—and spending the recovered height on larger type—makes the focused column meaningfully easier to read.
 
 ## 24 — Vertical Landscape
 
 Status: **playable 18-derived hypothesis**.
 
-24 directly reuses 18's equal-column 3 × 2 matrix and its two reading scales. Category headers remain horizontal; product names use `vertical-rl` and occupy right-to-left columns in canonical order. Prices stay in the same vertical reading flow, while opened descriptions remain horizontal overlays.
+24 reuses 18's 3 × 2 topology but not its equal column widths. The three paired columns use product totals 14:10:6, giving each vertical product lane a more consistent width. Category headers remain horizontal; product names use `vertical-rl` in canonical right-to-left order. Each upright price stays in its product's vertical flex flow and is pushed to that lane's bottom.
 
-Overview keeps 18's exact 1:1:1 source widths. Reading mode keeps 18's 235% horizontal sheet and column navigation; the variant changes typography only, so width behavior is not another independent variable.
+Overview uses a 46rem sheet and reading mode uses a 64rem sheet; neither is derived from phone width. Product names increase from .72rem to .9rem in reading mode. The 14:10:6 outer columns and minimum product-lane width prevent eight-item categories from collapsing into hairlines without wasting equal width on the two-item dessert category.
 
 ## 25 — Menu Depth family
 
@@ -269,7 +271,7 @@ Status: **active real-axis dimensional projection**.
 
 25P gives every fixture product three coordinates that exist independently of layout: price, serving band, and preparation-time band. Price remains continuous. Portion metadata is normalized conservatively into small, single, and share bands because the source value `1` includes labels such as both 一杯 and 一人份; the original label remains visible in product detail. Preparation keeps quick, normal, slow, and explicit unknown bands, so the one missing value does not disappear.
 
-The interface shows price × serving, price × preparation, and serving × preparation as flat orthographic projections. It creates each of the 30 product nodes once, then moves those same nodes between projections. Category is color only, not a hidden fourth axis. This tests whether the three-dimensional relation helps people understand an actual tradeoff without introducing perspective, rotation, occlusion, or a physical-object metaphor.
+The interface keeps price, serving, and preparation in one shallow axonometric volume. Price remains continuous; serving and preparation retain their explicit semantic bands. The price × serving, price × preparation, and serving × preparation controls rotate the same volume so the omitted axis becomes shallow depth rather than disappearing. Quaternion interpolation moves the 30 persistent product nodes, the bounding frame, and all three axes along one continuous rotation instead of cross-fading between independent plots. Tapping a node expands that node in place into a name-and-price card; no transaction or cart flow is introduced.
 
 25P is a secondary decision lens rather than the default complete-menu surface. If its projections only behave like a generic data dashboard, or coordinate collisions prevent users from identifying dishes, this axis model stops; that result does not stop dimensional research as a whole.
 

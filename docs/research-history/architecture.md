@@ -66,6 +66,7 @@ Changing a status requires a reason in the product-direction review or spatial-e
 
 1. Choose one parent and state the single main variable being changed.
 2. Add one entry to `research-history/prototype-registry.js`.
+   Alphanumeric suffixes are identities, not display modes: `03A`, `03B`, `18`, `18A`, `25`, `25P`, and `25B` remain separate objects throughout the catalog.
 3. Create the page at its registered path only if the entry is executable. Closely related child variants may share a phase directory.
 4. Reuse the shared 30-product fixture unless the research question explicitly concerns data variation.
 5. Register every stylesheet, renderer, and controller in the entry's `assets` object.

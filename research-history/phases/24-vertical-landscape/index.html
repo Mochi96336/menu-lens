@@ -21,12 +21,12 @@
         <div>
           <p class="eyebrow">24 · 18 + vertical product type</p>
           <h1>Vertical Landscape</h1>
-          <p class="lede">紙面使用固定 46rem／64rem 兩個尺度，手機只作橫向視窗；分類內料理則由右往左直排。切換尺度不會依手機寬度重新算紙張。</p>
+          <p class="lede">紙面使用固定 46rem／64rem 兩個尺度，三欄依料理總數配置為 14:10:6；手機只作橫向視窗，分類內料理由右往左直排。</p>
         </div>
         <a class="ghost-button" href="../../">回研究檔案館</a>
       </header>
 
-      <p class="study-note">分類標頭維持橫排；菜名與價格在同一條直排流。全紙固定 46rem，閱讀尺度固定 64rem，兩者都不跟手機寬度連動。</p>
+      <p class="study-note">欄寬採 14:10:6，讓 14、10、6 道料理取得接近一致的單道寬度。菜名與 upright 價格共用直向文字流，價格各自壓底。</p>
 
       <section id="prototype" class="phone-frame" aria-label="Vertical Landscape 互動原型">
         <div class="phone-screen paper-phone">
@@ -42,7 +42,7 @@
             <button id="vertical-next" type="button" aria-label="下一個紙欄">→</button>
             <div class="paper-location" aria-live="polite">
               <strong id="vertical-location-title">完整 3×2 紙面</strong>
-              <span id="vertical-location-meta">欄寬 1:1:1 · 30 道料理</span>
+              <span id="vertical-location-meta">欄寬 14:10:6 · 30 道料理</span>
             </div>
           </div>
 
@@ -64,11 +64,11 @@
       </section>
 
       <section class="section">
-        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>只改文字流向，不改 18 的寬度</h2></div>
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>直排密度決定欄寬</h2></div>
         <div class="timeline">
-          <article class="phase-card"><h3>來源幾何鎖定</h3><p>三欄維持 1:1:1；全紙 46rem、閱讀紙 64rem，手機寬度只決定 camera 可見範圍。</p></article>
+          <article class="phase-card"><h3>內容比例欄寬</h3><p>三欄依配對分類的料理總數成為 14:10:6；全紙 46rem、閱讀紙 64rem，手機只決定可見範圍。</p></article>
           <article class="phase-card"><h3>分類標頭橫排</h3><p>標頭位置、數量與價格區間不變，只有標頭下方的料理名稱改成由右往左直排。</p></article>
-          <article class="phase-card"><h3>價格不脫節</h3><p>價格數字以 upright 方字緊接菜名，不跨進鄰欄；打開後的料理說明仍是橫排。</p></article>
+          <article class="phase-card"><h3>價格各自壓底</h3><p>價格以 upright 數字留在同一條直向料理欄，利用彈性空間推到各欄底端，不建立共用第二排。</p></article>
           <article class="phase-card"><h3>主要風險</h3><p>繁中雖適合直排，數字、英文與現代手機閱讀習慣仍可能使掃描速度下降。</p></article>
         </div>
       </section>
@@ -97,7 +97,7 @@
         sheet,
         columnClass: "landscape-column vertical-column",
         categoryClass: "vertical-category",
-        columnWeight: () => 1,
+        columnWeight: ({ firstCount, secondCount }) => firstCount + secondCount,
         decorateProduct: ({ button, product }) => {
           button.dataset.availability = product.availability;
         },
@@ -140,7 +140,7 @@
         });
         if (scale === "overview") {
           locationTitle.textContent = "完整 3×2 紙面";
-          locationMeta.textContent = `欄寬 1:1:1 · ${productButtons.length} 道料理`;
+          locationMeta.textContent = `欄寬 ${columnCounts.join(":")} · ${productButtons.length} 道料理`;
           return;
         }
         const firstCategoryIndex = activeColumnIndex * 2;

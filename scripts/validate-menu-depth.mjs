@@ -82,12 +82,14 @@ for (const reference of [
   'data-projection="price-serving"',
   'data-projection="price-preparation"',
   'data-projection="serving-preparation"',
+  'id="projection-volume"',
+  'id="projection-depth-axis"',
 ]) {
   if (!projectionHtml.includes(reference)) throw new Error(`${projectionPage} is missing ${reference}.`);
 }
 const projectionSource = await readFile(new URL("menu-projections.js", archiveRoot), "utf8");
 new Script(projectionSource, { filename: "research-history/menu-projections.js" });
-for (const mechanism of ["price", "serving", "preparation", "nodeById", "menu.products.map", "未標註"]) {
+for (const mechanism of ["price", "serving", "preparation", "nodeById", "menu.products.map", "未標註", "viewQuaternions", "slerp", "renderFrame"]) {
   if (!projectionSource.includes(mechanism)) throw new Error(`Menu Projections must implement ${mechanism}.`);
 }
 const projectionStyles = await readFile(new URL("menu-projections.css", archiveRoot), "utf8");
@@ -122,6 +124,7 @@ for (const reference of [
   '<link rel="stylesheet" href="../../parallax-menu-volume.css" />',
   '<script src="../../menu-fixture.js"></script>',
   '<script src="../../parallax-menu-volume.js" defer></script>',
+  'id="parallax-detail"',
   "30 道料理固定交織",
 ]) {
   if (!parallaxHtml.includes(reference)) throw new Error(`26 is missing ${reference}.`);
@@ -134,6 +137,9 @@ for (const mechanism of [
   'addEventListener("pointermove"',
   "pointers.size === 2",
   "state.spread",
+  "item.dataset.productIndex",
+  "openDetail",
+  "resetView",
   "rotateX",
   "rotateY",
 ]) {
