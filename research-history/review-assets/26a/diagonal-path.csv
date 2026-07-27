@@ -1,0 +1,6 @@
+path,progress,view_x,view_y,nearest,second,nearest_score,landmarks_visible,interpretation
+02 飯麵類 → 01 個人主餐 → 05 飲料,0,27,-52,02 飯麵類,03 分享料理,1,False,existing centre endpoint
+02 飯麵類 → 01 個人主餐 → 05 飲料,0.25,13.5,-26.0,01 個人主餐,02 飯麵類,0.6244,True,continuous transition pair
+02 飯麵類 → 01 個人主餐 → 05 飲料,0.5,0.0,0.0,01 個人主餐,06 甜點,1,False,existing centre endpoint
+02 飯麵類 → 01 個人主餐 → 05 飲料,0.75,-15.5,23.5,01 個人主餐,05 飲料,0.6391,True,continuous transition pair
+02 飯麵類 → 01 個人主餐 → 05 飲料,1,-31.0,47.0,05 飲料,06 甜點,1,False,existing centre endpoint
