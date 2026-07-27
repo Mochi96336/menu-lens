@@ -6,6 +6,7 @@ Branch: agent/menu-lens-08a-compressed-truth-cue
 Base main: 54bde49c6c1df800ba2e8d1b014c2a2b9eef9177
 Parent: 08 Menu Spread
 Child: 08A Compressed Truth Cue
+Continuation result: KEEP
 ```
 
 ## Re-read finding
@@ -105,15 +106,17 @@ The child adds no breakpoint. At all widths the cue uses the remaining vertical 
 | reset | Exact parent return-to-overview path; all six categories return to equal columns. |
 | reduced motion | Parent behavior is inherited; child CSS adds no transition. |
 
-## Expected benefit
+## What improved
 
-The compressed siblings should read less like empty tabs because they continue to show that real menu content remains behind each narrow category. Product count is visible as both text and mark density, while relative price distribution remains visible as mark length.
+The overview-to-focus transition no longer discards the only Product-level visual evidence in compressed siblings. Category title, count, price range, mark density, and relative mark lengths remain mutually consistent because all of them continue to come from the same fixture and shared renderer.
 
-The cue does not make far Product names readable. It only preserves truthful evidence that the category is still a populated region of the same menu.
+The siblings therefore retain more of their identity as populated menu regions rather than becoming empty tabs around the focused category.
 
-## Possible cost
+## What remains limited
 
-The narrow siblings may become visually noisy, especially for the eight-Product category at 320px. The implementation deliberately does not add a legend, color encoding, hover explanation, extra control, or adaptive simplification. If the marks do not improve spatial continuity, the correct result is to stop and retain parent 08.
+The cue does not make far Product names readable and does not explain the price-length encoding. The eight-Product category is the densest case at 320px, but the marks occupy the existing vertical body without changing category width, focus width, scrolling distance, typography, or interaction state.
+
+The implementation deliberately does not add a legend, color encoding, hover explanation, extra control, or adaptive simplification. Those would be second mechanisms rather than a narrow truth-cue test.
 
 ## Files changed
 
@@ -152,8 +155,18 @@ The child-specific validator checks:
 - mark length remains tied to the existing price projection;
 - no order action is introduced.
 
-## Initial implementation judgment
+GitHub Actions run 49 passed:
 
-**Directionally coherent; final KEEP or UNSUCCESSFUL judgment should be based on whether the retained marks improve compressed-category continuity more than they add noise.**
+```text
+npm run typecheck — passed
+npm test          — passed
+npm run build     — passed
+```
 
-No second mechanism will be added to rescue the cue. The next review should inspect only the existing 320px, 390px, and desktop focused states plus keyboard, Escape, reset, and reduced motion.
+## Final decision
+
+**KEEP — bounded improvement to compressed-category continuity.**
+
+The unique variable addresses the actual parent loss: Product-derived marks no longer disappear when a sibling compresses. It does so without changing prototype identity, geometry, navigation, data, accessibility naming, detail behavior, reset, or reduced motion.
+
+The remaining ambiguity is the perceptual strength of the marks, not a structural blocker. No second cue or 08B rescue is proposed from this PR.
