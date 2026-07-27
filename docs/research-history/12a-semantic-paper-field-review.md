@@ -74,24 +74,38 @@ Additional checks:
 - reduced motion reports `0s` sheet transition duration
 - pointer and mobile touch reach overview → near → detail → close → reset without a hidden gesture
 
-## Actual judgment
+## Continuation decision
 
-**Result: successful as a bounded mechanism variant.**
+**Result: KEEP.**
 
-The overview no longer asks miniature text to function as readable Product rows. It still communicates that all six categories and 30 Products occupy one continuous sheet because each Product keeps a density mark in its original category and order. Focus naturally reveals names, prices, and state, while detail adds reading metadata without a page transition.
+Re-reading the implementation, actual diff, browser report, workflow result, and parent／child comparison did not reveal a second mechanism or a local UI defect that justified a narrow revision.
 
-The summary does not become a separate dashboard: it remains inside the same category headers and the same fixed paper regions. No sorting, filtering, axis, chart, or secondary overview surface was introduced.
+The whole-sheet summary remains inside the same category headers and fixed paper regions. Product density remains one mark per canonical Product in category order. Near-category and reading states add information without changing geometry, camera grammar, focus targets, or page structure.
+
+For the current research question, fixed paper plus semantic zoom is sufficient. There is not yet evidence that local reading remains constrained enough to justify `15A Pair-local Elastic`, and no boundary flip was observed that would justify `16A Stable Weighted Drag`.
+
+## What improved
+
+- Whole-sheet overview no longer asks miniature Product text to be readable.
+- Category scope, Product count, fixture price range, and density remain visible without a separate dashboard.
+- Near-category focus exposes Product name, price, and essential state.
+- Reading detail adds fixture-backed metadata while preserving the focused camera and return context.
+- Overview keyboard focus no longer stops on unreadable miniature Product actions.
 
 ## Unresolved
 
-- The density marks establish count and continuity but do not identify individual Products before focus; this is intentional and requires direct reader evaluation.
+- Density marks establish count and continuity but do not identify individual Products before focus; this is intentional and requires direct reader evaluation.
 - Sold-out density uses a dashed accent mark. Whether that state should be visible at whole-sheet scale remains an evaluation question, not a geometry change.
 - 12A does not address whether the parent camera scale is sufficient for every long Product name.
-- This implementation does not add native pinch, free pan, or another reading scale.
+- This implementation does not add native pinch, free pan, another reading scale, or elastic geometry.
 
 ## Repository checks
 
 - `node --check research-history/semantic-paper-field.js`
 - browser geometry and state report: `research-history/review-assets/12a/browser-report.json`
 - mobile touch emulation: overview → near → reading → close → reset
-- repository `typecheck`, `test`, and `build` are required on the Draft PR workflow
+- GitHub Actions run `30302477478`: `Typecheck`, `Test`, and `Build` passed
+
+## Next proposed step
+
+Run a direct reader comparison of parent 12 and child 12A on whole-menu comprehension and near-category reading. Do not begin another mechanism variant unless that evidence identifies a specific limitation.
