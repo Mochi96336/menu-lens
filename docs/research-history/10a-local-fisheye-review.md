@@ -45,7 +45,7 @@ The genuine global drift occurs at the first and last two products, where missin
 
 For focus `1 → 2`, the parent moves the first far category boundary by about `2.91 percentage points`; 10A keeps all category boundaries outside the local neighbourhood fixed. For focus `2 → 3`, the parent still moves that boundary by about `0.91 points`; 10A again keeps it fixed. Interior focus movement was already stable outside the local neighbourhood in the parent and remains so in 10A.
 
-## Viewport comparison
+## Viewport evidence
 
 These are automated geometry captures at the required viewports. They render the parent and child allocation equations with the same 30-product, six-category ribbon structure. The execution environment blocked Chromium navigation to both GitHub Pages and localhost, so the review used `page.setContent` rather than claiming a live deployed-page capture.
 
@@ -68,6 +68,76 @@ Left is parent 10; right is 10A.
 ![10 parent and 10A at desktop](../../research-history/review-assets/10a/compare-desktop.svg)
 
 The width equation is viewport-independent: the first and final focus remain `53.25%`, interior focus remains `41.14%`, and every far product remains `0.80%` at all three widths. The smaller viewports therefore reduce absolute pixels but do not change the parent/child relationship or introduce a breakpoint-specific geometry.
+
+## Point-by-point final assessment
+
+The separate follow-up comparison is cancelled. The existing implementation, equations, state review, and viewport captures are sufficient to close the current PR point by point.
+
+### 1. Far landmark stability
+
+**Result: improved.**
+
+- Parent 10 enlarges every far product near the first and final two focus positions because the normalization denominator changes.
+- 10A keeps every product outside `focus ± 2` at `0.8%`.
+- Category boundaries outside the active neighbourhood therefore remain fixed during representative start, middle, and end focus transitions.
+- A boundary inside the active neighbourhood may still move. That is the intended local fisheye deformation, not residual global drift.
+
+This improvement is strongest at the ribbon edges. Interior positions intentionally match parent 10 because the parent was already stable there.
+
+### 2. Focus-product readability
+
+**Result: preserved.**
+
+- Interior focus remains `41.14%`, equal to parent 10.
+- First and final focus increase from `50.07%` to `53.25%` because missing-neighbour space remains inside the local neighbourhood.
+- The focused-card typography, price, native detail disclosure, and vertical detail overflow behavior are inherited from parent 10.
+- The validator requires the focus allocation to remain the largest and at least `40%`.
+
+The remaining uncertainty is perceptual rather than structural: direct device review could still decide that the `53.25%` edge focus feels excessive, but no evidence shows a readability regression.
+
+### 3. Cross-category predictability
+
+**Result: mechanically improved, with the local transition preserved.**
+
+- Pointer X still maps directly to the canonical category or product index.
+- Canonical product order, category membership, start, and end do not change.
+- When focus crosses a category boundary, only products and the boundary inside the active `±2` neighbourhood may deform.
+- Unrelated category landmarks remain fixed, and no scroll distance, inertia, camera offset, or snap state accumulates.
+
+This makes the destination mechanically more predictable than parent 10 near the edges. A separate perception study is not required for this PR and is no longer proposed.
+
+### 4. Fisheye identity
+
+**Result: preserved.**
+
+- The focus product remains the largest region.
+- First and second neighbours receive progressively smaller allocations.
+- All 30 products remain visible inside one viewport.
+- Far products remain present as narrow ticks rather than disappearing.
+- No fixed category columns, tabs, long scroll ribbon, camera pan, or extra snap endpoints were introduced.
+
+10A remains a child of 10 rather than converging on 08, 09, or 18.
+
+### 5. Keyboard, detail close, and reset
+
+**Result: complete after one narrow revision.**
+
+- ArrowLeft / ArrowRight retain the parent stage interaction.
+- When a product summary owns DOM focus, focus now follows the newly selected product summary instead of remaining on the previous product.
+- Enter therefore continues from the visible focus rather than pulling the lens back.
+- Escape closes the open detail and returns focus to the same summary.
+- The category-lens control resets the prototype to the unchanged parent category lens.
+
+No additional keyboard navigation model or return hierarchy was added.
+
+### 6. Responsive and reduced motion
+
+**Result: preserved.**
+
+- The same allocation equation applies at 320px, 390px, and desktop phone-frame widths.
+- No child-specific breakpoint changes the mechanism.
+- The stage remains a single clipped viewport with no horizontal scrolling.
+- Parent reduced-motion behavior disables the flex transition, and 10A adds no new animation.
 
 ## State review
 
@@ -142,7 +212,7 @@ The child validator checks:
 - no horizontal scroll, spatial-drag, or snap mechanism is introduced;
 - no order action appears.
 
-GitHub Actions run 34 passed:
+GitHub Actions run 35 passed:
 
 ```text
 npm run typecheck — passed
@@ -160,7 +230,7 @@ This remains recognizably fisheye: focus is largest, first and second neighbours
 
 ## Deliberately unresolved
 
-- Direct live-device perception of the larger edge focus remains useful review evidence, but it is not required to establish the geometry improvement.
+- Direct live-device perception of the larger edge focus remains optional review evidence, not a prerequisite or a planned follow-up comparison.
 - Product names on far ticks remain unreadable by design.
 - Category lens still uses the parent category-wide allocation; 10A does not mix a second variable into that state.
 - No 10B or 10C work has started.
