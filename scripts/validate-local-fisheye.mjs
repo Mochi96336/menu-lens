@@ -44,6 +44,12 @@ const helpers = controllerSandbox.window.MenuLensLocalFisheye;
 if (!helpers || typeof helpers.computeProductLayout !== "function") {
   throw new Error("10A must expose a pure computeProductLayout helper.");
 }
+if (
+  !controllerSource.includes("const focusCurrentProductSummary = () =>") ||
+  !controllerSource.includes("if (summaryHadFocus) focusCurrentProductSummary();")
+) {
+  throw new Error("10A keyboard product navigation must keep DOM focus aligned with the visual focus.");
+}
 
 const productCount = 30;
 const categoryEndIndices = [7, 13, 19, 23, 27, 29];
@@ -100,4 +106,4 @@ for (const bannedMechanism of ["scrollLeft", "scrollTo(", "enableMenuLensHorizon
   }
 }
 
-console.log("10A Local Fisheye validation passed: fixed ±2 neighbourhood, stable far widths, stable far category boundaries, 30 products.");
+console.log("10A Local Fisheye validation passed: fixed ±2 neighbourhood, stable far widths and category boundaries, keyboard focus parity, 30 products.");
