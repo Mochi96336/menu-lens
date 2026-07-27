@@ -191,6 +191,13 @@
       assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "proportional-landscape.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
     },
     {
+      id: "18B", slug: "semantic-zoom-landscape", title: "Semantic Zoom", family: "landscape", parentId: "18",
+      kind: "spatial-prototype", status: "active-variant", statusLabel: "active semantic variant",
+      path: "phases/18b-semantic-zoom/index.html", validationProfile: "paper-field-variant",
+      summary: "只在 18 的 whole-menu overview 以分類摘要取代不可讀的微型料理文字；reading scale 恢復完整內容。",
+      assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "semantic-landscape-overview.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "spatial-drag.js"] },
+    },
+    {
       id: "19", slug: "rigid-horizontal-sheet", title: "Rigid Horizontal Sheet", family: "landscape", parentId: "18",
       kind: "spatial-prototype", status: "reviewed-stop", statusLabel: "reviewed; stop extending",
       path: "phases/19-rigid-horizontal-sheet/index.html", validationProfile: "paper-field-variant",

@@ -1,0 +1,761 @@
+{
+  "viewports": {
+    "320": {
+      "parent": {
+        "scale": "overview",
+        "sheetWidth": 736,
+        "scrollWidth": 736,
+        "columns": [
+          {
+            "left": 19.390625,
+            "top": 610.890625,
+            "width": 238.078125,
+            "height": 466.375
+          },
+          {
+            "left": 257.46875,
+            "top": 610.890625,
+            "width": 238.078125,
+            "height": 466.375
+          },
+          {
+            "left": 495.546875,
+            "top": 610.890625,
+            "width": 239.078125,
+            "height": 466.375
+          }
+        ],
+        "categories": [
+          {
+            "id": "personal-mains",
+            "left": 20.390625,
+            "top": 611.890625,
+            "width": 237.078125,
+            "height": 265.34375
+          },
+          {
+            "id": "rice-noodles",
+            "left": 20.390625,
+            "top": 877.234375,
+            "width": 237.078125,
+            "height": 199.03125
+          },
+          {
+            "id": "shared-dishes",
+            "left": 258.46875,
+            "top": 611.890625,
+            "width": 237.078125,
+            "height": 278.625
+          },
+          {
+            "id": "small-plates",
+            "left": 258.46875,
+            "top": 890.515625,
+            "width": 237.078125,
+            "height": 185.75
+          },
+          {
+            "id": "drinks",
+            "left": 496.546875,
+            "top": 611.890625,
+            "width": 237.078125,
+            "height": 309.578125
+          },
+          {
+            "id": "desserts",
+            "left": 496.546875,
+            "top": 921.46875,
+            "width": 237.078125,
+            "height": 154.796875
+          }
+        ],
+        "productIds": [
+          "miso-grilled-chicken-set",
+          "lemon-koji-salmon-set",
+          "black-garlic-beef-short-rib",
+          "basil-three-cup-mushroom-set",
+          "sichuan-mapo-tofu-pot",
+          "red-wine-braised-pork-cheek",
+          "herb-pork-loin-pesto",
+          "yuzu-teriyaki-tofu-steak",
+          "char-siu-onsen-egg-rice",
+          "truffle-mushroom-risotto",
+          "mentaiko-shrimp-udon",
+          "green-peppercorn-chicken-noodles",
+          "tomato-beef-wide-noodles",
+          "plum-cold-soba",
+          "sansho-roast-half-chicken",
+          "shaoxing-butter-prawns",
+          "garlic-salt-pepper-soft-shell-crab",
+          "black-bean-steamed-seabass",
+          "kung-pao-king-oyster-mushroom",
+          "seasonal-vegetable-tofu-pot",
+          "pickled-chili-fried-chicken",
+          "sesame-dragon-whisker-vegetable",
+          "seared-zucchini-miso",
+          "salted-egg-yolk-potato-wedges",
+          "osmanthus-oolong-cold-brew",
+          "brown-sugar-lemon-soda",
+          "shiso-plum-tomato-iced-tea",
+          "sea-salt-caramel-milk-tea",
+          "caramel-creme-brulee",
+          "yuzu-soy-milk-panna-cotta"
+        ],
+        "summaries": [],
+        "firstProductOpacity": "1"
+      },
+      "child": {
+        "scale": "overview",
+        "sheetWidth": 736,
+        "scrollWidth": 736,
+        "columns": [
+          {
+            "left": 19.390625,
+            "top": 690.0625,
+            "width": 238.078125,
+            "height": 466.375
+          },
+          {
+            "left": 257.46875,
+            "top": 690.0625,
+            "width": 238.078125,
+            "height": 466.375
+          },
+          {
+            "left": 495.546875,
+            "top": 690.0625,
+            "width": 239.078125,
+            "height": 466.375
+          }
+        ],
+        "categories": [
+          {
+            "id": "personal-mains",
+            "left": 20.390625,
+            "top": 691.0625,
+            "width": 237.078125,
+            "height": 265.34375
+          },
+          {
+            "id": "rice-noodles",
+            "left": 20.390625,
+            "top": 956.40625,
+            "width": 237.078125,
+            "height": 199.03125
+          },
+          {
+            "id": "shared-dishes",
+            "left": 258.46875,
+            "top": 691.0625,
+            "width": 237.078125,
+            "height": 278.625
+          },
+          {
+            "id": "small-plates",
+            "left": 258.46875,
+            "top": 969.6875,
+            "width": 237.078125,
+            "height": 185.75
+          },
+          {
+            "id": "drinks",
+            "left": 496.546875,
+            "top": 691.0625,
+            "width": 237.078125,
+            "height": 309.578125
+          },
+          {
+            "id": "desserts",
+            "left": 496.546875,
+            "top": 1000.640625,
+            "width": 237.078125,
+            "height": 154.796875
+          }
+        ],
+        "productIds": [
+          "miso-grilled-chicken-set",
+          "lemon-koji-salmon-set",
+          "black-garlic-beef-short-rib",
+          "basil-three-cup-mushroom-set",
+          "sichuan-mapo-tofu-pot",
+          "red-wine-braised-pork-cheek",
+          "herb-pork-loin-pesto",
+          "yuzu-teriyaki-tofu-steak",
+          "char-siu-onsen-egg-rice",
+          "truffle-mushroom-risotto",
+          "mentaiko-shrimp-udon",
+          "green-peppercorn-chicken-noodles",
+          "tomato-beef-wide-noodles",
+          "plum-cold-soba",
+          "sansho-roast-half-chicken",
+          "shaoxing-butter-prawns",
+          "garlic-salt-pepper-soft-shell-crab",
+          "black-bean-steamed-seabass",
+          "kung-pao-king-oyster-mushroom",
+          "seasonal-vegetable-tofu-pot",
+          "pickled-chili-fried-chicken",
+          "sesame-dragon-whisker-vegetable",
+          "seared-zucchini-miso",
+          "salted-egg-yolk-potato-wedges",
+          "osmanthus-oolong-cold-brew",
+          "brown-sugar-lemon-soda",
+          "shiso-plum-tomato-iced-tea",
+          "sea-salt-caramel-milk-tea",
+          "caramel-creme-brulee",
+          "yuzu-soy-milk-panna-cotta"
+        ],
+        "summaries": [
+          {
+            "id": "personal-mains",
+            "display": "flex",
+            "text": "定食、燉煮與植物性主餐完整 8 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "rice-noodles",
+            "display": "flex",
+            "text": "飯、燉飯、烏龍與麵食完整 6 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "shared-dishes",
+            "display": "flex",
+            "text": "烤雞、海鮮、蔬食熱菜完整 6 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "small-plates",
+            "display": "flex",
+            "text": "炸物、蔬菜與加點完整 4 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "drinks",
+            "display": "flex",
+            "text": "茶、果香氣泡與奶茶完整 4 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "desserts",
+            "display": "flex",
+            "text": "布蕾與豆乳奶酪完整 2 道料理 · 放大後閱讀"
+          }
+        ],
+        "firstProductOpacity": "0"
+      },
+      "maximumColumnDelta": 0,
+      "maximumCategoryDelta": 0
+    },
+    "390": {
+      "parent": {
+        "scale": "overview",
+        "sheetWidth": 736,
+        "scrollWidth": 736,
+        "columns": [
+          {
+            "left": 19.390625,
+            "top": 584.734375,
+            "width": 238.078125,
+            "height": 602.359375
+          },
+          {
+            "left": 257.46875,
+            "top": 584.734375,
+            "width": 238.078125,
+            "height": 602.359375
+          },
+          {
+            "left": 495.546875,
+            "top": 584.734375,
+            "width": 239.078125,
+            "height": 602.359375
+          }
+        ],
+        "categories": [
+          {
+            "id": "personal-mains",
+            "left": 20.390625,
+            "top": 585.734375,
+            "width": 237.078125,
+            "height": 343.0625
+          },
+          {
+            "id": "rice-noodles",
+            "left": 20.390625,
+            "top": 928.796875,
+            "width": 237.078125,
+            "height": 257.296875
+          },
+          {
+            "id": "shared-dishes",
+            "left": 258.46875,
+            "top": 585.734375,
+            "width": 237.078125,
+            "height": 360.203125
+          },
+          {
+            "id": "small-plates",
+            "left": 258.46875,
+            "top": 945.9375,
+            "width": 237.078125,
+            "height": 240.15625
+          },
+          {
+            "id": "drinks",
+            "left": 496.546875,
+            "top": 585.734375,
+            "width": 237.078125,
+            "height": 400.234375
+          },
+          {
+            "id": "desserts",
+            "left": 496.546875,
+            "top": 985.96875,
+            "width": 237.078125,
+            "height": 200.125
+          }
+        ],
+        "productIds": [
+          "miso-grilled-chicken-set",
+          "lemon-koji-salmon-set",
+          "black-garlic-beef-short-rib",
+          "basil-three-cup-mushroom-set",
+          "sichuan-mapo-tofu-pot",
+          "red-wine-braised-pork-cheek",
+          "herb-pork-loin-pesto",
+          "yuzu-teriyaki-tofu-steak",
+          "char-siu-onsen-egg-rice",
+          "truffle-mushroom-risotto",
+          "mentaiko-shrimp-udon",
+          "green-peppercorn-chicken-noodles",
+          "tomato-beef-wide-noodles",
+          "plum-cold-soba",
+          "sansho-roast-half-chicken",
+          "shaoxing-butter-prawns",
+          "garlic-salt-pepper-soft-shell-crab",
+          "black-bean-steamed-seabass",
+          "kung-pao-king-oyster-mushroom",
+          "seasonal-vegetable-tofu-pot",
+          "pickled-chili-fried-chicken",
+          "sesame-dragon-whisker-vegetable",
+          "seared-zucchini-miso",
+          "salted-egg-yolk-potato-wedges",
+          "osmanthus-oolong-cold-brew",
+          "brown-sugar-lemon-soda",
+          "shiso-plum-tomato-iced-tea",
+          "sea-salt-caramel-milk-tea",
+          "caramel-creme-brulee",
+          "yuzu-soy-milk-panna-cotta"
+        ],
+        "summaries": [],
+        "firstProductOpacity": "1"
+      },
+      "child": {
+        "scale": "overview",
+        "sheetWidth": 736,
+        "scrollWidth": 736,
+        "columns": [
+          {
+            "left": 19.390625,
+            "top": 637.515625,
+            "width": 238.078125,
+            "height": 602.359375
+          },
+          {
+            "left": 257.46875,
+            "top": 637.515625,
+            "width": 238.078125,
+            "height": 602.359375
+          },
+          {
+            "left": 495.546875,
+            "top": 637.515625,
+            "width": 239.078125,
+            "height": 602.359375
+          }
+        ],
+        "categories": [
+          {
+            "id": "personal-mains",
+            "left": 20.390625,
+            "top": 638.515625,
+            "width": 237.078125,
+            "height": 343.0625
+          },
+          {
+            "id": "rice-noodles",
+            "left": 20.390625,
+            "top": 981.578125,
+            "width": 237.078125,
+            "height": 257.296875
+          },
+          {
+            "id": "shared-dishes",
+            "left": 258.46875,
+            "top": 638.515625,
+            "width": 237.078125,
+            "height": 360.203125
+          },
+          {
+            "id": "small-plates",
+            "left": 258.46875,
+            "top": 998.71875,
+            "width": 237.078125,
+            "height": 240.15625
+          },
+          {
+            "id": "drinks",
+            "left": 496.546875,
+            "top": 638.515625,
+            "width": 237.078125,
+            "height": 400.234375
+          },
+          {
+            "id": "desserts",
+            "left": 496.546875,
+            "top": 1038.75,
+            "width": 237.078125,
+            "height": 200.125
+          }
+        ],
+        "productIds": [
+          "miso-grilled-chicken-set",
+          "lemon-koji-salmon-set",
+          "black-garlic-beef-short-rib",
+          "basil-three-cup-mushroom-set",
+          "sichuan-mapo-tofu-pot",
+          "red-wine-braised-pork-cheek",
+          "herb-pork-loin-pesto",
+          "yuzu-teriyaki-tofu-steak",
+          "char-siu-onsen-egg-rice",
+          "truffle-mushroom-risotto",
+          "mentaiko-shrimp-udon",
+          "green-peppercorn-chicken-noodles",
+          "tomato-beef-wide-noodles",
+          "plum-cold-soba",
+          "sansho-roast-half-chicken",
+          "shaoxing-butter-prawns",
+          "garlic-salt-pepper-soft-shell-crab",
+          "black-bean-steamed-seabass",
+          "kung-pao-king-oyster-mushroom",
+          "seasonal-vegetable-tofu-pot",
+          "pickled-chili-fried-chicken",
+          "sesame-dragon-whisker-vegetable",
+          "seared-zucchini-miso",
+          "salted-egg-yolk-potato-wedges",
+          "osmanthus-oolong-cold-brew",
+          "brown-sugar-lemon-soda",
+          "shiso-plum-tomato-iced-tea",
+          "sea-salt-caramel-milk-tea",
+          "caramel-creme-brulee",
+          "yuzu-soy-milk-panna-cotta"
+        ],
+        "summaries": [
+          {
+            "id": "personal-mains",
+            "display": "flex",
+            "text": "定食、燉煮與植物性主餐完整 8 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "rice-noodles",
+            "display": "flex",
+            "text": "飯、燉飯、烏龍與麵食完整 6 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "shared-dishes",
+            "display": "flex",
+            "text": "烤雞、海鮮、蔬食熱菜完整 6 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "small-plates",
+            "display": "flex",
+            "text": "炸物、蔬菜與加點完整 4 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "drinks",
+            "display": "flex",
+            "text": "茶、果香氣泡與奶茶完整 4 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "desserts",
+            "display": "flex",
+            "text": "布蕾與豆乳奶酪完整 2 道料理 · 放大後閱讀"
+          }
+        ],
+        "firstProductOpacity": "0"
+      },
+      "maximumColumnDelta": 0,
+      "maximumCategoryDelta": 0
+    },
+    "desktop": {
+      "parent": {
+        "scale": "overview",
+        "sheetWidth": 736,
+        "scrollWidth": 736,
+        "columns": [
+          {
+            "left": 436.390625,
+            "top": 509.578125,
+            "width": 238.078125,
+            "height": 589.890625
+          },
+          {
+            "left": 674.46875,
+            "top": 509.578125,
+            "width": 238.078125,
+            "height": 589.890625
+          },
+          {
+            "left": 912.546875,
+            "top": 509.578125,
+            "width": 239.078125,
+            "height": 589.890625
+          }
+        ],
+        "categories": [
+          {
+            "id": "personal-mains",
+            "left": 437.390625,
+            "top": 510.578125,
+            "width": 237.078125,
+            "height": 335.9375
+          },
+          {
+            "id": "rice-noodles",
+            "left": 437.390625,
+            "top": 846.515625,
+            "width": 237.078125,
+            "height": 251.953125
+          },
+          {
+            "id": "shared-dishes",
+            "left": 675.46875,
+            "top": 510.578125,
+            "width": 237.078125,
+            "height": 352.734375
+          },
+          {
+            "id": "small-plates",
+            "left": 675.46875,
+            "top": 863.3125,
+            "width": 237.078125,
+            "height": 235.15625
+          },
+          {
+            "id": "drinks",
+            "left": 913.546875,
+            "top": 510.578125,
+            "width": 237.078125,
+            "height": 391.921875
+          },
+          {
+            "id": "desserts",
+            "left": 913.546875,
+            "top": 902.5,
+            "width": 237.078125,
+            "height": 195.96875
+          }
+        ],
+        "productIds": [
+          "miso-grilled-chicken-set",
+          "lemon-koji-salmon-set",
+          "black-garlic-beef-short-rib",
+          "basil-three-cup-mushroom-set",
+          "sichuan-mapo-tofu-pot",
+          "red-wine-braised-pork-cheek",
+          "herb-pork-loin-pesto",
+          "yuzu-teriyaki-tofu-steak",
+          "char-siu-onsen-egg-rice",
+          "truffle-mushroom-risotto",
+          "mentaiko-shrimp-udon",
+          "green-peppercorn-chicken-noodles",
+          "tomato-beef-wide-noodles",
+          "plum-cold-soba",
+          "sansho-roast-half-chicken",
+          "shaoxing-butter-prawns",
+          "garlic-salt-pepper-soft-shell-crab",
+          "black-bean-steamed-seabass",
+          "kung-pao-king-oyster-mushroom",
+          "seasonal-vegetable-tofu-pot",
+          "pickled-chili-fried-chicken",
+          "sesame-dragon-whisker-vegetable",
+          "seared-zucchini-miso",
+          "salted-egg-yolk-potato-wedges",
+          "osmanthus-oolong-cold-brew",
+          "brown-sugar-lemon-soda",
+          "shiso-plum-tomato-iced-tea",
+          "sea-salt-caramel-milk-tea",
+          "caramel-creme-brulee",
+          "yuzu-soy-milk-panna-cotta"
+        ],
+        "summaries": [],
+        "firstProductOpacity": "1"
+      },
+      "child": {
+        "scale": "overview",
+        "sheetWidth": 736,
+        "scrollWidth": 736,
+        "columns": [
+          {
+            "left": 436.390625,
+            "top": 535.96875,
+            "width": 238.078125,
+            "height": 589.890625
+          },
+          {
+            "left": 674.46875,
+            "top": 535.96875,
+            "width": 238.078125,
+            "height": 589.890625
+          },
+          {
+            "left": 912.546875,
+            "top": 535.96875,
+            "width": 239.078125,
+            "height": 589.890625
+          }
+        ],
+        "categories": [
+          {
+            "id": "personal-mains",
+            "left": 437.390625,
+            "top": 536.96875,
+            "width": 237.078125,
+            "height": 335.9375
+          },
+          {
+            "id": "rice-noodles",
+            "left": 437.390625,
+            "top": 872.90625,
+            "width": 237.078125,
+            "height": 251.953125
+          },
+          {
+            "id": "shared-dishes",
+            "left": 675.46875,
+            "top": 536.96875,
+            "width": 237.078125,
+            "height": 352.734375
+          },
+          {
+            "id": "small-plates",
+            "left": 675.46875,
+            "top": 889.703125,
+            "width": 237.078125,
+            "height": 235.15625
+          },
+          {
+            "id": "drinks",
+            "left": 913.546875,
+            "top": 536.96875,
+            "width": 237.078125,
+            "height": 391.921875
+          },
+          {
+            "id": "desserts",
+            "left": 913.546875,
+            "top": 928.890625,
+            "width": 237.078125,
+            "height": 195.96875
+          }
+        ],
+        "productIds": [
+          "miso-grilled-chicken-set",
+          "lemon-koji-salmon-set",
+          "black-garlic-beef-short-rib",
+          "basil-three-cup-mushroom-set",
+          "sichuan-mapo-tofu-pot",
+          "red-wine-braised-pork-cheek",
+          "herb-pork-loin-pesto",
+          "yuzu-teriyaki-tofu-steak",
+          "char-siu-onsen-egg-rice",
+          "truffle-mushroom-risotto",
+          "mentaiko-shrimp-udon",
+          "green-peppercorn-chicken-noodles",
+          "tomato-beef-wide-noodles",
+          "plum-cold-soba",
+          "sansho-roast-half-chicken",
+          "shaoxing-butter-prawns",
+          "garlic-salt-pepper-soft-shell-crab",
+          "black-bean-steamed-seabass",
+          "kung-pao-king-oyster-mushroom",
+          "seasonal-vegetable-tofu-pot",
+          "pickled-chili-fried-chicken",
+          "sesame-dragon-whisker-vegetable",
+          "seared-zucchini-miso",
+          "salted-egg-yolk-potato-wedges",
+          "osmanthus-oolong-cold-brew",
+          "brown-sugar-lemon-soda",
+          "shiso-plum-tomato-iced-tea",
+          "sea-salt-caramel-milk-tea",
+          "caramel-creme-brulee",
+          "yuzu-soy-milk-panna-cotta"
+        ],
+        "summaries": [
+          {
+            "id": "personal-mains",
+            "display": "flex",
+            "text": "定食、燉煮與植物性主餐完整 8 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "rice-noodles",
+            "display": "flex",
+            "text": "飯、燉飯、烏龍與麵食完整 6 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "shared-dishes",
+            "display": "flex",
+            "text": "烤雞、海鮮、蔬食熱菜完整 6 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "small-plates",
+            "display": "flex",
+            "text": "炸物、蔬菜與加點完整 4 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "drinks",
+            "display": "flex",
+            "text": "茶、果香氣泡與奶茶完整 4 道料理 · 放大後閱讀"
+          },
+          {
+            "id": "desserts",
+            "display": "flex",
+            "text": "布蕾與豆乳奶酪完整 2 道料理 · 放大後閱讀"
+          }
+        ],
+        "firstProductOpacity": "0"
+      },
+      "maximumColumnDelta": 0,
+      "maximumCategoryDelta": 0
+    }
+  },
+  "states": {
+    "reading": {
+      "scale": "reading",
+      "visibleSummaries": 0,
+      "productTextOpacity": "1"
+    },
+    "detailOpen": "true",
+    "detailClose": {
+      "open": "false",
+      "focusReturned": true
+    },
+    "reset": {
+      "scale": "overview",
+      "scrollLeft": 0,
+      "visibleSummaries": 6
+    },
+    "keyboard": {
+      "scale": "reading",
+      "location": "飲料／甜點"
+    },
+    "reducedMotion": [
+      "auto"
+    ],
+    "pointerDrag": {
+      "start": 0,
+      "end": 364
+    }
+  },
+  "identity": {
+    "categoryCount": 6,
+    "productCount": 30,
+    "uniqueProductCount": 30,
+    "summaryCount": 6
+  }
+}

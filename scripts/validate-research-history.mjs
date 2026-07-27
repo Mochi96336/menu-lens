@@ -681,6 +681,39 @@ for (const variant of paperVariantSnapshots) {
   if (variant.phase === "18-landscape-paper" && !snapshot.includes('<script src="../../spatial-drag.js"></script>')) {
     throw new Error("Landscape Paper snapshot must load the shared pointer-drag controller.");
   }
+  if (variant.phase === "18b-semantic-zoom") {
+    for (const reference of [
+      '<script src="../../spatial-drag.js"></script>',
+      'class="landscape-sheet landscape-sheet--equal-columns"',
+      'categoryData.summary',
+      'overview.className = "semantic-overview"',
+      '完整 ${products.length} 道料理',
+    ]) {
+      if (!snapshot.includes(reference)) {
+        throw new Error(`Semantic Zoom must preserve 18 and add only fixture-backed overview semantics: ${reference}`);
+      }
+    }
+    for (const styleContract of [
+      '#landscape-viewport[data-scale="overview"] .semantic-overview',
+      '#landscape-viewport[data-scale="overview"] .paper-product span',
+      '#landscape-viewport[data-scale="reading"] .semantic-overview',
+    ]) {
+      if (!variantStyles.includes(styleContract)) {
+        throw new Error(`Semantic Zoom is missing its scale-specific information contract: ${styleContract}`);
+      }
+    }
+    for (const forbiddenMechanism of [
+      'focusFactor =',
+      'trackColumn',
+      'category.dataset.collapsed',
+      'writing-mode: vertical-rl',
+      'columnWeight:',
+    ]) {
+      if (snapshot.includes(forbiddenMechanism) || variantStyles.includes(forbiddenMechanism)) {
+        throw new Error(`Semantic Zoom must not import another landscape mechanism: ${forbiddenMechanism}`);
+      }
+    }
+  }
   if (variant.phase === "18a-proportional-landscape") {
     for (const reference of [
       "columnWeight: ({ firstCount, secondCount }) => firstCount + secondCount",
