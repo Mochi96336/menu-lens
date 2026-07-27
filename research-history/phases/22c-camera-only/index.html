@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 22C Camera-only Focus：18 的欄寬、列高、字級與 padding 不變，只在分類聚焦時將 camera 對準所在紙欄。" />
+    <title>22C Camera-only Focus — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../landscape-paper.css" />
+    <link rel="stylesheet" href="../../camera-only-focus.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../paper-landscape-core.js"></script>
+    <script src="../../spatial-drag.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">22C · 18 + camera-only focus</p>
+          <h1>Camera-only Focus</h1>
+          <p class="lede">從 18 的乾淨 landscape substrate 建立。點分類後只把 camera 對準所在紙欄；欄寬、上下列高、字級與 padding 都不改變。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">唯一變因是 focus-driven camera positioning。三欄始終 1:1:1，列高始終 8:6／6:4／4:2；不以幾何放大製造焦點。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="22C Camera-only Focus 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="camera-only-restaurant-name" class="restaurant-name"></h2>
+            <p id="camera-only-restaurant-meta" class="restaurant-meta"></p>
+            <p id="camera-only-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="camera-only-reset" type="button" aria-pressed="true">原位置</button>
+            <button id="camera-only-previous" type="button" aria-label="上一個分類">←</button>
+            <button id="camera-only-next" type="button" aria-label="下一個分類">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="camera-only-location-title">18 原位置</strong>
+              <span id="camera-only-location-meta">欄寬 1:1:1 · 列高 8:6／6:4／4:2</span>
+            </div>
+          </div>
+
+          <div class="landscape-stage camera-only-stage">
+            <div id="camera-only-viewport" class="landscape-viewport camera-only-viewport" tabindex="0" aria-label="只由分類焦點定位 camera 的 18 橫向紙面">
+              <div id="camera-only-sheet" class="landscape-sheet camera-only-sheet"></div>
+            </div>
+            <aside id="camera-only-detail" class="paper-detail" data-open="false" aria-hidden="true" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="camera-only-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="camera-only-detail-title"></h3>
+                <p id="camera-only-detail-meta" class="paper-detail__meta"></p>
+                <p id="camera-only-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">點分類只移動 camera；紙面幾何與文字完全不變。拖曳仍可自由查看其他紙欄。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Controlled comparison</p><h2>只測 focus-driven camera positioning</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>Control parent：18</h3><p>固定 46rem 紙面、1:1:1 外欄、8:6／6:4／4:2 基礎列高，以及相同 drag、detail、typography 與 padding。</p></article>
+          <article class="phase-card"><h3>唯一變因</h3><p>選中分類時，camera 平移到該分類所在紙欄中心；原位置 reset 回到紙張左端。</p></article>
+          <article class="phase-card"><h3>刻意沒有加入</h3><p>沒有 row weighting、column expansion、reading-scale typography、padding 調整、paired-category collapse 或 resize-after-width tracking。</p></article>
+          <article class="phase-card"><h3>停止條件</h3><p>若定位後內容仍不比 18 初始紙面更容易閱讀，結論應是 camera positioning alone is insufficient。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const core = window.MenuLensLandscapeCore;
+      const viewport = document.querySelector("#camera-only-viewport");
+      const sheet = document.querySelector("#camera-only-sheet");
+      const resetButton = document.querySelector("#camera-only-reset");
+      const previousButton = document.querySelector("#camera-only-previous");
+      const nextButton = document.querySelector("#camera-only-next");
+      const locationTitle = document.querySelector("#camera-only-location-title");
+      const locationMeta = document.querySelector("#camera-only-location-meta");
+
+      core.hydrateRestaurant({
+        menu,
+        name: document.querySelector("#camera-only-restaurant-name"),
+        meta: document.querySelector("#camera-only-restaurant-meta"),
+        copy: document.querySelector("#camera-only-restaurant-copy"),
+      });
+
+      // core.buildLandscape projects the fixture through window.renderMenuLensPaperField(menu).
+      const { categories, categoryCounts, columns, productButtons } = core.buildLandscape({
+        menu,
+        sheet,
+        columnClass: "landscape-column camera-only-column",
+        columnWeight: () => 1,
+      });
+
+      const detail = core.createDishDetail({
+        menu,
+        detail: document.querySelector("#camera-only-detail"),
+        closeButton: document.querySelector("#camera-only-detail-close"),
+        title: document.querySelector("#camera-only-detail-title"),
+        meta: document.querySelector("#camera-only-detail-meta"),
+        copy: document.querySelector("#camera-only-detail-copy"),
+        productButtons,
+      });
+
+      categories.forEach((category, categoryIndex) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+        header.setAttribute("aria-label", `${menu.categories[categoryIndex].name}，將 camera 對準這個分類`);
+      });
+
+      let activeCategoryIndex = null;
+
+      const scrollBehavior = () =>
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+      const trackColumn = (columnIndex, behavior = scrollBehavior()) => {
+        const boundedIndex = Math.max(0, Math.min(columns.length - 1, columnIndex));
+        const column = columns[boundedIndex];
+        const targetLeft = column.offsetLeft + column.offsetWidth / 2 - viewport.clientWidth / 2;
+        viewport.scrollTo({ left: Math.max(0, targetLeft), behavior });
+      };
+
+      const updateState = () => {
+        const atOverview = activeCategoryIndex === null;
+        resetButton.setAttribute("aria-pressed", String(atOverview));
+        previousButton.disabled = atOverview || activeCategoryIndex === 0;
+        nextButton.disabled = atOverview || activeCategoryIndex === categories.length - 1;
+
+        categories.forEach((category, index) => {
+          const focused = index === activeCategoryIndex;
+          if (focused) category.dataset.focused = "true";
+          else delete category.dataset.focused;
+          const header = category.querySelector(".paper-category__header");
+          header.setAttribute("aria-pressed", String(focused));
+          header.setAttribute(
+            "aria-label",
+            `${menu.categories[index].name}，${focused ? "回到原位置" : "將 camera 對準這個分類"}`,
+          );
+        });
+
+        if (atOverview) {
+          locationTitle.textContent = "18 原位置";
+          locationMeta.textContent = "欄寬 1:1:1 · 列高 8:6／6:4／4:2";
+          return;
+        }
+
+        const columnIndex = Math.floor(activeCategoryIndex / 2);
+        locationTitle.textContent = menu.categories[activeCategoryIndex].name;
+        locationMeta.textContent = `${categoryCounts[activeCategoryIndex]} 道 · camera 對準紙欄 ${columnIndex + 1}`;
+      };
+
+      const showOverview = () => {
+        activeCategoryIndex = null;
+        updateState();
+        detail.close();
+        trackColumn(0);
+      };
+
+      const focusCategory = (categoryIndex) => {
+        activeCategoryIndex = Math.max(0, Math.min(categories.length - 1, categoryIndex));
+        updateState();
+        detail.close();
+        requestAnimationFrame(() => trackColumn(Math.floor(activeCategoryIndex / 2)));
+      };
+
+      categories.forEach((category, categoryIndex) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          if (activeCategoryIndex === categoryIndex) showOverview();
+          else focusCategory(categoryIndex);
+        });
+      });
+
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+          if (categoryIndex !== activeCategoryIndex) {
+            focusCategory(categoryIndex);
+            return;
+          }
+          detail.open(button);
+        });
+      });
+
+      resetButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => {
+        if (activeCategoryIndex !== null) focusCategory(activeCategoryIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        if (activeCategoryIndex !== null) focusCategory(activeCategoryIndex + 1);
+      });
+      viewport.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        if (activeCategoryIndex === null) focusCategory(event.key === "ArrowLeft" ? 0 : categories.length - 1);
+        else focusCategory(activeCategoryIndex + (event.key === "ArrowLeft" ? -1 : 1));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.isOpen()) detail.close(true);
+        else if (activeCategoryIndex !== null) showOverview();
+      });
+
+      window.enableMenuLensHorizontalDrag(viewport, {
+        enabled: () => !detail.isOpen(),
+      });
+
+      updateState();
+    </script>
+  </body>
+</html>
