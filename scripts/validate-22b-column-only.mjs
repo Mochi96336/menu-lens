@@ -63,8 +63,9 @@ for (const forbiddenStyle of [
   "font-size: .68rem",
   "font-size: .62rem",
   "padding-inline: .55rem",
+  "scroll-snap-type: x proximity",
 ]) {
-  if (styles.includes(forbiddenStyle)) throw new Error(`22B must preserve 18 rows and typography: ${forbiddenStyle}`);
+  if (styles.includes(forbiddenStyle)) throw new Error(`22B must preserve 18 rows and typography without implicit camera snap: ${forbiddenStyle}`);
 }
 
 for (const requiredStyle of [
@@ -72,11 +73,12 @@ for (const requiredStyle of [
   "min-width: 46rem;",
   "flex: var(--column-count) 1 0;",
   "transition: flex-grow",
+  "scroll-snap-type: none;",
   ".column-only-viewport .paper-product",
   "padding-inline: .5rem;",
   "font-size: .64rem;",
 ]) {
-  if (!styles.includes(requiredStyle)) throw new Error(`22B must preserve 18's base presentation: ${requiredStyle}`);
+  if (!styles.includes(requiredStyle)) throw new Error(`22B must preserve 18's base presentation and explicit navigation contract: ${requiredStyle}`);
 }
 
 if (html.includes("選這道") || html.includes("加入購物車")) {
