@@ -18,6 +18,12 @@ for (const required of [
   'const focusFactor = 1.8',
   'column.style.setProperty("--column-rows"',
   'class="landscape-sheet landscape-sheet--equal-columns row-only-sheet"',
+  'aria-label="上一個紙欄"',
+  'aria-label="下一個紙欄"',
+  'let activeColumnIndex = 0',
+  'snapToColumn(activeColumnIndex - 1)',
+  'snapToColumn(activeColumnIndex + 1)',
+  'viewport.addEventListener("scroll"',
   'onSettle: () => snapToColumn(nearestColumnIndex())',
 ]) {
   if (!html.includes(required)) throw new Error(`22A is missing its row-only contract: ${required}`);
@@ -30,8 +36,21 @@ for (const forbidden of [
   "trackingTimer",
   "data-collapsed",
   "category.dataset.collapsed",
+  "focusCategory(activeCategoryIndex - 1)",
+  "focusCategory(activeCategoryIndex + 1)",
 ]) {
   if (html.includes(forbidden)) throw new Error(`22A must not inherit mixed focus behavior: ${forbidden}`);
+}
+
+const focusCategorySource = html.match(/const focusCategory = \(categoryIndex\) => \{[\s\S]*?\n      \};/)?.[0];
+const showOverviewSource = html.match(/const showOverview = \(\) => \{[\s\S]*?\n      \};/)?.[0];
+if (!focusCategorySource || !showOverviewSource) {
+  throw new Error("22A must expose explicit focus and reset functions for validation.");
+}
+for (const [name, source] of [["focus", focusCategorySource], ["reset", showOverviewSource]]) {
+  if (source.includes("snapToColumn") || source.includes("scrollTo")) {
+    throw new Error(`22A ${name} must not move the camera automatically.`);
+  }
 }
 
 for (const forbiddenStyle of [
@@ -63,4 +82,4 @@ const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script
   .filter(Boolean);
 inlineScripts.forEach((source, index) => new Script(source, { filename: `${path}#inline-${index + 1}` }));
 
-console.log("22A row-only validation passed: fixed 1:1:1 columns, 1.8× row weighting, no camera or typography coupling.");
+console.log("22A row-only validation passed: fixed 1:1:1 columns, 1.8× row weighting, explicit camera navigation only.");

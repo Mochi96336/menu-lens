@@ -38,8 +38,8 @@
           </header>
           <div class="paper-toolbar">
             <button id="row-only-reset" type="button" aria-pressed="true">原比例</button>
-            <button id="row-only-previous" type="button" aria-label="上一個分類">←</button>
-            <button id="row-only-next" type="button" aria-label="下一個分類">→</button>
+            <button id="row-only-previous" type="button" aria-label="上一個紙欄">←</button>
+            <button id="row-only-next" type="button" aria-label="下一個紙欄">→</button>
             <div class="paper-location" aria-live="polite">
               <strong id="row-only-location-title">18 原比例</strong>
               <span id="row-only-location-meta">欄寬 1:1:1 · 列高 8:6／6:4／4:2</span>
@@ -119,6 +119,8 @@
 
       const focusFactor = 1.8;
       let activeCategoryIndex = null;
+      let activeColumnIndex = 0;
+      let scrollFrame = null;
 
       const applyRows = () => {
         columns.forEach((column, columnIndex) => {
@@ -132,8 +134,8 @@
       const updateState = () => {
         const atOverview = activeCategoryIndex === null;
         resetButton.setAttribute("aria-pressed", String(atOverview));
-        previousButton.disabled = atOverview || activeCategoryIndex === 0;
-        nextButton.disabled = atOverview || activeCategoryIndex === categories.length - 1;
+        previousButton.disabled = activeColumnIndex === 0;
+        nextButton.disabled = activeColumnIndex === columns.length - 1;
 
         categories.forEach((category, index) => {
           const focused = index === activeCategoryIndex;
@@ -178,7 +180,7 @@
       const nearestColumnIndex = () => {
         const viewportBounds = viewport.getBoundingClientRect();
         const center = viewportBounds.left + viewportBounds.width / 2;
-        let nearestIndex = 0;
+        let nearestIndex = activeColumnIndex;
         let nearestDistance = Number.POSITIVE_INFINITY;
         columns.forEach((column, index) => {
           const bounds = column.getBoundingClientRect();
@@ -192,12 +194,14 @@
       };
 
       const snapToColumn = (columnIndex) => {
-        const column = columns[Math.max(0, Math.min(columns.length - 1, columnIndex))];
+        activeColumnIndex = Math.max(0, Math.min(columns.length - 1, columnIndex));
+        const column = columns[activeColumnIndex];
         const targetLeft = column.offsetLeft + column.offsetWidth / 2 - viewport.clientWidth / 2;
         viewport.scrollTo({
           left: Math.max(0, targetLeft),
           behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
         });
+        updateState();
       };
 
       categories.forEach((category, categoryIndex) => {
@@ -220,15 +224,26 @@
 
       resetButton.addEventListener("click", showOverview);
       previousButton.addEventListener("click", () => {
-        if (activeCategoryIndex !== null) focusCategory(activeCategoryIndex - 1);
+        detail.close();
+        snapToColumn(activeColumnIndex - 1);
       });
       nextButton.addEventListener("click", () => {
-        if (activeCategoryIndex !== null) focusCategory(activeCategoryIndex + 1);
+        detail.close();
+        snapToColumn(activeColumnIndex + 1);
       });
+      viewport.addEventListener("scroll", () => {
+        if (scrollFrame !== null) return;
+        scrollFrame = requestAnimationFrame(() => {
+          scrollFrame = null;
+          activeColumnIndex = nearestColumnIndex();
+          updateState();
+        });
+      }, { passive: true });
       viewport.addEventListener("keydown", (event) => {
         if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
         event.preventDefault();
-        snapToColumn(nearestColumnIndex() + (event.key === "ArrowLeft" ? -1 : 1));
+        detail.close();
+        snapToColumn(activeColumnIndex + (event.key === "ArrowLeft" ? -1 : 1));
       });
       document.addEventListener("keydown", (event) => {
         if (event.key !== "Escape") return;
