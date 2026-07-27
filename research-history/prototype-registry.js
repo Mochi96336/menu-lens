@@ -260,6 +260,13 @@
       summary: "30 道料理交織在同一排版體積；斜向旋轉使分類逐漸成形，雙指張合連續控制深度而不切換頁面。",
       assets: { styles: ["history.css", "parallax-menu-volume.css"], scripts: ["menu-fixture.js", "parallax-menu-volume.js"] },
     },
+    {
+      id: "26A", slug: "transition-landmarks", title: "Transition Landmarks", family: "depth", parentId: "26",
+      kind: "spatial-prototype", status: "active-variant", statusLabel: "active transition landmark variant",
+      path: "phases/26a-transition-landmarks/index.html", validationProfile: "parallax-transition-landmarks",
+      summary: "保留 26 的同一排版體積，只在中間角度標示離開與接近的分類、料理數與範圍線索。",
+      assets: { styles: ["history.css", "parallax-menu-volume.css", "parallax-transition-landmarks.css"], scripts: ["menu-fixture.js", "parallax-menu-volume.js", "parallax-transition-landmarks.js"] },
+    },
   ];
 
   window.menuLensPrototypeRegistry = Object.freeze({
