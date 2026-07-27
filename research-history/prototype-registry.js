@@ -93,6 +93,13 @@
       assets: { styles: ["history.css", "evidence.css"], scripts: ["menu-fixture.js"] },
     },
     {
+      id: "05A", slug: "minimal-ledger-row", title: "Minimal Ledger Row", family: "document", parentId: "05",
+      kind: "mechanism-variant", status: "active-variant", statusLabel: "active variant",
+      path: "phases/05a-minimal-ledger/index.html", validationProfile: "minimal-ledger",
+      summary: "只縮減 collapsed ledger row 的可見資訊量，完整 description 與 metadata 留在 inline detail。",
+      assets: { styles: ["history.css", "minimal-ledger.css"], scripts: ["menu-fixture.js", "minimal-ledger.js"] },
+    },
+    {
       id: "06", slug: "multiscale-menu-map", title: "Multi-scale menu map", family: "relational", parentId: "02",
       kind: "revisit", status: "unresolved-revisit", statusLabel: "unresolved revisit",
       path: "phases/06-multiscale-menu-map/index.html", validationProfile: "multiscale",

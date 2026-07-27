@@ -1,0 +1,247 @@
+.minimal-ledger-screen {
+  overflow-x: clip;
+}
+
+.minimal-ledger-observer {
+  position: sticky;
+  z-index: 3;
+  top: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .1rem .65rem;
+  margin: 0 -1.15rem 1rem;
+  padding: .58rem 1.15rem;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+  background: rgb(248 245 239 / 96%);
+  backdrop-filter: blur(10px);
+}
+
+.minimal-ledger-observer span,
+.minimal-ledger-observer small {
+  color: var(--faint);
+  font-size: .72rem;
+}
+
+.minimal-ledger-observer strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: .84rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.minimal-ledger-observer small {
+  grid-column: 1 / -1;
+}
+
+.minimal-ledger-category {
+  margin-top: 2rem;
+  scroll-margin-top: 4rem;
+}
+
+.minimal-ledger-category > header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .28rem .75rem;
+  padding-bottom: .62rem;
+  border-bottom: 2px solid var(--ink);
+}
+
+.minimal-ledger-category h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  line-height: 1.2;
+}
+
+.minimal-ledger-category header p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+.minimal-ledger-count {
+  align-self: center;
+  white-space: nowrap;
+  font-size: .8rem;
+  font-weight: 750;
+}
+
+.minimal-ledger-row {
+  border-bottom: 1px solid var(--line);
+}
+
+.minimal-ledger-row summary {
+  display: grid;
+  min-height: 3.6rem;
+  grid-template-columns: minmax(0, 1fr) 4.85rem 2.9rem;
+  grid-template-areas:
+    "name price disclosure"
+    "cue price disclosure";
+  gap: .14rem .45rem;
+  align-items: center;
+  padding: .68rem 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.minimal-ledger-row summary::-webkit-details-marker {
+  display: none;
+}
+
+.minimal-ledger-row summary:focus-visible,
+.minimal-ledger-close:focus-visible,
+.minimal-ledger-nav a:focus-visible {
+  outline: 3px solid #245b88;
+  outline-offset: 3px;
+}
+
+.minimal-ledger-name-wrap {
+  grid-area: name;
+  min-width: 0;
+}
+
+.minimal-ledger-name {
+  font-weight: 780;
+  line-height: 1.28;
+}
+
+.minimal-ledger-sold-out {
+  display: inline-block;
+  margin-inline-start: .35rem;
+  color: var(--danger);
+  font-size: .7rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.minimal-ledger-cue {
+  grid-area: cue;
+  min-width: 0;
+  overflow: hidden;
+  color: #5a5147;
+  font-size: .76rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.minimal-ledger-price {
+  grid-area: price;
+  justify-self: end;
+  color: var(--ink);
+  font-size: .82rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 760;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.minimal-ledger-disclosure {
+  grid-area: disclosure;
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: var(--accent);
+  font-size: .7rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.minimal-ledger-row[open] > summary {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.minimal-ledger-detail {
+  margin: 0 0 .85rem;
+  padding: .78rem 0 .2rem .8rem;
+  border-left: 3px solid var(--accent);
+}
+
+.minimal-ledger-description {
+  margin-bottom: .68rem;
+  color: #39352f;
+  font-size: .86rem;
+  line-height: 1.6;
+}
+
+.minimal-ledger-detail dl {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: .24rem .65rem;
+  margin: 0;
+  font-size: .78rem;
+}
+
+.minimal-ledger-detail dt {
+  color: var(--faint);
+}
+
+.minimal-ledger-detail dd {
+  min-width: 0;
+  margin: 0;
+}
+
+.minimal-ledger-close {
+  min-height: 2.75rem;
+  margin-top: .75rem;
+  padding: .42rem .7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: transparent;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.minimal-ledger-screen .archive-source-note {
+  margin-top: 1.2rem;
+  padding-top: .9rem;
+  border-top: 1px solid var(--line);
+  color: var(--faint);
+  font-size: .76rem;
+}
+
+.minimal-ledger-variant-note {
+  display: grid;
+  gap: .75rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line-strong);
+}
+
+.minimal-ledger-variant-note h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.minimal-ledger-variant-note p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .84rem;
+}
+
+@media (max-width: 700px) {
+  .minimal-ledger-observer {
+    margin-inline: -.9rem;
+    padding-inline: .9rem;
+  }
+}
+
+@media (max-width: 340px) {
+  .minimal-ledger-row summary {
+    grid-template-columns: minmax(0, 1fr) 4.55rem 2.65rem;
+    column-gap: .35rem;
+  }
+
+  .minimal-ledger-disclosure {
+    font-size: .66rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .minimal-ledger-observer {
+    backdrop-filter: none;
+  }
+}

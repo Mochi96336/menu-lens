@@ -1,0 +1,39 @@
+name: Validate 05A Minimal Ledger
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "research-history/**"
+      - "docs/research-history/reviews/05a/**"
+      - "scripts/validate-minimal-ledger.mjs"
+      - "package.json"
+      - ".github/workflows/05a-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
