@@ -57,7 +57,8 @@ The runner:
 - presents one condition at a time;
 - hides research titles and mechanism notes inside the embedded prototype;
 - supports 320px, 390px, and 1280px frames;
-- stores no response, identifier, analytics, or local state.
+- stores no response, identifier, analytics, or local state;
+- includes no response form, submit action, or automated result export.
 
 The facilitator records observations manually with `12a-reader-comparison-observation-sheet.md`.
 
