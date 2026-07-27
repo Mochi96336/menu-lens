@@ -19,9 +19,13 @@ It exists to prevent parallel conversations from redefining the product, duplica
 [complete] foundation memory
 → [complete] domain schema and reference dataset
 → [complete] formative evaluation protocol
-→ [active] customer decision spine
-    [complete] complete menu + inline detail
-    → [next] Candidate + comparison
+→ [active] spatial interaction exploration
+    [registry] document / relational / horizontal / matrix-paper / landscape / depth families
+    → [current substrate] 18 Landscape Paper
+    → [active variants] 22 Weighted Pinch / 23 Collapsible / 24 Vertical / 25 Menu Depth
+    → [active] detail-level visual and interaction review
+→ [paused] customer decision spine
+    Candidate surface review
     → Decision + Configuration + Current order
 → continuity and table state
 → thin alternative lenses
@@ -36,7 +40,8 @@ It exists to prevent parallel conversations from redefining the product, duplica
 | Foundation memory | Complete | product contract, glossary, workstream boundaries, handoff protocol | existing design core | stable cross-conversation reference |
 | Domain and reference data | Complete | types, validation, 30-product fictional menu, incomplete metadata cases | product contract | local typed dataset and tests |
 | Formative evaluation | Complete | task scripts, observation notes, lightweight local events, falsification signals | product contract | protocol that shapes implementation |
-| Customer decision spine | In progress | full menu → inline detail → candidates → comparison → decision → configuration → current order | domain dataset and formative protocol | one complete interactive flow |
+| Spatial interaction exploration | In progress | horizontal structure, two-dimensional overview, category focus, location continuity | complete-menu substrate and research archive | playable spatial hypotheses and mechanism notes |
+| Customer decision spine | Paused | full menu → inline detail → candidates → comparison → decision → configuration → current order | spatial interaction exploration | one complete interactive flow |
 | Continuity and table state | Deferred | scroll restoration, preserved candidates, submitted rounds, coarse table composition | customer decision spine | continuity behavior over the same state model |
 | Alternative lenses | Deferred | thin quick, shared-table, and featured views | stable decision spine | views over the same canonical menu |
 | Merchant authoring | Deferred | category defaults, exceptions, confidence, incomplete-data preview | proven useful semantic fields | small authoring test, not production CMS |
@@ -94,55 +99,54 @@ The first customer-facing slice now provides:
 - reduced-motion-aware category scrolling
 - focused menu-reading tests and a static build path
 
-## Active workstream: customer decision spine
+## Active workstream: spatial interaction exploration
 
 ### Goal
 
-Implement one coherent mobile-first interaction using the canonical reference menu:
+Explore spatial models that are materially different from a vertical document or familiar category pager. The workstream may preserve multiple hypotheses; it does not need to select a winner before the mechanisms are playable.
 
 ```text
-complete menu
-→ inline detail
-→ Candidate
-→ comparison
-→ explicit Decision
-→ Configuration
-→ Current order
+prototype-registry.js
+├─ document
+├─ relational
+├─ horizontal
+├─ matrix-paper
+├─ landscape
+   ├─ 18 current substrate
+   ├─ 19–21 reviewed-stop evidence
+   └─ 22–24 active variants
+└─ depth
+   ├─ 25 family hub
+   ├─ 25P active real-axis projection
+   ├─ Menu Sections rejected semantic-depth evidence
+   └─ 25B retained first-pass falsification
 ```
 
 ### Progress
 
-```text
-[complete] complete menu + inline detail
-→ [next] Candidate + comparison
-→ [pending] explicit Decision + Configuration + Current order
-```
+The registry and executable archive retain 25B as a first-pass falsification study. Its shared ordinal slices remain semantically unsupported and are not a recommended direction. Menu Sections preserved the anchor from Z0 to Z+1, but the shorter overview surface forced a large boundary jump, so only the semantic-depth model stops before pinch. The active 25P prototype uses one real data model—price × portion × preparation—and moves the same 30 nodes between three readable orthographic projections. It is a secondary decision lens, not a replacement for the complete menu.
 
 ### Required outputs
 
-- **Complete:** one client application
-- **Complete:** complete-menu overview with stable category navigation
-- **Complete:** inline product detail without losing browsing context
-- **Next:** Candidate add, remove, and workspace behavior
-- **Next:** comparison for genuine Candidate differences
-- **Pending:** explicit transition from consideration to Decision
-- **Pending:** Configuration only after Decision
-- **Pending:** Current order clearly separated from Candidates
-- **Pending:** local-only observation events aligned with `docs/evaluation-plan.md`
-- focused tests for every implemented state transition and preserved invariant
+- a valid registry entry for every research node, with one family and at most one parent
+- stable URLs for every executable historical phase
+- registered asset references and structural validation
+- complete six-category, 30-product fixture parity where the profile requires it
+- direct review kept separate from participant evidence
+- visual inspection of initial, focused, detail, reset, and narrow-screen states before a prototype is called playable
 
 ### Constraints
 
-- no backend, database, authentication, payment, POS, or KDS integration
-- no conventional baseline
-- no Quick, Shared-table, or Featured lens implementation
-- no merchant CMS
-- no remote analytics
-- no generic state-machine, repository, plugin, or design-system framework
-- do not add abstractions for deferred work
-- preserve `Product ≠ Candidate ≠ DraftOrderItem ≠ ConfiguredOrderItem ≠ SubmittedOrderRound`
+- no Candidate, comparison, Decision, Configuration, or Current order implementation during spatial exploration
+- no pinch-to-zoom or freeform canvas in the first 08 prototype; this bounded 08 constraint does not apply to 22 or 24
+- no claim that 07 represents every market product; it is a familiar baseline family, not a completed benchmark
+- no forced disposition or participant-study requirement while interaction mechanisms are still being formed
+- every executable hypothesis must render all six categories and 30 products from the shared fixture
+- preserve `Product ≠ Candidate ≠ DraftOrderItem ≠ ConfiguredOrderItem ≠ SubmittedOrderRound` unless the product contract is explicitly revised
 
-## Next implementation slice: Candidate and comparison
+## Paused implementation slice: Candidate and comparison
+
+This slice is not authorized to proceed until spatial exploration is intentionally closed and the Candidate surface has been reviewed against the rejected Candidate workspace and bounded-comparison evidence.
 
 ### Goal
 

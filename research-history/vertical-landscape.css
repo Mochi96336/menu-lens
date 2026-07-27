@@ -1,0 +1,91 @@
+.vertical-category {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.vertical-category .paper-category__header {
+  grid-row: 1;
+  writing-mode: horizontal-tb;
+}
+
+.vertical-category .paper-category__products {
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--product-count), minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  direction: rtl;
+  overflow: hidden;
+}
+
+.vertical-category .paper-product {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: .38rem;
+  min-width: 0;
+  padding: .4rem .1rem;
+  overflow: hidden;
+  border: 0;
+  border-left: 1px dotted var(--line);
+  direction: ltr;
+  font-size: .5rem;
+  line-height: 1.35;
+  text-align: start;
+  text-orientation: upright;
+  writing-mode: vertical-rl;
+}
+
+.vertical-category .paper-product:last-child {
+  border-left: 0;
+}
+
+.vertical-category .paper-product__name {
+  display: block;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vertical-category .paper-product strong {
+  display: inline-block;
+  flex: 0 0 auto;
+  padding-top: .18rem;
+  border-top: 1px solid var(--line);
+  color: var(--accent);
+  font-size: .46rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-combine-upright: all;
+  text-orientation: upright;
+  writing-mode: vertical-rl;
+}
+
+.vertical-category .paper-product[data-availability="sold_out"] .paper-product__name {
+  text-decoration: line-through;
+  text-decoration-color: rgb(139 58 34 / 55%);
+}
+
+.vertical-category .paper-product[data-selected="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.vertical-viewport[data-scale="reading"] .vertical-category .paper-product {
+  padding-inline: .16rem;
+  font-size: .62rem;
+}
+
+.vertical-viewport[data-scale="reading"] .vertical-category .paper-product strong {
+  font-size: .55rem;
+}
+
+.vertical-stage .paper-detail {
+  right: .65rem;
+  left: .65rem;
+}

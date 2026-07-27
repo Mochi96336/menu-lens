@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 23 Collapsible Landscape：在 18 的原始三欄紙面內收起分類，不改欄寬，也不拉高剩餘料理列。" />
+    <title>23 Collapsible Landscape — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../landscape-paper.css" />
+    <link rel="stylesheet" href="../../collapsible-landscape.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../paper-landscape-core.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">23 · 18 + literal category collapse</p>
+          <h1>Collapsible Landscape</h1>
+          <p class="lede">畫面與欄寬直接沿用 18。點哪個分類就收起哪個；同欄另一分類留在原處，但料理列維持收合前高度，不把空出的紙面硬灌成巨大列。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">三個紙欄始終等寬。收起分類後只留下原位標頭；同欄剩餘分類不增加資訊、不改欄寬，也不拉高每道料理。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Collapsible Landscape 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="collapse-restaurant-name" class="restaurant-name"></h2>
+            <p id="collapse-restaurant-meta" class="restaurant-meta"></p>
+            <p id="collapse-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar collapse-toolbar">
+            <button id="collapse-reset" type="button" aria-pressed="true" disabled>全部展開</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="collapse-location-title">完整 3×2 紙面</strong>
+              <span id="collapse-location-meta">0 / 6 收起 · 三欄等寬</span>
+            </div>
+          </div>
+
+          <div class="landscape-stage collapse-stage">
+            <div class="landscape-viewport collapse-viewport" aria-label="可局部收合的 18 比例紙面">
+              <div id="collapse-sheet" class="landscape-sheet collapse-sheet"></div>
+            </div>
+            <aside id="collapse-detail" class="paper-detail" data-open="false" aria-hidden="true" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="collapse-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="collapse-detail-title"></h3>
+                <p id="collapse-detail-meta" class="paper-detail__meta"></p>
+                <p id="collapse-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">點分類標頭收起／展開；空出的就是空白紙面，剩餘料理列不會被拉高。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>只收起分類，不重算 18 的寬度</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>欄寬鎖定</h3><p>三欄直接使用 18 的 1:1:1；任何收合狀態都不改欄寬或左右順序。</p></article>
+          <article class="phase-card"><h3>點哪個，收哪個</h3><p>分類標頭直接控制自己的內容，收起後在同一個上下邊緣留下名稱、數量與 ＋。</p></article>
+          <article class="phase-card"><h3>不灌高料理列</h3><p>收合前先記錄每道料理的實際高度；同欄剩餘分類即使取得空間，列高仍維持原值。</p></article>
+          <article class="phase-card"><h3>主要風險</h3><p>空白紙面可能比自動重排更誠實，也可能顯得浪費；這正是這個變體要判斷的成本。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const core = window.MenuLensLandscapeCore;
+      const sheet = document.querySelector("#collapse-sheet");
+      const resetButton = document.querySelector("#collapse-reset");
+      const locationTitle = document.querySelector("#collapse-location-title");
+      const locationMeta = document.querySelector("#collapse-location-meta");
+
+      core.hydrateRestaurant({
+        menu,
+        name: document.querySelector("#collapse-restaurant-name"),
+        meta: document.querySelector("#collapse-restaurant-meta"),
+        copy: document.querySelector("#collapse-restaurant-copy"),
+      });
+
+      const { categories, columns, productButtons } = core.buildLandscape({
+        menu,
+        sheet,
+        columnClass: "landscape-column collapse-column",
+      });
+
+      const detail = core.createDishDetail({
+        menu,
+        detail: document.querySelector("#collapse-detail"),
+        closeButton: document.querySelector("#collapse-detail-close"),
+        title: document.querySelector("#collapse-detail-title"),
+        meta: document.querySelector("#collapse-detail-meta"),
+        copy: document.querySelector("#collapse-detail-copy"),
+        productButtons,
+      });
+
+      categories.forEach((category) => {
+        const mark = document.createElement("span");
+        mark.className = "collapse-toggle-mark";
+        mark.setAttribute("aria-hidden", "true");
+        category.querySelector(".paper-category__header").append(mark);
+      });
+
+      const captureStableRows = () => {
+        if (columns.some((column) => column.dataset.collapsed !== "none")) return;
+        categories.forEach((category) => {
+          const products = [...category.querySelectorAll(".paper-product")];
+          const productsBox = category.querySelector(".paper-category__products").getBoundingClientRect();
+          if (products.length > 0 && productsBox.height > 0) {
+            category.style.setProperty("--stable-row-height", `${productsBox.height / products.length}px`);
+          }
+        });
+      };
+
+      const updateStatus = () => {
+        const collapsedCategories = categories.filter((category) => category.dataset.collapsed === "true");
+        const allExpanded = collapsedCategories.length === 0;
+        const names = collapsedCategories.map((category) => menu.categories[Number(category.dataset.categoryIndex)].name);
+        resetButton.disabled = allExpanded;
+        resetButton.setAttribute("aria-pressed", String(allExpanded));
+        locationTitle.textContent = allExpanded ? "完整 3×2 紙面" : names.join("、");
+        locationMeta.textContent = `${collapsedCategories.length} / ${categories.length} 收起 · 三欄等寬`;
+      };
+
+      const setColumnCollapsed = (column, nextCollapsed) => {
+        column.dataset.collapsed = nextCollapsed;
+        const pair = [...column.querySelectorAll(".paper-category")];
+        pair.forEach((category, localIndex) => {
+          const ownKey = localIndex === 0 ? "first" : "second";
+          const collapsed = nextCollapsed === ownKey;
+          const expandedRoom = nextCollapsed !== "none" && !collapsed;
+          const categoryName = menu.categories[Number(category.dataset.categoryIndex)].name;
+          const header = category.querySelector(".paper-category__header");
+          category.dataset.collapsed = String(collapsed);
+          category.dataset.expandedRoom = String(expandedRoom);
+          header.setAttribute("aria-expanded", String(!collapsed));
+          header.setAttribute("aria-label", `${categoryName}，${collapsed ? "展開分類" : "收起分類"}`);
+          header.querySelector(".collapse-toggle-mark").textContent = collapsed ? "＋" : "−";
+        });
+        updateStatus();
+      };
+
+      columns.forEach((column) => {
+        column.dataset.collapsed = "none";
+        const pair = [...column.querySelectorAll(".paper-category")];
+        pair.forEach((category, localIndex) => {
+          const ownKey = localIndex === 0 ? "first" : "second";
+          category.querySelector(".paper-category__header").addEventListener("click", () => {
+            detail.close();
+            captureStableRows();
+            setColumnCollapsed(column, column.dataset.collapsed === ownKey ? "none" : ownKey);
+          });
+        });
+        setColumnCollapsed(column, "none");
+      });
+
+      productButtons.forEach((button) => button.addEventListener("click", () => detail.open(button)));
+      resetButton.addEventListener("click", () => {
+        detail.close();
+        columns.forEach((column) => setColumnCollapsed(column, "none"));
+        requestAnimationFrame(captureStableRows);
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.isOpen()) detail.close(true);
+        else resetButton.click();
+      });
+      window.addEventListener("resize", () => requestAnimationFrame(captureStableRows));
+      requestAnimationFrame(captureStableRows);
+    </script>
+  </body>
+</html>

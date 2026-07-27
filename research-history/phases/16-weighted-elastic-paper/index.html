@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 16 Weighted Elastic Paper：依分類料理數量配置 2×3 紙面與聚焦面積。" />
+    <title>16 Weighted Elastic Paper — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../weighted-elastic-paper.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">16 · Content-weighted distortion</p>
+          <h1>Weighted Elastic Paper</h1>
+          <p class="lede">延續 15 的 2 欄×3 列，但紙面不再六等分。分類的基礎面積與聚焦後面積都從料理數量計算。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">修正問題：兩道甜點不需要和八道主餐相同的閱讀面積。焦點倍率相同，但它乘在 8／6／6／4／4／2 的內容權重上。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Weighted Elastic Paper 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="weighted-restaurant-name" class="restaurant-name"></h2>
+            <p id="weighted-restaurant-meta" class="restaurant-meta"></p>
+            <p id="weighted-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="weighted-overview" type="button" aria-pressed="true">比例紙面</button>
+            <button id="weighted-previous" type="button" aria-label="上一個分類">←</button>
+            <button id="weighted-next" type="button" aria-label="下一個分類">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="weighted-location-title">內容比例</strong>
+              <span id="weighted-location-meta">列 14:10:6 · 每列依料理數分欄</span>
+            </div>
+          </div>
+
+          <div id="weighted-viewport" class="paper-viewport weighted-elastic-viewport" data-scale="overview" tabindex="0" aria-label="拖曳以改變加權紙面焦點">
+            <div id="weighted-sheet" class="weighted-elastic-sheet"></div>
+            <aside id="weighted-detail" class="paper-detail" data-open="false" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="weighted-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="weighted-detail-title"></h3>
+                <p id="weighted-detail-meta" class="paper-detail__meta"></p>
+                <p id="weighted-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">拖曳焦點；每個分類只取得容納自身料理數量所需的面積。「比例紙面」回到基礎權重。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>相同倍率，不等於相同面積</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>每列欄寬</h3><p>三列分別依 8:6、6:4、4:2 分欄，因此每個分類面積能精確對應料理數量。</p></article>
+          <article class="phase-card"><h3>基礎列高</h3><p>三列分別有 14、10、6 道，因此高度約為 47%／33%／20%。</p></article>
+          <article class="phase-card"><h3>內容加權焦點</h3><p>焦點分類的原始內容權重乘以 1.8 再重新分配；主餐約取得 40% 紙面，甜點約 11%。</p></article>
+          <article class="phase-card"><h3>剩餘問題</h3><p>面積表達料理數量很合理，但也可能把菜單推向 treemap／dashboard，而不是閱讀版面。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const viewport = document.querySelector("#weighted-viewport");
+      const sheet = document.querySelector("#weighted-sheet");
+      const overviewButton = document.querySelector("#weighted-overview");
+      const previousButton = document.querySelector("#weighted-previous");
+      const nextButton = document.querySelector("#weighted-next");
+      const locationTitle = document.querySelector("#weighted-location-title");
+      const locationMeta = document.querySelector("#weighted-location-meta");
+      const detail = document.querySelector("#weighted-detail");
+      const detailClose = document.querySelector("#weighted-detail-close");
+
+      document.querySelector("#weighted-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#weighted-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#weighted-restaurant-meta").textContent = menu.restaurant.summary;
+      const projection = document.createElement("div");
+      projection.innerHTML = window.renderMenuLensPaperField(menu);
+      const projectedCategories = [...projection.querySelectorAll(".paper-category")];
+      const rows = [];
+      for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
+        const row = document.createElement("div");
+        row.className = "weighted-elastic-row";
+        row.dataset.rowIndex = String(rowIndex);
+        row.append(projectedCategories[rowIndex * 2], projectedCategories[rowIndex * 2 + 1]);
+        sheet.append(row);
+        rows.push(row);
+      }
+
+      const categories = [...sheet.querySelectorAll(".paper-category")];
+      const productButtons = [...sheet.querySelectorAll(".paper-product")];
+      categories.forEach((category) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+      });
+      const categoryCounts = menu.categories.map((category) =>
+        menu.products.filter((product) => product.categoryId === category.id).length,
+      );
+      const baseRows = [categoryCounts[0] + categoryCounts[1], categoryCounts[2] + categoryCounts[3], categoryCounts[4] + categoryCounts[5]];
+      const focusFactor = 1.8;
+      let activeCategoryIndex = null;
+      let selectedProductIndex = null;
+      let pointerState = null;
+      let suppressClick = false;
+
+      const applyContentWeights = (weights) => {
+        const rowWeights = rows.map((_, rowIndex) => weights[rowIndex * 2] + weights[rowIndex * 2 + 1]);
+        rows.forEach((row, rowIndex) => {
+          row.style.setProperty("--weighted-columns", `${weights[rowIndex * 2]}fr ${weights[rowIndex * 2 + 1]}fr`);
+        });
+        sheet.style.setProperty("--weighted-rows", rowWeights.map((weight) => `${weight}fr`).join(" "));
+        return rowWeights;
+      };
+
+      const closeDetail = (restoreFocus = false) => {
+        detail.dataset.open = "false";
+        productButtons.forEach((button) => delete button.dataset.selected);
+        if (restoreFocus && selectedProductIndex !== null) {
+          productButtons.find((button) => Number(button.dataset.productIndex) === selectedProductIndex)?.focus();
+        }
+        selectedProductIndex = null;
+      };
+
+      const focusCategory = (nextIndex) => {
+        activeCategoryIndex = Math.max(0, Math.min(categories.length - 1, nextIndex));
+        const weightedCounts = categoryCounts.map((count, index) => count * (index === activeCategoryIndex ? focusFactor : 1));
+        applyContentWeights(weightedCounts);
+        viewport.dataset.scale = "focus";
+        overviewButton.setAttribute("aria-pressed", "false");
+        categories.forEach((category, index) => {
+          const focused = index === activeCategoryIndex;
+          if (focused) category.dataset.focused = "true";
+          else delete category.dataset.focused;
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", String(focused));
+        });
+
+        const category = menu.categories[activeCategoryIndex];
+        const areaShare = weightedCounts[activeCategoryIndex] / weightedCounts.reduce((sum, weight) => sum + weight, 0);
+        locationTitle.textContent = category.name;
+        locationMeta.textContent = `${categoryCounts[activeCategoryIndex]} 道 · 聚焦紙面約 ${Math.round(areaShare * 100)}%`;
+        previousButton.disabled = activeCategoryIndex === 0;
+        nextButton.disabled = activeCategoryIndex === categories.length - 1;
+      };
+
+      const showOverview = () => {
+        activeCategoryIndex = null;
+        applyContentWeights(categoryCounts);
+        viewport.dataset.scale = "overview";
+        overviewButton.setAttribute("aria-pressed", "true");
+        categories.forEach((category) => {
+          delete category.dataset.focused;
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", "false");
+        });
+        locationTitle.textContent = "內容比例";
+        locationMeta.textContent = `列 ${baseRows.join(":")} · 每列 ${categoryCounts[0]}:${categoryCounts[1]}／${categoryCounts[2]}:${categoryCounts[3]}／${categoryCounts[4]}:${categoryCounts[5]}`;
+        previousButton.disabled = true;
+        nextButton.disabled = true;
+        closeDetail();
+      };
+
+      const openDetail = (productIndex, button) => {
+        const product = menu.products[productIndex];
+        selectedProductIndex = productIndex;
+        productButtons.forEach((candidate) => {
+          if (candidate === button) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+        });
+        document.querySelector("#weighted-detail-title").textContent = product.name;
+        document.querySelector("#weighted-detail-meta").textContent = `NT$${product.price} · ${product.cue}${product.availability === "sold_out" ? " · 售完" : ""}`;
+        document.querySelector("#weighted-detail-copy").textContent = product.description;
+        detail.dataset.open = "true";
+      };
+
+      const categoryFromPointer = (clientX, clientY) => {
+        const hitCategory = document.elementFromPoint(clientX, clientY)?.closest(".paper-category");
+        return hitCategory && sheet.contains(hitCategory) ? Number(hitCategory.dataset.categoryIndex) : activeCategoryIndex ?? 0;
+      };
+
+      categories.forEach((category, index) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          closeDetail();
+          if (activeCategoryIndex === index) showOverview();
+          else focusCategory(index);
+        });
+      });
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+          if (categoryIndex !== activeCategoryIndex) {
+            closeDetail();
+            focusCategory(categoryIndex);
+            return;
+          }
+          openDetail(Number(button.dataset.productIndex), button);
+        });
+      });
+
+      viewport.addEventListener("pointerdown", (event) => {
+        if (detail.contains(event.target)) return;
+        if (!event.isPrimary || pointerState || (event.pointerType === "mouse" && event.button !== 0)) return;
+        pointerState = { id: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false };
+      });
+      viewport.addEventListener("pointermove", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        if (!pointerState.moved && Math.hypot(event.clientX - pointerState.startX, event.clientY - pointerState.startY) < 6) return;
+        if (!pointerState.moved) {
+          pointerState.moved = true;
+          viewport.setPointerCapture(event.pointerId);
+          viewport.classList.add("is-dragging");
+          closeDetail();
+        }
+        event.preventDefault();
+        focusCategory(categoryFromPointer(event.clientX, event.clientY));
+      });
+      const endPointer = (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        if (pointerState.moved) suppressClick = true;
+        pointerState = null;
+        viewport.classList.remove("is-dragging");
+      };
+      viewport.addEventListener("pointerup", endPointer);
+      viewport.addEventListener("pointercancel", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        pointerState = null;
+        suppressClick = false;
+        viewport.classList.remove("is-dragging");
+      });
+      viewport.addEventListener("click", (event) => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        suppressClick = false;
+      }, true);
+
+      overviewButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => {
+        if (activeCategoryIndex === null) return;
+        closeDetail();
+        focusCategory(activeCategoryIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        if (activeCategoryIndex === null) return;
+        closeDetail();
+        focusCategory(activeCategoryIndex + 1);
+      });
+      detailClose.addEventListener("click", () => closeDetail(true));
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.dataset.open === "true") closeDetail(true);
+        else if (activeCategoryIndex !== null) showOverview();
+      });
+
+      showOverview();
+    </script>
+  </body>
+</html>

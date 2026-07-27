@@ -1,0 +1,328 @@
+.parallax-phone {
+  display: flex;
+  height: min(820px, calc(100vh - 1rem));
+  min-height: 700px;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  background: #f2ede4;
+}
+
+.parallax-phone .phone-status {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: .65rem .9rem .35rem;
+}
+
+.parallax-restaurant {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: .8rem;
+  padding: .25rem .9rem .7rem;
+  border-bottom: 1px solid rgb(49 42 34 / 24%);
+  background: #f2ede4;
+}
+
+.parallax-restaurant__kicker {
+  margin: 0 0 .15rem;
+  color: var(--faint);
+  font-size: .56rem;
+  font-weight: 850;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.parallax-restaurant h2 {
+  margin: 0;
+  font-family: "Noto Serif TC", "PMingLiU", Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.parallax-restaurant > p {
+  max-width: 10.5rem;
+  margin: 0;
+  color: var(--faint);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: .54rem;
+  line-height: 1.35;
+  text-align: right;
+}
+
+.parallax-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  outline: none;
+  background:
+    radial-gradient(circle at 50% 42%, rgb(255 253 248 / 98%) 0 12%, rgb(235 228 217 / 92%) 48%, #d3c8b9 100%);
+  cursor: grab;
+  perspective: 780px;
+  perspective-origin: 50% 47%;
+  touch-action: none;
+  user-select: none;
+}
+
+.parallax-stage:active { cursor: grabbing; }
+.parallax-stage:focus-visible { box-shadow: inset 0 0 0 2px var(--accent); }
+
+.parallax-space,
+.parallax-space span {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.parallax-space::before {
+  position: absolute;
+  top: 11%;
+  bottom: 20%;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(transparent, rgb(46 39 32 / 18%), transparent);
+  content: "";
+}
+
+.parallax-space span {
+  top: 47%;
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  width: 19rem;
+  height: 7rem;
+  border: 1px solid rgb(51 44 36 / 10%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotateX(68deg);
+}
+
+.parallax-space span:nth-child(2) { width: 14rem; height: 5rem; }
+.parallax-space span:nth-child(3) { width: 9rem; height: 3.2rem; }
+
+.parallax-volume {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.parallax-volume.is-settling { transition: transform 240ms cubic-bezier(.2, .75, .25, 1); }
+
+.parallax-field {
+  --field-opacity: .2;
+  --field-line-opacity: .12;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.parallax-field::before,
+.parallax-field::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 18.5rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--category-color), transparent);
+  opacity: var(--field-line-opacity);
+  transform: translate(-50%, -7.35rem) translateZ(-1px);
+  content: "";
+}
+
+.parallax-field::after {
+  transform: translate(-50%, 7.05rem) translateZ(-1px);
+}
+
+.parallax-category-tag,
+.parallax-product {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  backface-visibility: visible;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+.parallax-category-tag {
+  display: grid;
+  width: 9.6rem;
+  grid-template-columns: auto 1fr auto;
+  gap: .4rem;
+  align-items: baseline;
+  padding: .34rem .46rem;
+  border: 0;
+  border-top: 2px solid var(--category-color);
+  border-bottom: 1px solid color-mix(in srgb, var(--category-color) 35%, transparent);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--category-pale) 88%, transparent);
+  box-shadow: 0 5px 14px rgb(45 38 30 / 10%);
+  color: #2c2823;
+  font: inherit;
+  opacity: var(--field-opacity);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.parallax-category-tag span,
+.parallax-category-tag small {
+  color: color-mix(in srgb, var(--category-color) 78%, #302a23);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: .52rem;
+  font-weight: 800;
+}
+
+.parallax-category-tag strong {
+  overflow: hidden;
+  font-family: "Noto Serif TC", "PMingLiU", Georgia, serif;
+  font-size: .83rem;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.parallax-product {
+  display: grid;
+  width: 8.9rem;
+  min-height: 2.35rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .4rem;
+  align-items: center;
+  padding: .34rem .42rem .32rem .5rem;
+  border-left: 2px solid var(--category-color);
+  border-bottom: 1px solid color-mix(in srgb, var(--category-color) 36%, transparent);
+  background: color-mix(in srgb, #fbf8f1 91%, var(--category-pale));
+  box-shadow: 0 7px 18px rgb(43 36 28 / 11%);
+  opacity: var(--field-opacity);
+}
+
+.parallax-product__name {
+  overflow: hidden;
+  font-family: "Noto Serif TC", "PMingLiU", Georgia, serif;
+  font-size: .68rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.parallax-product__price {
+  color: color-mix(in srgb, var(--category-color) 82%, #302a23);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: .54rem;
+  font-weight: 850;
+}
+
+.parallax-field[data-current="true"] .parallax-product,
+.parallax-field[data-current="true"] .parallax-category-tag {
+  box-shadow: 0 8px 22px rgb(43 36 28 / 14%);
+}
+
+.parallax-readout {
+  position: absolute;
+  z-index: 40;
+  right: .65rem;
+  bottom: 3.2rem;
+  left: .65rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .15rem .7rem;
+  align-items: end;
+  padding: .55rem .65rem .5rem;
+  border-top: 1px solid rgb(45 38 31 / 38%);
+  background: rgb(243 238 229 / 88%);
+  box-shadow: 0 8px 30px rgb(45 38 31 / 12%);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+}
+
+.parallax-readout span { display: block; color: var(--faint); font-size: .53rem; }
+.parallax-readout strong { display: block; margin-top: .08rem; font-family: "Noto Serif TC", "PMingLiU", Georgia, serif; font-size: .9rem; }
+.parallax-readout__metrics { display: flex; gap: .45rem; text-align: right; }
+
+.parallax-meter {
+  grid-column: 1 / -1;
+  height: 2px;
+  overflow: hidden;
+  background: rgb(45 38 31 / 14%);
+}
+
+.parallax-meter i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--accent);
+  transform-origin: left center;
+  transition: background-color 120ms ease;
+}
+
+.parallax-reset {
+  position: absolute;
+  z-index: 45;
+  top: .6rem;
+  right: .65rem;
+  min-height: 2rem;
+  padding: .25rem .5rem;
+  border: 1px solid rgb(48 41 33 / 38%);
+  border-radius: 0;
+  background: rgb(246 242 235 / 82%);
+  color: var(--ink);
+  font-size: .58rem;
+  font-weight: 800;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.parallax-gesture {
+  position: absolute;
+  z-index: 41;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2.45rem;
+  margin: 0;
+  padding: .75rem .6rem 0;
+  border-top: 1px solid rgb(45 38 31 / 20%);
+  background: #f2ede4;
+  color: var(--muted);
+  font-size: .58rem;
+  text-align: center;
+}
+
+.parallax-study-notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--line-strong);
+  border-left: 1px solid var(--line-strong);
+}
+
+.parallax-study-notes article {
+  padding: 1rem;
+  border-right: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.parallax-study-notes h3 { margin: 0 0 .3rem; font-size: .9rem; }
+.parallax-study-notes p { margin: 0; color: var(--muted); font-size: .76rem; line-height: 1.5; }
+.parallax-study-notes .phase-index { margin-bottom: .2rem; color: var(--accent); }
+
+@media (max-width: 700px) {
+  .parallax-phone { height: calc(100vh - 1rem); min-height: 650px; }
+  .parallax-study-notes { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax-volume.is-settling { transition: none; }
+}

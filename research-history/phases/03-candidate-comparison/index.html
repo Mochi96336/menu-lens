@@ -87,6 +87,7 @@
       const products = [
         { id: "roast-chicken", name: "山椒烤雞半隻", copy: "山椒、柑橘、烤根莖", price: 520, portion: "約 3–4 人", rhythm: "較久", trait: "濃郁、微辣" },
         { id: "butter-prawns", name: "紹興奶油蝦", copy: "紹興酒、蒜末、奶油", price: 480, portion: "約 2–3 人", rhythm: "一般", trait: "濃郁" },
+        { id: "soft-shell-crab", name: "蒜酥椒鹽軟殼蟹", copy: "蒜酥、蔥花、椒鹽", price: 460, portion: "約 2–3 人", rhythm: "一般", trait: "酥脆、鹹香" },
         { id: "seabass", name: "豆豉蒸鱸魚", copy: "豆豉、薑絲、清蒸", price: 560, portion: "約 2–3 人", rhythm: "一般", trait: "清爽" },
         { id: "kung-pao-mushroom", name: "宮保杏鮑菇", copy: "乾辣椒、花生、甜鹹辣", price: 340, portion: "約 2–3 人", rhythm: "一般", trait: "素食、微辣" },
         { id: "tofu-pot", name: "季節時蔬豆腐煲", copy: "時蔬、豆腐、菇類 · 售完", price: 380, portion: "約 2–3 人", rhythm: "一般", trait: "素食、清爽", soldOut: true }
@@ -116,10 +117,17 @@
         menuPanel.dataset.active = String(surface === "menu");
         candidatePanel.dataset.active = String(surface === "candidates");
         comparisonPanel.dataset.active = String(surface === "comparison");
-        window.scrollTo({ top: 0, behavior: "instant" });
+        document.querySelector("#prototype").scrollIntoView({ block: "start", behavior: "auto" });
+        const activePanel = surface === "menu" ? menuPanel : surface === "candidates" ? candidatePanel : comparisonPanel;
+        const heading = activePanel.querySelector("h2");
+        if (heading) {
+          heading.tabIndex = -1;
+          heading.focus({ preventScroll: true });
+        }
       }
 
       function toggleCandidate(id) {
+        const source = document.activeElement?.dataset.candidate ? "menu" : document.activeElement?.dataset.remove ? "candidates" : null;
         if (state.candidates.has(id)) {
           state.candidates.delete(id);
           state.comparison.delete(id);
@@ -128,6 +136,13 @@
           if (!product?.soldOut) state.candidates.add(id);
         }
         render();
+        if (source === "menu") {
+          [...menuList.querySelectorAll("[data-candidate]")].find((button) => button.dataset.candidate === id)?.focus({ preventScroll: true });
+        } else if (source === "candidates") {
+          const nextRemove = candidateList.querySelector("[data-remove]");
+          if (nextRemove) nextRemove.focus({ preventScroll: true });
+          else document.querySelector("#back-menu").focus({ preventScroll: true });
+        }
       }
 
       function toggleComparison(id) {
@@ -140,6 +155,9 @@
           return;
         }
         renderComparison();
+        [...comparisonCandidates.querySelectorAll("[data-compare]")]
+          .find((button) => button.dataset.compare === id)
+          ?.focus({ preventScroll: true });
       }
 
       function productById(id) {
@@ -193,8 +211,11 @@
         });
         candidateList.querySelectorAll("[data-locate]").forEach((button) => {
           button.addEventListener("click", () => {
+            const productId = button.dataset.locate;
             setSurface("menu");
-            document.querySelector(`#menu-${button.dataset.locate}`)?.scrollIntoView({ block: "center" });
+            const row = document.querySelector(`#menu-${productId}`);
+            row?.scrollIntoView({ block: "center" });
+            row?.querySelector("[data-candidate]")?.focus({ preventScroll: true });
           });
         });
 

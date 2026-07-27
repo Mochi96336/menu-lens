@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 25 Menu Sections：在單一完整菜單文件中切換全貌、完整與詳讀資訊深度，並保持料理錨點位置。" />
+    <title>25 Menu Sections continuity test — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../menu-sections.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../menu-sections.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到連續性原型</a>
+    <main class="prototype-shell site-shell sections-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">25 reset · single-surface continuity test</p>
+          <h1>Menu Sections</h1>
+          <p class="lede">不再並排三張狀態圖。30 道料理只渲染一次；實測顯示完整到詳讀可以保持錨點，但縮到全貌會遇到無法靠動畫消除的邊界跳動。</p>
+        </div>
+        <a class="ghost-button" href="./">回 25 檢討頁</a>
+      </header>
+
+      <section class="sections-intent" aria-label="研究假設與深度規則">
+        <p><strong>這次只驗證資訊連續性</strong>預設從完整菜單開始。切換深度前取得視窗中央最近的分類或料理，並嘗試保留螢幕高度；全貌層的內容若短於視窗，這個承諾就會在邊界失效。</p>
+        <div class="sections-legend" aria-label="三個資訊深度">
+          <span><b>Z−1</b>分類、道數、摘要、價格帶</span>
+          <span><b>Z0</b>30 道菜名、價格、售完狀態</span>
+          <span><b>Z+1</b>附近 cue、錨點完整資訊</span>
+        </div>
+      </section>
+
+      <section id="prototype" class="sections-prototype" aria-label="Menu Sections 單一表面原型">
+        <div id="sections-phone" class="phone-frame section-phone" data-depth="menu">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="section-restaurant"><h2 id="sections-restaurant-name"></h2><p id="sections-restaurant-summary"></p></header>
+          <nav class="section-depth-controls" aria-label="資訊深度">
+            <button type="button" data-depth-target="overview" aria-pressed="false">全貌</button>
+            <button type="button" data-depth-target="menu" aria-pressed="true">完整</button>
+            <button type="button" data-depth-target="detail" aria-pressed="false">詳讀</button>
+          </nav>
+          <div class="section-depth-status" aria-live="polite"><span id="sections-status-layer">Z0 · 完整菜單</span><strong id="sections-status-anchor"></strong></div>
+          <div id="sections-document" class="section-document" aria-label="同一份完整菜單文件"></div>
+          <p id="sections-footnote" class="section-footnote">30 / 30 道在同一份文件；沒有篩選、重排或隱藏分類</p>
+        </div>
+
+        <div class="continuity-notes" aria-label="與 06 及 25B 的判斷門檻">
+          <article><h3>不是三張頁面</h3><p>只有一份 category/product DOM。三個深度只顯示或收回既有 metadata，canonical order 不變。</p></article>
+          <article><h3>位置不是固定資料座標</h3><p>沒有沿用 18。切換時以目前視窗中心最近的內容為錨，因此使用者先閱讀哪裡，就保留哪裡。</p></article>
+          <article><h3>25B 目前沒有提供 Z 語意</h3><p>「各分類第 N 道」不能解釋成共同切面。B 只保留作反證，不移植它的 ordinal layer。</p></article>
+          <article class="gate"><h3>結果：否決這一種 Z 定義</h3><p>Z0→Z+1 的同一料理可維持 0px 位移；Z+1→Z−1 在第一分類實測位移約 325px。這只否決 semantic depth，不代表停止維度研究。</p></article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

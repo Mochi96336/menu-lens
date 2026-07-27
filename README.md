@@ -121,14 +121,14 @@ Use [`docs/handoff.md`](docs/handoff.md) when opening or closing a separate work
 - [`docs/merchant-data-strategy.md`](docs/merchant-data-strategy.md) — progressive metadata, category defaults, confidence, governance, and graceful degradation
 - [`docs/demo-scope.md`](docs/demo-scope.md) — reference restaurant, primary flow, exclusions, and build sequence
 - [`docs/evaluation-plan.md`](docs/evaluation-plan.md) — formative tasks, observations, local events, and falsification signals
+- [`docs/research-history/architecture.md`](docs/research-history/architecture.md) — prototype registry, family, lineage, status, and contribution rules
 
 ## Current status
 
-The cross-conversation foundation is complete. New workstreams can rely on the repository instead of prior chat history.
+The cross-conversation foundation, domain dataset, formative protocol, and first complete-menu slice are complete. New workstreams can rely on the repository instead of prior chat history.
 
-The next bounded workstreams are:
+The active workstream is spatial interaction exploration. Prototypes are organized into six families—document, relational, horizontal, matrix-paper, 18-derived landscape, and depth—rather than maintained as another numbered list in this README.
 
-1. **Domain and reference data** — typed product schema, validation, and a credible 30-product fictional menu.
-2. **Formative evaluation** — task scripts, observable failure signals, and a compact local event vocabulary.
+The canonical catalog is [`research-history/prototype-registry.js`](research-history/prototype-registry.js). It records each node's family, parent, status, executable path, and required assets; the research archive and validator both consume it. See [`docs/workstreams.md`](docs/workstreams.md) for current work, [`docs/research-history/spatial-exploration.md`](docs/research-history/spatial-exploration.md) for mechanism notes, and [`docs/research-history/product-direction-review.md`](docs/research-history/product-direction-review.md) for explicitly sourced product review.
 
-The customer decision spine begins after those two workstreams establish the data and observation contracts.
+Candidate, comparison, Decision, Configuration, and Current order implementation remain paused while the current spatial variants are refined.

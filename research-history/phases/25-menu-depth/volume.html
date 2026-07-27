@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 25B Menu Volume：將 3×2 分類矩陣沿料理順序堆疊成八個透明深度平面。" />
+    <title>25B Menu Volume — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../menu-depth.css" />
+    <link rel="stylesheet" href="../../menu-volume.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../menu-depth.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div><p class="eyebrow">25B · Reviewed stop / falsification artifact</p><h1>Menu Volume</h1><p class="lede">這不是候選方向。八個平面能用空格顯示分類長短，但「各分類第 N 道」沒有共同語意；相同資訊以道數即可更直接表達。</p></div>
+        <a class="ghost-button" href="./">回 25 檢討頁</a>
+      </header>
+
+      <section id="prototype" class="phone-frame" aria-label="Menu Volume 互動原型">
+        <div id="volume-root" class="phone-screen depth-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="depth-restaurant"><h2 id="volume-restaurant-name"></h2><p id="volume-restaurant-meta"></p></header>
+          <div class="depth-toolbar">
+            <button id="volume-overview" type="button" aria-pressed="true">完整體積</button>
+            <button id="volume-previous" type="button" aria-label="前一個料理深度">−Z</button>
+            <button id="volume-next" type="button" aria-label="下一個料理深度">＋Z</button>
+            <div class="depth-toolbar__status" aria-live="polite"><strong id="volume-status-title">八層菜單體積</strong><span id="volume-status-meta">點右上 Z 標籤進入閱讀</span></div>
+          </div>
+          <div id="volume-stage" class="depth-stage volume-stage" tabindex="0" aria-label="八層 3×2 菜單體積">
+            <div id="volume-stack" class="volume-stack" data-mode="overview"></div>
+            <nav id="volume-layer-picker" class="volume-layer-picker" aria-label="八個料理深度"></nav>
+            <aside id="volume-detail" class="depth-detail" data-open="false" aria-live="polite" aria-label="料理細節">
+              <div class="depth-detail__inner"><button id="volume-detail-close" class="depth-detail__close" type="button" aria-label="關閉料理細節">×</button><h3 id="volume-detail-title"></h3><p id="volume-detail-meta" class="depth-detail__meta"></p><p id="volume-detail-copy" class="depth-detail__copy"></p></div>
+            </aside>
+          </div>
+          <p class="depth-hint">完整體積看八層厚度；點 Z 標籤進入該平面。閱讀時上下滑或使用 ±Z，位置固定、內容沿深度更換。</p>
+        </div>
+      </section>
+
+      <section class="section depth-study-notes">
+        <article><h3>唯一可讀證據</h3><p>甜點從 Z3 開始留空，空格能表達分類較短；但分類標頭的「2 道」已用更少空間提供同一資訊。</p></article>
+        <article><h3>核心失敗</h3><p>Z1–Z8 只是分類內順序。不同分類的第 N 道彼此沒有關係，因此切片不能支援比較或理解。</p></article>
+        <article><h3>操作成本</h3><p>必須先看傾斜體積、再切回單層閱讀；這兩種相機沒有產生菜單本身缺少的新能力。</p></article>
+        <article><h3>處置</h3><p>保留作反證，不把 ordinal layer、透明堆疊或 Z1–Z8 控制搬進後續原型。</p></article>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const helpers = window.MenuLensDepth;
+      const entries = helpers.modelMenu(menu);
+      const root = document.querySelector("#volume-root");
+      const stage = document.querySelector("#volume-stage");
+      const stack = document.querySelector("#volume-stack");
+      const layerPicker = document.querySelector("#volume-layer-picker");
+      const overviewButton = document.querySelector("#volume-overview");
+      const previousButton = document.querySelector("#volume-previous");
+      const nextButton = document.querySelector("#volume-next");
+      const statusTitle = document.querySelector("#volume-status-title");
+      const statusMeta = document.querySelector("#volume-status-meta");
+      helpers.fillRestaurant(menu, "volume");
+      const detail = helpers.createDetailController(menu, root, "volume");
+      let activeLayer = null;
+      let pointerStartY = null;
+
+      const createLayerCell = (entry, layerIndex) => {
+        const cell = document.createElement("section");
+        cell.className = "volume-cell";
+        const label = document.createElement("div");
+        label.className = "volume-cell__category";
+        const index = document.createElement("span");
+        index.textContent = String(entry.categoryIndex + 1).padStart(2, "0");
+        const title = document.createElement("strong");
+        title.textContent = entry.category.name;
+        label.append(index, title);
+        cell.append(label);
+        const item = entry.products[layerIndex];
+        if (item) cell.append(helpers.createProductButton(item, "volume-product"));
+        else {
+          const empty = document.createElement("span");
+          empty.className = "volume-empty";
+          empty.textContent = "此深度留空";
+          cell.append(empty);
+        }
+        return cell;
+      };
+
+      for (let layerIndex = 0; layerIndex < 8; layerIndex += 1) {
+        const layer = document.createElement("div");
+        layer.className = "volume-layer";
+        layer.dataset.layerIndex = String(layerIndex);
+        layer.dataset.active = String(layerIndex === 0);
+        layer.style.setProperty("--layer", String(layerIndex));
+        layer.style.setProperty("--reverse-layer", String(8 - layerIndex));
+        for (let columnIndex = 0; columnIndex < 3; columnIndex += 1) {
+          const first = entries[columnIndex * 2];
+          const second = entries[columnIndex * 2 + 1];
+          const column = document.createElement("div");
+          column.className = "volume-column";
+          column.style.setProperty("--column-weight", String(first.products.length + second.products.length));
+          column.style.setProperty("--row-weights", `${first.products.length}fr ${second.products.length}fr`);
+          column.append(createLayerCell(first, layerIndex), createLayerCell(second, layerIndex));
+          layer.append(column);
+        }
+        stack.append(layer);
+
+        const pickerButton = document.createElement("button");
+        pickerButton.type = "button";
+        pickerButton.textContent = `Z${layerIndex + 1}`;
+        pickerButton.dataset.layerIndex = String(layerIndex);
+        pickerButton.setAttribute("aria-label", `閱讀第 ${layerIndex + 1} 深度`);
+        pickerButton.setAttribute("aria-pressed", "false");
+        pickerButton.addEventListener("click", () => setLayer(layerIndex));
+        layerPicker.append(pickerButton);
+      }
+
+      function setLayer(nextLayer) {
+        detail.close();
+        activeLayer = nextLayer === null ? null : Math.max(0, Math.min(7, nextLayer));
+        stack.dataset.mode = activeLayer === null ? "overview" : "layer";
+        stack.querySelectorAll(".volume-layer").forEach((layer) => {
+          const isReadable = activeLayer !== null && Number(layer.dataset.layerIndex) === activeLayer;
+          layer.dataset.active = String(Number(layer.dataset.layerIndex) === (activeLayer ?? 0));
+          layer.inert = !isReadable;
+          layer.setAttribute("aria-hidden", String(!isReadable));
+          layer.querySelectorAll("button").forEach((button) => button.tabIndex = isReadable ? 0 : -1);
+        });
+        layerPicker.querySelectorAll("button").forEach((button) => {
+          button.setAttribute("aria-pressed", String(Number(button.dataset.layerIndex) === activeLayer));
+        });
+        overviewButton.setAttribute("aria-pressed", String(activeLayer === null));
+        previousButton.disabled = activeLayer === null || activeLayer === 0;
+        nextButton.disabled = activeLayer === null || activeLayer === 7;
+        if (activeLayer === null) {
+          statusTitle.textContent = "八層菜單體積";
+          statusMeta.textContent = "點右上 Z 標籤進入閱讀";
+        } else {
+          const occupied = entries.filter((entry) => entry.products[activeLayer]).length;
+          statusTitle.textContent = `Z${activeLayer + 1} · 各分類第 ${activeLayer + 1} 道`;
+          statusMeta.textContent = `${occupied} / 6 個分類在此層有料理`;
+        }
+      }
+
+      overviewButton.addEventListener("click", () => setLayer(null));
+      previousButton.addEventListener("click", () => setLayer((activeLayer ?? 1) - 1));
+      nextButton.addEventListener("click", () => setLayer((activeLayer ?? -1) + 1));
+      stage.addEventListener("pointerdown", (event) => { pointerStartY = event.clientY; });
+      stage.addEventListener("pointerup", (event) => {
+        if (activeLayer === null || pointerStartY === null) return;
+        const delta = event.clientY - pointerStartY;
+        pointerStartY = null;
+        if (Math.abs(delta) < 32) return;
+        setLayer(activeLayer + (delta < 0 ? 1 : -1));
+      });
+      stage.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+        event.preventDefault();
+        if (activeLayer === null) setLayer(0);
+        else setLayer(activeLayer + (event.key === "ArrowDown" ? 1 : -1));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") setLayer(null);
+      });
+      setLayer(null);
+    </script>
+  </body>
+</html>

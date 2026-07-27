@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 22 Weighted Pinch Sheet：在 18 的原始 3×2 紙面上加入雙指縮放與內容感知的分類定位。" />
+    <title>22 Weighted Pinch Sheet — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../landscape-paper.css" />
+    <link rel="stylesheet" href="../../weighted-pinch-sheet.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../paper-landscape-core.js"></script>
+    <script src="../../pinch-sheet.js?v=2"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">22 · 18 + content-aware pinch</p>
+          <h1>Weighted Pinch Sheet</h1>
+          <p class="lede">畫面與紙面幾何直接沿用 18。雙指縮放同一張 3×2 紙面；點分類只是依料理數量提供不同閱讀倍率，不改欄寬、不重新排版。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">三個紙欄固定等寬 1:1:1，欄內高度維持 8:6、6:4、4:2。兩道甜點的定位倍率是 1.55×，八道主餐是 2.45×；差異只發生在 camera。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Weighted Pinch Sheet 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="pinch-restaurant-name" class="restaurant-name"></h2>
+            <p id="pinch-restaurant-meta" class="restaurant-meta"></p>
+            <p id="pinch-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="pinch-reset" type="button" aria-pressed="true">整張</button>
+            <button id="pinch-out" type="button" aria-label="縮小紙面">−</button>
+            <button id="pinch-in" type="button" aria-label="放大紙面">＋</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="pinch-location-title">完整 3×2 紙面</strong>
+              <span id="pinch-location-meta">三欄等寬 1:1:1</span>
+            </div>
+          </div>
+
+          <div class="landscape-stage pinch-stage">
+            <div id="pinch-viewport" class="landscape-viewport pinch-viewport" data-camera-depth="overview" tabindex="0" aria-label="可雙指縮放的 18 比例紙面">
+              <div id="pinch-sheet" class="landscape-sheet pinch-sheet"></div>
+            </div>
+            <aside id="pinch-detail" class="paper-detail" data-open="false" aria-hidden="true" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="pinch-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="pinch-detail-title"></h3>
+                <p id="pinch-detail-meta" class="paper-detail__meta"></p>
+                <p id="pinch-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">整張畫面就是 18；雙指縮放、放大後單指移動，或點分類使用內容感知倍率。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>只移動 camera，不動 18 的紙面</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>來源幾何鎖定</h3><p>22 直接使用 18 的 sheet 與三個等寬紙欄；縮放前的像素寬度必須完全相同。</p></article>
+          <article class="phase-card"><h3>原生多點觸控</h3><p>兩指距離控制連續倍率，兩指中心固定來源座標；放大後才啟用單指二維移動。</p></article>
+          <article class="phase-card"><h3>內容感知捷徑</h3><p>分類定位從兩道的 1.55× 線性增加到八道的 2.45×，但只是可跳過的 camera shortcut。</p></article>
+          <article class="phase-card"><h3>主要風險</h3><p>自由縮放容易迷失；整張按鈕是否足以恢復位置仍需觀察。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const core = window.MenuLensLandscapeCore;
+      const viewport = document.querySelector("#pinch-viewport");
+      const sheet = document.querySelector("#pinch-sheet");
+      const resetButton = document.querySelector("#pinch-reset");
+      const zoomOutButton = document.querySelector("#pinch-out");
+      const zoomInButton = document.querySelector("#pinch-in");
+      const locationTitle = document.querySelector("#pinch-location-title");
+      const locationMeta = document.querySelector("#pinch-location-meta");
+
+      core.hydrateRestaurant({
+        menu,
+        name: document.querySelector("#pinch-restaurant-name"),
+        meta: document.querySelector("#pinch-restaurant-meta"),
+        copy: document.querySelector("#pinch-restaurant-copy"),
+      });
+
+      const { categories, categoryCounts, productButtons } = core.buildLandscape({
+        menu,
+        sheet,
+        columnClass: "landscape-column",
+      });
+
+      const detail = core.createDishDetail({
+        menu,
+        detail: document.querySelector("#pinch-detail"),
+        closeButton: document.querySelector("#pinch-detail-close"),
+        title: document.querySelector("#pinch-detail-title"),
+        meta: document.querySelector("#pinch-detail-meta"),
+        copy: document.querySelector("#pinch-detail-copy"),
+        productButtons,
+      });
+
+      const categoryScale = (count) => 1.55 + ((count - 2) / 6) * .9;
+      let activeCategoryName = null;
+      let camera;
+
+      const clearCameraTarget = () => {
+        categories.forEach((category) => {
+          delete category.dataset.cameraTarget;
+          category.querySelector(".paper-category__header").setAttribute("aria-expanded", "false");
+        });
+        activeCategoryName = null;
+      };
+
+      camera = window.createMenuLensPinchCamera(viewport, sheet, {
+        minimumScale: 1,
+        maximumScale: 3.2,
+        onChange: ({ scale }) => {
+          const atOverview = scale <= 1.04;
+          resetButton.setAttribute("aria-pressed", String(atOverview));
+          zoomOutButton.disabled = scale <= 1.01;
+          zoomInButton.disabled = scale >= 3.19;
+          if (atOverview && activeCategoryName) clearCameraTarget();
+          locationTitle.textContent = atOverview ? "完整 3×2 紙面" : `${Math.round(scale * 100)}%`;
+          locationMeta.textContent = activeCategoryName ?? (atOverview ? "三欄等寬 1:1:1" : "自由鏡頭 · 拖曳移動");
+        },
+      });
+
+      categories.forEach((category, categoryIndex) => {
+        const header = category.querySelector(".paper-category__header");
+        header.addEventListener("click", () => {
+          detail.close();
+          clearCameraTarget();
+          const count = categoryCounts[categoryIndex];
+          const targetScale = categoryScale(count);
+          activeCategoryName = `${menu.categories[categoryIndex].name} · ${count} 道 · ${Math.round(targetScale * 100)}%`;
+          category.dataset.cameraTarget = "true";
+          header.setAttribute("aria-expanded", "true");
+          camera.focusElement(category, targetScale, { alignY: "start" });
+        });
+      });
+
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          if (camera.getState().scale <= 1.08) {
+            button.closest(".paper-category").querySelector(".paper-category__header").click();
+            return;
+          }
+          detail.open(button);
+        });
+      });
+
+      resetButton.addEventListener("click", () => {
+        detail.close();
+        clearCameraTarget();
+        camera.reset();
+      });
+      zoomOutButton.addEventListener("click", () => camera.zoomBy(.8));
+      zoomInButton.addEventListener("click", () => camera.zoomBy(1.25));
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          if (detail.isOpen()) detail.close(true);
+          else resetButton.click();
+        } else if (event.key === "+" || event.key === "=") {
+          camera.zoomBy(1.25);
+        } else if (event.key === "-") {
+          camera.zoomBy(.8);
+        } else if (event.key === "0") {
+          resetButton.click();
+        }
+      });
+    </script>
+  </body>
+</html>

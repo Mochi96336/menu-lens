@@ -2,6 +2,8 @@
 
 手機菜單閱讀問題的研究檔案。這份文件保存實作、轉向與回訪，不把所有版本寫成一條必然進步的時間線。
 
+版本、家族、父系、狀態、路徑與資產的單一真相來源是 `research-history/prototype-registry.js`；新增與整理規則見 [`architecture.md`](architecture.md)。本文件負責解釋研究脈絡，不再承擔機器可讀的版本清單。
+
 HTML 入口：
 
 ```text
@@ -24,18 +26,18 @@ HTML 入口：
 01 → 02 → 03 → 04 → 05 → 06
 ```
 
-而是兩條互相靠近、反覆回訪的研究路線：
+而是六個可分支、可停止、可回訪的 prototype 家族。完整節點以 registry 為準：
 
 ```text
-Line A — 完整菜單閱讀
-01 Complete menu
-└─ 05 Ledger revisit
-
-Line B — 結構、局部與比較投影
-02 Relational reading
-├─ 03 Candidate marks / workspace
-├─ 04 Bounded comparison
-└─ 06 Multi-scale revisit
+document       01 → 05
+relational     02 → 03 → 04
+               └→ 06 revisit
+horizontal     07 → 08 → 09 → 10
+matrix-paper   11 → 12 → 13 / 14 / 15 → 16 → 17
+landscape      16 → 18 → 19 / 20 / 21 / 22 / 23 / 24
+depth          25 → 25P（real-axis projection）/ 25B（falsification）→ 26（layout volume）
+                  ├→ Menu Sections（rejected semantic-depth model）
+                  └→ 25B（first-pass falsification）
 ```
 
 這個分組只描述親緣與問題來源，不代表已判定：
@@ -43,6 +45,7 @@ Line B — 結構、局部與比較投影
 - 05 等於 01；
 - 06 等於 02；
 - 05 或 06 沒有新價值；
+- 後來的編號必然優於既有方向；
 - 任何一條路線已經勝出。
 
 ## 歷史原件
@@ -233,23 +236,149 @@ Later revisits / no disposition yet
 3. 不同機制是否帶來可觀察的任務差異？
 4. 若沒有新效益，是否只保留為回訪證據？
 
-## 下一輪比較
+## Line C — 空間互動探索
 
-不急著選答案，先用相同任務比較：
+完整探索邊界記錄於 [`spatial-exploration.md`](spatial-exploration.md)。
 
-- 01 Complete menu；
-- 05 Ledger revisit；
-- 02 Prototype C；
-- 06 Multi-scale revisit。
+### 07 Horizontal Menu Atlas
 
-觀察：
+市面常見的橫向分類導覽加分類內垂直清單。它保留為 market baseline 記錄，目前不重建；需要正式比較時才以同一 fixture 補上。
 
-1. 首屏能否說出分類數、菜單類型與價格帶；
-2. 同分類比較三道料理的移動與記憶成本；
-3. 跨分類找到兩道指定料理；
-4. 查看細節後是否知道原位置；
-5. 是否需要先理解新術語或模式；
-6. 操作後能否回想料理位於哪一區。
+### 08 Menu Spread
+
+目前的 active spatial hypothesis。它不以橫向 tabs 替換分類，而把六個分類視為同一張連續 spread：聚焦分類在原位置展寬，其他分類壓縮但不消失，料理細節再於分類內展開。
+
+HTML 入口：
+
+```text
+/research-history/phases/08-menu-spread/
+```
+
+第一輪先觀察空間機制，不要求淘汰任何既有方向，也不把自我操作記錄當成參與者證據。
+
+### 09 Horizontal Ribbon
+
+把橫向推到更極端：30 道料理不再分別存在於六個垂直分類清單，而是依 canonical order 佔據同一條水平 ribbon。全店尺度顯示分類章節與料理刻度，閱讀尺度展開同一批料理，垂直方向只用於 product detail。
+
+HTML 入口：
+
+```text
+/research-history/phases/09-horizontal-ribbon/
+```
+
+### 10 Fisheye Ribbon
+
+延續 09 的單一水平菜序，但取消長距離軌道。30 道料理固定在同一個手機寬度，拖曳只移動閱讀鏡頭。現在也加入類似 06 的分類尺度：先放大分類中的料理地標，再進入單一道料理鏡頭與細節。
+
+HTML 入口：
+
+```text
+/research-history/phases/10-fisheye-ribbon/
+```
+
+### 11 Menu Matrix
+
+把六個分類固定成列、分類內最多八道固定成欄。選分類時伸展整列而不改變格位；料理細節在獨立面板顯示。橫軸只代表分類內菜序，不承擔價格或份量等語意。
+
+HTML 入口：
+
+```text
+/research-history/phases/11-menu-matrix/
+```
+
+### 12 Paper Menu Field
+
+矩陣單位改為六個分類區塊。兩欄三列只有紙面編排意義，不代表任何比較軸；全貌是整張 sheet 縮小，聚焦時則依分類原始座標移動並放大同一張 sheet。
+
+HTML 入口：
+
+```text
+/research-history/phases/12-paper-menu-field/
+```
+
+### 13 Static Loupe
+
+紙面與分類位置完全固定，只有矩形閱讀鏡頭在底圖上移動。鏡頭內放大相同來源座標，並可直接點料理開啟細節。
+
+```text
+/research-history/phases/13-static-loupe/
+```
+
+### 14 Folded Menu
+
+六個分類成為同一張手風琴摺頁。焦點紙面攤平，其他分類沿可見摺線留下帶角度的窄紙條。
+
+```text
+/research-history/phases/14-folded-menu/
+```
+
+### 15 Elastic Paper
+
+固定紙張外框，焦點所在的欄與列在原位置取得主要空間。使用者可直接拖曳焦點穿過二維分類版面。
+
+```text
+/research-history/phases/15-elastic-paper/
+```
+
+### 16 Weighted Elastic Paper
+
+保留 15 的 2 欄×3 列與直接拖曳，但欄寬、列高和聚焦後面積都依分類料理數量計算。八道主餐與兩道甜點不再取得相同閱讀空間。
+
+```text
+/research-history/phases/16-weighted-elastic-paper/
+```
+
+### 17 Weighted Horizontal Strip
+
+六分類依 8:6:6:4:4:2 共用同一個手機寬度。聚焦分類的原始權重乘四後重新分配；沒有固定大欄，也沒有橫向捲動。
+
+```text
+/research-history/phases/17-weighted-horizontal-strip/
+```
+
+### 18 Landscape Paper
+
+三個等寬橫向紙欄各含上下兩分類，欄內高度依各分類數量配置。整張尺度保留全貌，閱讀尺度才沿紙欄橫向拖曳。
+
+```text
+/research-history/phases/18-landscape-paper/
+```
+
+### 19 Rigid Horizontal Sheet
+
+固定 840×560 的 3×2 紙面，overview 與 reading 都使用等比例縮放。閱讀時只移動 camera 的 translateX，上方縮圖持續標示可見紙面範圍。
+
+```text
+/research-history/phases/19-rigid-horizontal-sheet/
+```
+
+### 20 Tri-fold Matrix
+
+沿三個紙欄折疊，而不是把六分類做成 accordion。每個 panel 始終保留上下兩分類與水平分隔線。
+
+```text
+/research-history/phases/20-trifold-matrix/
+```
+
+### 21 Two-column Reading Window
+
+在固定三欄紙面上只設 A+B 與 B+C 兩個閱讀窗口。每次橫移一欄，中間 B 欄與其兩分類持續在場。
+
+```text
+/research-history/phases/21-two-column-window/
+```
+
+### 22–24 Landscape Paper branches
+
+18 is now the common substrate rather than another branch to replace. The three new variants isolate native content-aware zoom, local category collapse, and vertical product typography.
+
+```text
+/research-history/phases/22-weighted-pinch-sheet/
+/research-history/phases/23-collapsible-landscape/
+/research-history/phases/24-vertical-landscape/
+```
+
+Direct product-owner reactions and branch consequences are recorded separately in `product-direction-review.md`. They are not participant-study results.
 
 ## 視覺處理
 

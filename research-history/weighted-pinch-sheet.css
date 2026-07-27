@@ -1,0 +1,49 @@
+.pinch-viewport {
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.pinch-viewport.is-camera-gesturing {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.pinch-sheet {
+  --camera-x: 0px;
+  --camera-y: 0px;
+  --camera-scale: 1;
+  transform: translate3d(var(--camera-x), var(--camera-y), 0) scale(var(--camera-scale));
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.pinch-sheet.is-camera-animating {
+  transition: transform 240ms cubic-bezier(.2, .75, .25, 1);
+}
+
+.pinch-sheet .paper-category[data-camera-target="true"] {
+  z-index: 2;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.pinch-sheet .paper-product[data-selected="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.pinch-viewport[data-camera-depth="overview"] .paper-category__header,
+.pinch-viewport[data-camera-depth="overview"] .paper-product {
+  cursor: zoom-in;
+}
+
+.pinch-stage .paper-detail {
+  right: .65rem;
+  left: .65rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pinch-sheet.is-camera-animating {
+    transition: none;
+  }
+}

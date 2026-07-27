@@ -123,9 +123,17 @@
         });
 
         const sections = [...root.querySelectorAll(".ledger-category")];
+        const showLastCategoryAtPageEnd = () => {
+          const atEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+          if (atEnd && sections.length > 0) {
+            currentCategory.textContent = sections[sections.length - 1].dataset.categoryName;
+          }
+          return atEnd;
+        };
         if ("IntersectionObserver" in window) {
           const observer = new IntersectionObserver(
             (entries) => {
+              if (showLastCategoryAtPageEnd()) return;
               const visible = entries
                 .filter((entry) => entry.isIntersecting)
                 .sort((a, b) => Math.abs(a.boundingClientRect.top) - Math.abs(b.boundingClientRect.top))[0];
@@ -135,6 +143,7 @@
           );
           sections.forEach((section) => observer.observe(section));
         }
+        window.addEventListener("scroll", showLastCategoryAtPageEnd, { passive: true });
       })();
     </script>
   </body>

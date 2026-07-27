@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Menu Lens 26 Parallax Menu Volume：第三維不編碼資料，而是讓六套分類排版交織、旋轉成形並以雙指壓回可讀面。"
+    />
+    <title>26 Parallax Menu Volume — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../parallax-menu-volume.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../parallax-menu-volume.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">26 · depth as layout material</p>
+          <h1>Parallax Menu Volume</h1>
+          <p class="lede">不是六張立體卡片，也不替 Z 軸指定資料語意。30 道料理固定交織在一個排版體積裡；觀看方向讓分類逐漸成形，雙指距離決定它保有多少深度。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">先拖曳物體尋找不同觀看方向，再用雙指合攏把目前版面壓平。桌面可用方向鍵旋轉、＋／－調整深度；Home 回到初始狀態。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Parallax Menu Volume 手機互動原型">
+        <div class="phone-screen parallax-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="parallax-restaurant">
+            <div>
+              <p class="parallax-restaurant__kicker">視差菜單體</p>
+              <h2 id="parallax-restaurant-name"></h2>
+            </div>
+            <p id="parallax-restaurant-meta"></p>
+          </header>
+
+          <div
+            id="parallax-stage"
+            class="parallax-stage"
+            tabindex="0"
+            role="application"
+            aria-label="可旋轉的立體菜單。拖曳旋轉，雙指張合改變深度，方向鍵旋轉，加減鍵改變深度。"
+          >
+            <div class="parallax-space" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <div id="parallax-volume" class="parallax-volume"></div>
+
+            <div class="parallax-readout" aria-live="polite">
+              <div>
+                <span>正在成形</span>
+                <strong id="parallax-current-category">個人主餐</strong>
+              </div>
+              <div class="parallax-readout__metrics">
+                <span id="parallax-alignment">對齊 100%</span>
+                <span id="parallax-depth">深度 58%</span>
+              </div>
+              <div class="parallax-meter" aria-hidden="true"><i id="parallax-meter-fill"></i></div>
+            </div>
+
+            <button id="parallax-reset" class="parallax-reset" type="button">回正</button>
+            <p class="parallax-gesture" aria-hidden="true">拖曳旋轉 · 兩指張開立體 · 合攏壓平</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="parallax-study-notes" aria-label="26 研究註記">
+        <article>
+          <p class="phase-index">Retains</p>
+          <h3>完整內容與固定位置</h3>
+          <p>30 道料理只建立一次；旋轉、壓縮與重新展開都不改分類內順序，也不把料理移入另一份清單。</p>
+        </article>
+        <article>
+          <p class="phase-index">Varies</p>
+          <h3>觀看方向與排版厚度</h3>
+          <p>六個分類不是水平頁序。拖曳的 X／Y 同時改變觀看方向；雙指只控制文字片之間的空間，不代表任何料理屬性。</p>
+        </article>
+        <article>
+          <p class="phase-index">Critical test</p>
+          <h3>中間角度是否仍有資訊</h3>
+          <p>若只有六個吸附角度可讀，26 就只是分類頁籤加轉場。交接途中必須能預見下一個分類、保留上一個分類的碎片與份量。</p>
+        </article>
+        <article>
+          <p class="phase-index">Stop condition</p>
+          <h3>操作成本大於視差所得</h3>
+          <p>若使用者必須反覆試轉、無法理解兩指張合，或壓平後與普通分類列表完全等價，就停止延伸這個家族。</p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

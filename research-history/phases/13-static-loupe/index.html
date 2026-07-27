@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 13 Static Loupe：紙面固定不動，以可拖曳放大鏡閱讀分類與料理。" />
+    <title>13 Static Loupe — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../static-loupe.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">13 · Fixed-sheet lens</p>
+          <h1>Static Loupe</h1>
+          <p class="lede">整張紙與六個分類完全不動。手指拖曳的是一個閱讀鏡頭；鏡頭內放大同一位置的紙面內容。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">探索問題：若全貌從不移動或變形，一塊可直接拖曳的局部放大層，能否讓微型紙面真正成為導覽地圖？</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Static Loupe 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="loupe-restaurant-name" class="restaurant-name"></h2>
+            <p id="loupe-restaurant-meta" class="restaurant-meta"></p>
+            <p id="loupe-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="loupe-center" type="button">置中</button>
+            <button id="loupe-previous" type="button" aria-label="上一個分類">←</button>
+            <button id="loupe-next" type="button" aria-label="下一個分類">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="loupe-location-title">移動鏡頭</strong>
+              <span id="loupe-location-meta">紙面位置不變</span>
+            </div>
+          </div>
+
+          <div id="loupe-viewport" class="paper-viewport loupe-viewport" tabindex="0" aria-label="拖曳閱讀放大鏡">
+            <div id="loupe-sheet" class="paper-sheet loupe-sheet"></div>
+            <div id="loupe-readout" class="loupe-readout">閱讀鏡頭</div>
+            <div id="loupe-lens" class="loupe-lens">
+              <div id="loupe-magnified" class="paper-sheet loupe-magnified"></div>
+            </div>
+            <aside id="loupe-detail" class="paper-detail" data-open="false" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="loupe-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="loupe-detail-title"></h3>
+                <p id="loupe-detail-meta" class="paper-detail__meta"></p>
+                <p id="loupe-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">拖曳鏡頭閱讀固定紙面；鏡頭內可直接點料理。箭頭會把鏡頭移到相鄰分類。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>移動閱讀層，不碰底圖</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>底圖完全固定</h3><p>與 12 不同，紙面不平移、不縮放，分類位置也不因焦點改變。</p></article>
+          <article class="phase-card"><h3>鏡頭是第二層</h3><p>局部放大層複製同一紙面投影；拖曳時依底圖座標同步內容。</p></article>
+          <article class="phase-card"><h3>直接閱讀</h3><p>放大鏡中的料理可直接開啟細節，不需要先切換成另一張列表。</p></article>
+          <article class="phase-card"><h3>風險</h3><p>鏡頭會遮住底圖，而且同時顯示縮小與放大內容，可能造成複視與指向混亂。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const viewport = document.querySelector("#loupe-viewport");
+      const sheet = document.querySelector("#loupe-sheet");
+      const lens = document.querySelector("#loupe-lens");
+      const magnified = document.querySelector("#loupe-magnified");
+      const readout = document.querySelector("#loupe-readout");
+      const locationTitle = document.querySelector("#loupe-location-title");
+      const locationMeta = document.querySelector("#loupe-location-meta");
+      const previousButton = document.querySelector("#loupe-previous");
+      const nextButton = document.querySelector("#loupe-next");
+      const detail = document.querySelector("#loupe-detail");
+      const detailClose = document.querySelector("#loupe-detail-close");
+
+      document.querySelector("#loupe-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#loupe-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#loupe-restaurant-meta").textContent = menu.restaurant.summary;
+      sheet.innerHTML = window.renderMenuLensPaperField(menu);
+      magnified.innerHTML = sheet.innerHTML;
+      magnified.setAttribute("aria-hidden", "true");
+      magnified.inert = true;
+      magnified.querySelectorAll("[data-product-id]").forEach((element) => element.removeAttribute("data-product-id"));
+      magnified.querySelectorAll("button").forEach((button) => button.tabIndex = -1);
+
+      const sourceCategories = [...sheet.querySelectorAll(".paper-category")];
+      const sourceProducts = [...sheet.querySelectorAll(".paper-product")];
+      const lensCategories = [...magnified.querySelectorAll(".paper-category")];
+      const lensProducts = [...magnified.querySelectorAll(".paper-product")];
+      sourceCategories.forEach((category) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+      });
+      let activeCategoryIndex = 0;
+      let selectedProductIndex = null;
+      let pointerState = null;
+      let suppressClick = false;
+      let sourcePoint = { x: 0, y: 0 };
+      const magnification = 2.35;
+
+      const closeDetail = (restoreFocus = false) => {
+        detail.dataset.open = "false";
+        sourceProducts.forEach((button) => delete button.dataset.selected);
+        lensProducts.forEach((button) => delete button.dataset.selected);
+        if (restoreFocus && selectedProductIndex !== null) {
+          sourceProducts.find((button) => Number(button.dataset.productIndex) === selectedProductIndex)?.focus({ preventScroll: true });
+        }
+        selectedProductIndex = null;
+      };
+
+      const nearestCategoryIndex = (x, y) => {
+        let nearestIndex = 0;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+        sourceCategories.forEach((category, index) => {
+          const centerX = category.offsetLeft + category.offsetWidth / 2;
+          const centerY = category.offsetTop + category.offsetHeight / 2;
+          const distance = Math.hypot(centerX - x, centerY - y);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+        return nearestIndex;
+      };
+
+      const updateLens = (viewportX, viewportY, exactSourcePoint = null) => {
+        const lensWidth = lens.offsetWidth;
+        const lensHeight = lens.offsetHeight;
+        const lensCenterX = Math.max(lensWidth / 2, Math.min(viewport.clientWidth - lensWidth / 2, viewportX));
+        const lensCenterY = Math.max(lensHeight / 2, Math.min(viewport.clientHeight - lensHeight / 2, viewportY));
+        const lensLeft = lensCenterX - lensWidth / 2;
+        const lensTop = lensCenterY - lensHeight / 2;
+        sourcePoint = exactSourcePoint ?? {
+          x: Math.max(0, Math.min(sheet.offsetWidth, viewportX - sheet.offsetLeft)),
+          y: Math.max(0, Math.min(sheet.offsetHeight, viewportY - sheet.offsetTop)),
+        };
+        activeCategoryIndex = nearestCategoryIndex(sourcePoint.x, sourcePoint.y);
+
+        viewport.style.setProperty("--lens-left", `${lensLeft}px`);
+        viewport.style.setProperty("--lens-top", `${lensTop}px`);
+        magnified.style.setProperty("--source-width", `${sheet.offsetWidth}px`);
+        magnified.style.setProperty("--source-height", `${sheet.offsetHeight}px`);
+        magnified.style.setProperty(
+          "--loupe-transform",
+          `translate(${lensWidth / 2 - sourcePoint.x * magnification}px, ${lensHeight / 2 - sourcePoint.y * magnification}px) scale(${magnification})`,
+        );
+
+        const category = menu.categories[activeCategoryIndex];
+        const count = menu.products.filter((product) => product.categoryId === category.id).length;
+        locationTitle.textContent = category.name;
+        locationMeta.textContent = `${activeCategoryIndex + 1} / ${menu.categories.length} · ${count} 道 · 鏡頭 ×${magnification}`;
+        readout.textContent = `${category.name} · 固定紙面上的閱讀鏡頭`;
+        previousButton.disabled = activeCategoryIndex === 0;
+        nextButton.disabled = activeCategoryIndex === menu.categories.length - 1;
+        lensCategories.forEach((candidate, index) => {
+          if (index === activeCategoryIndex) candidate.dataset.loupeCategory = "true";
+          else delete candidate.dataset.loupeCategory;
+        });
+        sourceCategories.forEach((category, index) => {
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", String(index === activeCategoryIndex));
+        });
+      };
+
+      const snapCategory = (categoryIndex) => {
+        activeCategoryIndex = Math.max(0, Math.min(sourceCategories.length - 1, categoryIndex));
+        const category = sourceCategories[activeCategoryIndex];
+        const point = {
+          x: category.offsetLeft + category.offsetWidth / 2,
+          y: category.offsetTop + category.offsetHeight / 2,
+        };
+        updateLens(sheet.offsetLeft + point.x, sheet.offsetTop + point.y, point);
+      };
+
+      const openDetail = (productIndex) => {
+        const product = menu.products[productIndex];
+        selectedProductIndex = productIndex;
+        sourceProducts.forEach((candidate) => {
+          if (Number(candidate.dataset.productIndex) === productIndex) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+        });
+        lensProducts.forEach((candidate) => {
+          if (Number(candidate.dataset.productIndex) === productIndex) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+        });
+        document.querySelector("#loupe-detail-title").textContent = product.name;
+        document.querySelector("#loupe-detail-meta").textContent = `NT$${product.price} · ${product.cue}${product.availability === "sold_out" ? " · 售完" : ""}`;
+        document.querySelector("#loupe-detail-copy").textContent = product.description;
+        detail.dataset.open = "true";
+      };
+
+      sourceCategories.forEach((category, index) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => snapCategory(index));
+      });
+      sourceProducts.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+          snapCategory(categoryIndex);
+          const productIndex = Number(button.dataset.productIndex);
+          openDetail(productIndex);
+        });
+      });
+
+      lens.addEventListener("click", (event) => {
+        const lensBounds = lens.getBoundingClientRect();
+        const sheetBounds = sheet.getBoundingClientRect();
+        const sourceX = sourcePoint.x + (event.clientX - lensBounds.left - lensBounds.width / 2) / magnification;
+        const sourceY = sourcePoint.y + (event.clientY - lensBounds.top - lensBounds.height / 2) / magnification;
+        const containsSourcePoint = (element) => {
+          const bounds = element.getBoundingClientRect();
+          const left = bounds.left - sheetBounds.left;
+          const top = bounds.top - sheetBounds.top;
+          return sourceX >= left && sourceX <= left + bounds.width && sourceY >= top && sourceY <= top + bounds.height;
+        };
+        const product = sourceProducts.find(containsSourcePoint);
+        if (product) {
+          event.preventDefault();
+          event.stopPropagation();
+          const categoryIndex = Number(product.closest(".paper-category").dataset.categoryIndex);
+          snapCategory(categoryIndex);
+          openDetail(Number(product.dataset.productIndex));
+          return;
+        }
+        const categoryIndex = sourceCategories.findIndex(containsSourcePoint);
+        if (categoryIndex >= 0) {
+          event.preventDefault();
+          event.stopPropagation();
+          snapCategory(categoryIndex);
+        }
+      });
+
+      viewport.addEventListener("pointerdown", (event) => {
+        if (detail.contains(event.target)) return;
+        if (!event.isPrimary || pointerState || (event.pointerType === "mouse" && event.button !== 0)) return;
+        pointerState = { id: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false };
+      });
+      viewport.addEventListener("pointermove", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        const distance = Math.hypot(event.clientX - pointerState.startX, event.clientY - pointerState.startY);
+        if (!pointerState.moved && distance < 6) return;
+        if (!pointerState.moved) {
+          pointerState.moved = true;
+          viewport.setPointerCapture(event.pointerId);
+          viewport.classList.add("is-dragging");
+          closeDetail();
+        }
+        event.preventDefault();
+        const bounds = viewport.getBoundingClientRect();
+        updateLens(event.clientX - bounds.left, event.clientY - bounds.top);
+      });
+      const endPointer = (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        if (pointerState.moved) suppressClick = true;
+        pointerState = null;
+        viewport.classList.remove("is-dragging");
+      };
+      viewport.addEventListener("pointerup", endPointer);
+      viewport.addEventListener("pointercancel", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        pointerState = null;
+        suppressClick = false;
+        viewport.classList.remove("is-dragging");
+      });
+      viewport.addEventListener("click", (event) => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        suppressClick = false;
+      }, true);
+
+      document.querySelector("#loupe-center").addEventListener("click", () => {
+        const point = { x: sheet.offsetWidth / 2, y: sheet.offsetHeight / 2 };
+        updateLens(viewport.clientWidth / 2, viewport.clientHeight / 2, point);
+      });
+      previousButton.addEventListener("click", () => snapCategory(activeCategoryIndex - 1));
+      nextButton.addEventListener("click", () => snapCategory(activeCategoryIndex + 1));
+      detailClose.addEventListener("click", () => closeDetail(true));
+      window.addEventListener("resize", () => requestAnimationFrame(() => snapCategory(activeCategoryIndex)));
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape" || detail.dataset.open !== "true") return;
+        closeDetail(true);
+      });
+
+      requestAnimationFrame(() => snapCategory(0));
+    </script>
+  </body>
+</html>

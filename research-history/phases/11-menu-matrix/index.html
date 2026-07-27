@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 11 Menu Matrix：固定六列分類與八欄菜序，以伸縮整列探索二維菜單。" />
+    <title>11 Menu Matrix — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../menu-matrix.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../menu-matrix-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">11 · Matrix hypothesis</p>
+          <h1>Menu Matrix</h1>
+          <p class="lede">把分類固定成六列、每列最多八道。選一列時只放大那一列，其他分類仍壓縮留在原位；料理細節放在獨立面板，不推動矩陣。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">
+        探索問題：如果橫向不是一條無限軌道，而是紙本菜單式的固定二維格局，是否更容易形成「我在哪一區、這區有多少選項」的空間記憶？
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="Menu Matrix 互動原型">
+        <div class="phone-screen matrix-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+
+          <header class="matrix-restaurant">
+            <h2 id="matrix-restaurant-name" class="restaurant-name"></h2>
+            <p id="matrix-restaurant-meta" class="restaurant-meta"></p>
+            <p id="matrix-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+
+          <div class="matrix-toolbar">
+            <button id="matrix-overview" type="button" aria-pressed="true">全覽</button>
+            <button id="matrix-previous-row" type="button" aria-label="上一個分類">↑</button>
+            <button id="matrix-next-row" type="button" aria-label="下一個分類">↓</button>
+            <div class="matrix-location" aria-live="polite">
+              <strong id="matrix-location-title">完整矩陣</strong>
+              <span id="matrix-location-meta">6 列 × 8 欄 · 30 道料理</span>
+            </div>
+          </div>
+
+          <div id="matrix-board" class="matrix-board" data-mode="overview"></div>
+
+          <aside id="matrix-detail" class="matrix-detail" data-open="false" aria-live="polite" aria-label="料理細節">
+            <div class="matrix-detail__inner">
+              <button id="matrix-detail-close" class="matrix-detail__close" type="button" aria-label="關閉料理細節">×</button>
+              <h3 id="matrix-detail-title"></h3>
+              <p id="matrix-detail-meta" class="matrix-detail__meta"></p>
+              <p id="matrix-detail-copy" class="matrix-detail__copy"></p>
+              <dl>
+                <dt>份量</dt><dd id="matrix-detail-portion"></dd>
+                <dt>準備時間</dt><dd id="matrix-detail-preparation"></dd>
+                <dt>必要選項</dt><dd id="matrix-detail-configuration"></dd>
+              </dl>
+            </div>
+          </aside>
+          <p class="matrix-hint">格內數字是價格；點分類伸展整列，點料理在下方看細節。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Mechanism notes</p>
+          <h2>固定座標，再伸縮整列</h2>
+        </div>
+        <div class="timeline">
+          <article class="phase-card"><h3>Y 軸是分類</h3><p>六個分類永遠各自佔一列，列序不因閱讀或展開而改變。</p></article>
+          <article class="phase-card"><h3>X 軸仍是菜序</h3><p>八欄代表分類內的第一至第八道；價格直接標在格內，不假裝成 X 軸的位置語意。</p></article>
+          <article class="phase-card"><h3>列伸縮</h3><p>選中的分類取得主要高度；其餘五列仍作為壓縮地標同時在場。</p></article>
+          <article class="phase-card"><h3>空格有意義</h3><p>六列共 48 個位置，18 個空格直接顯示各分類長短，不用再讀數字才能比較。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const board = document.querySelector("#matrix-board");
+      const overviewButton = document.querySelector("#matrix-overview");
+      const previousRowButton = document.querySelector("#matrix-previous-row");
+      const nextRowButton = document.querySelector("#matrix-next-row");
+      const locationTitle = document.querySelector("#matrix-location-title");
+      const locationMeta = document.querySelector("#matrix-location-meta");
+      const detail = document.querySelector("#matrix-detail");
+      const detailClose = document.querySelector("#matrix-detail-close");
+
+      document.querySelector("#matrix-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#matrix-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#matrix-restaurant-meta").textContent = menu.restaurant.summary;
+      board.innerHTML = window.renderMenuLensMatrix(menu);
+
+      const rows = [...board.querySelectorAll(".matrix-row")];
+      const productButtons = [...board.querySelectorAll(".matrix-product")];
+      rows.forEach((row) => {
+        const label = row.querySelector(".matrix-row__label");
+        label.removeAttribute("aria-expanded");
+        label.setAttribute("aria-pressed", "false");
+      });
+      let activeRowIndex = null;
+      let selectedProductIndex = null;
+
+      const categoryProducts = (rowIndex) => [...rows[rowIndex].querySelectorAll(".matrix-product")];
+
+      const closeDetail = (restoreFocus = false) => {
+        detail.dataset.open = "false";
+        productButtons.forEach((button) => delete button.dataset.selected);
+        if (restoreFocus && selectedProductIndex !== null) {
+          productButtons.find((button) => Number(button.dataset.productIndex) === selectedProductIndex)?.focus();
+        }
+        selectedProductIndex = null;
+      };
+
+      const setRow = (nextRowIndex) => {
+        activeRowIndex = Math.max(0, Math.min(rows.length - 1, nextRowIndex));
+        board.dataset.mode = "focus";
+        overviewButton.setAttribute("aria-pressed", "false");
+        rows.forEach((row, index) => {
+          const active = index === activeRowIndex;
+          if (active) row.dataset.active = "true";
+          else delete row.dataset.active;
+          row.querySelector(".matrix-row__label").setAttribute("aria-pressed", String(active));
+        });
+        const category = menu.categories[activeRowIndex];
+        const count = menu.products.filter((product) => product.categoryId === category.id).length;
+        locationTitle.textContent = category.name;
+        locationMeta.textContent = `${activeRowIndex + 1} / ${rows.length} · ${count} 道 · ${category.priceRange}`;
+        previousRowButton.disabled = activeRowIndex === 0;
+        nextRowButton.disabled = activeRowIndex === rows.length - 1;
+      };
+
+      const setOverview = () => {
+        activeRowIndex = null;
+        board.dataset.mode = "overview";
+        overviewButton.setAttribute("aria-pressed", "true");
+        rows.forEach((row) => {
+          delete row.dataset.active;
+          row.querySelector(".matrix-row__label").setAttribute("aria-pressed", "false");
+        });
+        locationTitle.textContent = "完整矩陣";
+        locationMeta.textContent = `6 列 × 8 欄 · ${productButtons.length} 道料理`;
+        previousRowButton.disabled = true;
+        nextRowButton.disabled = true;
+        closeDetail();
+      };
+
+      const openDetail = (productIndex, button) => {
+        const product = menu.products[productIndex];
+        selectedProductIndex = productIndex;
+        productButtons.forEach((candidate) => {
+          if (candidate === button) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+        });
+        document.querySelector("#matrix-detail-title").textContent = product.name;
+        document.querySelector("#matrix-detail-meta").textContent = `NT$${product.price} · ${product.cue}${product.availability === "sold_out" ? " · 售完" : ""}`;
+        document.querySelector("#matrix-detail-copy").textContent = product.description;
+        document.querySelector("#matrix-detail-portion").textContent = product.portion?.label ?? "尚未提供";
+        document.querySelector("#matrix-detail-preparation").textContent = product.preparation?.label ?? "尚未提供";
+        document.querySelector("#matrix-detail-configuration").textContent = product.requiredConfiguration;
+        detail.dataset.open = "true";
+      };
+
+      rows.forEach((row, rowIndex) => {
+        row.querySelector(".matrix-row__label").addEventListener("click", () => {
+          if (activeRowIndex === rowIndex) setOverview();
+          else {
+            closeDetail();
+            setRow(rowIndex);
+          }
+        });
+      });
+
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const productIndex = Number(button.dataset.productIndex);
+          const rowIndex = Number(button.closest(".matrix-row").dataset.categoryIndex);
+          setRow(rowIndex);
+          openDetail(productIndex, button);
+        });
+
+        button.addEventListener("keydown", (event) => {
+          if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+          event.preventDefault();
+          const rowIndex = Number(button.closest(".matrix-row").dataset.categoryIndex);
+          const columnIndex = Number(button.dataset.columnIndex);
+          if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+            const siblings = categoryProducts(rowIndex);
+            const siblingIndex = siblings.indexOf(button) + (event.key === "ArrowLeft" ? -1 : 1);
+            siblings[Math.max(0, Math.min(siblings.length - 1, siblingIndex))].focus();
+            return;
+          }
+          const direction = event.key === "ArrowUp" ? -1 : 1;
+          const targetRow = Math.max(0, Math.min(rows.length - 1, rowIndex + direction));
+          const candidates = categoryProducts(targetRow);
+          candidates[Math.min(columnIndex, candidates.length - 1)].focus();
+        });
+      });
+
+      overviewButton.addEventListener("click", setOverview);
+      previousRowButton.addEventListener("click", () => {
+        if (activeRowIndex !== null) {
+          closeDetail();
+          setRow(activeRowIndex - 1);
+        }
+      });
+      nextRowButton.addEventListener("click", () => {
+        if (activeRowIndex !== null) {
+          closeDetail();
+          setRow(activeRowIndex + 1);
+        }
+      });
+      detailClose.addEventListener("click", () => closeDetail(true));
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.dataset.open === "true") {
+          closeDetail(true);
+          return;
+        }
+        if (activeRowIndex !== null) {
+          setOverview();
+          overviewButton.focus({ preventScroll: true });
+        }
+      });
+
+      setOverview();
+    </script>
+  </body>
+</html>

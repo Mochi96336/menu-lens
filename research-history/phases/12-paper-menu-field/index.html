@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 12 Paper Menu Field：把分類排成沒有語意座標的紙面區塊，整張菜單原位縮放。" />
+    <title>12 Paper Menu Field — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">12 · Paper-space hypothesis</p>
+          <h1>Paper Menu Field</h1>
+          <p class="lede">矩陣裡放的不是料理，而是六個分類版面。X、Y 不代表價格或菜序；它們只是紙面位置。閱讀時放大的也是同一張紙，不重新排列內容。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">
+        探索問題：手機是否能先呈現一張縮小紙本菜單，再以分類原始位置為座標放大，而不把「全貌」翻譯成另一套控制介面？
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="Paper Menu Field 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+
+          <header class="paper-restaurant">
+            <h2 id="paper-restaurant-name" class="restaurant-name"></h2>
+            <p id="paper-restaurant-meta" class="restaurant-meta"></p>
+            <p id="paper-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+
+          <div class="paper-toolbar">
+            <button id="paper-overview" type="button" aria-pressed="true">整張</button>
+            <button id="paper-previous" type="button" aria-label="上一個分類">←</button>
+            <button id="paper-next" type="button" aria-label="下一個分類">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="paper-location-title">完整紙面</strong>
+              <span id="paper-location-meta">6 個分類區塊 · 30 道料理</span>
+            </div>
+          </div>
+
+          <div id="paper-viewport" class="paper-viewport" data-scale="overview" tabindex="0">
+            <div id="paper-sheet" class="paper-sheet"></div>
+            <aside id="paper-detail" class="paper-detail" data-open="false" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="paper-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="paper-detail-title"></h3>
+                <p id="paper-detail-meta" class="paper-detail__meta"></p>
+                <p id="paper-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">點分類放大同一張紙；放大後點料理看細節。整張按鈕回到原比例。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Mechanism notes</p>
+          <h2>這不是資料矩陣，是縮小的版面</h2>
+        </div>
+        <div class="timeline">
+          <article class="phase-card"><h3>分類是版面單位</h3><p>六個分類各自是一塊紙面區域，料理保留在自己的分類內，不散成 30 個等價格子。</p></article>
+          <article class="phase-card"><h3>X／Y 無語意</h3><p>左右與上下只描述印刷編排；不暗示價格、份量、速度或比較維度。</p></article>
+          <article class="phase-card"><h3>同一張紙縮放</h3><p>聚焦分類時，整張 sheet 依該區塊的原始座標平移與放大；DOM 順序與版面格位不改變。</p></article>
+          <article class="phase-card"><h3>主要風險</h3><p>全貌中的微型文字可能只能提供形狀與密度，無法真正閱讀；這個版本要觀察那種不可讀的全貌是否仍有價值。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const viewport = document.querySelector("#paper-viewport");
+      const sheet = document.querySelector("#paper-sheet");
+      const overviewButton = document.querySelector("#paper-overview");
+      const previousButton = document.querySelector("#paper-previous");
+      const nextButton = document.querySelector("#paper-next");
+      const locationTitle = document.querySelector("#paper-location-title");
+      const locationMeta = document.querySelector("#paper-location-meta");
+      const detail = document.querySelector("#paper-detail");
+      const detailClose = document.querySelector("#paper-detail-close");
+
+      document.querySelector("#paper-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#paper-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#paper-restaurant-meta").textContent = menu.restaurant.summary;
+      sheet.innerHTML = window.renderMenuLensPaperField(menu);
+
+      const categories = [...sheet.querySelectorAll(".paper-category")];
+      const productButtons = [...sheet.querySelectorAll(".paper-product")];
+      categories.forEach((category) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+      });
+      let activeCategoryIndex = null;
+      let selectedProductIndex = null;
+
+      const closeDetail = (restoreFocus = false) => {
+        detail.dataset.open = "false";
+        productButtons.forEach((button) => delete button.dataset.selected);
+        if (restoreFocus && selectedProductIndex !== null) {
+          productButtons.find((button) => Number(button.dataset.productIndex) === selectedProductIndex)?.focus();
+        }
+        selectedProductIndex = null;
+      };
+
+      const updateTransform = () => {
+        if (activeCategoryIndex === null) {
+          sheet.style.setProperty("--paper-transform", "translate(0px, 0px) scale(1)");
+          return;
+        }
+
+        const category = categories[activeCategoryIndex];
+        const viewportWidth = viewport.clientWidth;
+        const viewportHeight = viewport.clientHeight;
+        const categoryCenterX = category.offsetLeft + category.offsetWidth / 2;
+        const categoryCenterY = category.offsetTop + category.offsetHeight / 2;
+        const scale = Math.min(
+          2.05,
+          (viewportWidth * .9) / Math.max(1, category.offsetWidth),
+          (viewportHeight * .82) / Math.max(1, category.offsetHeight),
+        );
+        const translateX = viewportWidth / 2 - sheet.offsetLeft - categoryCenterX * scale;
+        const translateY = viewportHeight / 2 - sheet.offsetTop - categoryCenterY * scale;
+        sheet.style.setProperty(
+          "--paper-transform",
+          `translate(${translateX}px, ${translateY}px) scale(${scale})`,
+        );
+      };
+
+      const focusCategory = (nextIndex) => {
+        activeCategoryIndex = Math.max(0, Math.min(categories.length - 1, nextIndex));
+        viewport.dataset.scale = "focus";
+        overviewButton.setAttribute("aria-pressed", "false");
+        categories.forEach((category, index) => {
+          const focused = index === activeCategoryIndex;
+          if (focused) category.dataset.focused = "true";
+          else delete category.dataset.focused;
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", String(focused));
+          category.querySelectorAll(".paper-product").forEach((button) => button.tabIndex = focused ? 0 : -1);
+        });
+        const category = menu.categories[activeCategoryIndex];
+        const count = menu.products.filter((product) => product.categoryId === category.id).length;
+        locationTitle.textContent = category.name;
+        locationMeta.textContent = `${activeCategoryIndex + 1} / ${categories.length} · ${count} 道 · ${category.priceRange}`;
+        previousButton.disabled = activeCategoryIndex === 0;
+        nextButton.disabled = activeCategoryIndex === categories.length - 1;
+        requestAnimationFrame(updateTransform);
+      };
+
+      const showOverview = () => {
+        activeCategoryIndex = null;
+        viewport.dataset.scale = "overview";
+        overviewButton.setAttribute("aria-pressed", "true");
+        categories.forEach((category) => {
+          delete category.dataset.focused;
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", "false");
+          category.querySelectorAll(".paper-product").forEach((button) => button.tabIndex = 0);
+        });
+        locationTitle.textContent = "完整紙面";
+        locationMeta.textContent = `${categories.length} 個分類區塊 · ${productButtons.length} 道料理`;
+        previousButton.disabled = true;
+        nextButton.disabled = true;
+        closeDetail();
+        updateTransform();
+      };
+
+      const openDetail = (productIndex, button) => {
+        const product = menu.products[productIndex];
+        selectedProductIndex = productIndex;
+        productButtons.forEach((candidate) => {
+          if (candidate === button) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+        });
+        document.querySelector("#paper-detail-title").textContent = product.name;
+        document.querySelector("#paper-detail-meta").textContent = `NT$${product.price} · ${product.cue}${product.availability === "sold_out" ? " · 售完" : ""}`;
+        document.querySelector("#paper-detail-copy").textContent = product.description;
+        detail.dataset.open = "true";
+      };
+
+      categories.forEach((category, categoryIndex) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          closeDetail();
+          if (activeCategoryIndex === categoryIndex) showOverview();
+          else focusCategory(categoryIndex);
+        });
+      });
+
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+          if (activeCategoryIndex !== categoryIndex) {
+            closeDetail();
+            focusCategory(categoryIndex);
+            return;
+          }
+          openDetail(Number(button.dataset.productIndex), button);
+        });
+      });
+
+      overviewButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => {
+        if (activeCategoryIndex === null) return;
+        closeDetail();
+        focusCategory(activeCategoryIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        if (activeCategoryIndex === null) return;
+        closeDetail();
+        focusCategory(activeCategoryIndex + 1);
+      });
+      detailClose.addEventListener("click", () => closeDetail(true));
+      viewport.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        if (activeCategoryIndex === null) focusCategory(event.key === "ArrowLeft" ? 0 : categories.length - 1);
+        else focusCategory(activeCategoryIndex + (event.key === "ArrowLeft" ? -1 : 1));
+      });
+      window.addEventListener("resize", () => requestAnimationFrame(updateTransform));
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.dataset.open === "true") {
+          closeDetail(true);
+          return;
+        }
+        if (activeCategoryIndex !== null) {
+          showOverview();
+          overviewButton.focus({ preventScroll: true });
+        }
+      });
+
+      showOverview();
+    </script>
+  </body>
+</html>

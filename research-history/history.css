@@ -109,6 +109,25 @@ h2 { font-family: "Noto Serif TC", "PMingLiU", Georgia, serif; font-weight: 600;
 .phase-card ul { margin: 0; padding-left: 1.1rem; }
 .phase-card footer { align-self: end; display: flex; flex-wrap: wrap; gap: .55rem; padding-top: .4rem; }
 
+.prototype-families { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.prototype-family { min-width: 0; padding: 1rem; border: 1px solid var(--line-strong); background: var(--surface); }
+.prototype-family:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.prototype-family__heading { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; margin-bottom: .55rem; }
+.prototype-family__heading h3 { margin: 0; font-family: "Noto Serif TC", "PMingLiU", Georgia, serif; font-size: 1.25rem; }
+.prototype-family > p { margin-bottom: .9rem; color: var(--muted); font-size: .88rem; }
+.prototype-lineage { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: .4rem; margin: 0; padding: 0; list-style: none; }
+.prototype-lineage li { min-width: 0; border-left: 3px solid var(--line); background: var(--surface-strong); }
+.prototype-lineage li[data-status="current-substrate"] { border-left-color: var(--ink); }
+.prototype-lineage li[data-status="active-variant"] { border-left-color: var(--accent); }
+.prototype-lineage li[data-status="reviewed-stop"],
+.prototype-lineage li[data-status^="rejected"],
+.prototype-lineage li[data-status="product-invalid"] { opacity: .7; }
+.prototype-lineage a,
+.prototype-lineage li > span { display: grid; gap: .1rem; min-height: 100%; padding: .55rem .65rem; color: inherit; text-decoration: none; }
+.prototype-lineage a:hover { background: var(--accent-soft); }
+.prototype-lineage strong { overflow: hidden; font-size: .78rem; text-overflow: ellipsis; white-space: nowrap; }
+.prototype-lineage small { color: var(--faint); font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: .62rem; }
+
 .button, .ghost-button {
   display: inline-flex;
   align-items: center;
@@ -196,6 +215,8 @@ h2 { font-family: "Noto Serif TC", "PMingLiU", Georgia, serif; font-weight: 600;
   .masthead { padding-top: 2.4rem; }
   h1 { font-size: clamp(2.3rem, 13vw, 4rem); }
   .prototype-header { flex-direction: column; }
+  .prototype-families { grid-template-columns: 1fr; }
+  .prototype-family:last-child:nth-child(odd) { grid-column: auto; }
   .phone-screen { min-height: 100vh; padding: .9rem; }
   .category-nav { grid-template-columns: repeat(2, 1fr); }
 }

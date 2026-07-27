@@ -142,6 +142,9 @@
             button.addEventListener("click", () => {
               anchorId = button.dataset.anchorId;
               render();
+              [...ledger.querySelectorAll("[data-anchor-id]")]
+                .find((candidate) => candidate.dataset.anchorId === anchorId)
+                ?.focus({ preventScroll: true });
             });
           });
         };
