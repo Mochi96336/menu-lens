@@ -26,6 +26,10 @@
 .projection-volume,
 .projection-node-layer { position: absolute; inset: 0; width: 100%; height: 100%; }
 .projection-volume { overflow: visible; }
+.projection-volume__grid { stroke: rgb(80 65 48 / 9%); stroke-width: .35; vector-effect: non-scaling-stroke; transition: stroke 180ms ease, stroke-width 180ms ease; }
+.projection-volume__grid[data-active="true"] { stroke: rgb(80 65 48 / 32%); stroke-width: .6; }
+.projection-cell-highlight { display: none; fill: rgb(184 91 62 / 11%); stroke: #a6533a; stroke-dasharray: 2 1.5; stroke-width: .65; vector-effect: non-scaling-stroke; }
+.projection-cell-highlight[data-open="true"] { display: block; }
 .projection-volume__edge { stroke: rgb(80 65 48 / 26%); stroke-width: .45; vector-effect: non-scaling-stroke; }
 .projection-volume__axis { stroke-width: 1.15; vector-effect: non-scaling-stroke; }
 .projection-volume__axis--x { stroke: #ad593e; }
@@ -54,6 +58,7 @@
 .projection-focus-card::before { position: absolute; top: 50%; width: .9rem; border-top: 1px solid var(--ink); content: ""; }
 .projection-focus-card[data-side="right"]::before { right: 100%; }
 .projection-focus-card[data-side="left"]::before { left: 100%; }
+.projection-focus-card__heading { padding: .38rem .45rem; border-bottom: 1px solid var(--ink); background: #eee3d5; color: #5c4c3a; font-size: .54rem; line-height: 1.3; }
 .projection-focus-card__row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; min-height: 2.65rem; align-items: center; gap: .4rem; padding: .35rem .42rem; border-bottom: 1px solid var(--line); }
 .projection-focus-card__row:last-child { border-bottom: 0; }
 .projection-focus-card__row i { width: .65rem; height: .65rem; border: 2px solid #fff8ed; border-radius: 50%; background: var(--category-color); box-shadow: 0 0 0 1px rgb(48 39 28 / 48%); }

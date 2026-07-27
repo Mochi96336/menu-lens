@@ -296,6 +296,25 @@
       edgeRoot.append(line);
       return line;
     });
+    const gridLines = [];
+    const addGridLine = (plane, start, end) => {
+      const line = svgElement("line", "projection-volume__grid");
+      line.dataset.plane = plane;
+      gridRoot.append(line);
+      gridLines.push({ plane, start, end, line });
+    };
+    semanticBands.price.bounds.slice(1, -1).forEach((x) => {
+      addGridLine("xy", { x, y: -.48, z: -.48 }, { x, y: .48, z: -.48 });
+      addGridLine("xz", { x, y: -.48, z: -.48 }, { x, y: -.48, z: .48 });
+    });
+    semanticBands.serving.bounds.slice(1, -1).forEach((y) => {
+      addGridLine("xy", { x: -.48, y, z: -.48 }, { x: .48, y, z: -.48 });
+      addGridLine("yz", { x: -.48, y, z: -.48 }, { x: -.48, y, z: .48 });
+    });
+    semanticBands.preparation.bounds.slice(1, -1).forEach((z) => {
+      addGridLine("xz", { x: -.48, y: -.48, z }, { x: .48, y: -.48, z });
+      addGridLine("yz", { x: -.48, y: -.48, z }, { x: -.48, y: .48, z });
+    });
     const axisData = [
       { key: "x", label: "價格", end: { x: .62, y: -.48, z: -.48 } },
       { key: "y", label: "份量", end: { x: -.48, y: .62, z: -.48 } },
@@ -326,7 +345,43 @@
       line.setAttribute("y2", end.y.toFixed(2));
     };
 
+    const semanticCellCorners = () => {
+      if (!anchorProductId) return [];
+      const anchor = items.find((candidate) => candidate.product.id === anchorProductId);
+      const semantic = semanticDefinitions[activeProjection];
+      const coordinateKey = { price: "x", serving: "y", preparation: "z" };
+      const horizontalBounds = semanticBands[semantic.x].bounds;
+      const verticalBounds = semanticBands[semantic.y].bounds;
+      const horizontal = [horizontalBounds[anchor.bands[semantic.x]], horizontalBounds[anchor.bands[semantic.x] + 1]];
+      const vertical = [verticalBounds[anchor.bands[semantic.y]], verticalBounds[anchor.bands[semantic.y] + 1]];
+      return [
+        [horizontal[0], vertical[0]],
+        [horizontal[1], vertical[0]],
+        [horizontal[1], vertical[1]],
+        [horizontal[0], vertical[1]],
+      ].map(([first, second]) => ({
+        x: semantic.plane === "yz" ? -.48 : semantic.x === "price" ? first : second,
+        y: semantic.plane === "xz" ? -.48 : coordinateKey[semantic.x] === "y" ? first : second,
+        z: semantic.plane === "xy" ? -.48 : coordinateKey[semantic.x] === "z" ? first : second,
+      }));
+    };
+
     function renderFrame(quaternion) {
+      gridLines.forEach((grid) => {
+        setLine(grid.line, project(grid.start, quaternion), project(grid.end, quaternion));
+        grid.line.dataset.active = String(grid.plane === semanticDefinitions[activeProjection].plane);
+      });
+      const highlightCorners = semanticCellCorners();
+      if (highlightCorners.length) {
+        cellHighlight.setAttribute("points", highlightCorners.map((corner) => {
+          const position = project(corner, quaternion);
+          return `${position.x.toFixed(2)},${position.y.toFixed(2)}`;
+        }).join(" "));
+        cellHighlight.dataset.open = "true";
+      } else {
+        cellHighlight.removeAttribute("points");
+        cellHighlight.dataset.open = "false";
+      }
       edgePairs.forEach(([startIndex, endIndex], index) => setLine(edgeElements[index], project(corners[startIndex], quaternion), project(corners[endIndex], quaternion)));
       const axisOrigin = project({ x: -.48, y: -.48, z: -.48 }, quaternion);
       axisData.forEach((axis) => {
@@ -366,6 +421,7 @@
       statusTitle.textContent = projectionDefinitions[activeProjection].title;
       statusMeta.textContent = `深度：${projectionDefinitions[activeProjection].depth}`;
       depthAxis.textContent = projectionDefinitions[activeProjection].depth;
+      if (anchorProductId) focusSemanticCell(anchorProductId, false);
       if (reducedMotion) {
         currentQuaternion = target;
         renderFrame(currentQuaternion);
@@ -387,12 +443,15 @@
     controls.forEach((control) => control.addEventListener("click", () => setProjection(control.dataset.projection)));
     document.addEventListener("keydown", (event) => {
       if (event.key !== "Escape" || !focusedProductIds.length) return;
+      anchorProductId = null;
       focusedProductIds = [];
       focusCard.dataset.open = "false";
+      statusMeta.textContent = `深度：${projectionDefinitions[activeProjection].depth}`;
       nodeById.forEach((node) => {
         node.dataset.selected = "false";
         node.setAttribute("aria-pressed", "false");
       });
+      renderFrame(currentQuaternion);
     });
     renderFrame(currentQuaternion);
     setProjection(activeProjection);

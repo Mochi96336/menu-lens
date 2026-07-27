@@ -83,13 +83,15 @@ for (const reference of [
   'data-projection="price-preparation"',
   'data-projection="serving-preparation"',
   'id="projection-volume"',
+  'id="projection-volume-grids"',
+  'id="projection-cell-highlight"',
   'id="projection-depth-axis"',
 ]) {
   if (!projectionHtml.includes(reference)) throw new Error(`${projectionPage} is missing ${reference}.`);
 }
 const projectionSource = await readFile(new URL("menu-projections.js", archiveRoot), "utf8");
 new Script(projectionSource, { filename: "research-history/menu-projections.js" });
-for (const mechanism of ["price", "serving", "preparation", "nodeById", "menu.products.map", "未標註", "viewQuaternions", "slerp", "renderFrame"]) {
+for (const mechanism of ["price", "serving", "preparation", "nodeById", "menu.products.map", "未標註", "viewQuaternions", "slerp", "renderFrame", "semanticBands", "focusSemanticCell", "semanticCellCorners"]) {
   if (!projectionSource.includes(mechanism)) throw new Error(`Menu Projections must implement ${mechanism}.`);
 }
 const projectionStyles = await readFile(new URL("menu-projections.css", archiveRoot), "utf8");
