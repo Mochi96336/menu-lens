@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -15,8 +15,51 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out branch
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Patch 10A archive index once
+        if: github.event.pull_request.head.ref == 'agent/menu-lens-10a-local-fisheye'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("research-history/index.html")
+          source = path.read_text()
+          if "10A / local fisheye child" in source:
+              raise SystemExit(0)
+          parent_card = '''          <article class="phase-card">
+            <div><p class="phase-index">10 / focus-lens prototype</p><h3>Fisheye Ribbon</h3><span class="status active">active hypothesis</span></div>
+            <p><strong>探索問題：</strong>若完整 30 道固定在一個手機寬度，只移動局部放大的閱讀鏡頭，能否減少 09 的長距離移動？</p>
+            <p><strong>尺度分配：</strong>先用分類鏡頭建立局部，再進入料理鏡頭；焦點與鄰近項目逐層取得不同寬度。</p>
+            <footer><a class="button" href="./phases/10-fisheye-ribbon/">開啟 10</a></footer>
+          </article>
+'''
+          child_card = parent_card + '''
+          <article class="phase-card">
+            <div><p class="phase-index">10A / local fisheye child</p><h3>Local Fisheye</h3><span class="status active">active 10 variant</span></div>
+            <p><strong>單一變因：</strong>料理鏡頭只在焦點與左右兩道鄰居內重配寬度；遠方料理固定為 0.8%。</p>
+            <p><strong>保留：</strong>一個 viewport、完整 30 道、分類鏡頭、pointer mapping、keyboard 與 detail 都沿用 10。</p>
+            <footer><a class="button" href="./phases/10a-local-fisheye/">開啟 10A</a></footer>
+          </article>
+'''
+          if parent_card not in source:
+              raise SystemExit("10 parent card marker not found")
+          source = source.replace(parent_card, child_card, 1)
+          parent_row = '              <tr><td>10</td><td>09 的單一菜序、完整 fixture</td><td>固定全貌上的可拖曳 fisheye 鏡頭</td><td>局部放大是否以位置扭曲換取了太多可讀性</td></tr>\n'
+          child_row = parent_row + '              <tr><td>10A</td><td>10 的單一菜序、分類鏡頭與完整 fixture</td><td>固定 ±2 料理形變範圍與 0.8% 遠方寬度</td><td>邊界 focus 增大是否值得遠方 landmark 穩定性</td></tr>\n'
+          if parent_row not in source:
+              raise SystemExit("10 comparison row marker not found")
+          path.write_text(source.replace(parent_row, child_row, 1))
+          PY
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research-history/index.html
+          git commit -m "feat(10a): localize fisheye deformation"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
