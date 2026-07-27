@@ -3,7 +3,14 @@
   const categoryProducts = (menu, categoryId) =>
     menu.products.filter((product) => product.categoryId === categoryId);
 
-  const buildLandscape = ({ menu, sheet, columnClass, categoryClass = "", decorateProduct }) => {
+  const buildLandscape = ({
+    menu,
+    sheet,
+    columnClass,
+    categoryClass = "",
+    columnWeight,
+    decorateProduct,
+  }) => {
     if (!menu || !sheet || typeof window.renderMenuLensPaperField !== "function") {
       throw new Error("Landscape paper requires the shared menu fixture and paper renderer.");
     }
@@ -44,7 +51,8 @@
       const column = document.createElement("div");
       column.className = columnClass;
       column.dataset.columnIndex = String(columnIndex);
-      column.style.setProperty("--column-count", "1");
+      const weight = columnWeight?.({ columnIndex, firstCount, secondCount }) ?? 1;
+      column.style.setProperty("--column-count", String(weight));
       column.style.setProperty("--column-rows", `${firstCount}fr ${secondCount}fr`);
       column.append(projectedCategories[firstCategoryIndex], projectedCategories[firstCategoryIndex + 1]);
       sheet.append(column);

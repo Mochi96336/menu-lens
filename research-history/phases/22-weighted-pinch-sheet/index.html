@@ -21,12 +21,12 @@
         <div>
           <p class="eyebrow">22 · 18 + content-aware pinch</p>
           <h1>Weighted Pinch Sheet</h1>
-          <p class="lede">畫面與紙面幾何直接沿用 18。雙指縮放同一張 3×2 紙面；點分類只是依料理數量提供不同閱讀倍率，不改欄寬、不重新排版。</p>
+          <p class="lede">紙面固定為 46rem 寬的 3×2 編排，手機只是一個 camera。雙指縮放同一張紙；點分類只依料理數量改變 camera 倍率，不改欄寬、不重新排版。</p>
         </div>
         <a class="ghost-button" href="../../">回研究檔案館</a>
       </header>
 
-      <p class="study-note">三個紙欄固定等寬 1:1:1，欄內高度維持 8:6、6:4、4:2。兩道甜點的定位倍率是 1.55×，八道主餐是 2.45×；差異只發生在 camera。</p>
+      <p class="study-note">三個紙欄固定等寬 1:1:1，整張紙固定 46rem，不跟手機寬度重排。分類定位約為全紙尺度的 2.3×–3.2×；差異只發生在 camera。</p>
 
       <section id="prototype" class="phone-frame" aria-label="Weighted Pinch Sheet 互動原型">
         <div class="phone-screen paper-phone">
@@ -59,16 +59,16 @@
               </div>
             </aside>
           </div>
-          <p class="paper-hint">整張畫面就是 18；雙指縮放、放大後單指移動，或點分類使用內容感知倍率。</p>
+          <p class="paper-hint">手機只是 46rem 紙面的視窗；雙指縮放、放大後單指移動，或點分類使用內容感知倍率。</p>
         </div>
       </section>
 
       <section class="section">
         <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>只移動 camera，不動 18 的紙面</h2></div>
         <div class="timeline">
-          <article class="phase-card"><h3>來源幾何鎖定</h3><p>22 直接使用 18 的 sheet 與三個等寬紙欄；縮放前的像素寬度必須完全相同。</p></article>
+          <article class="phase-card"><h3>來源幾何鎖定</h3><p>22 使用固定 46rem 的 sheet 與三個等寬紙欄；手機尺寸只能改 camera，不得改紙張像素寬度。</p></article>
           <article class="phase-card"><h3>原生多點觸控</h3><p>兩指距離控制連續倍率，兩指中心固定來源座標；放大後才啟用單指二維移動。</p></article>
-          <article class="phase-card"><h3>內容感知捷徑</h3><p>分類定位從兩道的 1.55× 線性增加到八道的 2.45×，但只是可跳過的 camera shortcut。</p></article>
+          <article class="phase-card"><h3>內容感知捷徑</h3><p>分類定位從全紙尺度的 2.3× 線性增加到 3.2×，但只是可跳過的 camera shortcut。</p></article>
           <article class="phase-card"><h3>主要風險</h3><p>自由縮放容易迷失；整張按鈕是否足以恢復位置仍需觀察。</p></article>
         </div>
       </section>
@@ -96,6 +96,7 @@
         menu,
         sheet,
         columnClass: "landscape-column",
+        columnWeight: () => 1,
       });
 
       const detail = core.createDishDetail({
@@ -108,7 +109,13 @@
         productButtons,
       });
 
-      const categoryScale = (count) => 1.55 + ((count - 2) / 6) * .9;
+      const overviewScale = Math.min(
+        1,
+        (viewport.clientWidth - 12) / sheet.offsetWidth,
+        (viewport.clientHeight - 12) / sheet.offsetHeight,
+      );
+      const maximumScale = Math.max(1.6, overviewScale * 4.2);
+      const categoryScale = (count) => overviewScale * (2.3 + ((count - 2) / 6) * .9);
       let activeCategoryName = null;
       let camera;
 
@@ -121,15 +128,16 @@
       };
 
       camera = window.createMenuLensPinchCamera(viewport, sheet, {
-        minimumScale: 1,
-        maximumScale: 3.2,
+        minimumScale: overviewScale,
+        maximumScale,
         onChange: ({ scale }) => {
-          const atOverview = scale <= 1.04;
+          const atOverview = scale <= overviewScale + .02;
+          const relativeScale = scale / overviewScale;
           resetButton.setAttribute("aria-pressed", String(atOverview));
-          zoomOutButton.disabled = scale <= 1.01;
-          zoomInButton.disabled = scale >= 3.19;
+          zoomOutButton.disabled = scale <= overviewScale + .01;
+          zoomInButton.disabled = scale >= maximumScale - .01;
           if (atOverview && activeCategoryName) clearCameraTarget();
-          locationTitle.textContent = atOverview ? "完整 3×2 紙面" : `${Math.round(scale * 100)}%`;
+          locationTitle.textContent = atOverview ? "完整 3×2 紙面" : `${Math.round(relativeScale * 100)}%`;
           locationMeta.textContent = activeCategoryName ?? (atOverview ? "三欄等寬 1:1:1" : "自由鏡頭 · 拖曳移動");
         },
       });
@@ -150,7 +158,7 @@
 
       productButtons.forEach((button) => {
         button.addEventListener("click", () => {
-          if (camera.getState().scale <= 1.08) {
+          if (camera.getState().scale <= overviewScale + .04) {
             button.closest(".paper-category").querySelector(".paper-category__header").click();
             return;
           }

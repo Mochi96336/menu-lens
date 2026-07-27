@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 18A Proportional Landscape：以 14:10:6 欄寬呈現 18 的內容比例參照。" />
+    <title>18A Proportional Landscape — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../landscape-paper.css" />
+    <link rel="stylesheet" href="../../proportional-landscape.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../paper-landscape-core.js"></script>
+    <script src="../../spatial-drag.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">18A · Content-proportional reference</p>
+          <h1>Proportional Landscape</h1>
+          <p class="lede">保持 18 的三欄 × 上下兩分類，只讓每個紙欄依所含料理總數取得寬度。這是與 18 並排比較的參照，不取代等寬版本。</p>
+        </div>
+        <a class="ghost-button" href="../18-landscape-paper/">回 18 等寬版本</a>
+      </header>
+
+      <p class="study-note">欄寬：(8+6):(6+4):(4+2) = 14:10:6；欄內列高仍是 8:6、6:4、4:2。資料、順序與互動皆沿用 18。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Proportional Landscape 參照原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="proportional-restaurant-name" class="restaurant-name"></h2>
+            <p id="proportional-restaurant-meta" class="restaurant-meta"></p>
+            <p id="proportional-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="proportional-previous" type="button" aria-label="上一個紙欄">←</button>
+            <button id="proportional-next" type="button" aria-label="下一個紙欄">→</button>
+            <div class="paper-location" aria-live="polite" style="grid-column: span 2">
+              <strong id="proportional-location-title">內容比例紙面</strong>
+              <span id="proportional-location-meta">欄寬 14:10:6 · 30 道料理</span>
+            </div>
+          </div>
+
+          <div class="landscape-stage">
+            <div id="proportional-viewport" class="landscape-viewport proportional-viewport" tabindex="0" aria-label="14:10:6 欄寬的橫向三欄菜單紙面">
+              <div id="proportional-sheet" class="landscape-sheet proportional-sheet"></div>
+            </div>
+            <aside id="proportional-detail" class="paper-detail" data-open="false" aria-hidden="true" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="proportional-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="proportional-detail-title"></h3>
+                <p id="proportional-detail-meta" class="paper-detail__meta"></p>
+                <p id="proportional-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">左右拖曳比較 14、10、6 份寬度；點分類定位紙欄，點料理查看細節。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Reference notes</p><h2>只比較欄寬，不加入新機制</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>18</h3><p>欄寬固定 1:1:1，讓少內容分類保有最低閱讀寬度。</p></article>
+          <article class="phase-card"><h3>18A</h3><p>欄寬依內容變成 14:10:6，整張紙直接顯示料理份量差異。</p></article>
+          <article class="phase-card"><h3>唯一變因</h3><p>分類配對、上下比例、菜序、字級與操作不變；只改三欄的 flex weight。</p></article>
+          <article class="phase-card"><h3>觀察點</h3><p>第三欄是否因 6 份寬度而失去可讀性，以及第一欄的額外寬度是否真的有幫助。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const core = window.MenuLensLandscapeCore;
+      const viewport = document.querySelector("#proportional-viewport");
+      const sheet = document.querySelector("#proportional-sheet");
+      const previousButton = document.querySelector("#proportional-previous");
+      const nextButton = document.querySelector("#proportional-next");
+      const locationTitle = document.querySelector("#proportional-location-title");
+      const locationMeta = document.querySelector("#proportional-location-meta");
+
+      core.hydrateRestaurant({
+        menu,
+        name: document.querySelector("#proportional-restaurant-name"),
+        meta: document.querySelector("#proportional-restaurant-meta"),
+        copy: document.querySelector("#proportional-restaurant-copy"),
+      });
+
+      const { categories, columnCounts, columns, productButtons } = core.buildLandscape({
+        menu,
+        sheet,
+        columnClass: "landscape-column proportional-column",
+        columnWeight: ({ firstCount, secondCount }) => firstCount + secondCount,
+      });
+
+      const detail = core.createDishDetail({
+        menu,
+        detail: document.querySelector("#proportional-detail"),
+        closeButton: document.querySelector("#proportional-detail-close"),
+        title: document.querySelector("#proportional-detail-title"),
+        meta: document.querySelector("#proportional-detail-meta"),
+        copy: document.querySelector("#proportional-detail-copy"),
+        productButtons,
+      });
+
+      let activeColumnIndex = 0;
+      const scrollBehavior = () =>
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+      const updateLocation = () => {
+        columns.forEach((column, index) => {
+          if (index === activeColumnIndex) column.dataset.active = "true";
+          else delete column.dataset.active;
+        });
+        previousButton.disabled = activeColumnIndex === 0;
+        nextButton.disabled = activeColumnIndex === columns.length - 1;
+        const firstCategoryIndex = activeColumnIndex * 2;
+        locationTitle.textContent = `${menu.categories[firstCategoryIndex].name}／${menu.categories[firstCategoryIndex + 1].name}`;
+        locationMeta.textContent = `紙欄 ${activeColumnIndex + 1} / 3 · 權重 ${columnCounts[activeColumnIndex]}`;
+      };
+
+      const scrollToColumn = (columnIndex, behavior = scrollBehavior()) => {
+        activeColumnIndex = Math.max(0, Math.min(columns.length - 1, columnIndex));
+        const column = columns[activeColumnIndex];
+        const targetLeft = column.offsetLeft + column.offsetWidth / 2 - viewport.clientWidth / 2;
+        viewport.scrollTo({ left: Math.max(0, targetLeft), behavior });
+        updateLocation();
+      };
+
+      const nearestColumnIndex = () => {
+        const viewportCenter = viewport.getBoundingClientRect().left + viewport.clientWidth / 2;
+        return columns.reduce((nearest, column, index) => {
+          const bounds = column.getBoundingClientRect();
+          const distance = Math.abs(bounds.left + bounds.width / 2 - viewportCenter);
+          return distance < nearest.distance ? { index, distance } : nearest;
+        }, { index: 0, distance: Number.POSITIVE_INFINITY }).index;
+      };
+
+      categories.forEach((category) => {
+        const columnIndex = Number(category.closest(".landscape-column").dataset.columnIndex);
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          detail.close();
+          scrollToColumn(columnIndex);
+        });
+      });
+      productButtons.forEach((button) => button.addEventListener("click", () => detail.open(button)));
+      previousButton.addEventListener("click", () => { detail.close(); scrollToColumn(activeColumnIndex - 1); });
+      nextButton.addEventListener("click", () => { detail.close(); scrollToColumn(activeColumnIndex + 1); });
+      viewport.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        scrollToColumn(activeColumnIndex + (event.key === "ArrowLeft" ? -1 : 1));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && detail.isOpen()) detail.close(true);
+      });
+      window.enableMenuLensHorizontalDrag(viewport, {
+        enabled: () => !detail.isOpen(),
+        onSettle: () => scrollToColumn(nearestColumnIndex()),
+      });
+
+      updateLocation();
+    </script>
+  </body>
+</html>
+

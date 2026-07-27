@@ -1,3 +1,22 @@
+.vertical-viewport {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.vertical-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.vertical-sheet {
+  width: 46rem;
+  min-width: 46rem;
+}
+
+.vertical-viewport[data-scale="reading"] .vertical-sheet {
+  width: 64rem;
+  min-width: 64rem;
+}
+
 .vertical-category {
   min-width: 0;
   min-height: 0;

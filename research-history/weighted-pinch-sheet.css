@@ -13,6 +13,8 @@
   --camera-x: 0px;
   --camera-y: 0px;
   --camera-scale: 1;
+  width: 46rem;
+  min-width: 46rem;
   transform: translate3d(var(--camera-x), var(--camera-y), 0) scale(var(--camera-scale));
   transform-origin: 0 0;
   will-change: transform;

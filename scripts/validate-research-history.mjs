@@ -587,8 +587,13 @@ const landscapePaperCore = await readFile(new URL("paper-landscape-core.js", arc
 if (!landscapePaperStyles.includes("flex: var(--column-count) 1 0;")) {
   throw new Error("Landscape Paper must preserve its existing column geometry hook.");
 }
-if (!landscapePaperCore.includes('column.style.setProperty("--column-count", "1")')) {
-  throw new Error("18-derived variants must inherit 18's source column geometry unchanged.");
+for (const geometryContract of [
+  "columnWeight?.({ columnIndex, firstCount, secondCount }) ?? 1",
+  'column.style.setProperty("--column-count", String(weight))',
+]) {
+  if (!landscapePaperCore.includes(geometryContract)) {
+    throw new Error(`Landscape variants must default to equal columns unless they opt into a weight: ${geometryContract}`);
+  }
 }
 if (!landscapePaperStyles.includes(".landscape-sheet--equal-columns > .landscape-column { flex: 1 1 0; }")) {
   throw new Error("Landscape Paper must expose an explicit 1:1:1 column contract.");
@@ -607,6 +612,7 @@ for (const variant of paperVariantSnapshots) {
     new URL(`phases/${variant.phase}/index.html`, archiveRoot),
     "utf8",
   );
+  const variantStyles = await readFile(new URL(variant.stylesheet, archiveRoot), "utf8");
   for (const requiredReference of [
     '<link rel="stylesheet" href="../../paper-menu-field.css" />',
     `<link rel="stylesheet" href="../../${variant.stylesheet}" />`,
@@ -618,6 +624,7 @@ for (const variant of paperVariantSnapshots) {
     }
   }
   const usesLandscapeCore = [
+    "18a-proportional-landscape",
     "22-weighted-pinch-sheet",
     "23-collapsible-landscape",
     "24-vertical-landscape",
@@ -629,6 +636,13 @@ for (const variant of paperVariantSnapshots) {
   ].includes(variant.phase);
   if (isLandscapeVariant && snapshot.includes("14:10:6")) {
     throw new Error(`${variant.label} must inherit 18's source geometry instead of inventing a new width ratio.`);
+  }
+  if (isLandscapeVariant && !snapshot.includes("columnWeight: () => 1")) {
+    throw new Error(`${variant.label} must explicitly preserve the 1:1:1 landscape column contract.`);
+  }
+  if (isLandscapeVariant
+    && (!variantStyles.includes("width: 46rem;") || !variantStyles.includes("min-width: 46rem;"))) {
+    throw new Error(`${variant.label} must keep an intrinsic 46rem sheet independent of the phone viewport.`);
   }
   if (usesLandscapeCore) {
     for (const requiredReference of [
@@ -648,6 +662,17 @@ for (const variant of paperVariantSnapshots) {
   if (variant.phase === "18-landscape-paper" && !snapshot.includes('<script src="../../spatial-drag.js"></script>')) {
     throw new Error("Landscape Paper snapshot must load the shared pointer-drag controller.");
   }
+  if (variant.phase === "18a-proportional-landscape") {
+    for (const reference of [
+      "columnWeight: ({ firstCount, secondCount }) => firstCount + secondCount",
+      "欄寬 14:10:6",
+      '<script src="../../spatial-drag.js"></script>',
+    ]) {
+      if (!snapshot.includes(reference)) {
+        throw new Error(`Proportional Landscape must preserve its content-weight reference: ${reference}`);
+      }
+    }
+  }
   if (variant.phase === "18-landscape-paper"
     && !snapshot.includes('class="landscape-sheet landscape-sheet--equal-columns"')) {
     throw new Error("Landscape Paper must opt into the explicit 1:1:1 column contract.");
@@ -656,9 +681,17 @@ for (const variant of paperVariantSnapshots) {
     && !snapshot.includes('<script src="../../pinch-sheet.js')) {
     throw new Error(`${variant.label} must load the shared two-pointer pinch camera.`);
   }
+  if (variant.phase === "23-collapsible-landscape"
+    && !snapshot.includes('<script src="../../spatial-drag.js"></script>')) {
+    throw new Error("Collapsible Landscape must expose horizontal camera movement over its fixed sheet.");
+  }
   if (variant.phase === "24-vertical-landscape"
     && !snapshot.includes('<script src="../../spatial-drag.js"></script>')) {
     throw new Error("Vertical Landscape must reuse 18's horizontal drag controller.");
+  }
+  if (variant.phase === "24-vertical-landscape"
+    && (!variantStyles.includes('data-scale="reading"') || !variantStyles.includes("width: 64rem;"))) {
+    throw new Error("Vertical Landscape reading scale must use an intrinsic 64rem sheet.");
   }
   if (snapshot.includes("選這道")) {
     throw new Error(`${variant.label} reading hypothesis must not contain an order action.`);

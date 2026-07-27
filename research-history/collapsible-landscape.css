@@ -1,5 +1,17 @@
 .collapse-viewport {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.collapse-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.collapse-sheet {
+  width: 46rem;
+  min-width: 46rem;
 }
 
 .collapse-toolbar {

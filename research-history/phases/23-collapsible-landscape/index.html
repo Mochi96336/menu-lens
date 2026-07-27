@@ -12,6 +12,7 @@
     <script src="../../menu-fixture.js"></script>
     <script src="../../paper-menu-field-renderer.js"></script>
     <script src="../../paper-landscape-core.js"></script>
+    <script src="../../spatial-drag.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#prototype">跳到原型</a>
@@ -20,12 +21,12 @@
         <div>
           <p class="eyebrow">23 · 18 + literal category collapse</p>
           <h1>Collapsible Landscape</h1>
-          <p class="lede">畫面與欄寬直接沿用 18。點哪個分類就收起哪個；同欄另一分類留在原處，但料理列維持收合前高度，不把空出的紙面硬灌成巨大列。</p>
+          <p class="lede">46rem 紙面不跟手機縮放，手機只顯示其中一段。點哪個分類就收起哪個；同欄另一分類留在原處，料理列也不會被空出的紙面硬灌成巨大列。</p>
         </div>
         <a class="ghost-button" href="../../">回研究檔案館</a>
       </header>
 
-      <p class="study-note">三個紙欄始終等寬。收起分類後只留下原位標頭；同欄剩餘分類不增加資訊、不改欄寬，也不拉高每道料理。</p>
+      <p class="study-note">三個固定紙欄始終等寬，整張紙寬 46rem；左右拖曳移動 camera。收起分類後只留下原位標頭，不改紙寬，也不拉高每道料理。</p>
 
       <section id="prototype" class="phone-frame" aria-label="Collapsible Landscape 互動原型">
         <div class="phone-screen paper-phone">
@@ -44,7 +45,7 @@
           </div>
 
           <div class="landscape-stage collapse-stage">
-            <div class="landscape-viewport collapse-viewport" aria-label="可局部收合的 18 比例紙面">
+            <div id="collapse-viewport" class="landscape-viewport collapse-viewport" tabindex="0" aria-label="可局部收合的固定寬紙面">
               <div id="collapse-sheet" class="landscape-sheet collapse-sheet"></div>
             </div>
             <aside id="collapse-detail" class="paper-detail" data-open="false" aria-hidden="true" aria-live="polite" aria-label="料理細節">
@@ -56,7 +57,7 @@
               </div>
             </aside>
           </div>
-          <p class="paper-hint">點分類標頭收起／展開；空出的就是空白紙面，剩餘料理列不會被拉高。</p>
+          <p class="paper-hint">左右拖曳查看固定寬紙面；點分類標頭收起／展開，空出的就是空白紙面。</p>
         </div>
       </section>
 
@@ -74,6 +75,7 @@
     <script>
       const menu = window.menuLensResearchMenu;
       const core = window.MenuLensLandscapeCore;
+      const viewport = document.querySelector("#collapse-viewport");
       const sheet = document.querySelector("#collapse-sheet");
       const resetButton = document.querySelector("#collapse-reset");
       const locationTitle = document.querySelector("#collapse-location-title");
@@ -90,6 +92,7 @@
         menu,
         sheet,
         columnClass: "landscape-column collapse-column",
+        columnWeight: () => 1,
       });
 
       const detail = core.createDishDetail({
@@ -174,6 +177,9 @@
         else resetButton.click();
       });
       window.addEventListener("resize", () => requestAnimationFrame(captureStableRows));
+      window.enableMenuLensHorizontalDrag(viewport, {
+        enabled: () => !detail.isOpen(),
+      });
       requestAnimationFrame(captureStableRows);
     </script>
   </body>
