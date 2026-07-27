@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 15A Pair-local Elastic：只在選中分類與同列鄰居之間交換紙面寬度。" />
+    <title>15A Pair-local Elastic — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../pair-local-elastic.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">15A · Pair-local distortion support</p>
+          <h1>Pair-local Elastic</h1>
+          <p class="lede">保留 15 的固定紙張與拖曳焦點，但形變只發生在選中分類所在的左右配對。其他兩列恢復並維持 1:1，遠處分類邊界不再跟著移動。</p>
+        </div>
+        <a class="ghost-button" href="../15-elastic-paper/">回 15 Elastic Paper</a>
+      </header>
+
+      <p class="study-note">單一變因：15 的全紙欄列形變，縮成同一列兩分類之間的 72:28 局部交換。列高、其他兩列、資料、順序、字級與 detail 行為不變。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Pair-local Elastic 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="pair-local-restaurant-name" class="restaurant-name"></h2>
+            <p id="pair-local-restaurant-meta" class="restaurant-meta"></p>
+            <p id="pair-local-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="pair-local-overview" type="button" aria-pressed="true">放鬆</button>
+            <button id="pair-local-previous" type="button" aria-label="上一個分類">←</button>
+            <button id="pair-local-next" type="button" aria-label="下一個分類">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="pair-local-location-title">三組穩定配對</strong>
+              <span id="pair-local-location-meta">三列固定 · 每列 1:1</span>
+            </div>
+          </div>
+
+          <div id="pair-local-viewport" class="paper-viewport pair-local-viewport" data-scale="overview" tabindex="0" aria-label="拖曳以改變同列分類的局部焦點">
+            <div id="pair-local-sheet" class="pair-local-sheet"></div>
+            <aside id="pair-local-detail" class="paper-detail" data-open="false" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="pair-local-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="pair-local-detail-title"></h3>
+                <p id="pair-local-detail-meta" class="paper-detail__meta"></p>
+                <p id="pair-local-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">拖曳或點選分類；只有同列配對交換寬度。點已聚焦分類中的料理查看細節，「放鬆」恢復三列 1:1。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>形變停在配對邊界</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>三列互相獨立</h3><p>紙面永遠維持三個等高 row；每列各自持有左右兩分類，不共用全紙 column track。</p></article>
+          <article class="phase-card"><h3>局部 72:28</h3><p>焦點只改寫 active row 的左右比例。移到別列時，上一列立即回到 1:1。</p></article>
+          <article class="phase-card"><h3>遠處不受牽連</h3><p>另外四個分類的寬度、列高與邊界不因目前焦點改變。</p></article>
+          <article class="phase-card"><h3>判定問題</h3><p>局部寬度是否足以改善料理名稱與價格閱讀，並抵銷同列鄰居被壓縮的成本。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const viewport = document.querySelector("#pair-local-viewport");
+      const sheet = document.querySelector("#pair-local-sheet");
+      const overviewButton = document.querySelector("#pair-local-overview");
+      const previousButton = document.querySelector("#pair-local-previous");
+      const nextButton = document.querySelector("#pair-local-next");
+      const locationTitle = document.querySelector("#pair-local-location-title");
+      const locationMeta = document.querySelector("#pair-local-location-meta");
+      const detail = document.querySelector("#pair-local-detail");
+      const detailClose = document.querySelector("#pair-local-detail-close");
+
+      document.querySelector("#pair-local-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#pair-local-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#pair-local-restaurant-meta").textContent = menu.restaurant.summary;
+
+      const projection = document.createElement("div");
+      projection.innerHTML = window.renderMenuLensPaperField(menu);
+      const projectedCategories = [...projection.querySelectorAll(".paper-category")];
+      const rows = [];
+      for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
+        const row = document.createElement("div");
+        row.className = "pair-local-row";
+        row.dataset.rowIndex = String(rowIndex);
+        row.style.setProperty("--pair-columns", "1fr 1fr");
+        row.append(projectedCategories[rowIndex * 2], projectedCategories[rowIndex * 2 + 1]);
+        sheet.append(row);
+        rows.push(row);
+      }
+
+      const categories = [...sheet.querySelectorAll(".paper-category")];
+      const productButtons = [...sheet.querySelectorAll(".paper-product")];
+      categories.forEach((category) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+      });
+
+      let activeCategoryIndex = null;
+      let selectedProductIndex = null;
+      let pointerState = null;
+      let suppressClick = false;
+
+      const closeDetail = (restoreFocus = false) => {
+        detail.dataset.open = "false";
+        productButtons.forEach((button) => delete button.dataset.selected);
+        if (restoreFocus && selectedProductIndex !== null) {
+          productButtons.find((button) => Number(button.dataset.productIndex) === selectedProductIndex)?.focus();
+        }
+        selectedProductIndex = null;
+      };
+
+      const resetPairWidths = () => {
+        rows.forEach((row) => {
+          row.style.setProperty("--pair-columns", "1fr 1fr");
+          delete row.dataset.active;
+        });
+      };
+
+      const focusCategory = (nextIndex) => {
+        activeCategoryIndex = Math.max(0, Math.min(categories.length - 1, nextIndex));
+        const activeRowIndex = Math.floor(activeCategoryIndex / 2);
+        const activeSide = activeCategoryIndex % 2;
+        resetPairWidths();
+        rows[activeRowIndex].style.setProperty(
+          "--pair-columns",
+          activeSide === 0 ? "72fr 28fr" : "28fr 72fr",
+        );
+        rows[activeRowIndex].dataset.active = "true";
+        viewport.dataset.scale = "focus";
+        overviewButton.setAttribute("aria-pressed", "false");
+
+        categories.forEach((category, index) => {
+          const focused = index === activeCategoryIndex;
+          const paired = Math.floor(index / 2) === activeRowIndex && !focused;
+          if (focused) category.dataset.focused = "true";
+          else delete category.dataset.focused;
+          if (paired) category.dataset.paired = "true";
+          else delete category.dataset.paired;
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", String(focused));
+        });
+
+        const category = menu.categories[activeCategoryIndex];
+        const count = menu.products.filter((product) => product.categoryId === category.id).length;
+        locationTitle.textContent = category.name;
+        locationMeta.textContent = `${activeCategoryIndex + 1} / ${categories.length} · ${count} 道 · 第 ${activeRowIndex + 1} 列內 72:28`;
+        previousButton.disabled = activeCategoryIndex === 0;
+        nextButton.disabled = activeCategoryIndex === categories.length - 1;
+      };
+
+      const showOverview = () => {
+        activeCategoryIndex = null;
+        resetPairWidths();
+        viewport.dataset.scale = "overview";
+        overviewButton.setAttribute("aria-pressed", "true");
+        categories.forEach((category) => {
+          delete category.dataset.focused;
+          delete category.dataset.paired;
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", "false");
+        });
+        locationTitle.textContent = "三組穩定配對";
+        locationMeta.textContent = `三列固定 · 每列 1:1 · ${productButtons.length} 道料理`;
+        previousButton.disabled = true;
+        nextButton.disabled = true;
+        closeDetail();
+      };
+
+      const openDetail = (productIndex, button) => {
+        const product = menu.products[productIndex];
+        selectedProductIndex = productIndex;
+        productButtons.forEach((candidate) => {
+          if (candidate === button) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+        });
+        document.querySelector("#pair-local-detail-title").textContent = product.name;
+        document.querySelector("#pair-local-detail-meta").textContent = `NT$${product.price} · ${product.cue}${product.availability === "sold_out" ? " · 售完" : ""}`;
+        document.querySelector("#pair-local-detail-copy").textContent = product.description;
+        detail.dataset.open = "true";
+      };
+
+      const categoryFromPointer = (clientX, clientY) => {
+        const hitCategory = document.elementFromPoint(clientX, clientY)?.closest(".paper-category");
+        if (hitCategory && sheet.contains(hitCategory)) return Number(hitCategory.dataset.categoryIndex);
+        const bounds = sheet.getBoundingClientRect();
+        const x = Math.max(0, Math.min(.999, (clientX - bounds.left) / Math.max(1, bounds.width)));
+        const y = Math.max(0, Math.min(.999, (clientY - bounds.top) / Math.max(1, bounds.height)));
+        return Math.floor(y * 3) * 2 + Math.floor(x * 2);
+      };
+
+      categories.forEach((category, index) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          closeDetail();
+          if (activeCategoryIndex === index) showOverview();
+          else focusCategory(index);
+        });
+      });
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+          if (categoryIndex !== activeCategoryIndex) {
+            closeDetail();
+            focusCategory(categoryIndex);
+            return;
+          }
+          openDetail(Number(button.dataset.productIndex), button);
+        });
+      });
+
+      viewport.addEventListener("pointerdown", (event) => {
+        if (detail.contains(event.target)) return;
+        if (!event.isPrimary || pointerState || (event.pointerType === "mouse" && event.button !== 0)) return;
+        pointerState = { id: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false };
+      });
+      viewport.addEventListener("pointermove", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        if (!pointerState.moved && Math.hypot(event.clientX - pointerState.startX, event.clientY - pointerState.startY) < 6) return;
+        if (!pointerState.moved) {
+          pointerState.moved = true;
+          viewport.setPointerCapture(event.pointerId);
+          viewport.classList.add("is-dragging");
+          closeDetail();
+        }
+        event.preventDefault();
+        focusCategory(categoryFromPointer(event.clientX, event.clientY));
+      });
+      const endPointer = (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        if (pointerState.moved) suppressClick = true;
+        pointerState = null;
+        viewport.classList.remove("is-dragging");
+      };
+      viewport.addEventListener("pointerup", endPointer);
+      viewport.addEventListener("pointercancel", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        pointerState = null;
+        suppressClick = false;
+        viewport.classList.remove("is-dragging");
+      });
+      viewport.addEventListener("click", (event) => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        suppressClick = false;
+      }, true);
+
+      overviewButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => {
+        if (activeCategoryIndex === null) return;
+        closeDetail();
+        focusCategory(activeCategoryIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        if (activeCategoryIndex === null) return;
+        closeDetail();
+        focusCategory(activeCategoryIndex + 1);
+      });
+      detailClose.addEventListener("click", () => closeDetail(true));
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.dataset.open === "true") {
+          closeDetail(true);
+          return;
+        }
+        if (activeCategoryIndex !== null) showOverview();
+      });
+
+      showOverview();
+    </script>
+  </body>
+</html>
