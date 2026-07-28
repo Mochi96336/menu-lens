@@ -31,7 +31,7 @@
         },
         "focused": {
           "state": "focused",
-          "scrollY": 883,
+          "scrollY": 878,
           "viewport": {
             "width": 320,
             "height": 900
@@ -44,8 +44,8 @@
           "label": "分類尺度 · 分享料理 · 6 道",
           "topbarPosition": "sticky",
           "topbarTop": 0,
-          "topbarHeight": 51.765625,
-          "resetTop": 4,
+          "topbarHeight": 46.953125,
+          "resetTop": 1.59375,
           "resetVisible": true,
           "topbarInsideFrame": true,
           "documentOverflowX": false,
@@ -57,7 +57,7 @@
         },
         "deep": {
           "state": "deep",
-          "scrollY": 883,
+          "scrollY": 878,
           "viewport": {
             "width": 320,
             "height": 900
@@ -70,8 +70,8 @@
           "label": "分類尺度 · 分享料理 · 6 道",
           "topbarPosition": "sticky",
           "topbarTop": 0,
-          "topbarHeight": 51.765625,
-          "resetTop": 4,
+          "topbarHeight": 46.953125,
+          "resetTop": 1.59375,
           "resetVisible": true,
           "topbarInsideFrame": true,
           "documentOverflowX": false,
@@ -110,9 +110,7 @@
       },
       "returnPositionError": 0,
       "focusReturned": true,
-      "failures": [
-        "focused:topbar-too-tall"
-      ]
+      "failures": []
     },
     "390": {
       "pageErrors": [],
@@ -145,7 +143,7 @@
         },
         "focused": {
           "state": "focused",
-          "scrollY": 875,
+          "scrollY": 871,
           "viewport": {
             "width": 390,
             "height": 900
@@ -158,8 +156,8 @@
           "label": "分類尺度 · 分享料理 · 6 道",
           "topbarPosition": "sticky",
           "topbarTop": 0,
-          "topbarHeight": 51.765625,
-          "resetTop": 4,
+          "topbarHeight": 46.953125,
+          "resetTop": 1.59375,
           "resetVisible": true,
           "topbarInsideFrame": true,
           "documentOverflowX": false,
@@ -171,7 +169,7 @@
         },
         "deep": {
           "state": "deep",
-          "scrollY": 875,
+          "scrollY": 871,
           "viewport": {
             "width": 390,
             "height": 900
@@ -184,8 +182,8 @@
           "label": "分類尺度 · 分享料理 · 6 道",
           "topbarPosition": "sticky",
           "topbarTop": 0,
-          "topbarHeight": 51.765625,
-          "resetTop": 4,
+          "topbarHeight": 46.953125,
+          "resetTop": 1.59375,
           "resetVisible": true,
           "topbarInsideFrame": true,
           "documentOverflowX": false,
@@ -224,9 +222,7 @@
       },
       "returnPositionError": 0,
       "focusReturned": true,
-      "failures": [
-        "focused:topbar-too-tall"
-      ]
+      "failures": []
     },
     "desktop": {
       "pageErrors": [],
@@ -259,7 +255,7 @@
         },
         "focused": {
           "state": "focused",
-          "scrollY": 736,
+          "scrollY": 731,
           "viewport": {
             "width": 1280,
             "height": 900
@@ -272,8 +268,8 @@
           "label": "分類尺度 · 分享料理 · 6 道",
           "topbarPosition": "sticky",
           "topbarTop": 0,
-          "topbarHeight": 51.765625,
-          "resetTop": 4,
+          "topbarHeight": 46.953125,
+          "resetTop": 1.59375,
           "resetVisible": true,
           "topbarInsideFrame": true,
           "documentOverflowX": false,
@@ -285,7 +281,7 @@
         },
         "deep": {
           "state": "deep",
-          "scrollY": 736,
+          "scrollY": 731,
           "viewport": {
             "width": 1280,
             "height": 900
@@ -298,8 +294,8 @@
           "label": "分類尺度 · 分享料理 · 6 道",
           "topbarPosition": "sticky",
           "topbarTop": 0,
-          "topbarHeight": 51.765625,
-          "resetTop": 4,
+          "topbarHeight": 46.953125,
+          "resetTop": 1.59375,
           "resetVisible": true,
           "topbarInsideFrame": true,
           "documentOverflowX": false,
@@ -338,29 +334,8 @@
       },
       "returnPositionError": 0,
       "focusReturned": true,
-      "failures": [
-        "focused:topbar-too-tall"
-      ]
+      "failures": []
     }
   },
-  "failures": [
-    {
-      "viewport": "320",
-      "failures": [
-        "focused:topbar-too-tall"
-      ]
-    },
-    {
-      "viewport": "390",
-      "failures": [
-        "focused:topbar-too-tall"
-      ]
-    },
-    {
-      "viewport": "desktop",
-      "failures": [
-        "focused:topbar-too-tall"
-      ]
-    }
-  ]
+  "failures": []
 }
