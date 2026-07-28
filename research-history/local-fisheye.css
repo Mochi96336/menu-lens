@@ -1,0 +1,8 @@
+/* 10A changes only the product-lens deformation boundary. */
+.fisheye-stage[data-lens="product"] .fisheye-product[data-distance="far"] {
+  flex-basis: var(--fisheye-basis);
+}
+
+.fisheye-stage[data-lens="product"] .fisheye-product[data-distance="far"] .fisheye-product__tick {
+  width: min(70%, .55rem);
+}

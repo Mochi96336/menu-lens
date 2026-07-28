@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 09A Direct Minimap Scrub 橫向空間研究原型。" />
+    <title>09A Direct Minimap Scrub — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../horizontal-ribbon.css" />
+    <link rel="stylesheet" href="../../direct-ribbon-scrub.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../horizontal-ribbon-renderer.js"></script>
+    <script src="../../spatial-drag.js"></script>
+    <script src="../../direct-ribbon-scrub.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">09A · Direct minimap scrub</p>
+          <h1>Direct Minimap Scrub</h1>
+          <p class="lede">保留 09 的完整水平 ribbon，讓既有 minimap 位置窗可直接拖曳或用鍵盤移到任一道料理。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案</a>
+      </header>
+
+      <p class="study-note">
+        探索提示：先用原本的 ribbon 拖動，再拖動 minimap 下方的位置窗跨越遠距離。觀察直接定位是否降低操作成本，而不破壞整條菜單的固定 X 座標。
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="Direct Minimap Scrub 空間互動原型">
+        <div class="phone-screen ribbon-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>●●● 100%</span></div>
+
+          <header class="ribbon-restaurant">
+            <h2 id="ribbon-restaurant-name" class="restaurant-name"></h2>
+            <p id="ribbon-restaurant-meta" class="restaurant-meta"></p>
+            <p id="ribbon-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+
+          <div class="ribbon-scale-bar" aria-label="菜單尺度與位置控制">
+            <button id="ribbon-overview" type="button" aria-pressed="true">全店</button>
+            <button id="ribbon-reading" type="button" aria-pressed="false">閱讀</button>
+            <div class="ribbon-location" aria-live="polite">
+              <strong id="ribbon-location-title">全店尺度</strong>
+              <span id="ribbon-location-meta">6 個章節 · 30 道料理</span>
+            </div>
+            <button id="ribbon-previous" type="button" aria-label="上一道料理" disabled>←</button>
+            <button id="ribbon-next" type="button" aria-label="下一道料理" disabled>→</button>
+          </div>
+
+          <nav id="ribbon-minimap" class="ribbon-minimap" aria-label="整份菜單位置">
+            <span
+              id="ribbon-minimap-window"
+              class="ribbon-minimap__window"
+              role="slider"
+              tabindex="0"
+              aria-label="直接移到菜單位置"
+              aria-orientation="horizontal"
+              aria-valuemin="1"
+              aria-valuemax="30"
+              aria-valuenow="1"
+              aria-valuetext="1 / 30"
+            ></span>
+          </nav>
+
+          <div id="ribbon-viewport" class="ribbon-viewport" data-scale="overview" tabindex="0">
+            <div id="ribbon-track" class="ribbon-track"></div>
+          </div>
+          <p id="ribbon-hint" class="ribbon-hint">點分類、料理刻度，或拖動 minimap 位置窗進入閱讀尺度。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Mechanism notes</p>
+          <h2>只把既有 locator 變成直接操作</h2>
+        </div>
+        <div class="timeline">
+          <article class="phase-card"><h3>唯一變因</h3><p>09 的 minimap viewport window 從只讀指示，變成可拖曳與鍵盤操作的直接位置控制。</p></article>
+          <article class="phase-card"><h3>保留</h3><p>30 道料理的固定 X 座標、產品寬度、分類比例、ribbon drag、inertia、snap 與 detail 全部不變。</p></article>
+          <article class="phase-card"><h3>直接映射</h3><p>位置窗的水平位置按 30 道 canonical order 映射到最近料理，不新增另一張地圖或另一個頁面。</p></article>
+          <article class="phase-card"><h3>停止訊號</h3><p>若直接跨越距離後仍難以理解料理前後關係，09 的成本來自長 ribbon 本身，不應再增加導航補丁。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const viewport = document.querySelector("#ribbon-viewport");
+      const track = document.querySelector("#ribbon-track");
+      const minimap = document.querySelector("#ribbon-minimap");
+      const minimapWindow = document.querySelector("#ribbon-minimap-window");
+      const overviewButton = document.querySelector("#ribbon-overview");
+      const readingButton = document.querySelector("#ribbon-reading");
+      const previousButton = document.querySelector("#ribbon-previous");
+      const nextButton = document.querySelector("#ribbon-next");
+      const locationTitle = document.querySelector("#ribbon-location-title");
+      const locationMeta = document.querySelector("#ribbon-location-meta");
+      const hint = document.querySelector("#ribbon-hint");
+
+      document.querySelector("#ribbon-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#ribbon-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#ribbon-restaurant-meta").textContent = menu.restaurant.summary;
+      track.innerHTML = window.renderMenuLensHorizontalRibbon(menu);
+
+      const categories = [...track.querySelectorAll(".ribbon-category")];
+      const products = [...track.querySelectorAll(".ribbon-product")];
+      let scale = "overview";
+      let activeProductIndex = 0;
+      let scrollFrame = null;
+
+      minimap.insertAdjacentHTML(
+        "afterbegin",
+        menu.categories
+          .map((category) => {
+            const count = menu.products.filter((product) => product.categoryId === category.id).length;
+            return `<button type="button" data-category-id="${category.id}" style="--category-count: ${count}" title="${category.name}">${category.name}</button>`;
+          })
+          .join(""),
+      );
+      const minimapButtons = [...minimap.querySelectorAll("button")];
+
+      const scrollBehavior = () =>
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+      const activeProduct = () => products[activeProductIndex];
+
+      const updateMinimap = () => {
+        if (scale === "overview") {
+          minimap.style.setProperty("--view-left", "0%");
+          minimap.style.setProperty("--view-width", "100%");
+        } else {
+          const totalWidth = Math.max(1, viewport.scrollWidth);
+          minimap.style.setProperty("--view-left", `${(viewport.scrollLeft / totalWidth) * 100}%`);
+          minimap.style.setProperty("--view-width", `${Math.min(100, (viewport.clientWidth / totalWidth) * 100)}%`);
+        }
+
+        const product = menu.products[activeProductIndex];
+        const category = menu.categories.find((candidate) => candidate.id === product.categoryId);
+        minimapWindow.setAttribute("aria-valuemax", String(products.length));
+        minimapWindow.setAttribute("aria-valuenow", String(activeProductIndex + 1));
+        minimapWindow.setAttribute(
+          "aria-valuetext",
+          `${activeProductIndex + 1} / ${products.length} · ${product.name} · ${category.name}`,
+        );
+
+        const categoryId = activeProduct()?.closest(".ribbon-category")?.dataset.categoryId;
+        minimapButtons.forEach((button) => {
+          if (button.dataset.categoryId === categoryId && scale === "reading") {
+            button.setAttribute("aria-current", "true");
+          } else {
+            button.removeAttribute("aria-current");
+          }
+        });
+      };
+
+      const updateLocation = () => {
+        overviewButton.setAttribute("aria-pressed", String(scale === "overview"));
+        readingButton.setAttribute("aria-pressed", String(scale === "reading"));
+        previousButton.disabled = scale === "overview" || activeProductIndex === 0;
+        nextButton.disabled = scale === "overview" || activeProductIndex === products.length - 1;
+
+        if (scale === "overview") {
+          locationTitle.textContent = "全店尺度";
+          locationMeta.textContent = `${categories.length} 個章節 · ${products.length} 道料理`;
+          hint.textContent = "點分類、料理刻度，或拖動 minimap 位置窗進入閱讀尺度。";
+        } else {
+          const product = menu.products[activeProductIndex];
+          const category = menu.categories.find((candidate) => candidate.id === product.categoryId);
+          locationTitle.textContent = product.name;
+          locationMeta.textContent = `${activeProductIndex + 1} / ${products.length} · ${category.name}`;
+          hint.textContent = "拖動 ribbon 閱讀鄰近料理；拖動 minimap 位置窗直接跨越遠距離。";
+        }
+        updateMinimap();
+      };
+
+      const scrollProductIntoView = (index, behavior = scrollBehavior()) => {
+        const nextIndex = Math.max(0, Math.min(products.length - 1, index));
+        if (nextIndex !== activeProductIndex) {
+          products.forEach((product) => product.removeAttribute("open"));
+        }
+        activeProductIndex = nextIndex;
+        products[activeProductIndex].scrollIntoView({ block: "nearest", inline: "center", behavior });
+        updateLocation();
+      };
+
+      const setScale = (nextScale, targetIndex = activeProductIndex, behavior = scrollBehavior()) => {
+        scale = nextScale;
+        viewport.dataset.scale = scale;
+        if (scale === "overview") {
+          viewport.scrollTo({ left: 0, behavior });
+          updateLocation();
+          return;
+        }
+        requestAnimationFrame(() => scrollProductIntoView(targetIndex, behavior));
+      };
+
+      const nearestProductIndex = () => {
+        const bounds = viewport.getBoundingClientRect();
+        const center = bounds.left + bounds.width / 2;
+        let nearestIndex = activeProductIndex;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+        products.forEach((product, index) => {
+          const productBounds = product.getBoundingClientRect();
+          const distance = Math.abs(productBounds.left + productBounds.width / 2 - center);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+        return nearestIndex;
+      };
+
+      const snapNearestProduct = () => {
+        if (scale !== "reading") return;
+        scrollProductIntoView(nearestProductIndex());
+      };
+
+      products.forEach((product, index) => {
+        product.querySelector("summary").addEventListener("click", (event) => {
+          if (scale !== "overview") return;
+          event.preventDefault();
+          setScale("reading", index);
+        });
+        product.addEventListener("toggle", () => {
+          if (!product.open || scale !== "reading") return;
+          products.forEach((candidate) => {
+            if (candidate !== product) candidate.removeAttribute("open");
+          });
+          activeProductIndex = index;
+          updateLocation();
+        });
+      });
+
+      categories.forEach((category) => {
+        category.querySelector(".ribbon-category__header").addEventListener("click", (event) => {
+          const firstIndex = Number(event.currentTarget.dataset.firstProductIndex);
+          setScale("reading", firstIndex);
+        });
+      });
+
+      minimapButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const category = categories.find((candidate) => candidate.dataset.categoryId === button.dataset.categoryId);
+          const firstIndex = Number(category.querySelector(".ribbon-category__header").dataset.firstProductIndex);
+          setScale("reading", firstIndex);
+        });
+      });
+
+      overviewButton.addEventListener("click", () => setScale("overview"));
+      readingButton.addEventListener("click", () => setScale("reading"));
+      previousButton.addEventListener("click", () => scrollProductIntoView(activeProductIndex - 1));
+      nextButton.addEventListener("click", () => scrollProductIntoView(activeProductIndex + 1));
+
+      viewport.addEventListener("scroll", () => {
+        if (scale !== "reading" || scrollFrame !== null) return;
+        scrollFrame = requestAnimationFrame(() => {
+          scrollFrame = null;
+          const nextIndex = nearestProductIndex();
+          if (nextIndex !== activeProductIndex) {
+            products.forEach((product) => product.removeAttribute("open"));
+          }
+          activeProductIndex = nextIndex;
+          updateLocation();
+        });
+      }, { passive: true });
+
+      viewport.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+          event.preventDefault();
+          if (scale === "overview") {
+            setScale("reading", activeProductIndex);
+          } else {
+            scrollProductIntoView(activeProductIndex + (event.key === "ArrowLeft" ? -1 : 1));
+          }
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape" || scale !== "reading") return;
+        const openProduct = track.querySelector("details[open]");
+        if (openProduct) {
+          openProduct.removeAttribute("open");
+          openProduct.querySelector("summary").focus({ preventScroll: true });
+          return;
+        }
+        setScale("overview");
+        overviewButton.focus({ preventScroll: true });
+      });
+
+      window.enableMenuLensHorizontalDrag(viewport, {
+        enabled: () => scale === "reading",
+        onSettle: snapNearestProduct,
+      });
+
+      window.enableMenuLensDirectRibbonScrub({
+        minimap,
+        windowControl: minimapWindow,
+        productCount: products.length,
+        getScale: () => scale,
+        enterReading: (index) => setScale("reading", index, "auto"),
+        moveReading: (index) => scrollProductIntoView(index, "auto"),
+      });
+
+      updateLocation();
+    </script>
+  </body>
+</html>

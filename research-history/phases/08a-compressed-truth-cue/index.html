@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 08A Compressed Truth Cue：讓壓縮分類保留既有的料理密度與價格分布 marks。" />
+    <title>08A Compressed Truth Cue — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../menu-spread.css" />
+    <link rel="stylesheet" href="../../compressed-truth-cue.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../menu-spread-renderer.js"></script>
+    <script src="../../spatial-drag.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">08A · Child of 08 Menu Spread</p>
+          <h1>Compressed Truth Cue</h1>
+          <p class="lede">沿用 08 的固定分類位置與原地展寬；唯一差異是進入分類焦點後，其他壓縮欄不再清空料理 marks，而是繼續顯示一菜一筆的密度與價格分布線索。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案</a>
+      </header>
+
+      <p class="study-note">
+        唯一變因：08 本來已從真實料理產生 marks，但 focus mode 會把壓縮 sibling 的 marks 全部隱藏。08A 只保留這批既有 marks；展開寬度、捲動、drag、分類順序、料理內容與 detail 行為完全不變。
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="Compressed Truth Cue 互動原型">
+        <div class="phone-screen spread-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>●●● 100%</span></div>
+
+          <header class="spread-restaurant">
+            <h2 id="spread-restaurant-name" class="restaurant-name"></h2>
+            <p id="spread-restaurant-meta" class="restaurant-meta"></p>
+            <p id="spread-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+
+          <div class="spread-toolbar" aria-label="菜單尺度與分類移動">
+            <button id="spread-overview" type="button" disabled>全覽</button>
+            <div class="spread-location" aria-live="polite">
+              <strong id="spread-location-title">全店尺度</strong>
+              <span id="spread-location-meta">6 個分類同時在場</span>
+            </div>
+            <button id="spread-previous" type="button" aria-label="上一個分類" disabled>←</button>
+            <button id="spread-next" type="button" aria-label="下一個分類" disabled>→</button>
+          </div>
+
+          <div id="spread-map" class="spread-map" data-mode="overview"></div>
+          <p id="spread-hint" class="spread-hint">點一個分類展開；分類位置與完整菜單不會改變。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Controlled child</p>
+          <h2>不是新導航，只是不讓壓縮欄失去內容證據</h2>
+        </div>
+        <div class="timeline">
+          <article class="phase-card"><h3>保留</h3><p>六個固定分類位置、79vw 聚焦欄、3.15rem 壓縮欄、horizontal drag、scroll snap、previous／next 與 inline detail。</p></article>
+          <article class="phase-card"><h3>只改</h3><p>壓縮 sibling 繼續顯示 renderer 已由真實料理產生的 marks；一筆對應一道料理，長度仍由價格導出。</p></article>
+          <article class="phase-card"><h3>不宣稱</h3><p>marks 不讓遠方菜名可讀，也不取代分類名、料理數量與價格區間；它只回答壓縮區是否仍像有內容的菜單區域。</p></article>
+          <article class="phase-card"><h3>停止訊號</h3><p>若 marks 只形成噪音、無法加強返回與密度感，就保留 08 原樣，不再加入圖例、tab 或第二層控制。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const spreadMap = document.querySelector("#spread-map");
+      const overviewButton = document.querySelector("#spread-overview");
+      const previousButton = document.querySelector("#spread-previous");
+      const nextButton = document.querySelector("#spread-next");
+      const locationTitle = document.querySelector("#spread-location-title");
+      const locationMeta = document.querySelector("#spread-location-meta");
+      const spreadHint = document.querySelector("#spread-hint");
+
+      document.querySelector("#spread-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#spread-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#spread-restaurant-meta").textContent = menu.restaurant.summary;
+      spreadMap.innerHTML = window.renderMenuLensSpread(menu);
+
+      const categories = [...spreadMap.querySelectorAll(".spread-category")];
+      let focusedIndex = null;
+
+      const scrollBehavior = () =>
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+      const updateControls = () => {
+        const focused = focusedIndex === null ? null : categories[focusedIndex];
+        overviewButton.disabled = !focused;
+        previousButton.disabled = !focused || focusedIndex === 0;
+        nextButton.disabled = !focused || focusedIndex === categories.length - 1;
+
+        if (!focused) {
+          locationTitle.textContent = "全店尺度";
+          locationMeta.textContent = `${categories.length} 個分類同時在場`;
+          spreadHint.textContent = "點一個分類展開；分類位置與完整菜單不會改變。";
+          return;
+        }
+
+        const category = menu.categories[focusedIndex];
+        const count = menu.products.filter((product) => product.categoryId === category.id).length;
+        locationTitle.textContent = category.name;
+        locationMeta.textContent = `${focusedIndex + 1} / ${categories.length} · ${count} 道 · ${category.priceRange}`;
+        spreadHint.textContent = "左右拖動或使用箭頭移到相鄰分類；按全覽回到六欄。";
+      };
+
+      const setFocus = (nextIndex, moveIntoView = true) => {
+        focusedIndex = nextIndex;
+        spreadMap.dataset.mode = nextIndex === null ? "overview" : "focus";
+
+        categories.forEach((category, index) => {
+          const focused = index === nextIndex;
+          category.dataset.focused = String(focused);
+          category.querySelector(".spread-category__focus").setAttribute("aria-pressed", String(focused));
+        });
+
+        updateControls();
+
+        if (nextIndex === null) {
+          spreadMap.scrollTo({ left: 0, behavior: scrollBehavior() });
+          return;
+        }
+
+        if (moveIntoView) {
+          categories[nextIndex].scrollIntoView({ block: "nearest", inline: "center", behavior: scrollBehavior() });
+        }
+      };
+
+      const returnToOverview = (restoreCategoryFocus) => {
+        const previousIndex = focusedIndex;
+        setFocus(null);
+        if (restoreCategoryFocus && previousIndex !== null) {
+          categories[previousIndex].querySelector(".spread-category__focus").focus({ preventScroll: true });
+        }
+      };
+
+      const focusCategoryNearestViewportCenter = () => {
+        if (focusedIndex === null) return;
+        const mapBounds = spreadMap.getBoundingClientRect();
+        const center = mapBounds.left + mapBounds.width / 2;
+        let nearestIndex = focusedIndex;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+
+        categories.forEach((category, index) => {
+          const bounds = category.getBoundingClientRect();
+          const distance = Math.abs(bounds.left + bounds.width / 2 - center);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+
+        setFocus(nearestIndex);
+      };
+
+      categories.forEach((category, index) => {
+        const focusButton = category.querySelector(".spread-category__focus");
+        focusButton.addEventListener("click", () => {
+          if (focusedIndex === index) {
+            returnToOverview(true);
+          } else {
+            setFocus(index);
+          }
+        });
+        focusButton.addEventListener("keydown", (event) => {
+          if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+          event.preventDefault();
+          const direction = event.key === "ArrowLeft" ? -1 : 1;
+          const nextIndex = Math.max(0, Math.min(categories.length - 1, index + direction));
+          categories[nextIndex].querySelector(".spread-category__focus").focus();
+          setFocus(nextIndex);
+        });
+
+        const details = [...category.querySelectorAll("details")];
+        details.forEach((detail) => {
+          detail.addEventListener("toggle", () => {
+            if (!detail.open) return;
+            details.forEach((candidate) => {
+              if (candidate !== detail) candidate.removeAttribute("open");
+            });
+          });
+        });
+      });
+
+      overviewButton.addEventListener("click", () => returnToOverview(true));
+      previousButton.addEventListener("click", () => {
+        if (focusedIndex !== null && focusedIndex > 0) setFocus(focusedIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        if (focusedIndex !== null && focusedIndex < categories.length - 1) setFocus(focusedIndex + 1);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape" || focusedIndex === null) return;
+        const openDetail = categories[focusedIndex].querySelector("details[open]");
+        if (openDetail) {
+          openDetail.removeAttribute("open");
+          openDetail.querySelector("summary").focus({ preventScroll: true });
+          return;
+        }
+        returnToOverview(true);
+      });
+
+      window.enableMenuLensHorizontalDrag(spreadMap, {
+        enabled: () => focusedIndex !== null,
+        onSettle: focusCategoryNearestViewportCenter,
+      });
+    </script>
+  </body>
+</html>

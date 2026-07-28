@@ -1,0 +1,30 @@
+.ribbon-minimap__window {
+  height: 3px;
+  pointer-events: auto;
+  cursor: ew-resize;
+  touch-action: none;
+  background: var(--accent);
+  outline: none;
+}
+
+.ribbon-minimap__window::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 2.75rem);
+  height: .8rem;
+  transform: translate(-50%, -50%);
+}
+
+.ribbon-minimap__window:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.ribbon-minimap__window.is-scrubbing {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ribbon-minimap__window { transition: none; }
+}

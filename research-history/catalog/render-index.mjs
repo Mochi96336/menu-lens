@@ -1,5 +1,6 @@
 import { buildArchiveCatalog } from "./index.mjs";
 import { archiveExtensions } from "./extensions.mjs";
+import { archiveLegacyOverrides } from "./legacy-overrides.mjs";
 
 const makeText = (tag, className, text) => {
   const node = document.createElement(tag);
@@ -54,7 +55,7 @@ async function renderArchiveIndex() {
     const legacyRegistry = window.menuLensPrototypeRegistry;
     if (!legacyRegistry) throw new Error("Legacy prototype registry did not load.");
 
-    const catalog = buildArchiveCatalog(legacyRegistry, archiveExtensions);
+    const catalog = buildArchiveCatalog(legacyRegistry, archiveExtensions, archiveLegacyOverrides);
     window.menuLensArchiveCatalog = catalog;
 
     const familyById = new Map(catalog.families.map((family) => [family.id, family]));
