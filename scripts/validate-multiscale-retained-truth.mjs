@@ -22,6 +22,8 @@ assert(controller.includes(".split(' · ')[0]"), "Focused truth copy must use th
 assert(controller.includes("applyExpandedState(null);"), "Controller must initialize and return to the same complete-menu truth state.");
 assert(styles.includes("overflow: clip"), "A-M4 must inherit the repaired sticky containment from A-M3.");
 assert(styles.includes("white-space: nowrap"), "A-M4 must inherit the compact single-row topbar contract.");
+assert(styles.includes("@media (max-width: 340px)"), "A-M4 must retain its 320px truth-label fit rule.");
+assert(styles.includes("font-size: .84rem"), "A-M4 must fit the full focused truth wording without clipping at 320px.");
 
 for (const required of [
   "returnContext",
