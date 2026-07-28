@@ -1,0 +1,366 @@
+{
+  "viewports": {
+    "320": {
+      "pageErrors": [],
+      "states": {
+        "initial": {
+          "state": "initial",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 900
+          },
+          "categories": 6,
+          "products": 30,
+          "uniqueProducts": 30,
+          "expandedCategories": 0,
+          "openDetails": 0,
+          "label": "全店尺度",
+          "topbarPosition": "static",
+          "topbarTop": 705.03125,
+          "topbarHeight": 42.765625,
+          "resetTop": 705.03125,
+          "resetVisible": true,
+          "topbarInsideFrame": true,
+          "documentOverflowX": false,
+          "frameOverflowX": false,
+          "screenOverflowX": false,
+          "topbarOverflowX": false,
+          "labelOverflowX": false,
+          "resetOverflowX": false
+        },
+        "focused": {
+          "state": "focused",
+          "scrollY": 883,
+          "viewport": {
+            "width": 320,
+            "height": 900
+          },
+          "categories": 6,
+          "products": 30,
+          "uniqueProducts": 30,
+          "expandedCategories": 1,
+          "openDetails": 0,
+          "label": "分類尺度 · 分享料理 · 6 道",
+          "topbarPosition": "sticky",
+          "topbarTop": 0,
+          "topbarHeight": 51.765625,
+          "resetTop": 4,
+          "resetVisible": true,
+          "topbarInsideFrame": true,
+          "documentOverflowX": false,
+          "frameOverflowX": false,
+          "screenOverflowX": false,
+          "topbarOverflowX": false,
+          "labelOverflowX": false,
+          "resetOverflowX": false
+        },
+        "deep": {
+          "state": "deep",
+          "scrollY": 883,
+          "viewport": {
+            "width": 320,
+            "height": 900
+          },
+          "categories": 6,
+          "products": 30,
+          "uniqueProducts": 30,
+          "expandedCategories": 1,
+          "openDetails": 1,
+          "label": "分類尺度 · 分享料理 · 6 道",
+          "topbarPosition": "sticky",
+          "topbarTop": 0,
+          "topbarHeight": 51.765625,
+          "resetTop": 4,
+          "resetVisible": true,
+          "topbarInsideFrame": true,
+          "documentOverflowX": false,
+          "frameOverflowX": false,
+          "screenOverflowX": false,
+          "topbarOverflowX": false,
+          "labelOverflowX": false,
+          "resetOverflowX": false
+        },
+        "returned": {
+          "state": "returned",
+          "scrollY": 517,
+          "viewport": {
+            "width": 320,
+            "height": 900
+          },
+          "categories": 6,
+          "products": 30,
+          "uniqueProducts": 30,
+          "expandedCategories": 0,
+          "openDetails": 0,
+          "label": "全店尺度",
+          "topbarPosition": "static",
+          "topbarTop": 188.03125,
+          "topbarHeight": 42.765625,
+          "resetTop": 188.03125,
+          "resetVisible": true,
+          "topbarInsideFrame": true,
+          "documentOverflowX": false,
+          "frameOverflowX": false,
+          "screenOverflowX": false,
+          "topbarOverflowX": false,
+          "labelOverflowX": false,
+          "resetOverflowX": false
+        }
+      },
+      "returnPositionError": 0,
+      "focusReturned": true,
+      "failures": [
+        "focused:topbar-too-tall"
+      ]
+    },
+    "390": {
+      "pageErrors": [],
+      "states": {
+        "initial": {
+          "state": "initial",
+          "scrollY": 0,
+          "viewport": {
+            "width": 390,
+            "height": 900
+          },
+          "categories": 6,
+          "products": 30,
+          "uniqueProducts": 30,
+          "expandedCategories": 0,
+          "openDetails": 0,
+          "label": "全店尺度",
+          "topbarPosition": "static",
+          "topbarTop": 697.578125,
+          "topbarHeight": 42.765625,
+          "resetTop": 697.578125,
+          "resetVisible": true,
+          "topbarInsideFrame": true,
+          "documentOverflowX": false,
+          "frameOverflowX": false,
+          "screenOverflowX": false,
+          "topbarOverflowX": false,
+          "labelOverflowX": false,
+          "resetOverflowX": false
+        },
+        "focused": {
+          "state": "focused",
+          "scrollY": 875,
+          "viewport": {
+            "width": 390,
+            "height": 900
+          },
+          "categories": 6,
+          "products": 30,
+          "uniqueProducts": 30,
+          "expandedCategories": 1,
+          "openDetails": 0,
+          "label": "分類尺度 · 分享料理 · 6 道",
+          "topbarPosition": "sticky",
+          "topbarTop": 0,
+          "topbarHeight": 51.765625,
+          "resetTop": 4,
+          "resetVisible": true,
+          "topbarInsideFrame": true,
+          "documentOverflowX": false,
+          "frameOverflowX": false,
+          "screenOverflowX": false,
+          "topbarOverflowX": false,
+          "labelOverflowX": false,
+          "resetOverflowX": false
+        },
+        "deep": {
+          "state": "deep",
+          "scrollY": 875,
+          "viewport": {
+            "width": 390,
+            "height": 900
+          },
+          "categories": 6,
+          "products": 30,
+          "uniqueProducts": 30,
+          "expandedCategories": 1,
+          "openDetails": 1,
+          "label": "分類尺度 · 分享料理 · 6 道",
+          "topbarPosition": "sticky",
+          "topbarTop": 0,
+          "topbarHeight": 51.765625,
+          "resetTop": 4,
+          "resetVisible": true,
+          "topbarInsideFrame": true,
+          "documentOverflowX": false,
+          "frameOverflowX": false,
+          "screenOverflowX": false,
+          "topbarOverflowX": false,
+          "labelOverflowX": false,
+          "resetOverflowX": false
+        },
+        "returned": {
+          "state": "returned",
+          "scrollY": 509,
+          "viewport": {
+            "width": 390,
+            "height": 900
+          },
+          "categories": 6,
+          "products": 30,
+          "uniqueProducts": 30,
+          "expandedCategories": 0,
+          "openDetails": 0,
+          "label": "全店尺度",
+          "topbarPosition": "static",
+          "topbarTop": 188.578125,
+          "topbarHeight": 42.765625,
+          "resetTop": 188.578125,
+          "resetVisible": true,
+          "topbarInsideFrame": true,
+          "documentOverflowX": false,
+          "frameOverflowX": false,
+          "screenOverflowX": false,
+          "topbarOverflowX": false,
+          "labelOverflowX": false,
+          "resetOverflowX": false
+        }
+      },
+      "returnPositionError": 0,
+      "focusReturned": true,
+      "failures": [
+        "focused:topbar-too-tall"
+      ]
+    },
+    "desktop": {
+      "pageErrors": [],
+      "states": {
+        "initial": {
+          "state": "initial",
+          "scrollY": 0,
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "categories": 6,
+          "products": 30,
+          "uniqueProducts": 30,
+          "expandedCategories": 0,
+          "openDetails": 0,
+          "label": "全店尺度",
+          "topbarPosition": "static",
+          "topbarTop": 558.359375,
+          "topbarHeight": 42.765625,
+          "resetTop": 558.359375,
+          "resetVisible": true,
+          "topbarInsideFrame": true,
+          "documentOverflowX": false,
+          "frameOverflowX": false,
+          "screenOverflowX": false,
+          "topbarOverflowX": false,
+          "labelOverflowX": false,
+          "resetOverflowX": false
+        },
+        "focused": {
+          "state": "focused",
+          "scrollY": 736,
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "categories": 6,
+          "products": 30,
+          "uniqueProducts": 30,
+          "expandedCategories": 1,
+          "openDetails": 0,
+          "label": "分類尺度 · 分享料理 · 6 道",
+          "topbarPosition": "sticky",
+          "topbarTop": 0,
+          "topbarHeight": 51.765625,
+          "resetTop": 4,
+          "resetVisible": true,
+          "topbarInsideFrame": true,
+          "documentOverflowX": false,
+          "frameOverflowX": false,
+          "screenOverflowX": false,
+          "topbarOverflowX": false,
+          "labelOverflowX": false,
+          "resetOverflowX": false
+        },
+        "deep": {
+          "state": "deep",
+          "scrollY": 736,
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "categories": 6,
+          "products": 30,
+          "uniqueProducts": 30,
+          "expandedCategories": 1,
+          "openDetails": 1,
+          "label": "分類尺度 · 分享料理 · 6 道",
+          "topbarPosition": "sticky",
+          "topbarTop": 0,
+          "topbarHeight": 51.765625,
+          "resetTop": 4,
+          "resetVisible": true,
+          "topbarInsideFrame": true,
+          "documentOverflowX": false,
+          "frameOverflowX": false,
+          "screenOverflowX": false,
+          "topbarOverflowX": false,
+          "labelOverflowX": false,
+          "resetOverflowX": false
+        },
+        "returned": {
+          "state": "returned",
+          "scrollY": 0,
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "categories": 6,
+          "products": 30,
+          "uniqueProducts": 30,
+          "expandedCategories": 0,
+          "openDetails": 0,
+          "label": "全店尺度",
+          "topbarPosition": "static",
+          "topbarTop": 558.359375,
+          "topbarHeight": 42.765625,
+          "resetTop": 558.359375,
+          "resetVisible": true,
+          "topbarInsideFrame": true,
+          "documentOverflowX": false,
+          "frameOverflowX": false,
+          "screenOverflowX": false,
+          "topbarOverflowX": false,
+          "labelOverflowX": false,
+          "resetOverflowX": false
+        }
+      },
+      "returnPositionError": 0,
+      "focusReturned": true,
+      "failures": [
+        "focused:topbar-too-tall"
+      ]
+    }
+  },
+  "failures": [
+    {
+      "viewport": "320",
+      "failures": [
+        "focused:topbar-too-tall"
+      ]
+    },
+    {
+      "viewport": "390",
+      "failures": [
+        "focused:topbar-too-tall"
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "failures": [
+        "focused:topbar-too-tall"
+      ]
+    }
+  ]
+}
