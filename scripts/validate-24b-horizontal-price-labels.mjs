@@ -67,6 +67,8 @@ for (const requiredChildStyle of [
   "transform: translateX(-50%);",
   "text-combine-upright: none;",
   "writing-mode: horizontal-tb;",
+  '.horizontal-price-viewport[data-scale="overview"] .vertical-category .paper-product strong',
+  "letter-spacing: -.04em;",
 ]) {
   if (!childStyles.includes(requiredChildStyle)) throw new Error(`24B is missing its horizontal price-label contract: ${requiredChildStyle}`);
 }
@@ -79,8 +81,14 @@ for (const forbiddenChildStyle of [
   "font-size:",
   "scroll-snap",
   "display: none",
+  "scale(",
 ]) {
-  if (childStyles.includes(forbiddenChildStyle)) throw new Error(`24B child CSS must change only price orientation and reserved bottom space: ${forbiddenChildStyle}`);
+  if (childStyles.includes(forbiddenChildStyle)) throw new Error(`24B child CSS must preserve geometry and price size while changing only price orientation, reserved space, and overview containment: ${forbiddenChildStyle}`);
+}
+
+const trackingRules = [...childStyles.matchAll(/letter-spacing:\s*([^;]+);/g)].map((match) => match[1].trim());
+if (trackingRules.join("|") !== "-.04em") {
+  throw new Error(`24B must expose exactly the approved overview tracking correction, found: ${trackingRules.join(", ")}`);
 }
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
@@ -88,4 +96,4 @@ const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script
   .filter(Boolean);
 inlineScripts.forEach((source, index) => new Script(source, { filename: `${path}#inline-${index + 1}` }));
 
-console.log("24B validation passed: 24 geometry, vertical names, and interaction retained; only price labels return to horizontal flow.");
+console.log("24B validation passed: 24 geometry and vertical names remain unchanged; horizontal prices use one overview-only tracking correction to stay inside narrow lanes.");
