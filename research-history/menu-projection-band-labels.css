@@ -44,6 +44,30 @@
   line-height: 1.25;
 }
 
+.projection-focus-card[data-open="true"] {
+  pointer-events: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+}
+
+.projection-focus-card[data-layout-side="right"] {
+  transform: translate(
+    calc(.85rem + var(--focus-clamp-x, 0px)),
+    calc(-50% + var(--focus-clamp-y, 0px))
+  );
+}
+
+.projection-focus-card[data-layout-side="left"] {
+  transform: translate(
+    calc(-100% - .85rem + var(--focus-clamp-x, 0px)),
+    calc(-50% + var(--focus-clamp-y, 0px))
+  );
+}
+
+.projection-focus-card::before { top: var(--focus-pointer-y, 50%); }
+.projection-focus-card:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+
 @media (max-width: 360px) {
   .projection-band-label { font-size: 2.15px; }
   .projection-band-summary { padding-inline: .55rem; }
