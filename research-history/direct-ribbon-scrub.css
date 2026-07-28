@@ -1,9 +1,9 @@
 .ribbon-minimap__window {
-  height: 1.15rem;
+  height: 3px;
   pointer-events: auto;
   cursor: ew-resize;
   touch-action: none;
-  background: linear-gradient(to bottom, transparent calc(100% - 3px), var(--accent) 0);
+  background: var(--accent);
   outline: none;
 }
 
@@ -11,14 +11,14 @@
   content: "";
   position: absolute;
   left: 50%;
-  top: 0;
+  top: 50%;
   width: max(100%, 2.75rem);
-  height: 100%;
-  transform: translateX(-50%);
+  height: .8rem;
+  transform: translate(-50%, -50%);
 }
 
 .ribbon-minimap__window:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 .ribbon-minimap__window.is-scrubbing {
