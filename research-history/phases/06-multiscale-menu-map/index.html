@@ -6,8 +6,10 @@
     <meta name="description" content="Menu Lens 多尺度菜單地圖研究快照。" />
     <title>06 Multi-scale menu map — Menu Lens research archive</title>
     <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../multiscale-return.css" />
     <script src="../../menu-fixture.js"></script>
     <script src="../../multiscale-menu-renderer.js"></script>
+    <script src="../../multiscale-menu-controller.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#prototype">跳到原型</a>
@@ -26,7 +28,7 @@
       </p>
 
       <section id="prototype" class="phone-frame" aria-label="多尺度菜單地圖互動快照">
-        <div class="phone-screen">
+        <div class="phone-screen multiscale-screen" data-focused="false">
           <div class="phone-status" aria-hidden="true"><span>9:41</span><span>●●● 100%</span></div>
 
           <header>
@@ -68,46 +70,11 @@
       document.querySelector("#restaurant-meta").textContent = menu.restaurant.summary;
       map.innerHTML = window.renderMenuLensMultiscaleMap(menu);
 
-      const categories = [...map.querySelectorAll(".scale-category")];
-      const details = [...map.querySelectorAll("details")];
-
-      function setExpanded(target) {
-        categories.forEach((category) => {
-          const expanded = category === target;
-          category.dataset.expanded = String(expanded);
-          category.querySelector(":scope > button").setAttribute("aria-expanded", String(expanded));
-          if (!expanded) {
-            category.querySelectorAll("details[open]").forEach((detail) => detail.removeAttribute("open"));
-          }
-        });
-        collapseAll.disabled = !target;
-        scaleLabel.textContent = target
-          ? `分類尺度 · ${target.querySelector(".scale-category-title").textContent}`
-          : "全店尺度";
-
-        if (target) {
-          const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          target.scrollIntoView({ block: "start", behavior: reduceMotion ? "auto" : "smooth" });
-        }
-      }
-
-      categories.forEach((category) => {
-        category.querySelector(":scope > button").addEventListener("click", () => {
-          const isExpanded = category.dataset.expanded === "true";
-          setExpanded(isExpanded ? null : category);
-        });
+      window.createMenuLensMultiscaleController({
+        root: map,
+        collapseAll,
+        scaleLabel,
       });
-
-      details.forEach((detail) => {
-        detail.addEventListener("toggle", () => {
-          if (!detail.open) return;
-          details.forEach((candidate) => {
-            if (candidate !== detail) candidate.removeAttribute("open");
-          });
-        });
-      });
-
-      collapseAll.addEventListener("click", () => setExpanded(null));
     </script>
   </body>
 </html>
