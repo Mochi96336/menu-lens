@@ -255,3 +255,94 @@
     render(currentQuaternion);
   });
 })();
+
+(() => {
+  const clamp = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, value));
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const field = document.querySelector("#projection-field");
+    const focusCard = document.querySelector("#projection-focus-card");
+    const nodeLayer = document.querySelector("#projection-node-layer");
+    const controls = [...document.querySelectorAll("[data-projection]")];
+    if (!field || !focusCard || !nodeLayer || controls.length !== 3) return;
+
+    focusCard.tabIndex = 0;
+    focusCard.setAttribute("aria-label", "目前語意格的料理列表；內容較長時可上下捲動");
+
+    let trackingFrame = null;
+    let trackingUntil = 0;
+
+    const layoutFocusCard = () => {
+      if (focusCard.dataset.open !== "true") return;
+      const fieldRect = field.getBoundingClientRect();
+      if (!fieldRect.width || !fieldRect.height) return;
+
+      const inset = 6;
+      const gap = 14;
+      focusCard.style.maxWidth = `${Math.max(120, fieldRect.width - inset * 2)}px`;
+      focusCard.style.maxHeight = `${Math.max(96, fieldRect.height - inset * 2)}px`;
+
+      const cardWidth = focusCard.offsetWidth;
+      const cardHeight = focusCard.offsetHeight;
+      const anchorPercentX = Number.parseFloat(focusCard.style.left) || 50;
+      const anchorPercentY = Number.parseFloat(focusCard.style.top) || 50;
+      const anchorX = fieldRect.left + fieldRect.width * anchorPercentX / 100;
+      const anchorY = fieldRect.top + fieldRect.height * anchorPercentY / 100;
+      const roomRight = fieldRect.right - inset - anchorX;
+      const roomLeft = anchorX - fieldRect.left - inset;
+      const layoutSide = roomRight >= cardWidth + gap
+        ? "right"
+        : roomLeft >= cardWidth + gap
+          ? "left"
+          : roomRight >= roomLeft ? "right" : "left";
+
+      const naturalLeft = layoutSide === "right"
+        ? anchorX + gap
+        : anchorX - gap - cardWidth;
+      const naturalTop = anchorY - cardHeight / 2;
+      const minimumLeft = fieldRect.left + inset;
+      const maximumLeft = Math.max(minimumLeft, fieldRect.right - inset - cardWidth);
+      const minimumTop = fieldRect.top + inset;
+      const maximumTop = Math.max(minimumTop, fieldRect.bottom - inset - cardHeight);
+      const finalLeft = clamp(naturalLeft, minimumLeft, maximumLeft);
+      const finalTop = clamp(naturalTop, minimumTop, maximumTop);
+      const pointerY = clamp(anchorY - finalTop, 10, Math.max(10, cardHeight - 10));
+
+      focusCard.dataset.layoutSide = layoutSide;
+      focusCard.style.setProperty("--focus-clamp-x", `${finalLeft - naturalLeft}px`);
+      focusCard.style.setProperty("--focus-clamp-y", `${finalTop - naturalTop}px`);
+      focusCard.style.setProperty("--focus-pointer-y", `${pointerY}px`);
+    };
+
+    const trackFor = (duration) => {
+      trackingUntil = Math.max(trackingUntil, performance.now() + duration);
+      if (trackingFrame) return;
+      const tick = (now) => {
+        layoutFocusCard();
+        if (now < trackingUntil) trackingFrame = requestAnimationFrame(tick);
+        else trackingFrame = null;
+      };
+      trackingFrame = requestAnimationFrame(tick);
+    };
+
+    nodeLayer.addEventListener("click", () => trackFor(140));
+    controls.forEach((control) => control.addEventListener("click", () => trackFor(700)));
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") trackFor(80);
+    });
+    window.addEventListener("resize", () => trackFor(160));
+
+    new MutationObserver(() => trackFor(140)).observe(focusCard, {
+      attributes: true,
+      attributeFilter: ["data-open"],
+      childList: true,
+      subtree: true,
+    });
+
+    if (globalThis.ResizeObserver) {
+      const resizeObserver = new ResizeObserver(() => trackFor(120));
+      resizeObserver.observe(field);
+      resizeObserver.observe(focusCard);
+    }
+  });
+})();
