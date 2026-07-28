@@ -96,7 +96,10 @@
             const section = sections.find((candidate) => candidate.dataset.categoryId === button.dataset.categoryId);
             if (!section) return;
             setActiveCategory(button.dataset.categoryId, false);
-            section.scrollIntoView({ block: "start", behavior: scrollBehavior() });
+            const scrollBounds = scroll.getBoundingClientRect();
+            const sectionBounds = section.getBoundingClientRect();
+            const targetTop = Math.max(0, scroll.scrollTop + sectionBounds.top - scrollBounds.top);
+            scroll.scrollTo({ top: targetTop, behavior: scrollBehavior() });
           });
         });
 
