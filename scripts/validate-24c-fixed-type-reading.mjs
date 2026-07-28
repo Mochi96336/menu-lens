@@ -35,6 +35,8 @@ for (const requiredStyle of [
   "direction: rtl;",
   "writing-mode: vertical-rl;",
   "text-combine-upright: all;",
+  "font-size: .56rem;",
+  "font-size: .52rem;",
   "font-size: .72rem;",
   "font-size: .58rem;",
   "font-size: .9rem;",
@@ -47,10 +49,14 @@ for (const requiredStyle of [
 for (const requiredOverride of [
   '.fixed-type-reading[data-scale="reading"] .vertical-category .paper-product__name',
   '.fixed-type-reading[data-scale="reading"] .vertical-category .paper-product strong',
+  '.fixed-type-reading[data-scale="reading"] .vertical-category .paper-category__header > span',
   '.fixed-type-reading[data-scale="reading"] .vertical-category .paper-category__header strong',
+  '.fixed-type-reading[data-scale="reading"] .vertical-category .paper-category__header small',
   "font-size: .72rem;",
   "font-size: .58rem;",
+  "font-size: .56rem;",
   "font-size: .82rem;",
+  "font-size: .52rem;",
 ]) {
   if (!childStyles.includes(requiredOverride)) throw new Error(`24C is missing its fixed typography override: ${requiredOverride}`);
 }
@@ -91,8 +97,8 @@ for (const forbidden of [
 }
 
 const overrideRules = [...childStyles.matchAll(/font-size:\s*([^;]+);/g)].map((match) => match[1].trim());
-if (overrideRules.join("|") !== ".72rem|.58rem|.82rem") {
-  throw new Error(`24C must expose exactly the three approved fixed reading sizes, found: ${overrideRules.join(", ")}`);
+if (overrideRules.join("|") !== ".72rem|.58rem|.56rem|.82rem|.52rem") {
+  throw new Error(`24C must expose exactly the five approved overview reading sizes, found: ${overrideRules.join(", ")}`);
 }
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
@@ -100,4 +106,4 @@ const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script
   .filter(Boolean);
 inlineScripts.forEach((source, index) => new Script(source, { filename: `${path}#inline-${index + 1}` }));
 
-console.log("24C validation passed: Parent 24 geometry, vertical flow, detail, and drag retained while reading typography stays at overview sizes.");
+console.log("24C validation passed: Parent 24 geometry, vertical flow, detail, and drag are retained while all reading typography stays at overview sizes.");
