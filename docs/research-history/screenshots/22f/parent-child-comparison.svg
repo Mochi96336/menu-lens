@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1080" viewBox="0 0 1280 1080" role="img" aria-labelledby="title desc">
+  <title id="title">22F padding-only controlled comparison</title>
+  <desc id="desc">Parent 18 and child 22F at 320 pixel, 390 pixel, and desktop viewports. Geometry and typography are identical; only focused Product horizontal padding increases.</desc>
+  <defs>
+    <style>
+      .bg{fill:#e9e3d8}.card{fill:#f8f5ef;stroke:#8f867a}.sheet{fill:#eee8dd;stroke:#3d3832;stroke-width:2}.cat{fill:#faf7f1;stroke:#aaa195}.pair{fill:#f1ece3}.focus{fill:none;stroke:#a54a2a;stroke-width:3}.guide{stroke:#a54a2a;stroke-width:1;stroke-dasharray:3 3}.line{stroke:#c8c0b5}.ink{fill:#211e1a}.muted{fill:#6a6259}.accent{fill:#8f3e25}.t{font-family:Arial,"Noto Sans CJK TC",sans-serif}.s{font-family:Georgia,"Noto Serif CJK TC",serif}.title{font-size:28px}.label{font-size:16px;font-weight:700}.meta{font-size:11px}.note{font-size:12px;font-weight:700}.row{font-size:7px}
+    </style>
+    <g id="geometry">
+      <rect class="sheet" width="430" height="220"/>
+      <rect class="cat" x="1" y="1" width="141" height="125"/><rect class="pair" x="1" y="126" width="141" height="93"/>
+      <rect class="cat" x="144" y="1" width="141" height="132"/><rect class="pair" x="144" y="133" width="141" height="86"/>
+      <rect class="cat" x="287" y="1" width="142" height="146"/><rect class="pair" x="287" y="147" width="142" height="72"/>
+    </g>
+    <g id="baseRows" class="t row ink">
+      <text x="9" y="22">炭烤時蔬拼盤</text><text x="111" y="22">NT$320</text>
+      <text x="9" y="39">香料烤雞腿</text><text x="111" y="39">NT$420</text>
+      <text x="9" y="56">海鹽烤鮮魚</text><text x="111" y="56">NT$480</text>
+      <text x="9" y="73">奶油野菇燉飯</text><text x="111" y="73">NT$360</text>
+      <text x="9" y="90">煙燻牛胸肉</text><text x="111" y="90">NT$520</text>
+      <text x="9" y="107">檸檬香草蝦</text><text x="111" y="107">NT$460</text>
+    </g>
+    <g id="focusRows" class="t row ink">
+      <line class="guide" x1="11" y1="8" x2="11" y2="119"/><line class="guide" x1="132" y1="8" x2="132" y2="119"/>
+      <text x="11" y="22">炭烤時蔬拼盤</text><text x="109" y="22">NT$320</text>
+      <text x="11" y="39">香料烤雞腿</text><text x="109" y="39">NT$420</text>
+      <text x="11" y="56">海鹽烤鮮魚</text><text x="109" y="56">NT$480</text>
+      <text x="11" y="73">奶油野菇燉飯</text><text x="109" y="73">NT$360</text>
+      <text x="11" y="90">煙燻牛胸肉</text><text x="109" y="90">NT$520</text>
+      <text x="11" y="107">檸檬香草蝦</text><text x="109" y="107">NT$460</text>
+    </g>
+    <g id="parent"><use href="#geometry"/><use href="#baseRows"/></g>
+    <g id="child"><use href="#geometry"/><use href="#focusRows"/><rect class="focus" x="2" y="2" width="139" height="122"/></g>
+  </defs>
+  <rect class="bg" width="1280" height="1080"/>
+  <text class="s title ink" x="24" y="40">Menu Lens — 22F Padding-only Focus</text>
+  <text class="t meta muted" x="24" y="64">Same 46rem sheet, columns, rows, typography, line-height, and camera. Only focused Product padding changes from .5rem to .55rem.</text>
+
+  <g transform="translate(28 100)">
+    <g><rect class="card" width="590" height="285" rx="14"/><text class="t label ink" x="16" y="28">18 parent · 320px window</text><g transform="translate(78 48)"><use href="#parent"/></g><text class="t note accent" x="16" y="265">Product padding .5rem</text></g>
+    <g transform="translate(620)"><rect class="card" width="590" height="285" rx="14"/><text class="t label ink" x="16" y="28">22F focused · 320px window</text><g transform="translate(78 48)"><use href="#child"/></g><text class="t note accent" x="16" y="265">Product padding .55rem · text measure narrows</text></g>
+  </g>
+
+  <g transform="translate(28 415)">
+    <g><rect class="card" width="590" height="285" rx="14"/><text class="t label ink" x="16" y="28">18 parent · 390px window</text><g transform="translate(78 48)"><use href="#parent"/></g><text class="t note accent" x="16" y="265">Same intrinsic 46rem sheet</text></g>
+    <g transform="translate(620)"><rect class="card" width="590" height="285" rx="14"/><text class="t label ink" x="16" y="28">22F focused · 390px window</text><g transform="translate(78 48)"><use href="#child"/></g><text class="t note accent" x="16" y="265">Only left/right inset changes</text></g>
+  </g>
+
+  <g transform="translate(28 730)">
+    <g><rect class="card" width="590" height="285" rx="14"/><text class="t label ink" x="16" y="28">18 parent · desktop phone frame</text><g transform="translate(78 48)"><use href="#parent"/></g><text class="t note accent" x="16" y="265">Product .64/.58rem · line-height 1.2</text></g>
+    <g transform="translate(620)"><rect class="card" width="590" height="285" rx="14"/><text class="t label ink" x="16" y="28">22F focused · desktop phone frame</text><g transform="translate(78 48)"><use href="#child"/></g><text class="t note accent" x="16" y="265">Typography and camera unchanged</text></g>
+  </g>
+</svg>
