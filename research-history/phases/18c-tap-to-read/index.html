@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 18C Tap-to-Read：保留 18 的 landscape paper，只讓分類標頭成為 overview 的閱讀入口。" />
+    <title>18C Tap-to-Read — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../landscape-paper.css" />
+    <link rel="stylesheet" href="../../tap-to-read-landscape.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../spatial-drag.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">18C · Category-entry activation variant</p>
+          <h1>Tap-to-Read</h1>
+          <p class="lede">完整保留 18 的三欄×上下兩分類紙面，只整理進入閱讀的手勢語法：overview 只讓六個分類標頭成為明確入口，料理列先保留為內容但不是操作。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">唯一變因：overview activation grammar。分類標頭支援 tap、Enter 與 Space；Product 只有在 reading scale 才能開啟細節。geometry、drag、snap、camera、detail 與 reset 全部沿用 18。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="18C Tap-to-Read 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="landscape-restaurant-name" class="restaurant-name"></h2>
+            <p id="landscape-restaurant-meta" class="restaurant-meta"></p>
+            <p id="landscape-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="landscape-overview" type="button" aria-pressed="true">整張</button>
+            <button id="landscape-previous" type="button" aria-label="上一個紙欄">←</button>
+            <button id="landscape-next" type="button" aria-label="下一個紙欄">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="landscape-location-title">橫向 3×2 紙面</strong>
+              <span id="landscape-location-meta">欄寬 1:1:1 · 30 道料理</span>
+            </div>
+          </div>
+
+          <div class="landscape-stage">
+            <div id="landscape-viewport" class="landscape-viewport" data-scale="overview" data-activation="category-entry" tabindex="0" aria-label="橫向三欄菜單紙面">
+              <div id="landscape-sheet" class="landscape-sheet landscape-sheet--equal-columns"></div>
+            </div>
+            <aside id="landscape-detail" class="paper-detail" data-open="false" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="landscape-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="landscape-detail-title"></h3>
+                <p id="landscape-detail-meta" class="paper-detail__meta"></p>
+                <p id="landscape-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">紙面本來就寬於手機；左右拖曳沿三個紙欄移動，點分類可放大閱讀。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>先選分類，再讀料理</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>Overview</h3><p>六個分類標頭是唯一閱讀入口；料理名稱、價格與密度仍完整可見，但不再假裝每列已可操作。</p></article>
+          <article class="phase-card"><h3>Reading</h3><p>進入既有 reading scale 後，只有目前紙欄的 Product 進入 tab sequence，點選料理才開啟原本 detail。</p></article>
+          <article class="phase-card"><h3>Keyboard</h3><p>分類標頭原生支援 Enter／Space；overview 的左右方向鍵從目前欄前進一欄，不再由第一欄直接跳到最後一欄。</p></article>
+          <article class="phase-card"><h3>停止條件</h3><p>若分類入口仍需額外 tabs、地圖或教學才能理解，就停止 18C，不把第二套導覽塞進紙面。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const viewport = document.querySelector("#landscape-viewport");
+      const sheet = document.querySelector("#landscape-sheet");
+      const overviewButton = document.querySelector("#landscape-overview");
+      const previousButton = document.querySelector("#landscape-previous");
+      const nextButton = document.querySelector("#landscape-next");
+      const locationTitle = document.querySelector("#landscape-location-title");
+      const locationMeta = document.querySelector("#landscape-location-meta");
+      const detail = document.querySelector("#landscape-detail");
+      const detailClose = document.querySelector("#landscape-detail-close");
+
+      document.querySelector("#landscape-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#landscape-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#landscape-restaurant-meta").textContent = menu.restaurant.summary;
+
+      const projection = document.createElement("div");
+      projection.innerHTML = window.renderMenuLensPaperField(menu);
+      const projectedCategories = [...projection.querySelectorAll(".paper-category")];
+      const categoryCounts = menu.categories.map((category) =>
+        menu.products.filter((product) => product.categoryId === category.id).length,
+      );
+      const columnCounts = [];
+      for (let columnIndex = 0; columnIndex < 3; columnIndex += 1) {
+        const firstCategoryIndex = columnIndex * 2;
+        const firstCount = categoryCounts[firstCategoryIndex];
+        const secondCount = categoryCounts[firstCategoryIndex + 1];
+        const column = document.createElement("div");
+        column.className = "landscape-column";
+        column.dataset.columnIndex = String(columnIndex);
+        column.dataset.firstCategoryIndex = String(firstCategoryIndex);
+        column.style.setProperty("--column-count", 1);
+        column.style.setProperty("--column-rows", `${firstCount}fr ${secondCount}fr`);
+        column.append(projectedCategories[firstCategoryIndex], projectedCategories[firstCategoryIndex + 1]);
+        sheet.append(column);
+        columnCounts.push(firstCount + secondCount);
+      }
+
+      const columns = [...sheet.querySelectorAll(".landscape-column")];
+      const categories = [...sheet.querySelectorAll(".paper-category")];
+      const categoryHeaders = categories.map((category) => category.querySelector(".paper-category__header"));
+      const productButtons = [...sheet.querySelectorAll(".paper-product")];
+      categoryHeaders.forEach((header, categoryIndex) => {
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+        header.dataset.tapEntry = "true";
+        header.setAttribute(
+          "aria-label",
+          `閱讀${menu.categories[categoryIndex].name}，${categoryCounts[categoryIndex]} 道料理`,
+        );
+      });
+      let scale = "overview";
+      let activeColumnIndex = 0;
+      let selectedProductIndex = null;
+      let scrollFrame = null;
+
+      const scrollBehavior = () =>
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+      const closeDetail = (restoreFocus = false) => {
+        detail.dataset.open = "false";
+        productButtons.forEach((button) => delete button.dataset.selected);
+        if (restoreFocus && selectedProductIndex !== null) {
+          productButtons.find((button) => Number(button.dataset.productIndex) === selectedProductIndex)?.focus();
+        }
+        selectedProductIndex = null;
+      };
+
+      const updateLocation = () => {
+        overviewButton.setAttribute("aria-pressed", String(scale === "overview"));
+        previousButton.disabled = activeColumnIndex === 0;
+        nextButton.disabled = activeColumnIndex === columns.length - 1;
+        columns.forEach((column, index) => {
+          if (scale === "reading" && index === activeColumnIndex) column.dataset.active = "true";
+          else delete column.dataset.active;
+        });
+        categories.forEach((category, categoryIndex) => {
+          const columnIndex = Number(category.closest(".landscape-column").dataset.columnIndex);
+          const overviewMode = scale === "overview";
+          const header = categoryHeaders[categoryIndex];
+          header.tabIndex = overviewMode ? 0 : -1;
+          header.setAttribute(
+            "aria-pressed",
+            String(scale === "reading" && columnIndex === activeColumnIndex),
+          );
+          category.querySelectorAll(".paper-product").forEach((button) => {
+            const readable = scale === "reading" && columnIndex === activeColumnIndex;
+            button.tabIndex = readable ? 0 : -1;
+            button.inert = overviewMode;
+            button.setAttribute("aria-hidden", String(overviewMode));
+          });
+        });
+        if (scale === "overview") {
+          locationTitle.textContent = "橫向 3×2 紙面";
+          locationMeta.textContent = `欄寬 1:1:1 · ${productButtons.length} 道料理`;
+          return;
+        }
+        const firstCategoryIndex = Number(columns[activeColumnIndex].dataset.firstCategoryIndex);
+        locationTitle.textContent = `${menu.categories[firstCategoryIndex].name}／${menu.categories[firstCategoryIndex + 1].name}`;
+        locationMeta.textContent = `紙欄 ${activeColumnIndex + 1} / ${columns.length} · ${columnCounts[activeColumnIndex]} 道`;
+      };
+
+      const scrollColumnIntoView = (columnIndex, behavior = scrollBehavior()) => {
+        activeColumnIndex = Math.max(0, Math.min(columns.length - 1, columnIndex));
+        const column = columns[activeColumnIndex];
+        const targetLeft = column.offsetLeft + column.offsetWidth / 2 - viewport.clientWidth / 2;
+        viewport.scrollTo({ left: Math.max(0, targetLeft), behavior });
+        updateLocation();
+      };
+
+      const setScale = (nextScale, columnIndex = activeColumnIndex) => {
+        scale = nextScale;
+        viewport.dataset.scale = scale;
+        closeDetail();
+        if (scale === "overview") {
+          viewport.scrollTo({ left: 0, behavior: scrollBehavior() });
+          updateLocation();
+          return;
+        }
+        requestAnimationFrame(() => scrollColumnIntoView(columnIndex));
+      };
+
+      const nearestColumnIndex = () => {
+        const viewportBounds = viewport.getBoundingClientRect();
+        const center = viewportBounds.left + viewportBounds.width / 2;
+        let nearestIndex = activeColumnIndex;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+        columns.forEach((column, index) => {
+          const bounds = column.getBoundingClientRect();
+          const distance = Math.abs(bounds.left + bounds.width / 2 - center);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+        return nearestIndex;
+      };
+
+      const openDetail = (productIndex, button) => {
+        const product = menu.products[productIndex];
+        selectedProductIndex = productIndex;
+        productButtons.forEach((candidate) => {
+          if (candidate === button) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+        });
+        document.querySelector("#landscape-detail-title").textContent = product.name;
+        document.querySelector("#landscape-detail-meta").textContent = `NT$${product.price} · ${product.cue}${product.availability === "sold_out" ? " · 售完" : ""}`;
+        document.querySelector("#landscape-detail-copy").textContent = product.description;
+        detail.dataset.open = "true";
+      };
+
+      categoryHeaders.forEach((header, categoryIndex) => {
+        const category = categories[categoryIndex];
+        const columnIndex = Number(category.closest(".landscape-column").dataset.columnIndex);
+        header.addEventListener("click", () => {
+          if (scale !== "overview") return;
+          setScale("reading", columnIndex);
+        });
+      });
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          if (scale !== "reading") return;
+          openDetail(Number(button.dataset.productIndex), button);
+        });
+      });
+
+      overviewButton.addEventListener("click", () => setScale("overview"));
+      previousButton.addEventListener("click", () => {
+        closeDetail();
+        scrollColumnIntoView(activeColumnIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        closeDetail();
+        scrollColumnIntoView(activeColumnIndex + 1);
+      });
+      detailClose.addEventListener("click", () => closeDetail(true));
+      viewport.addEventListener("scroll", () => {
+        if (scrollFrame !== null) return;
+        scrollFrame = requestAnimationFrame(() => {
+          scrollFrame = null;
+          activeColumnIndex = nearestColumnIndex();
+          updateLocation();
+        });
+      }, { passive: true });
+      viewport.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        if (scale === "overview") setScale("reading", activeColumnIndex + (event.key === "ArrowLeft" ? -1 : 1));
+        else scrollColumnIntoView(activeColumnIndex + (event.key === "ArrowLeft" ? -1 : 1));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.dataset.open === "true") closeDetail(true);
+        else if (scale === "reading") setScale("overview");
+      });
+      window.addEventListener("resize", () => {
+        if (scale === "reading") requestAnimationFrame(() => scrollColumnIntoView(activeColumnIndex, "auto"));
+      });
+
+      window.enableMenuLensHorizontalDrag(viewport, {
+        enabled: () => detail.dataset.open !== "true",
+        onSettle: () => scrollColumnIntoView(nearestColumnIndex()),
+      });
+
+      updateLocation();
+    </script>
+  </body>
+</html>

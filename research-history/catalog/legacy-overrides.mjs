@@ -15,4 +15,20 @@ export const archiveLegacyOverrides = Object.freeze({
     sourcePr: 29,
     sourceCommit: "6128517df68f711c49d737ee8601dd3d34415a86",
   }),
+  "18": Object.freeze({
+    disposition: "substrate",
+    evidenceState: "browser-verified",
+    entrypoint: "phases/18-landscape-paper/index.html",
+    validationProfile: "paper-field-variant",
+    summary: "三欄 × 上下兩分類的等寬橫向紙面，保留 8:6／6:4／4:2 row ratios、完整 30 道料理、drag、snap、camera、detail 與 reset，作為 Landscape Core 的共同 substrate。",
+    assets: Object.freeze({
+      styles: Object.freeze(["history.css", "paper-menu-field.css", "landscape-paper.css"]),
+      scripts: Object.freeze(["menu-fixture.js", "paper-menu-field-renderer.js", "spatial-drag.js"]),
+    }),
+    nextGate: "Compare 18B, 18C and 18D independently; do not combine overview information, activation grammar and detail placement without a new hypothesis.",
+    reviewDocument: "records/18/index.html",
+    evidencePath: null,
+    sourcePr: null,
+    sourceCommit: null,
+  }),
 });

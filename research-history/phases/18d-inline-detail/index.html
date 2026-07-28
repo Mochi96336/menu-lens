@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 18D Inline Detail：保留 18 的 landscape paper，只把料理細節從底部 overlay 放回所選料理旁。" />
+    <title>18D Inline Detail — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../landscape-paper.css" />
+    <link rel="stylesheet" href="../../inline-detail-landscape.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../spatial-drag.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">18D · Inline detail placement variant</p>
+          <h1>Inline Detail</h1>
+          <p class="lede">完整保留 18 的三欄×上下兩分類紙面、兩個尺度與操作，只把料理 detail 從跨越紙面的底部 overlay，移到所選料理列之後，讓來源與說明留在同一分類裡。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">唯一變因：detail placement。overview、分類與 Product activation、3×2 geometry、drag、snap、camera、內容表示與 reset 全部沿用 18。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="18D Inline Detail 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="landscape-restaurant-name" class="restaurant-name"></h2>
+            <p id="landscape-restaurant-meta" class="restaurant-meta"></p>
+            <p id="landscape-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="landscape-overview" type="button" aria-pressed="true">整張</button>
+            <button id="landscape-previous" type="button" aria-label="上一個紙欄">←</button>
+            <button id="landscape-next" type="button" aria-label="下一個紙欄">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="landscape-location-title">橫向 3×2 紙面</strong>
+              <span id="landscape-location-meta">欄寬 1:1:1 · 30 道料理</span>
+            </div>
+          </div>
+
+          <div class="landscape-stage">
+            <div id="landscape-viewport" class="landscape-viewport" data-scale="overview" data-detail-placement="inline" tabindex="0" aria-label="橫向三欄菜單紙面">
+              <div id="landscape-sheet" class="landscape-sheet landscape-sheet--equal-columns"></div>
+            </div>
+            <aside id="landscape-detail" class="paper-detail inline-paper-detail" data-open="false" data-placement="inline" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="landscape-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="landscape-detail-title"></h3>
+                <p id="landscape-detail-meta" class="paper-detail__meta"></p>
+                <p id="landscape-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">紙面本來就寬於手機；左右拖曳沿三個紙欄移動，點分類可放大閱讀。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>細節留在料理旁，不蓋住整張紙</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>Same source</h3><p>點選料理後，detail 直接插在該 Product row 之後；標題、價格與說明不再脫離來源。</p></article>
+          <article class="phase-card"><h3>Local reflow</h3><p>只有所選分類的料理區在既有外框內重新分配空間；紙欄、分類外框與 camera 不改變。</p></article>
+          <article class="phase-card"><h3>Close／reset</h3><p>關閉、Escape、切欄或回到整張時，detail 回到停放位置並把焦點交還原料理。</p></article>
+          <article class="phase-card"><h3>停止條件</h3><p>若 inline detail 讓分類內捲動成本高於 overlay 遮擋成本，就停止 18D，不加入 accordion 或第二個 detail mode。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const viewport = document.querySelector("#landscape-viewport");
+      const sheet = document.querySelector("#landscape-sheet");
+      const overviewButton = document.querySelector("#landscape-overview");
+      const previousButton = document.querySelector("#landscape-previous");
+      const nextButton = document.querySelector("#landscape-next");
+      const locationTitle = document.querySelector("#landscape-location-title");
+      const locationMeta = document.querySelector("#landscape-location-meta");
+      const detail = document.querySelector("#landscape-detail");
+      const detailClose = document.querySelector("#landscape-detail-close");
+
+      document.querySelector("#landscape-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#landscape-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#landscape-restaurant-meta").textContent = menu.restaurant.summary;
+
+      const projection = document.createElement("div");
+      projection.innerHTML = window.renderMenuLensPaperField(menu);
+      const projectedCategories = [...projection.querySelectorAll(".paper-category")];
+      const categoryCounts = menu.categories.map((category) =>
+        menu.products.filter((product) => product.categoryId === category.id).length,
+      );
+      const columnCounts = [];
+      for (let columnIndex = 0; columnIndex < 3; columnIndex += 1) {
+        const firstCategoryIndex = columnIndex * 2;
+        const firstCount = categoryCounts[firstCategoryIndex];
+        const secondCount = categoryCounts[firstCategoryIndex + 1];
+        const column = document.createElement("div");
+        column.className = "landscape-column";
+        column.dataset.columnIndex = String(columnIndex);
+        column.dataset.firstCategoryIndex = String(firstCategoryIndex);
+        column.style.setProperty("--column-count", 1);
+        column.style.setProperty("--column-rows", `${firstCount}fr ${secondCount}fr`);
+        column.append(projectedCategories[firstCategoryIndex], projectedCategories[firstCategoryIndex + 1]);
+        sheet.append(column);
+        columnCounts.push(firstCount + secondCount);
+      }
+
+      const columns = [...sheet.querySelectorAll(".landscape-column")];
+      const categories = [...sheet.querySelectorAll(".paper-category")];
+      const productButtons = [...sheet.querySelectorAll(".paper-product")];
+      categories.forEach((category) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+      });
+      let scale = "overview";
+      let activeColumnIndex = 0;
+      let selectedProductIndex = null;
+      let scrollFrame = null;
+      const detailHome = document.createComment("inline-detail-home");
+      detail.before(detailHome);
+      productButtons.forEach((button) => {
+        button.setAttribute("aria-controls", "landscape-detail");
+        button.setAttribute("aria-expanded", "false");
+      });
+
+      const scrollBehavior = () =>
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+      const closeDetail = (restoreFocus = false) => {
+        const sourceButton = selectedProductIndex === null
+          ? null
+          : productButtons.find((button) => Number(button.dataset.productIndex) === selectedProductIndex);
+        detail.dataset.open = "false";
+        detail.closest(".paper-category__products")?.removeAttribute("data-inline-detail-open");
+        productButtons.forEach((button) => {
+          delete button.dataset.selected;
+          button.setAttribute("aria-expanded", "false");
+        });
+        detailHome.after(detail);
+        if (restoreFocus) sourceButton?.focus();
+        selectedProductIndex = null;
+      };
+
+      const updateLocation = () => {
+        overviewButton.setAttribute("aria-pressed", String(scale === "overview"));
+        previousButton.disabled = activeColumnIndex === 0;
+        nextButton.disabled = activeColumnIndex === columns.length - 1;
+        columns.forEach((column, index) => {
+          if (scale === "reading" && index === activeColumnIndex) column.dataset.active = "true";
+          else delete column.dataset.active;
+        });
+        categories.forEach((category) => {
+          const columnIndex = Number(category.closest(".landscape-column").dataset.columnIndex);
+          const readable = scale === "overview" || columnIndex === activeColumnIndex;
+          category.querySelector(".paper-category__header").setAttribute(
+            "aria-pressed",
+            String(scale === "reading" && columnIndex === activeColumnIndex),
+          );
+          category.querySelectorAll(".paper-product").forEach((button) => button.tabIndex = readable ? 0 : -1);
+        });
+        if (scale === "overview") {
+          locationTitle.textContent = "橫向 3×2 紙面";
+          locationMeta.textContent = `欄寬 1:1:1 · ${productButtons.length} 道料理`;
+          return;
+        }
+        const firstCategoryIndex = Number(columns[activeColumnIndex].dataset.firstCategoryIndex);
+        locationTitle.textContent = `${menu.categories[firstCategoryIndex].name}／${menu.categories[firstCategoryIndex + 1].name}`;
+        locationMeta.textContent = `紙欄 ${activeColumnIndex + 1} / ${columns.length} · ${columnCounts[activeColumnIndex]} 道`;
+      };
+
+      const scrollColumnIntoView = (columnIndex, behavior = scrollBehavior()) => {
+        activeColumnIndex = Math.max(0, Math.min(columns.length - 1, columnIndex));
+        const column = columns[activeColumnIndex];
+        const targetLeft = column.offsetLeft + column.offsetWidth / 2 - viewport.clientWidth / 2;
+        viewport.scrollTo({ left: Math.max(0, targetLeft), behavior });
+        updateLocation();
+      };
+
+      const setScale = (nextScale, columnIndex = activeColumnIndex) => {
+        scale = nextScale;
+        viewport.dataset.scale = scale;
+        closeDetail();
+        if (scale === "overview") {
+          viewport.scrollTo({ left: 0, behavior: scrollBehavior() });
+          updateLocation();
+          return;
+        }
+        requestAnimationFrame(() => scrollColumnIntoView(columnIndex));
+      };
+
+      const nearestColumnIndex = () => {
+        const viewportBounds = viewport.getBoundingClientRect();
+        const center = viewportBounds.left + viewportBounds.width / 2;
+        let nearestIndex = activeColumnIndex;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+        columns.forEach((column, index) => {
+          const bounds = column.getBoundingClientRect();
+          const distance = Math.abs(bounds.left + bounds.width / 2 - center);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+        return nearestIndex;
+      };
+
+      const openDetail = (productIndex, button) => {
+        const product = menu.products[productIndex];
+        const productContainer = button.closest(".paper-category__products");
+        detail.closest(".paper-category__products")?.removeAttribute("data-inline-detail-open");
+        selectedProductIndex = productIndex;
+        productButtons.forEach((candidate) => {
+          const selected = candidate === button;
+          if (selected) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+          candidate.setAttribute("aria-expanded", String(selected));
+        });
+        document.querySelector("#landscape-detail-title").textContent = product.name;
+        document.querySelector("#landscape-detail-meta").textContent = `NT$${product.price} · ${product.cue}${product.availability === "sold_out" ? " · 售完" : ""}`;
+        document.querySelector("#landscape-detail-copy").textContent = product.description;
+        button.after(detail);
+        productContainer.dataset.inlineDetailOpen = "true";
+        detail.dataset.open = "true";
+      };
+
+      categories.forEach((category) => {
+        const columnIndex = Number(category.closest(".landscape-column").dataset.columnIndex);
+        category.querySelector(".paper-category__header").addEventListener("click", () => setScale("reading", columnIndex));
+      });
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const columnIndex = Number(button.closest(".landscape-column").dataset.columnIndex);
+          if (scale === "overview") {
+            setScale("reading", columnIndex);
+            return;
+          }
+          openDetail(Number(button.dataset.productIndex), button);
+        });
+      });
+
+      overviewButton.addEventListener("click", () => setScale("overview"));
+      previousButton.addEventListener("click", () => {
+        closeDetail();
+        scrollColumnIntoView(activeColumnIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        closeDetail();
+        scrollColumnIntoView(activeColumnIndex + 1);
+      });
+      detailClose.addEventListener("click", () => closeDetail(true));
+      viewport.addEventListener("scroll", () => {
+        if (scrollFrame !== null) return;
+        scrollFrame = requestAnimationFrame(() => {
+          scrollFrame = null;
+          activeColumnIndex = nearestColumnIndex();
+          updateLocation();
+        });
+      }, { passive: true });
+      viewport.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        if (scale === "overview") setScale("reading", event.key === "ArrowLeft" ? 0 : columns.length - 1);
+        else scrollColumnIntoView(activeColumnIndex + (event.key === "ArrowLeft" ? -1 : 1));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.dataset.open === "true") closeDetail(true);
+        else if (scale === "reading") setScale("overview");
+      });
+      window.addEventListener("resize", () => {
+        if (scale === "reading") requestAnimationFrame(() => scrollColumnIntoView(activeColumnIndex, "auto"));
+      });
+
+      window.enableMenuLensHorizontalDrag(viewport, {
+        enabled: () => detail.dataset.open !== "true",
+        onSettle: () => scrollColumnIntoView(nearestColumnIndex()),
+      });
+
+      updateLocation();
+    </script>
+  </body>
+</html>
