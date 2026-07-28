@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1260" viewBox="0 0 1280 1260" role="img" aria-labelledby="title desc">
+  <title id="title">22D geometry-only controlled comparison</title>
+  <desc id="desc">18 parent, 22A row-only, 22B column-only, and 22D combined geometry at 320 pixel, 390 pixel, and desktop viewports.</desc>
+  <defs>
+    <style>
+      .bg{fill:#e9e3d8}.card{fill:#f8f5ef;stroke:#8f867a}.sheet{fill:#eee8dd;stroke:#3d3832;stroke-width:2}.cat{fill:#faf7f1;stroke:#aaa195}.pair{fill:#f1ece3}.focus{fill:none;stroke:#a54a2a;stroke-width:3}.line{stroke:#c8c0b5}.ink{fill:#211e1a}.muted{fill:#6a6259}.accent{fill:#8f3e25}.t{font-family:Arial,"Noto Sans CJK TC",sans-serif}.s{font-family:Georgia,"Noto Serif CJK TC",serif}.title{font-size:28px}.label{font-size:16px;font-weight:700}.meta{font-size:11px}.note{font-size:12px;font-weight:700}
+    </style>
+    <g id="products"><path class="line" d="M7 19H76M7 31H76M7 43H76M7 55H76M7 67H76M7 79H76M7 91H76M7 103H76"/></g>
+    <g id="parent">
+      <rect class="sheet" width="250" height="198"/><rect class="cat" x="1" y="1" width="81" height="112"/><rect class="pair" x="1" y="113" width="81" height="84"/><use href="#products"/>
+      <rect class="cat" x="84" y="1" width="82" height="118"/><rect class="pair" x="84" y="119" width="82" height="78"/>
+      <rect class="cat" x="168" y="1" width="81" height="131"/><rect class="pair" x="168" y="132" width="81" height="65"/>
+    </g>
+    <g id="row">
+      <rect class="sheet" width="250" height="198"/><rect class="cat" x="1" y="1" width="81" height="139"/><rect class="pair" x="1" y="140" width="81" height="57"/><use href="#products"/><rect class="focus" x="2" y="2" width="79" height="136"/>
+      <rect class="cat" x="84" y="1" width="82" height="118"/><rect class="pair" x="84" y="119" width="82" height="78"/>
+      <rect class="cat" x="168" y="1" width="81" height="131"/><rect class="pair" x="168" y="132" width="81" height="65"/>
+    </g>
+    <g id="column">
+      <rect class="sheet" width="250" height="198"/><rect class="cat" x="1" y="1" width="111" height="112"/><rect class="pair" x="1" y="113" width="111" height="84"/><g transform="scale(1.36 1)"><use href="#products"/></g><rect class="focus" x="2" y="2" width="109" height="109"/>
+      <rect class="cat" x="114" y="1" width="67" height="118"/><rect class="pair" x="114" y="119" width="67" height="78"/>
+      <rect class="cat" x="183" y="1" width="66" height="131"/><rect class="pair" x="183" y="132" width="66" height="65"/>
+    </g>
+    <g id="both">
+      <rect class="sheet" width="250" height="198"/><rect class="cat" x="1" y="1" width="111" height="139"/><rect class="pair" x="1" y="140" width="111" height="57"/><g transform="scale(1.36 1)"><use href="#products"/></g><rect class="focus" x="2" y="2" width="109" height="136"/>
+      <rect class="cat" x="114" y="1" width="67" height="118"/><rect class="pair" x="114" y="119" width="67" height="78"/>
+      <rect class="cat" x="183" y="1" width="66" height="131"/><rect class="pair" x="183" y="132" width="66" height="65"/>
+    </g>
+  </defs>
+  <rect class="bg" width="1280" height="1260"/>
+  <text class="s title ink" x="24" y="38">Menu Lens — 22D Geometry-only Focus</text>
+  <text class="t meta muted" x="24" y="62">18 vs isolated row, isolated column, and their approved combination. Camera, type, padding, and paired content stay unchanged.</text>
+  <g id="row320" transform="translate(20 95)">
+    <g><rect class="card" width="290" height="335" rx="14"/><text class="t label ink" x="14" y="26">18 parent · 320px</text><g transform="translate(20 62)"><use href="#parent"/></g><text class="t note accent" x="14" y="305">1:1:1 · base rows</text><text class="t meta muted" x="14" y="324">camera and typography unchanged</text></g>
+    <g transform="translate(310)"><rect class="card" width="290" height="335" rx="14"/><text class="t label ink" x="14" y="26">22A row-only · 320px</text><g transform="translate(20 62)"><use href="#row"/></g><text class="t note accent" x="14" y="305">row 1.8× · X fixed</text><text class="t meta muted" x="14" y="324">camera and typography unchanged</text></g>
+    <g transform="translate(620)"><rect class="card" width="290" height="335" rx="14"/><text class="t label ink" x="14" y="26">22B column-only · 320px</text><g transform="translate(20 62)"><use href="#column"/></g><text class="t note accent" x="14" y="305">column 1.65× · rows fixed</text><text class="t meta muted" x="14" y="324">camera and typography unchanged</text></g>
+    <g transform="translate(930)"><rect class="card" width="290" height="335" rx="14"/><text class="t label ink" x="14" y="26">22D geometry-only · 320px</text><g transform="translate(20 62)"><use href="#both"/></g><text class="t note accent" x="14" y="305">row 1.8× + column 1.65×</text><text class="t meta muted" x="14" y="324">camera and typography unchanged</text></g>
+  </g>
+  <use href="#row320" transform="translate(0 370)"/><use href="#row320" transform="translate(0 740)"/>
+  <rect class="bg" x="20" y="465" width="1220" height="34"/><text class="t label ink" x="24" y="488">390px comparison — same intrinsic geometry, wider viewport window</text>
+  <rect class="bg" x="20" y="835" width="1220" height="34"/><text class="t label ink" x="24" y="858">Desktop phone-frame comparison — same 46rem sheet and focus equations</text>
+</svg>
