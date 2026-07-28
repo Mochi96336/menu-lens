@@ -30,24 +30,40 @@ It introduces a v2 catalog adapter with separate fields for:
 
 ```text
 prototype-registry.js (schema v1, temporary source)
-        ↓
-research-history/catalog/index.mjs
-        ↓
-archive catalog schema v2
-        ├─ catalog-rendered archive index
-        └─ generic catalog and entrypoint validation
+        ├──────────────────────────┐
+        ↓                          ↓
+catalog/index.mjs          catalog/extensions.mjs
+        └──────────────┬───────────┘
+                       ↓
+             archive catalog schema v2
+                    ├─ browser index renderer
+                    └─ Node validators
 ```
+
+`research-history/catalog/extensions.mjs` is the canonical intake surface for new schema-v2 objects. A family intake PR may import smaller family modules from that file, but it must not introduce a second extension list in the browser or validator.
 
 The legacy research validator still contains important prototype-specific contracts. During migration it runs through `scripts/archive/run-legacy-research-validator.mjs`, which supplies its former literal-link expectations temporarily and restores the real catalog-rendered index immediately afterward.
 
 This bridge is transitional. Family intake PRs should add structured v2 metadata and validators without restoring hand-written homepage cards.
 
+## Published path contract
+
+Catalog paths are relative to `research-history/`, because that directory becomes the root of the GitHub Pages artifact.
+
+- `entrypoint` points to an executable page such as `phases/22a-row-only/index.html`.
+- `reviewDocument` points to a published record inside `research-history/`; it must not point to repository-only `docs/` content outside the Pages artifact.
+- `evidencePath` points to a published file or directory inside `research-history/`.
+- absolute paths, backslashes, and `.` or `..` path segments are rejected.
+
+Repository coordination documents may remain under `docs/research-history/`, but a catalog card can link only to material included in the published archive.
+
 ## Intake rules after this PR
 
 1. Preserve source PR and commit provenance.
 2. Add one catalog object for each independently reviewable research object.
-3. Classify studies and corrections separately from prototypes.
-4. Preserve negative evidence as searchable archive material.
-5. Do not add literal object links or comparison rows to `research-history/index.html`.
-6. Keep existing public URLs stable during family intake.
-7. Replace the legacy registry only after all current branches have a v2 catalog destination.
+3. Add new schema-v2 objects through `catalog/extensions.mjs` or modules imported by it.
+4. Classify studies and corrections separately from prototypes.
+5. Preserve negative evidence as searchable archive material.
+6. Do not add literal object links or comparison rows to `research-history/index.html`.
+7. Keep existing public URLs stable during family intake.
+8. Replace the legacy registry only after all current branches have a v2 catalog destination.
