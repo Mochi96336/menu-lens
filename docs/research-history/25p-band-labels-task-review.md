@@ -1,89 +1,78 @@
-# 25P Band Labels + Task Definition — implementation review
+# 25P readable band labels and task prerequisite review
 
-## Scope
-
-```text
-Repository: a20030824/menu-lens
-Base: main
-Parent: 25P Menu Projections
-Branch: agent/menu-lens-25p-band-labels-task
-Purpose: prerequisite before any 25PA proposal
-```
-
-## Finding
-
-25P already defined eleven semantic bands in source:
-
-- four price bands;
-- three serving bands;
-- four preparation bands.
-
-Those labels were used in the focused-cell card, but the projection plane itself exposed only unlabeled grid divisions and three axis names. A reader could see regions without knowing which region meant NT$230–339, 分享, 較快, or 未標註.
-
-## Change
-
-The parent projection model and controller remain unchanged. A non-interactive label add-on now:
-
-- projects the active X- and Y-axis band labels onto the same rotating plane;
-- lists all active X, Y, and omitted depth-axis bands in a persistent summary;
-- updates all three sets when the existing projection buttons rotate the volume;
-- uses the same view matrices, quaternion interpolation duration, and reduced-motion endpoint as 25P;
-- adds no Product destination, filter, ranking, or navigation control.
-
-A separate protocol fixes one concrete three-axis task before 25PA can be discussed.
-
-## Concrete task
-
-```text
-three diners
-→ one sharing dish
-→ price no more than NT$500
-→ exclude slower preparation
-→ identify all matches
-→ compare fastest versus lowest price
-```
-
-Fixture answer set:
-
-- 紹興奶油蝦 — NT$480 — 分享 — 一般;
-- 蒜酥椒鹽軟殼蟹 — NT$460 — 分享 — 較快;
-- 宮保杏鮑菇 — NT$340 — 分享 — 一般.
-
-## Browser harness evidence
-
-A bounded Chromium harness ran the exact label add-on and label DOM against 30 persistent nodes at 320px, 390px, and desktop. It verified:
-
-- no script errors;
-- no horizontal document overflow;
-- 30 persistent nodes;
-- 7 visible labels for 價格 × 份量;
-- 8 visible labels for 價格 × 時間;
-- 7 visible labels for 份量 × 時間;
-- complete visual and accessible summaries for X, Y, and depth bands;
-- reduced-motion projection changes resolve directly to the endpoint labels.
-
-This harness isolates the label layer. It is not represented as a deployed-page screenshot or as participant evidence.
-
-## Parent identity preserved
-
-Unchanged:
-
-- 30 Product coordinates;
-- continuous price coordinate;
-- serving and preparation band boundaries;
-- three semantic matrix planes;
-- quaternion rotation and 620ms duration;
-- node identity and semantic-cell focus;
-- projection buttons and Escape reset;
-- category colors and Product detail content;
-- 6 categories and 30 unique Products.
-
-## Decision
+## Result
 
 **KEEP as a parent-viability prerequisite.**
 
-25P now names the regions it asks readers to use, and the research line has one fixture-backed task with a falsifiable answer key. This does not establish that 25P succeeds; it only makes a 25PA proposal evaluable.
+25P now names all semantic regions used by its three projections and has one fixed, fixture-backed task with a falsifiable answer key. This does not establish participant success and does not authorize 25PA.
 
-## Next step — not started
+## Preserved parent identity
 
-Run the task protocol. A separate 25PA Task-first Entry plan may be proposed only after direct reader evidence passes the documented gate. No 25PA code, branch, or Draft PR is included here.
+Unchanged:
+
+- six categories and 30 unique Products;
+- continuous price coordinate;
+- serving and preparation bands;
+- three semantic matrix planes;
+- Product coordinates and persistent nodes;
+- projection buttons, quaternion interpolation, and 620ms duration;
+- anchor retention across projection changes;
+- Escape clear behavior;
+- parent `menu-projections.js`, `menu-projections.css`, and shared fixture.
+
+## Band-label layer
+
+The add-on projects active X and Y band labels into the existing plane and lists X, Y, and omitted depth bands in a compact summary. Labels remain non-interactive and do not add another destination, filter, ranking, recommendation, or task flow.
+
+## Layout repair after separate review
+
+A separate viewport review found that the existing focus card could be clipped by the projection field because placement only chose left or right from the anchor X coordinate. Large result sets also exposed a scroll container with `pointer-events: none`.
+
+The narrow repair stays inside the same add-on:
+
+- measure the actual field and focus-card rectangles;
+- choose the side with enough available room when possible;
+- clamp the final X and Y position inside the field;
+- keep the pointer line aligned with the anchor after vertical clamping;
+- re-evaluate during projection animation and resize;
+- make open result cards pointer-scrollable and keyboard-focusable;
+- retain the base controller and semantic-cell result contents unchanged.
+
+A bounded Chromium matrix checked 168 card cases per viewport at 320px, 390px, and 1280px. It varied anchor positions and result sizes from one to eleven rows.
+
+Recorded at every viewport:
+
+- 168 cases;
+- zero cards outside the projection field;
+- minimum observed field gap about 5.09px;
+- eleven-row results remain vertically scrollable;
+- open cards use pointer events and expose a keyboard focus target.
+
+Machine-readable evidence:
+
+- `research-history/review-assets/25p-band-labels/browser-report.json`
+
+This is bounded layout evidence, not a deployed-page screenshot or participant result.
+
+## Fixed evaluation task
+
+> 你和兩位朋友要點一道分享料理。每道料理預算不超過 NT$500，而且不想選「較慢」的料理。請使用 25P 找出所有符合條件的料理。接著回答：若優先最快，會選哪一道；若優先最低價，會選哪一道？
+
+Fixture-backed qualifying set:
+
+| Product | Price | Serving | Preparation |
+| --- | ---: | --- | --- |
+| 紹興奶油蝦 | NT$480 | 分享 | 一般 |
+| 蒜酥椒鹽軟殼蟹 | NT$460 | 分享 | 較快 |
+| 宮保杏鮑菇 | NT$340 | 分享 | 一般 |
+
+Expected trade-off:
+
+- fastest: 蒜酥椒鹽軟殼蟹;
+- lowest price: 宮保杏鮑菇.
+
+`季節時蔬豆腐煲` remains excluded because preparation is `未標註`.
+
+## Boundary
+
+The repair removes layout interference from the evidence gate. It does not prove the projection grammar is understandable. 25PA remains blocked until unfamiliar readers complete the documented task without projection-order instruction.
