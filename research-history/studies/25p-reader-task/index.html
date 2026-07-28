@@ -10,9 +10,12 @@
       :root { color-scheme: light; }
       .study-shell { width: min(100% - 1rem, 96rem); margin-inline: auto; }
       .study-grid { display: grid; grid-template-columns: minmax(17rem, 25rem) minmax(0, 1fr); gap: 1rem; align-items: start; }
-      .study-panel { padding: .9rem; border: 1px solid var(--line-strong); background: var(--surface); }
+      .study-panel { min-width: 0; padding: .9rem; border: 1px solid var(--line-strong); background: var(--surface); }
       .study-panel h2, .study-panel h3 { margin-top: 0; }
       .study-panel p:last-child { margin-bottom: 0; }
+      .study-grid[data-state="active"] { grid-template-columns: minmax(0, 1fr); }
+      .study-grid[data-state="active"] .facilitator-panel { display: none; }
+      .study-grid[data-state="active"] .participant-panel { width: 100%; }
       .study-meta { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .3rem .75rem; margin: 0; font-size: .76rem; }
       .study-meta dt { color: var(--faint); }
       .study-meta dd { min-width: 0; margin: 0; overflow-wrap: anywhere; font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; }
@@ -24,24 +27,31 @@
       .study-task p { margin: 0; font-size: .94rem; font-weight: 700; line-height: 1.65; }
       .study-session-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem; margin: .75rem 0 .5rem; }
       .study-timer { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: 1rem; font-weight: 900; }
-      .study-frame-wrap { width: 100%; overflow: auto; padding: .5rem; border: 1px solid var(--line-strong); background: var(--paper); }
+      .study-frame-wrap { width: 100%; min-width: 0; overflow: auto; padding: .5rem; border: 1px solid var(--line-strong); background: var(--paper); }
       .study-frame-stage { width: var(--study-width, 390px); min-width: var(--study-width, 390px); margin-inline: auto; }
       .study-frame { display: block; width: 100%; height: var(--study-height, 900px); border: 0; background: var(--paper); }
       .study-status { min-height: 1.25rem; color: var(--muted); font-size: .72rem; }
       .study-warning { color: var(--accent); font-weight: 800; }
       .observer-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
-      .observer-field { display: grid; gap: .3rem; align-content: start; }
+      .observer-field { display: grid; gap: .3rem; align-content: start; min-width: 0; }
       .observer-field.full { grid-column: 1 / -1; }
       .observer-field label { color: var(--muted); font-size: .72rem; font-weight: 800; }
       .observer-field input, .observer-field select, .observer-field textarea { width: 100%; min-height: 2.35rem; padding: .45rem .5rem; border: 1px solid var(--line-strong); border-radius: 0; background: #fffaf2; color: var(--ink); font: inherit; }
       .observer-field textarea { min-height: 5.5rem; resize: vertical; }
-      .observer-field input[type="number"] { width: 7rem; }
-      .study-summary { padding: .75rem; border: 1px dashed var(--line-strong); background: var(--paper); font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: .7rem; white-space: pre-wrap; }
+      .observer-field input[type="number"] { width: 7rem; max-width: 100%; }
+      .study-summary { max-width: 100%; overflow: auto; padding: .75rem; border: 1px dashed var(--line-strong); background: var(--paper); font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: .7rem; white-space: pre-wrap; }
       [hidden] { display: none !important; }
       code { overflow-wrap: anywhere; }
+
+      #study.study--desktop-active { width: 100%; }
+      #study.study--desktop-active .study-grid { gap: 0; }
+      #study.study--desktop-active .participant-panel { padding: 0; border-right: 0; border-left: 0; }
+      #study.study--desktop-active #participant-stage > :not(.study-frame-wrap) { margin-inline: .9rem; }
+      #study.study--desktop-active .study-frame-wrap { overflow: hidden; padding: 0; border-right: 0; border-left: 0; }
+
       @media (max-width: 900px) {
-        .study-grid { grid-template-columns: 1fr; }
-        .observer-grid { grid-template-columns: 1fr; }
+        .study-grid { grid-template-columns: minmax(0, 1fr); }
+        .observer-grid { grid-template-columns: minmax(0, 1fr); }
         .observer-field.full { grid-column: auto; }
       }
       @media (prefers-reduced-motion: reduce) {
@@ -65,8 +75,8 @@
     </header>
 
     <main id="study" class="section study-shell">
-      <div class="study-grid">
-        <aside class="study-panel" aria-labelledby="setup-title">
+      <div id="study-grid" class="study-grid" data-state="setup" data-viewport="390">
+        <aside id="facilitator-panel" class="study-panel facilitator-panel" aria-labelledby="setup-title">
           <section id="setup-panel">
             <h2 id="setup-title">Facilitator setup</h2>
             <dl class="study-meta">
@@ -109,58 +119,19 @@
             </dl>
 
             <div class="observer-grid">
-              <div class="observer-field full">
-                <label for="named-products">參與者列出的所有符合料理</label>
-                <textarea id="named-products" placeholder="照參與者原始答案記錄；不要補正"></textarea>
-              </div>
-              <div class="observer-field">
-                <label for="first-correct-time">第一個正確候選時間</label>
-                <input id="first-correct-time" type="text" inputmode="numeric" placeholder="例如 01:24；未知留白" />
-              </div>
-              <div class="observer-field">
-                <label for="complete-set-time">完整集合時間</label>
-                <input id="complete-set-time" type="text" inputmode="numeric" placeholder="例如 03:42；未完成留白" />
-              </div>
-              <div class="observer-field">
-                <label for="fastest-answer">優先最快的回答</label>
-                <input id="fastest-answer" type="text" />
-              </div>
-              <div class="observer-field">
-                <label for="lowest-answer">優先最低價的回答</label>
-                <input id="lowest-answer" type="text" />
-              </div>
-              <div class="observer-field">
-                <label for="complete-set">三道完整集合</label>
-                <select id="complete-set"><option value="未判定">未判定</option><option value="正確">正確</option><option value="部分">部分</option><option value="錯誤">錯誤</option></select>
-              </div>
-              <div class="observer-field">
-                <label for="unknown-treatment">「未標註」處理</label>
-                <select id="unknown-treatment"><option value="未判定">未判定</option><option value="正確排除">正確排除</option><option value="錯誤納入">錯誤納入</option><option value="不確定">不確定</option></select>
-              </div>
-              <div class="observer-field">
-                <label for="band-label-use">是否實際使用 band labels</label>
-                <select id="band-label-use"><option value="未判定">未判定</option><option value="是">是</option><option value="部分">部分</option><option value="否／只猜位置">否／只猜位置</option></select>
-              </div>
-              <div class="observer-field">
-                <label for="tradeoff-explanation">最快／最低價取捨</label>
-                <select id="tradeoff-explanation"><option value="未判定">未判定</option><option value="完整正確">完整正確</option><option value="部分">部分</option><option value="錯誤">錯誤</option></select>
-              </div>
-              <div class="observer-field">
-                <label for="projection-help">需要 projection 順序提示</label>
-                <select id="projection-help"><option value="否">否</option><option value="是">是</option></select>
-              </div>
-              <div class="observer-field">
-                <label for="hint-count">Facilitator hints 次數</label>
-                <input id="hint-count" type="number" min="0" step="1" value="0" />
-              </div>
-              <div class="observer-field full">
-                <label for="observation-notes">錯誤、停頓、重試與協助內容</label>
-                <textarea id="observation-notes"></textarea>
-              </div>
-              <div class="observer-field full">
-                <label for="representative-quote">匿名代表語句</label>
-                <textarea id="representative-quote" placeholder="不要記錄姓名、聯絡方式或可識別背景"></textarea>
-              </div>
+              <div class="observer-field full"><label for="named-products">參與者列出的所有符合料理</label><textarea id="named-products" placeholder="照參與者原始答案記錄；不要補正"></textarea></div>
+              <div class="observer-field"><label for="first-correct-time">第一個正確候選時間</label><input id="first-correct-time" type="text" inputmode="numeric" placeholder="例如 01:24；未知留白" /></div>
+              <div class="observer-field"><label for="complete-set-time">完整集合時間</label><input id="complete-set-time" type="text" inputmode="numeric" placeholder="例如 03:42；未完成留白" /></div>
+              <div class="observer-field"><label for="fastest-answer">優先最快的回答</label><input id="fastest-answer" type="text" /></div>
+              <div class="observer-field"><label for="lowest-answer">優先最低價的回答</label><input id="lowest-answer" type="text" /></div>
+              <div class="observer-field"><label for="complete-set">三道完整集合</label><select id="complete-set"><option value="未判定">未判定</option><option value="正確">正確</option><option value="部分">部分</option><option value="錯誤">錯誤</option></select></div>
+              <div class="observer-field"><label for="unknown-treatment">「未標註」處理</label><select id="unknown-treatment"><option value="未判定">未判定</option><option value="正確排除">正確排除</option><option value="錯誤納入">錯誤納入</option><option value="不確定">不確定</option></select></div>
+              <div class="observer-field"><label for="band-label-use">是否實際使用 band labels</label><select id="band-label-use"><option value="未判定">未判定</option><option value="是">是</option><option value="部分">部分</option><option value="否／只猜位置">否／只猜位置</option></select></div>
+              <div class="observer-field"><label for="tradeoff-explanation">最快／最低價取捨</label><select id="tradeoff-explanation"><option value="未判定">未判定</option><option value="完整正確">完整正確</option><option value="部分">部分</option><option value="錯誤">錯誤</option></select></div>
+              <div class="observer-field"><label for="projection-help">需要 projection 順序提示</label><select id="projection-help"><option value="否">否</option><option value="是">是</option></select></div>
+              <div class="observer-field"><label for="hint-count">Facilitator hints 次數</label><input id="hint-count" type="number" min="0" step="1" value="0" /></div>
+              <div class="observer-field full"><label for="observation-notes">錯誤、停頓、重試與協助內容</label><textarea id="observation-notes"></textarea></div>
+              <div class="observer-field full"><label for="representative-quote">匿名代表語句</label><textarea id="representative-quote" placeholder="不要記錄姓名、聯絡方式或可識別背景"></textarea></div>
             </div>
 
             <div class="study-controls">
@@ -172,7 +143,7 @@
           </section>
         </aside>
 
-        <section class="study-panel" aria-labelledby="participant-title">
+        <section id="participant-panel" class="study-panel participant-panel" aria-labelledby="participant-title">
           <div id="waiting-stage">
             <p class="eyebrow">Participant surface</p>
             <h2 id="participant-title">尚未開始</h2>
@@ -182,20 +153,12 @@
           <div id="participant-stage" hidden>
             <p class="eyebrow">First-use task</p>
             <h2>請直接使用畫面完成任務</h2>
-            <article class="study-task">
-              <p>你和兩位朋友要點一道分享料理。每道料理預算不超過 NT$500，而且不想選「較慢」的料理。請找出所有符合條件的料理。接著回答：若優先最快，會選哪一道；若優先最低價，會選哪一道？</p>
-            </article>
+            <article class="study-task"><p>你和兩位朋友要點一道分享料理。每道料理預算不超過 NT$500，而且不想選「較慢」的料理。請找出所有符合條件的料理。接著回答：若優先最快，會選哪一道；若優先最低價，會選哪一道？</p></article>
             <div class="study-session-bar">
               <span id="timer" class="study-timer" aria-label="經過時間">00:00</span>
-              <div class="study-controls">
-                <button id="finish-session" type="button">完成任務</button>
-              </div>
+              <div class="study-controls"><button id="finish-session" type="button">完成任務</button></div>
             </div>
-            <div class="study-frame-wrap">
-              <div id="frame-stage" class="study-frame-stage">
-                <iframe id="prototype-frame" class="study-frame" title="25P Menu Projections 任務畫面"></iframe>
-              </div>
-            </div>
+            <div class="study-frame-wrap"><div id="frame-stage" class="study-frame-stage"><iframe id="prototype-frame" class="study-frame" title="25P Menu Projections 任務畫面"></iframe></div></div>
           </div>
 
           <div id="finished-stage" hidden>
@@ -207,9 +170,7 @@
       </div>
     </main>
 
-    <footer class="research-footer study-shell">
-      <p>Evidence-only runner · no name, contact detail, response, Product state, analytics, localStorage, or sessionStorage is persisted.</p>
-    </footer>
+    <footer class="research-footer study-shell"><p>Evidence-only runner · no name, contact detail, response, Product state, analytics, localStorage, or sessionStorage is persisted.</p></footer>
 
     <script>
       (() => {
@@ -221,11 +182,9 @@
         ];
         const allowedViewports = [320, 390, 1280];
         const query = new URLSearchParams(globalThis.location.search);
-
-        const randomIndex = (length) => {
-          if (globalThis.crypto?.getRandomValues) return globalThis.crypto.getRandomValues(new Uint32Array(1))[0] % length;
-          return Math.floor(Math.random() * length);
-        };
+        const randomIndex = (length) => globalThis.crypto?.getRandomValues
+          ? globalThis.crypto.getRandomValues(new Uint32Array(1))[0] % length
+          : Math.floor(Math.random() * length);
         const makeSessionCode = () => {
           const values = globalThis.crypto?.getRandomValues
             ? globalThis.crypto.getRandomValues(new Uint8Array(4))
@@ -249,6 +208,8 @@
         let timerId = null;
         let sessionStarted = false;
 
+        const study = document.querySelector("#study");
+        const studyGrid = document.querySelector("#study-grid");
         const frame = document.querySelector("#prototype-frame");
         const frameStage = document.querySelector("#frame-stage");
         const sessionCode = document.querySelector("#session-code");
@@ -260,12 +221,17 @@
         const finishedStage = document.querySelector("#finished-stage");
         const observerPanel = document.querySelector("#observer-panel");
         const setupPanel = document.querySelector("#setup-panel");
+        const participantPanel = document.querySelector("#participant-panel");
         const timer = document.querySelector("#timer");
         const finishButton = document.querySelector("#finish-session");
         const copyButton = document.querySelector("#copy-observation");
         const copyStatus = document.querySelector("#copy-status");
         const summary = document.querySelector("#study-summary");
 
+        const syncLayoutMode = () => {
+          studyGrid.dataset.viewport = String(viewport);
+          study.classList.toggle("study--desktop-active", sessionStarted && viewport === 1280);
+        };
         const setViewport = (nextViewport) => {
           if (sessionStarted || !allowedViewports.includes(nextViewport)) return;
           viewport = nextViewport;
@@ -273,35 +239,18 @@
           frameStage.style.setProperty("--study-width", `${viewport}px`);
           frameStage.style.setProperty("--study-height", desktop ? "960px" : "900px");
           viewportLabel.textContent = desktop ? "desktop · 1280px" : `${viewport}px`;
-          document.querySelectorAll("[data-viewport]").forEach((button) => {
-            button.setAttribute("aria-pressed", String(Number(button.dataset.viewport) === viewport));
-          });
+          document.querySelectorAll("[data-viewport]").forEach((button) => button.setAttribute("aria-pressed", String(Number(button.dataset.viewport) === viewport)));
+          syncLayoutMode();
         };
-
         const blindPrototypeChrome = (documentRoot) => {
-          documentRoot.querySelectorAll(".skip-link, .prototype-header, .projection-intent, .projection-notes").forEach((element) => {
-            element.hidden = true;
-          });
+          documentRoot.querySelectorAll(".skip-link, .prototype-header, .projection-intent, .projection-notes").forEach((element) => { element.hidden = true; });
           const shell = documentRoot.querySelector(".prototype-shell");
           const prototype = documentRoot.querySelector("#prototype");
           const phone = documentRoot.querySelector(".projection-phone");
-          if (shell) {
-            shell.style.width = "100%";
-            shell.style.maxWidth = "none";
-            shell.style.margin = "0";
-            shell.style.padding = "0";
-          }
-          if (prototype) {
-            prototype.style.display = "block";
-            prototype.style.width = "100%";
-            prototype.style.margin = "0";
-          }
-          if (phone) {
-            phone.style.width = viewport === 1280 ? "430px" : "100%";
-            phone.style.margin = "0 auto";
-          }
+          if (shell) Object.assign(shell.style, { width: "100%", maxWidth: "none", margin: "0", padding: "0" });
+          if (prototype) Object.assign(prototype.style, { display: "block", width: "100%", margin: "0" });
+          if (phone) Object.assign(phone.style, { width: viewport === 1280 ? "430px" : "100%", margin: "0 auto" });
         };
-
         const preparePrototype = () => {
           try {
             const documentRoot = frame.contentDocument;
@@ -312,33 +261,35 @@
             if (!initialControl) throw new Error("Starting projection control unavailable");
             initialControl.click();
             projectionSequence.push(startProjection.key);
-            controls.forEach((control) => {
-              control.addEventListener("click", () => {
-                const key = control.dataset.projection;
-                if (projectionSequence.at(-1) !== key) projectionSequence.push(key);
-              });
-            });
+            controls.forEach((control) => control.addEventListener("click", () => {
+              const key = control.dataset.projection;
+              if (projectionSequence.at(-1) !== key) projectionSequence.push(key);
+            }));
             documentRoot.addEventListener("click", (event) => {
               const product = event.target.closest?.("[data-product-id]");
-              if (!product) return;
-              productSequence.push(product.dataset.productId);
+              if (product) productSequence.push(product.dataset.productId);
             }, true);
             waitingStage.hidden = true;
             participantStage.hidden = false;
             setupPanel.hidden = true;
+            studyGrid.dataset.state = "active";
+            syncLayoutMode();
             startedAt = performance.now();
             timerId = globalThis.setInterval(() => {
               elapsedMs = performance.now() - startedAt;
               timer.textContent = formatTime(elapsedMs);
             }, 250);
+            participantPanel.scrollIntoView({ block: "start" });
             frame.focus();
           } catch (error) {
             sessionStarted = false;
+            studyGrid.dataset.state = "setup";
+            syncLayoutMode();
             startButton.disabled = false;
+            document.querySelectorAll("[data-viewport]").forEach((button) => { button.disabled = false; });
             setupStatus.textContent = `無法準備 prototype：${error.message}`;
           }
         };
-
         const startSession = () => {
           if (sessionStarted) return;
           sessionStarted = true;
@@ -347,7 +298,6 @@
           setupStatus.textContent = "正在載入 25P…";
           frame.src = prototypeHref;
         };
-
         const finishSession = () => {
           if (!startedAt) return;
           elapsedMs = performance.now() - startedAt;
@@ -355,7 +305,11 @@
           timer.textContent = formatTime(elapsedMs);
           participantStage.hidden = true;
           finishedStage.hidden = false;
+          setupPanel.hidden = true;
           observerPanel.hidden = false;
+          studyGrid.dataset.state = "finished";
+          sessionStarted = false;
+          syncLayoutMode();
           document.querySelector("#observer-session").textContent = sessionCodeValue;
           document.querySelector("#observer-viewport").textContent = viewport === 1280 ? "desktop · 1280px" : `${viewport}px`;
           document.querySelector("#observer-start").textContent = startProjection.label;
@@ -364,36 +318,24 @@
           document.querySelector("#observer-products").textContent = productSequence.length ? productSequence.join(" → ") : "none recorded";
           observerPanel.scrollIntoView({ block: "start" });
         };
-
         const valueOf = (selector) => document.querySelector(selector)?.value?.trim() ?? "";
         const buildObservation = () => [
-          "# 25P reader task observation",
-          "",
-          `Session: ${sessionCodeValue}`,
+          "# 25P reader task observation", "", `Session: ${sessionCodeValue}`,
           `Viewport: ${viewport === 1280 ? "desktop · 1280px" : `${viewport}px`}`,
-          `Starting projection: ${startProjection.label}`,
-          `Total time: ${formatTime(elapsedMs)}`,
+          `Starting projection: ${startProjection.label}`, `Total time: ${formatTime(elapsedMs)}`,
           `Projection sequence: ${projectionSequence.map((key) => projections.find((projection) => projection.key === key)?.label ?? key).join(" -> ")}`,
-          `Opened Product IDs: ${productSequence.length ? productSequence.join(" -> ") : "none recorded"}`,
-          "",
+          `Opened Product IDs: ${productSequence.length ? productSequence.join(" -> ") : "none recorded"}`, "",
           `Participant qualifying set: ${valueOf("#named-products")}`,
           `Time to first correct candidate: ${valueOf("#first-correct-time") || "not recorded"}`,
           `Time to complete set: ${valueOf("#complete-set-time") || "not completed / not recorded"}`,
-          `Fastest answer: ${valueOf("#fastest-answer")}`,
-          `Lowest-price answer: ${valueOf("#lowest-answer")}`,
-          `Complete three-Product set: ${valueOf("#complete-set")}`,
-          `Unknown-band treatment: ${valueOf("#unknown-treatment")}`,
-          `Band-label use: ${valueOf("#band-label-use")}`,
-          `Trade-off explanation: ${valueOf("#tradeoff-explanation")}`,
-          `Projection-order help required: ${valueOf("#projection-help")}`,
-          `Facilitator hints: ${valueOf("#hint-count")}`,
-          "",
+          `Fastest answer: ${valueOf("#fastest-answer")}`, `Lowest-price answer: ${valueOf("#lowest-answer")}`,
+          `Complete three-Product set: ${valueOf("#complete-set")}`, `Unknown-band treatment: ${valueOf("#unknown-treatment")}`,
+          `Band-label use: ${valueOf("#band-label-use")}`, `Trade-off explanation: ${valueOf("#tradeoff-explanation")}`,
+          `Projection-order help required: ${valueOf("#projection-help")}`, `Facilitator hints: ${valueOf("#hint-count")}`, "",
           `Errors / retries / assistance: ${valueOf("#observation-notes")}`,
-          `Anonymous representative quote: ${valueOf("#representative-quote")}`,
-          "",
+          `Anonymous representative quote: ${valueOf("#representative-quote")}`, "",
           "No name, contact detail, recording, demographic note, or account identifier collected.",
         ].join("\n");
-
         const copyObservation = async () => {
           const text = buildObservation();
           summary.textContent = text;
@@ -407,15 +349,12 @@
         };
 
         frame.addEventListener("load", () => requestAnimationFrame(preparePrototype), { once: true });
-        document.querySelectorAll("[data-viewport]").forEach((button) => {
-          button.addEventListener("click", () => setViewport(Number(button.dataset.viewport)));
-        });
+        document.querySelectorAll("[data-viewport]").forEach((button) => button.addEventListener("click", () => setViewport(Number(button.dataset.viewport))));
         startButton.addEventListener("click", startSession);
         finishButton.addEventListener("click", finishSession);
         copyButton.addEventListener("click", copyObservation);
         document.querySelector("#new-session").addEventListener("click", () => globalThis.location.reload());
         document.querySelector("#new-session-top").addEventListener("click", () => globalThis.location.reload());
-
         sessionCode.textContent = sessionCodeValue;
         setViewport(viewport);
       })();
