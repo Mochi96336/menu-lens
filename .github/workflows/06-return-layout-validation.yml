@@ -44,8 +44,6 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Run real layout checks
-        id: layout
-        continue-on-error: true
         shell: bash
         run: |
           python3 -m http.server 4173 --directory research-history > /tmp/menu-lens-06-return-layout-server.log 2>&1 &
@@ -78,7 +76,3 @@ jobs:
           name: a-m3-return-layout
           path: /tmp/menu-lens-06-return-layout
           if-no-files-found: error
-
-      - name: Enforce layout result
-        if: steps.layout.outcome != 'success'
-        run: exit 1
