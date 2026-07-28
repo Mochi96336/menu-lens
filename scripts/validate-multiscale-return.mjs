@@ -85,7 +85,7 @@ for (const text of [
   "overflow: clip",
   '.multiscale-screen[data-focused="true"] .workspace-topbar',
   "position: sticky",
-  "min-height: 2.6rem",
+  "min-height: 2.5rem",
   "white-space: nowrap",
   "scroll-margin-top: 3.3rem",
   "@media (prefers-reduced-motion: reduce)",
