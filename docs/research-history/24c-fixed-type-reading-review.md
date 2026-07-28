@@ -13,20 +13,24 @@ Does Parent 24's 46rem → 64rem paper enlargement provide a meaningful reading 
 Parent 24 reading typography:
 
 ```text
-Product name  .72rem → .9rem
-price         .58rem → .7rem
-category name .82rem → 1rem
+Product name   .72rem → .9rem
+price          .58rem → .7rem
+category index .56rem → .48rem
+category name  .82rem → 1rem
+price range    .52rem → .44rem
 ```
 
-24C keeps the overview sizes at both scales:
+24C keeps every overview type token at both scales:
 
 ```text
-Product name  .72rem
-price         .58rem
-category name .82rem
+Product name   .72rem
+price          .58rem
+category index .56rem
+category name  .82rem
+price range    .52rem
 ```
 
-Only the reading-scale font growth is removed.
+Only reading-scale type changes are removed. Geometry, spacing, and interaction remain Parent 24.
 
 ## Preserved from 24
 
@@ -44,11 +48,15 @@ Only the reading-scale font growth is removed.
 - shared pointer drag and nearest-column settle;
 - Escape, focus return, resize handling, and reduced motion.
 
+## Layout correction
+
+Browser inspection found that the initial child fixed the Product name, Product price, and category name but still allowed the category index and price range to inherit another reading-size rule. That produced a mixed header hierarchy in reading mode. The child now restores all five overview font sizes, without changing any non-type property.
+
 ## Excluded
 
 - equal columns from 24A;
 - horizontal prices from 24B;
-- font-size changes beyond restoring the three overview sizes;
+- font-size changes beyond restoring the five overview sizes;
 - padding or line-height changes;
 - sheet-width changes;
 - horizontal Product names;
@@ -64,6 +72,7 @@ Review Parent 24 and 24C at 320px, 390px, and desktop:
 
 - overview geometry and typography match;
 - reading sheet reaches the same 64rem width;
+- Product names, prices, category indices, category names, and price ranges retain their overview sizes;
 - the busiest eight-Product category remains fully present;
 - vertical names gain useful spacing from wider lanes even without larger glyphs;
 - prices remain attached to their Product lanes;
