@@ -15,6 +15,7 @@ await Promise.all([
 await Promise.all([
   "README.md",
   "browser-checks.json",
+  "layout-checks.json",
   "parent-child-contact-sheet.svg",
 ].map((path) => access(new URL(path, evidence))));
 
@@ -125,6 +126,33 @@ if (!checks.keyboard?.spaceReset || !checks.keyboard?.focusReturned || Math.abs(
 }
 if (!checks.reducedMotion?.reduced || checks.reducedMotion?.htmlScroll !== "auto" || checks.reducedMotion?.resetPosition !== "sticky") {
   throw new Error("A-M3 reduced-motion evidence failed.");
+}
+
+const layoutChecks = JSON.parse(await readFile(new URL("layout-checks.json", evidence), "utf8"));
+if (!Array.isArray(layoutChecks.failures) || layoutChecks.failures.length !== 0) {
+  throw new Error("A-M3 real layout evidence contains failures.");
+}
+for (const viewport of ["320", "390", "desktop"]) {
+  const result = layoutChecks.viewports?.[viewport];
+  if (!result) throw new Error(`Missing A-M3 real layout evidence for ${viewport}.`);
+  const { initial, focused, deep, returned } = result.states;
+  for (const state of [initial, focused, deep, returned]) {
+    if (state.categories !== 6 || state.products !== 30 || state.uniqueProducts !== 30) {
+      throw new Error(`${viewport} ${state.state} real layout fixture failed.`);
+    }
+    if (state.documentOverflowX || state.frameOverflowX || state.screenOverflowX || state.topbarOverflowX || state.labelOverflowX || state.resetOverflowX) {
+      throw new Error(`${viewport} ${state.state} real layout overflow failed.`);
+    }
+    if (!state.topbarInsideFrame) throw new Error(`${viewport} ${state.state} topbar left the phone frame.`);
+  }
+  for (const state of [focused, deep]) {
+    if (state.topbarPosition !== "sticky" || !state.resetVisible || Math.abs(state.topbarTop) > 1 || state.topbarHeight > 48) {
+      throw new Error(`${viewport} ${state.state} sticky reset geometry failed.`);
+    }
+  }
+  if (result.returnPositionError > 1 || !result.focusReturned || returned.expandedCategories !== 0 || returned.openDetails !== 0) {
+    throw new Error(`${viewport} real layout return contract failed.`);
+  }
 }
 
 console.log("A-M3 Multi-scale Return Continuity validation passed.");
