@@ -55,27 +55,54 @@ A compact task reminder can reopen the same briefing. Reopening temporarily hide
 - storage, cookies, analytics, or network submission;
 - changes to parent 25P files, shared fixture, registry, archive index, or package scripts.
 
-## Validation plan
+## Validation results
 
 The dedicated static validator checks the exact task contract, inherited 25P markup, 6 / 30 fixture identity, reversible state controller, and absence of forbidden behaviors.
 
-The real Chromium matrix checks 320px, 390px, and 1280px in three states:
+The real Chromium matrix exercised 320px, 390px, and 1280px in three states:
 
 1. initial task briefing;
 2. entered projection workspace;
 3. recalled task and return.
 
-Required observations:
+Workflow run `30388233091` passed:
 
-- no horizontal document overflow;
-- task briefing and entry action contained in the phone;
-- no internal task scrolling at the target viewport heights;
-- 30 unique Product nodes and three projection controls;
-- entry does not change the default projection;
-- projection and selected semantic cell survive task recall;
-- no storage, cookies, or page errors.
+```text
+npm run typecheck                               passed
+node scripts/validate-25pa-task-first-entry.mjs passed
+npm test                                        passed
+npm run build                                   passed
+real Chromium matrix                            passed
+viewport artifact upload                        passed
+```
 
-Browser results are written to:
+At 320px, 390px, and 1280px, the machine-readable report records:
+
+```text
+horizontal document overflow          none
+briefing contained in phone           yes
+condition-row overflow                none
+internal briefing scroll              none
+initial active projection             price-serving
+Product nodes after entry             30
+compact task reminder visible         yes
+projection preserved across recall    yes
+semantic cell preserved across recall yes
+Escape returns to workspace           yes
+storage keys                          0
+cookies                               0
+page errors                           0
+```
+
+Aggregate checks are all `true`:
+
+- `allViewportsNoOverflow`;
+- `allTaskBriefingsContained`;
+- `allParentIdentitiesRetained`;
+- `allRecallStatesPreserved`;
+- `noPersistenceOrPageErrors`.
+
+Browser results are recorded at:
 
 - `research-history/review-assets/25pa-task-first-entry/browser-report.json`
 
@@ -83,6 +110,6 @@ Viewport screenshots are uploaded as a workflow artifact rather than committed a
 
 ## Decision boundary
 
-A passing implementation and layout matrix means only that 25PA is technically coherent as a controlled child. It does not show that task-first entry helps unfamiliar readers, and it does not retroactively satisfy the evidence gate.
+The passing implementation and layout matrix means only that 25PA is technically coherent as a controlled child. It does not show that task-first entry helps unfamiliar readers, and it does not retroactively satisfy the evidence gate.
 
 The next meaningful comparison is direct reader evidence between labelled 25P and this exact 25PA child. Until that evidence exists, keep the PR Open + Draft and do not mark ready, auto-merge, or merge it.
