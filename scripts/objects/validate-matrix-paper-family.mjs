@@ -11,7 +11,7 @@ const catalog = await loadArchiveCatalog();
 const byId = new Map(catalog.objects.map((object) => [object.id, object]));
 for (const [id, parent] of [
   ["12", null], ["12A", "12"], ["12A-S1", "12A"],
-  ["15", "12"], ["15A", "15"],
+  ["15", null], ["15A", "15"],
   ["16", "15"], ["16A", "16"],
   ["17", "16"], ["17A", "17"],
 ]) {
