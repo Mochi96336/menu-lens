@@ -1,0 +1,36 @@
+name: Validate 22G Collapse-only
+
+on:
+  pull_request:
+    paths:
+      - "research-history/phases/22g-collapse-only/**"
+      - "research-history/collapse-only-focus.css"
+      - "scripts/validate-22g-collapse-only.mjs"
+      - "docs/research-history/22g-collapse-only-review.md"
+      - "docs/research-history/screenshots/22g/**"
+      - ".github/workflows/22g-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-22g:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Repository test
+        run: npm test
+      - name: Repository build
+        run: npm run build
+      - name: Validate 22G boundary
+        run: node scripts/validate-22g-collapse-only.mjs
