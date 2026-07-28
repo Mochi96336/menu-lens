@@ -229,7 +229,7 @@
       id: "23", slug: "collapsible-landscape", title: "Tracked Focus Landscape", family: "landscape", parentId: "22",
       kind: "spatial-prototype", status: "active-variant", statusLabel: "active variant",
       path: "phases/23-collapsible-landscape/index.html", validationProfile: "paper-field-variant",
-      summary: "沿用 22 的 1.65× 欄寬與 camera tracking，並將同欄另一分類收成標頭、放大焦點字級。",
+      summary: "沿用 22 的 1.65× 欄寬與 camera tracking，並將同欄鄰居收成標頭、放大焦點字級。",
       assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "collapsible-landscape.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
     },
     {
