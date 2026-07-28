@@ -1,13 +1,37 @@
+.phone-frame {
+  overflow: clip;
+}
+
+.multiscale-screen .workspace-topbar {
+  gap: .45rem;
+}
+
+.multiscale-screen #scale-label {
+  min-width: 0;
+  font-size: .88rem;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.multiscale-screen #collapse-all {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
 .multiscale-screen[data-focused="true"] .workspace-topbar {
   position: sticky;
   top: 0;
   z-index: 4;
-  min-height: 2.85rem;
-  padding: .35rem 0;
+  min-height: 2.6rem;
+  padding: .25rem 0;
   border-bottom: 1px solid var(--line-strong);
   background: rgb(255 253 248 / 96%);
 }
-.multiscale-screen[data-focused="true"] .scale-category { scroll-margin-top: 3.3rem; }
+
+.multiscale-screen[data-focused="true"] .scale-category {
+  scroll-margin-top: 3.3rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .multiscale-screen { scroll-behavior: auto; }
 }
