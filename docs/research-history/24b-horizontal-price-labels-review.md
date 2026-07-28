@@ -34,10 +34,20 @@ The original `strong` price node is repositioned; no duplicate price or second p
 - reading sheet remains `64rem`;
 - Product lanes remain right-to-left;
 - Product names retain parent 24 typography, spacing, and `vertical-rl` flow;
-- price value, Product membership, and DOM identity remain unchanged;
+- price value, Product membership, DOM identity, and font size remain unchanged;
 - six categories and 30 canonical Products remain present;
 - sold-out treatment remains unchanged;
 - category entry, Product detail, close, focus return, previous/next, keyboard, drag, settle, resize, and reduced motion remain parent 24 behavior.
+
+## Layout correction
+
+Direct browser inspection found that the four overview drink lanes are about `35.6px` wide while a full `NT$xxx` label measured about `36.8px`, allowing adjacent labels to touch. The overview label now uses one bounded tracking correction:
+
+```css
+letter-spacing: -.04em;
+```
+
+The correction applies only at overview scale. It does not change price content, font size, Product lanes, column weights, sheet width, or reading-scale presentation.
 
 ## Excluded
 
@@ -45,6 +55,8 @@ The original `strong` price node is repositioned; no duplicate price or second p
 - changes to category or Product order;
 - horizontal Product names;
 - font-size changes;
+- abbreviating or removing `NT$`;
+- scaling price labels;
 - another shared price row or rail;
 - row or column focus weighting;
 - focus-driven camera tracking;
@@ -72,6 +84,6 @@ Inspect at 320px, 390px, and desktop:
 
 KEEP only if horizontal prices are materially easier to identify and compare while remaining unambiguously attached to their vertical Product lanes.
 
-Mark UNSUCCESSFUL if the horizontal labels form a visually disconnected bottom band, overflow the narrower overview lanes, or consume enough vertical name space to reduce reading more than they help.
+Mark UNSUCCESSFUL if the horizontal labels form a visually disconnected bottom band, still collide in narrow lanes, or consume enough vertical name space to reduce reading more than they help.
 
 Do not add a shared price rail, wider columns, smaller type, abbreviations, or another alignment mechanism to rescue 24B. Those would be separate variables.
