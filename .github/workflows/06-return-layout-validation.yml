@@ -1,0 +1,84 @@
+name: Validate A-M3 return layout
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  validate-return-layout:
+    if: github.head_ref == 'agent/menu-lens-06-return-continuity'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out A-M3 branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/menu-lens-06-return-continuity
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Chromium runner
+        run: |
+          npm install --no-save --package-lock=false playwright@1.54.2
+          npx playwright install --with-deps chromium
+
+      - name: Run real layout checks
+        id: layout
+        continue-on-error: true
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory research-history > /tmp/menu-lens-06-return-layout-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" || true' EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4173/phases/06-multiscale-menu-map/ > /dev/null; then
+              break
+            fi
+            sleep 0.5
+          done
+          node scripts/06-return-layout-browser.mjs
+
+      - name: Commit deterministic layout report
+        if: always()
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/research-history/reviews/06-return-continuity/layout-checks.json
+          if ! git diff --cached --quiet; then
+            git commit -m "test(06): record real return-layout evidence"
+            git push origin HEAD:agent/menu-lens-06-return-continuity
+          fi
+
+      - name: Upload layout screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a-m3-return-layout
+          path: /tmp/menu-lens-06-return-layout
+          if-no-files-found: error
+
+      - name: Enforce layout result
+        if: steps.layout.outcome != 'success'
+        run: exit 1
