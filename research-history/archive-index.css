@@ -1,0 +1,43 @@
+.archive-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.archive-control {
+  display: grid;
+  gap: 0.35rem;
+  min-width: min(100%, 14rem);
+  font-size: 0.85rem;
+}
+
+.archive-control select {
+  min-height: 2.75rem;
+  border: 1px solid rgba(20, 20, 20, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: inherit;
+  padding: 0 1rem;
+  font: inherit;
+}
+
+.archive-family-card__question,
+.archive-object__evidence {
+  color: rgba(20, 20, 20, 0.66);
+}
+
+.archive-object[hidden] {
+  display: none;
+}
+
+.archive-empty,
+.archive-error {
+  padding: 1rem;
+  border: 1px dashed rgba(20, 20, 20, 0.28);
+  border-radius: 1rem;
+}
+
+.archive-note {
+  max-width: 70ch;
+}
