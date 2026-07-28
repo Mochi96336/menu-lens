@@ -121,6 +121,13 @@
       assets: { styles: ["history.css", "horizontal-ribbon.css"], scripts: ["menu-fixture.js", "horizontal-ribbon-renderer.js", "spatial-drag.js"] },
     },
     {
+      id: "09A", slug: "direct-minimap-scrub", title: "Direct Minimap Scrub", family: "horizontal", parentId: "09",
+      kind: "spatial-prototype", status: "preserved", statusLabel: "bounded navigation repair",
+      path: "phases/09a-direct-minimap-scrub/index.html", validationProfile: "ribbon-direct-scrub",
+      summary: "讓 09 既有的 minimap viewport window 可直接拖曳或用鍵盤映射到 30 道料理位置。",
+      assets: { styles: ["history.css", "horizontal-ribbon.css", "direct-ribbon-scrub.css"], scripts: ["menu-fixture.js", "horizontal-ribbon-renderer.js", "spatial-drag.js", "direct-ribbon-scrub.js"] },
+    },
+    {
       id: "10", slug: "fisheye-ribbon", title: "Fisheye Ribbon", family: "horizontal", parentId: "09",
       kind: "spatial-prototype", status: "preserved", statusLabel: "preserved experiment",
       path: "phases/10-fisheye-ribbon/index.html", validationProfile: "fisheye",
@@ -222,7 +229,7 @@
       id: "23", slug: "collapsible-landscape", title: "Tracked Focus Landscape", family: "landscape", parentId: "22",
       kind: "spatial-prototype", status: "active-variant", statusLabel: "active variant",
       path: "phases/23-collapsible-landscape/index.html", validationProfile: "paper-field-variant",
-      summary: "沿用 22 的 1.65× 欄寬與 camera tracking，並將同欄鄰居收成標頭、放大焦點字級。",
+      summary: "沿用 22 的 1.65× 欄寬與 camera tracking，並將同欄另一分類收成標頭、放大焦點字級。",
       assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "collapsible-landscape.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
     },
     {
