@@ -117,6 +117,15 @@ for (const forbiddenMechanism of ["scroll-snap", "overflow-x", "flex-basis", "gr
     throw new Error(`09A child CSS introduces an unrelated mechanism: ${forbiddenMechanism}`);
   }
 }
+if (!childCss.includes("height: 3px")) {
+  throw new Error("09A scrub control must retain the parent 3px viewport-window geometry.");
+}
+if (childCss.includes("height: 1.15rem")) {
+  throw new Error("09A must not cover the minimap buttons with a tall viewport-window layer.");
+}
+if (!childCss.includes("height: .8rem") || !childCss.includes("translate(-50%, -50%)")) {
+  throw new Error("09A must expand only a bounded pseudo hit area around the 3px line.");
+}
 
 for (const directContract of [
   "window.enableMenuLensDirectRibbonScrub",
@@ -189,4 +198,4 @@ for (const orderAction of ["加入購物車", "選這道", "下單", "結帳", "
   if (childHtml.includes(orderAction)) throw new Error(`09A must not introduce order behavior: ${orderAction}`);
 }
 
-console.log("09A direct minimap scrub validation passed: lineage, canonical mapping, ribbon geometry, existing drag, keyboard, detail, and no second locator preserved.");
+console.log("09A direct minimap scrub validation passed: lineage, canonical mapping, 3px minimap geometry, existing drag, keyboard, detail, and no second locator preserved.");
