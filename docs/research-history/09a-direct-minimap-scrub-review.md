@@ -146,14 +146,14 @@ The viewport-window fraction changes with viewport width, but the direct mapping
 | reset | Second Escape returns to overview and focuses the overview control. |
 | reduced motion | Parent smooth-scroll choice and minimap transition removal remain; direct scrub itself uses immediate mapping. |
 
-## Expected benefit
+## What improved
 
 09A separates two movement scales without creating another surface:
 
 - ribbon drag for nearby Products and spatial continuity;
 - minimap-window scrub for distant Products.
 
-This removes the need to repeatedly swipe or click through most of the 30-Product ribbon when the desired area is already visible in the minimap.
+The user no longer has to repeatedly swipe or activate next through most of the 30-Product ribbon when the desired region is already visible in the minimap. The direct mapping reaches any canonical Product position in one bounded action while leaving nearby ribbon movement intact.
 
 ## Remaining limitation
 
@@ -161,7 +161,7 @@ Direct access does not make the long ribbon shorter. After a distant jump, the u
 
 The correct conclusion is therefore bounded:
 
-- 09A may improve 09's navigation cost;
+- 09A improves 09's navigation cost;
 - it does not make 09 suitable as the primary menu screen;
 - it does not justify another locator, Product compression, extra scale, or camera rescue.
 
@@ -197,6 +197,18 @@ The child-specific validator checks:
 - scrub helper delegates movement rather than implementing another camera;
 - no Candidate, cart, order, or transaction behavior.
 
-## Initial implementation judgment
+GitHub Actions run 79 passed:
 
-**Directionally coherent.** The direct control addresses the central travel-cost complaint using the locator already present in 09. Final disposition should distinguish “useful research repair” from “suitable primary interface.” No second rescue mechanism will be added.
+```text
+npm run typecheck — passed
+npm test          — passed
+npm run build     — passed
+```
+
+## Final judgment
+
+**KEEP as a bounded research repair.**
+
+The child addresses 09's central long-distance traversal cost through the locator that already exists, preserves the extreme-horizontal prototype identity, and introduces no competing navigation surface. It is useful evidence that direct manipulation improves the mechanism, but it is not evidence that a 30-Product horizontal ribbon should become the primary menu interface.
+
+No second rescue mechanism, 09B, Product compression, additional scale, or new horizontal variant is proposed from this PR.
