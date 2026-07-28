@@ -1,0 +1,228 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2380" viewBox="0 0 1600 2380">
+<rect width="100%" height="100%" fill="#eeeae2"/>
+<style>text{font-family:Arial,"Noto Sans TC","Microsoft JhengHei",sans-serif;fill:#211f1b}.label{font-size:22px;font-weight:700;fill:#8b3f32}.title{font-size:30px;font-weight:700}.small{font-size:17px;fill:#68635c}.tiny{font-size:14px;fill:#8a847b}.name{font-size:21px;font-weight:700}.price{font-size:17px;font-weight:700}.cue{font-size:15px;fill:#68635c}.index{font-size:14px;font-weight:700;fill:#8a847b;letter-spacing:2px}.summary{font-size:17px;font-weight:700}</style>
+<text x="60" y="65" class="title" text-anchor="start">05B Editorial Ledger Rhythm — parent / child view record</text>
+<text x="60" y="100" class="small" text-anchor="start">Recorded viewports: 320px · 390px · desktop. Product-row geometry is unchanged; only category-level rhythm varies.</text>
+<rect x="70" y="190" width="430" height="590" rx="4" fill="#fffdf8" stroke="#8f877c"/>
+<text x="70" y="172" class="label" text-anchor="start">Parent 05 · 320px</text>
+<line x1="92" y1="224" x2="478" y2="224" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="276" class="title" text-anchor="start">飯麵類</text>
+<text x="478" y="274" class="tiny" text-anchor="end">6 道</text>
+<text x="92" y="309" class="small" text-anchor="start">以飯、麵或燉飯為核心的單人主食。 · NT$240–NT$320</text>
+<line x1="92" y1="328" x2="478" y2="328" stroke="#211f1b" stroke-width="2"/>
+<text x="92" y="366" class="name" text-anchor="start">炙燒叉燒溫泉蛋飯</text>
+<text x="478" y="366" class="price" text-anchor="end">NT$260</text>
+<text x="92" y="393" class="small" text-anchor="start">炙燒叉燒、溫泉蛋、青蔥與甜醬油鋪在熱飯上。</text>
+<text x="92" y="419" class="cue" text-anchor="start">濃郁、炙燒</text>
+<line x1="92" y1="438" x2="478" y2="438" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="458" class="name" text-anchor="start">松露野菇燉飯</text>
+<text x="478" y="458" class="price" text-anchor="end">NT$300</text>
+<text x="92" y="485" class="small" text-anchor="start">綜合野菇、帕瑪森與松露香氣收進偏濃稠的燉飯。</text>
+<text x="92" y="511" class="cue" text-anchor="start">蔬食、松露</text>
+<line x1="92" y1="530" x2="478" y2="530" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="550" class="name" text-anchor="start">海老明太子奶油烏龍</text>
+<text x="478" y="550" class="price" text-anchor="end">NT$320</text>
+<text x="92" y="577" class="small" text-anchor="start">蝦仁、明太子與奶油醬包裹彈牙烏龍麵。</text>
+<text x="92" y="603" class="cue" text-anchor="start">奶油、海味</text>
+<line x1="92" y1="622" x2="478" y2="622" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="642" class="name" text-anchor="start">青花椒雞絲拌麵</text>
+<text x="478" y="642" class="price" text-anchor="end">NT$250</text>
+<text x="92" y="669" class="small" text-anchor="start">雞絲、青花椒油與脆黃瓜拌入細麵，香麻而清爽。</text>
+<text x="92" y="695" class="cue" text-anchor="start">香麻、清爽</text>
+<line x1="92" y1="714" x2="478" y2="714" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="745" class="title" text-anchor="start">分享料理</text>
+<text x="478" y="743" class="tiny" text-anchor="end">6 道</text>
+<rect x="570" y="190" width="430" height="590" rx="4" fill="#fffdf8" stroke="#8f877c"/>
+<text x="570" y="172" class="label" text-anchor="start">Child 05B · 320px</text>
+<line x1="592" y1="224" x2="978" y2="224" stroke="#c9c2b7" stroke-width="1"/>
+<text x="592" y="265" class="index" text-anchor="start">02 / 06</text>
+<text x="680" y="263" class="title" text-anchor="start">飯麵類</text>
+<text x="680" y="291" class="summary" text-anchor="start">飯、燉飯、烏龍與麵食</text>
+<text x="978" y="263" class="tiny" text-anchor="end">6 道</text>
+<text x="978" y="289" class="tiny" text-anchor="end">NT$240–NT$320</text>
+<text x="680" y="322" class="small" text-anchor="start">以飯、麵或燉飯為核心的單人主食。</text>
+<line x1="592" y1="340" x2="978" y2="340" stroke="#211f1b" stroke-width="2"/>
+<text x="592" y="378" class="name" text-anchor="start">炙燒叉燒溫泉蛋飯</text>
+<text x="978" y="378" class="price" text-anchor="end">NT$260</text>
+<text x="592" y="405" class="small" text-anchor="start">炙燒叉燒、溫泉蛋、青蔥與甜醬油鋪在熱飯上。</text>
+<text x="592" y="431" class="cue" text-anchor="start">濃郁、炙燒</text>
+<line x1="592" y1="450" x2="978" y2="450" stroke="#c9c2b7" stroke-width="1"/>
+<text x="592" y="470" class="name" text-anchor="start">松露野菇燉飯</text>
+<text x="978" y="470" class="price" text-anchor="end">NT$300</text>
+<text x="592" y="497" class="small" text-anchor="start">綜合野菇、帕瑪森與松露香氣收進偏濃稠的燉飯。</text>
+<text x="592" y="523" class="cue" text-anchor="start">蔬食、松露</text>
+<line x1="592" y1="542" x2="978" y2="542" stroke="#c9c2b7" stroke-width="1"/>
+<text x="592" y="562" class="name" text-anchor="start">海老明太子奶油烏龍</text>
+<text x="978" y="562" class="price" text-anchor="end">NT$320</text>
+<text x="592" y="589" class="small" text-anchor="start">蝦仁、明太子與奶油醬包裹彈牙烏龍麵。</text>
+<text x="592" y="615" class="cue" text-anchor="start">奶油、海味</text>
+<line x1="592" y1="634" x2="978" y2="634" stroke="#c9c2b7" stroke-width="1"/>
+<text x="592" y="654" class="name" text-anchor="start">青花椒雞絲拌麵</text>
+<text x="978" y="654" class="price" text-anchor="end">NT$250</text>
+<text x="592" y="681" class="small" text-anchor="start">雞絲、青花椒油與脆黃瓜拌入細麵，香麻而清爽。</text>
+<text x="592" y="707" class="cue" text-anchor="start">香麻、清爽</text>
+<line x1="592" y1="726" x2="978" y2="726" stroke="#c9c2b7" stroke-width="1"/>
+<text x="592" y="745" class="index" text-anchor="start">03 / 06</text>
+<text x="680" y="745" class="title" text-anchor="start">分享料理</text>
+<rect x="70" y="900" width="500" height="640" rx="4" fill="#fffdf8" stroke="#8f877c"/>
+<text x="70" y="882" class="label" text-anchor="start">Parent 05 · 390px</text>
+<line x1="92" y1="934" x2="548" y2="934" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="986" class="title" text-anchor="start">飯麵類</text>
+<text x="548" y="984" class="tiny" text-anchor="end">6 道</text>
+<text x="92" y="1019" class="small" text-anchor="start">以飯、麵或燉飯為核心的單人主食。 · NT$240–NT$320</text>
+<line x1="92" y1="1038" x2="548" y2="1038" stroke="#211f1b" stroke-width="2"/>
+<text x="92" y="1076" class="name" text-anchor="start">炙燒叉燒溫泉蛋飯</text>
+<text x="548" y="1076" class="price" text-anchor="end">NT$260</text>
+<text x="92" y="1103" class="small" text-anchor="start">炙燒叉燒、溫泉蛋、青蔥與甜醬油鋪在熱飯上。</text>
+<text x="92" y="1129" class="cue" text-anchor="start">濃郁、炙燒</text>
+<line x1="92" y1="1148" x2="548" y2="1148" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="1168" class="name" text-anchor="start">松露野菇燉飯</text>
+<text x="548" y="1168" class="price" text-anchor="end">NT$300</text>
+<text x="92" y="1195" class="small" text-anchor="start">綜合野菇、帕瑪森與松露香氣收進偏濃稠的燉飯。</text>
+<text x="92" y="1221" class="cue" text-anchor="start">蔬食、松露</text>
+<line x1="92" y1="1240" x2="548" y2="1240" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="1260" class="name" text-anchor="start">海老明太子奶油烏龍</text>
+<text x="548" y="1260" class="price" text-anchor="end">NT$320</text>
+<text x="92" y="1287" class="small" text-anchor="start">蝦仁、明太子與奶油醬包裹彈牙烏龍麵。</text>
+<text x="92" y="1313" class="cue" text-anchor="start">奶油、海味</text>
+<line x1="92" y1="1332" x2="548" y2="1332" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="1352" class="name" text-anchor="start">青花椒雞絲拌麵</text>
+<text x="548" y="1352" class="price" text-anchor="end">NT$250</text>
+<text x="92" y="1379" class="small" text-anchor="start">雞絲、青花椒油與脆黃瓜拌入細麵，香麻而清爽。</text>
+<text x="92" y="1405" class="cue" text-anchor="start">香麻、清爽</text>
+<line x1="92" y1="1424" x2="548" y2="1424" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="1505" class="title" text-anchor="start">分享料理</text>
+<text x="548" y="1503" class="tiny" text-anchor="end">6 道</text>
+<rect x="640" y="900" width="500" height="640" rx="4" fill="#fffdf8" stroke="#8f877c"/>
+<text x="640" y="882" class="label" text-anchor="start">Child 05B · 390px</text>
+<line x1="662" y1="934" x2="1118" y2="934" stroke="#c9c2b7" stroke-width="1"/>
+<text x="662" y="975" class="index" text-anchor="start">02 / 06</text>
+<text x="750" y="973" class="title" text-anchor="start">飯麵類</text>
+<text x="750" y="1001" class="summary" text-anchor="start">飯、燉飯、烏龍與麵食</text>
+<text x="1118" y="973" class="tiny" text-anchor="end">6 道</text>
+<text x="1118" y="999" class="tiny" text-anchor="end">NT$240–NT$320</text>
+<text x="750" y="1032" class="small" text-anchor="start">以飯、麵或燉飯為核心的單人主食。</text>
+<line x1="662" y1="1050" x2="1118" y2="1050" stroke="#211f1b" stroke-width="2"/>
+<text x="662" y="1088" class="name" text-anchor="start">炙燒叉燒溫泉蛋飯</text>
+<text x="1118" y="1088" class="price" text-anchor="end">NT$260</text>
+<text x="662" y="1115" class="small" text-anchor="start">炙燒叉燒、溫泉蛋、青蔥與甜醬油鋪在熱飯上。</text>
+<text x="662" y="1141" class="cue" text-anchor="start">濃郁、炙燒</text>
+<line x1="662" y1="1160" x2="1118" y2="1160" stroke="#c9c2b7" stroke-width="1"/>
+<text x="662" y="1180" class="name" text-anchor="start">松露野菇燉飯</text>
+<text x="1118" y="1180" class="price" text-anchor="end">NT$300</text>
+<text x="662" y="1207" class="small" text-anchor="start">綜合野菇、帕瑪森與松露香氣收進偏濃稠的燉飯。</text>
+<text x="662" y="1233" class="cue" text-anchor="start">蔬食、松露</text>
+<line x1="662" y1="1252" x2="1118" y2="1252" stroke="#c9c2b7" stroke-width="1"/>
+<text x="662" y="1272" class="name" text-anchor="start">海老明太子奶油烏龍</text>
+<text x="1118" y="1272" class="price" text-anchor="end">NT$320</text>
+<text x="662" y="1299" class="small" text-anchor="start">蝦仁、明太子與奶油醬包裹彈牙烏龍麵。</text>
+<text x="662" y="1325" class="cue" text-anchor="start">奶油、海味</text>
+<line x1="662" y1="1344" x2="1118" y2="1344" stroke="#c9c2b7" stroke-width="1"/>
+<text x="662" y="1364" class="name" text-anchor="start">青花椒雞絲拌麵</text>
+<text x="1118" y="1364" class="price" text-anchor="end">NT$250</text>
+<text x="662" y="1391" class="small" text-anchor="start">雞絲、青花椒油與脆黃瓜拌入細麵，香麻而清爽。</text>
+<text x="662" y="1417" class="cue" text-anchor="start">香麻、清爽</text>
+<line x1="662" y1="1436" x2="1118" y2="1436" stroke="#c9c2b7" stroke-width="1"/>
+<text x="662" y="1505" class="index" text-anchor="start">03 / 06</text>
+<text x="750" y="1505" class="title" text-anchor="start">分享料理</text>
+<rect x="70" y="1660" width="500" height="620" rx="4" fill="#fffdf8" stroke="#8f877c"/>
+<text x="70" y="1642" class="label" text-anchor="start">Parent 05 · desktop</text>
+<line x1="92" y1="1694" x2="548" y2="1694" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="1746" class="title" text-anchor="start">飯麵類</text>
+<text x="548" y="1744" class="tiny" text-anchor="end">6 道</text>
+<text x="92" y="1779" class="small" text-anchor="start">以飯、麵或燉飯為核心的單人主食。 · NT$240–NT$320</text>
+<line x1="92" y1="1798" x2="548" y2="1798" stroke="#211f1b" stroke-width="2"/>
+<text x="92" y="1836" class="name" text-anchor="start">炙燒叉燒溫泉蛋飯</text>
+<text x="548" y="1836" class="price" text-anchor="end">NT$260</text>
+<text x="92" y="1863" class="small" text-anchor="start">炙燒叉燒、溫泉蛋、青蔥與甜醬油鋪在熱飯上。</text>
+<text x="92" y="1889" class="cue" text-anchor="start">濃郁、炙燒</text>
+<line x1="92" y1="1908" x2="548" y2="1908" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="1928" class="name" text-anchor="start">松露野菇燉飯</text>
+<text x="548" y="1928" class="price" text-anchor="end">NT$300</text>
+<text x="92" y="1955" class="small" text-anchor="start">綜合野菇、帕瑪森與松露香氣收進偏濃稠的燉飯。</text>
+<text x="92" y="1981" class="cue" text-anchor="start">蔬食、松露</text>
+<line x1="92" y1="2000" x2="548" y2="2000" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="2020" class="name" text-anchor="start">海老明太子奶油烏龍</text>
+<text x="548" y="2020" class="price" text-anchor="end">NT$320</text>
+<text x="92" y="2047" class="small" text-anchor="start">蝦仁、明太子與奶油醬包裹彈牙烏龍麵。</text>
+<text x="92" y="2073" class="cue" text-anchor="start">奶油、海味</text>
+<line x1="92" y1="2092" x2="548" y2="2092" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="2112" class="name" text-anchor="start">青花椒雞絲拌麵</text>
+<text x="548" y="2112" class="price" text-anchor="end">NT$250</text>
+<text x="92" y="2139" class="small" text-anchor="start">雞絲、青花椒油與脆黃瓜拌入細麵，香麻而清爽。</text>
+<text x="92" y="2165" class="cue" text-anchor="start">香麻、清爽</text>
+<line x1="92" y1="2184" x2="548" y2="2184" stroke="#c9c2b7" stroke-width="1"/>
+<text x="92" y="2245" class="title" text-anchor="start">分享料理</text>
+<text x="548" y="2243" class="tiny" text-anchor="end">6 道</text>
+<rect x="640" y="1660" width="500" height="620" rx="4" fill="#fffdf8" stroke="#8f877c"/>
+<text x="640" y="1642" class="label" text-anchor="start">Child 05B · desktop</text>
+<line x1="662" y1="1694" x2="1118" y2="1694" stroke="#c9c2b7" stroke-width="1"/>
+<text x="662" y="1735" class="index" text-anchor="start">02 / 06</text>
+<text x="750" y="1733" class="title" text-anchor="start">飯麵類</text>
+<text x="750" y="1761" class="summary" text-anchor="start">飯、燉飯、烏龍與麵食</text>
+<text x="1118" y="1733" class="tiny" text-anchor="end">6 道</text>
+<text x="1118" y="1759" class="tiny" text-anchor="end">NT$240–NT$320</text>
+<text x="750" y="1792" class="small" text-anchor="start">以飯、麵或燉飯為核心的單人主食。</text>
+<line x1="662" y1="1810" x2="1118" y2="1810" stroke="#211f1b" stroke-width="2"/>
+<text x="662" y="1848" class="name" text-anchor="start">炙燒叉燒溫泉蛋飯</text>
+<text x="1118" y="1848" class="price" text-anchor="end">NT$260</text>
+<text x="662" y="1875" class="small" text-anchor="start">炙燒叉燒、溫泉蛋、青蔥與甜醬油鋪在熱飯上。</text>
+<text x="662" y="1901" class="cue" text-anchor="start">濃郁、炙燒</text>
+<line x1="662" y1="1920" x2="1118" y2="1920" stroke="#c9c2b7" stroke-width="1"/>
+<text x="662" y="1940" class="name" text-anchor="start">松露野菇燉飯</text>
+<text x="1118" y="1940" class="price" text-anchor="end">NT$300</text>
+<text x="662" y="1967" class="small" text-anchor="start">綜合野菇、帕瑪森與松露香氣收進偏濃稠的燉飯。</text>
+<text x="662" y="1993" class="cue" text-anchor="start">蔬食、松露</text>
+<line x1="662" y1="2012" x2="1118" y2="2012" stroke="#c9c2b7" stroke-width="1"/>
+<text x="662" y="2032" class="name" text-anchor="start">海老明太子奶油烏龍</text>
+<text x="1118" y="2032" class="price" text-anchor="end">NT$320</text>
+<text x="662" y="2059" class="small" text-anchor="start">蝦仁、明太子與奶油醬包裹彈牙烏龍麵。</text>
+<text x="662" y="2085" class="cue" text-anchor="start">奶油、海味</text>
+<line x1="662" y1="2104" x2="1118" y2="2104" stroke="#c9c2b7" stroke-width="1"/>
+<text x="662" y="2124" class="name" text-anchor="start">青花椒雞絲拌麵</text>
+<text x="1118" y="2124" class="price" text-anchor="end">NT$250</text>
+<text x="662" y="2151" class="small" text-anchor="start">雞絲、青花椒油與脆黃瓜拌入細麵，香麻而清爽。</text>
+<text x="662" y="2177" class="cue" text-anchor="start">香麻、清爽</text>
+<line x1="662" y1="2196" x2="1118" y2="2196" stroke="#c9c2b7" stroke-width="1"/>
+<text x="662" y="2245" class="index" text-anchor="start">03 / 06</text>
+<text x="750" y="2245" class="title" text-anchor="start">分享料理</text>
+<rect x="1210" y="900" width="330" height="1040" rx="4" fill="#fffdf8" stroke="#8f877c"/>
+<text x="1210" y="882" class="label" text-anchor="start">Child 05B · 390px detail</text>
+<line x1="1232" y1="934" x2="1518" y2="934" stroke="#c9c2b7" stroke-width="1"/>
+<text x="1232" y="975" class="index" text-anchor="start">02 / 06</text>
+<text x="1320" y="973" class="title" text-anchor="start">飯麵類</text>
+<text x="1320" y="1001" class="summary" text-anchor="start">飯、燉飯、烏龍與麵食</text>
+<text x="1518" y="973" class="tiny" text-anchor="end">6 道</text>
+<text x="1518" y="999" class="tiny" text-anchor="end">NT$240–NT$320</text>
+<text x="1320" y="1032" class="small" text-anchor="start">以飯、麵或燉飯為核心的單人主食。</text>
+<line x1="1232" y1="1050" x2="1518" y2="1050" stroke="#211f1b" stroke-width="2"/>
+<text x="1232" y="1088" class="name" text-anchor="start">炙燒叉燒溫泉蛋飯</text>
+<text x="1518" y="1088" class="price" text-anchor="end">NT$260</text>
+<text x="1232" y="1115" class="small" text-anchor="start">炙燒叉燒、溫泉蛋、青蔥與甜醬油鋪在熱飯上。</text>
+<text x="1232" y="1141" class="cue" text-anchor="start">濃郁、炙燒</text>
+<line x1="1232" y1="1160" x2="1518" y2="1160" stroke="#c9c2b7" stroke-width="1"/>
+<rect x="1232" y="1168" width="286" height="128" fill="#f8f5ef" stroke="none"/>
+<line x1="1232" y1="1168" x2="1232" y2="1296" stroke="#8b3f32" stroke-width="4"/>
+<text x="1248" y="1196" class="small" text-anchor="start">炙燒叉燒、溫泉蛋、青蔥與甜醬油鋪在熱飯上。</text>
+<text x="1248" y="1228" class="tiny" text-anchor="start">份量　一人份 · 分類預設</text>
+<text x="1248" y="1255" class="tiny" text-anchor="start">準備節奏　一般 · 分類預設</text>
+<text x="1248" y="1282" class="tiny" text-anchor="start">供應狀態　可供應</text>
+<text x="1232" y="1324" class="name" text-anchor="start">松露野菇燉飯</text>
+<text x="1518" y="1324" class="price" text-anchor="end">NT$300</text>
+<text x="1232" y="1351" class="small" text-anchor="start">綜合野菇、帕瑪森與松露香氣收進偏濃稠的燉飯。</text>
+<text x="1232" y="1377" class="cue" text-anchor="start">蔬食、松露</text>
+<line x1="1232" y1="1396" x2="1518" y2="1396" stroke="#c9c2b7" stroke-width="1"/>
+<text x="1232" y="1416" class="name" text-anchor="start">海老明太子奶油烏龍</text>
+<text x="1518" y="1416" class="price" text-anchor="end">NT$320</text>
+<text x="1232" y="1443" class="small" text-anchor="start">蝦仁、明太子與奶油醬包裹彈牙烏龍麵。</text>
+<text x="1232" y="1469" class="cue" text-anchor="start">奶油、海味</text>
+<line x1="1232" y1="1488" x2="1518" y2="1488" stroke="#c9c2b7" stroke-width="1"/>
+<text x="1232" y="1508" class="name" text-anchor="start">青花椒雞絲拌麵</text>
+<text x="1518" y="1508" class="price" text-anchor="end">NT$250</text>
+<text x="1232" y="1535" class="small" text-anchor="start">雞絲、青花椒油與脆黃瓜拌入細麵，香麻而清爽。</text>
+<text x="1232" y="1561" class="cue" text-anchor="start">香麻、清爽</text>
+<line x1="1232" y1="1580" x2="1518" y2="1580" stroke="#c9c2b7" stroke-width="1"/>
+<text x="1232" y="1905" class="index" text-anchor="start">03 / 06</text>
+<text x="1320" y="1905" class="title" text-anchor="start">分享料理</text>
+<text x="60" y="2340" class="small" text-anchor="start">Chromium measurements: 6 categories · 30 unique Products · no horizontal overflow · category margin 32px → 53.6px · row geometry match at all viewports.</text>
+</svg>
