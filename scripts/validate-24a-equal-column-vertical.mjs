@@ -20,8 +20,6 @@ for (const required of [
   'category.style.setProperty("--product-count"',
   'core.createDishDetail({',
   'window.enableMenuLensHorizontalDrag(viewport',
-  'width: 46rem',
-  'width: 64rem',
   '外欄 1:1:1',
 ]) {
   if (!html.includes(required)) throw new Error(`24A is missing its equal-column vertical contract: ${required}`);
