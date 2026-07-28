@@ -1,0 +1,72 @@
+name: Validate 25P-S1 browser study
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/25p-s1-browser-validation.yml"
+      - "research-history/studies/25p-reader-task/**"
+      - "research-history/phases/25-menu-depth/projections.html"
+      - "research-history/menu-projection-band-labels.*"
+      - "research-history/catalog/extensions.mjs"
+      - "scripts/archive/validate-objects.mjs"
+      - "scripts/studies/**"
+      - "docs/research-history/25p-**"
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  browser-study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Chromium runner
+        run: |
+          npm install --no-save --package-lock=false playwright@1.54.2
+          npx playwright install --with-deps chromium
+
+      - name: Run canonical study browser checks
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory research-history > /tmp/menu-lens-25p-s1-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" || true' EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4173/studies/25p-reader-task/ > /dev/null; then
+              break
+            fi
+            sleep 0.5
+          done
+          node scripts/studies/25p-s1-browser.mjs
+
+      - name: Upload browser report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 25p-s1-browser-report
+          path: /tmp/25p-s1-browser-report.json
+          if-no-files-found: warn
