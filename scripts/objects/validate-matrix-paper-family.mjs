@@ -9,9 +9,10 @@ await import("../validate-17a-minimum-target-weighted-strip.mjs");
 
 const catalog = await loadArchiveCatalog();
 const byId = new Map(catalog.objects.map((object) => [object.id, object]));
+assert.equal(byId.get("10")?.family, "horizontal", "Matrix-paper lineage must retain horizontal parent 10.");
 for (const [id, parent] of [
-  ["12", null], ["12A", "12"], ["12A-S1", "12A"],
-  ["15", null], ["15A", "15"],
+  ["11", "10"], ["12", "11"], ["12A", "12"], ["12A-S1", "12A"],
+  ["15", "12"], ["15A", "15"],
   ["16", "15"], ["16A", "16"],
   ["17", "16"], ["17A", "17"],
 ]) {
@@ -46,4 +47,4 @@ assert.deepEqual([...study.evidenceFor], ["12", "12A"]);
 assert.ok(!catalog.objects.some((object) => ["15A16A17A", "combined-elastic-paper", "elastic-best-of"].includes(object.id) || object.slug === "combined-elastic-paper"), "Matrix-paper intake must not invent a combined elastic prototype.");
 assert.ok(!catalog.objects.some((object) => object.evidenceState === "participant-evidence-complete" && ["12A", "12A-S1", "15A", "16A", "17A"].includes(object.id)), "Phase M contains no participant results.");
 
-console.log("Matrix-paper Archive v2 intake passed: semantic fixed-paper evidence gate plus three independent elastic children, with no combined mechanism or participant result.");
+console.log("Matrix-paper Archive v2 intake passed: canonical 10→11→12→15→16→17 lineage, semantic fixed-paper evidence gate and independent elastic children.");

@@ -7,9 +7,12 @@ await import("../validate-08a-compressed-truth-cue.mjs");
 await import("../validate-09a-direct-minimap-scrub.mjs");
 await import("../validate-local-fisheye.mjs");
 
-assert.deepEqual(Object.keys(archiveLegacyOverrides), ["07"], "Horizontal intake must override only existing object 07.");
 const catalog = await loadArchiveCatalog();
 const byId = new Map(catalog.objects.map((object) => [object.id, object]));
+const horizontalOverrideIds = Object.keys(archiveLegacyOverrides)
+  .filter((id) => byId.get(id)?.family === "horizontal")
+  .sort();
+assert.deepEqual(horizontalOverrideIds, ["07"], "Horizontal intake must override only existing horizontal object 07.");
 for (const [id, parent] of [["07", null], ["08", "07"], ["08A", "08"], ["09", "08"], ["09A", "09"], ["10", "09"], ["10A", "10"]]) {
   const object = byId.get(id);
   assert.ok(object, `Horizontal intake requires object ${id}.`);
