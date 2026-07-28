@@ -80,6 +80,12 @@ Inspect at 320px, 390px, and desktop:
 10. Escape closes detail before returning to overview.
 11. Reduced motion remains inherited and no child animation appears.
 
+## Validation
+
+GitHub Actions run `30382109670` passed Typecheck, Test, and Build for head commit `8df438ce05739953b42e86587f3f2a7783bfe264`.
+
+The dedicated validator preserves Parent 24 geometry and price font size, requires the overview-only `-.04em` tracking correction, and rejects width, flex, grid, font-size, scaling, snap, hiding, focus, collapse, semantic-summary, and order changes.
+
 ## Decision boundary
 
 KEEP only if horizontal prices are materially easier to identify and compare while remaining unambiguously attached to their vertical Product lanes.
