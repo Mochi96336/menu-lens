@@ -82,6 +82,10 @@ Review Parent 24 and 24C at 320px, 390px, and desktop:
 - resize retains the active column;
 - reduced motion remains immediate where Parent 24 is immediate.
 
+## Validation
+
+The branch validator requires exactly the five overview sizes above and rejects geometry, padding, writing-mode, horizontal-price, focus, collapse, semantic-summary, and order changes.
+
 ## Decision boundary
 
 KEEP only if the 64rem geometry creates a materially clearer reading state without typography growth, while reducing density change or wrapping pressure compared with Parent 24.
