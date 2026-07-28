@@ -24,6 +24,7 @@ if (child.path !== childPath || child.validationProfile !== "fisheye-local") {
 }
 
 const childHtml = await readFile(new URL(childPath, archiveRoot), "utf8");
+const childCss = await readFile(new URL("local-fisheye.css", archiveRoot), "utf8");
 for (const reference of [
   '<link rel="stylesheet" href="../../fisheye-ribbon.css" />',
   '<link rel="stylesheet" href="../../local-fisheye.css" />',
@@ -35,6 +36,14 @@ for (const reference of [
 }
 if (childHtml.includes("選這道") || childHtml.includes("加入購物車")) {
   throw new Error("10A must remain a menu-reading study without an order action.");
+}
+if (childHtml.includes("local-fisheye-readout") || childCss.includes(".local-fisheye-readout")) {
+  throw new Error("10A must not add child-only phone chrome that reduces the parent stage height.");
+}
+for (const forbiddenLayoutRule of ["padding:", "border-bottom:", "font-size:", "flex:", "height:"]) {
+  if (childCss.includes(forbiddenLayoutRule)) {
+    throw new Error(`10A child CSS must not alter phone or stage layout: ${forbiddenLayoutRule}`);
+  }
 }
 
 const controllerSource = await readFile(new URL("local-fisheye.js", archiveRoot), "utf8");
@@ -106,4 +115,4 @@ for (const bannedMechanism of ["scrollLeft", "scrollTo(", "enableMenuLensHorizon
   }
 }
 
-console.log("10A Local Fisheye validation passed: fixed ±2 neighbourhood, stable far widths and category boundaries, keyboard focus parity, 30 products.");
+console.log("10A Local Fisheye validation passed: fixed ±2 neighbourhood, stable far widths and category boundaries, parent-equivalent phone chrome, keyboard focus parity, 30 products.");
