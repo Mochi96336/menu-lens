@@ -22,8 +22,8 @@
           "topbarPosition": "static",
           "topbarTop": 705.03125,
           "topbarHeight": 42.765625,
-          "labelWidth": 157.25,
-          "labelScrollWidth": 157,
+          "labelWidth": 147.546875,
+          "labelScrollWidth": 148,
           "resetTop": 705.03125,
           "resetVisible": true,
           "topbarInsideFrame": true,
@@ -53,8 +53,8 @@
           "topbarPosition": "sticky",
           "topbarTop": 0,
           "topbarHeight": 46.953125,
-          "labelWidth": 193.65625,
-          "labelScrollWidth": 202,
+          "labelWidth": 188.140625,
+          "labelScrollWidth": 188,
           "resetTop": 1.59375,
           "resetVisible": true,
           "topbarInsideFrame": true,
@@ -62,7 +62,7 @@
           "frameOverflowX": false,
           "screenOverflowX": false,
           "topbarOverflowX": false,
-          "labelOverflowX": true,
+          "labelOverflowX": false,
           "resetOverflowX": false
         },
         "deep": {
@@ -84,8 +84,8 @@
           "topbarPosition": "sticky",
           "topbarTop": 0,
           "topbarHeight": 46.953125,
-          "labelWidth": 193.65625,
-          "labelScrollWidth": 202,
+          "labelWidth": 188.140625,
+          "labelScrollWidth": 188,
           "resetTop": 1.59375,
           "resetVisible": true,
           "topbarInsideFrame": true,
@@ -93,7 +93,7 @@
           "frameOverflowX": false,
           "screenOverflowX": false,
           "topbarOverflowX": false,
-          "labelOverflowX": true,
+          "labelOverflowX": false,
           "resetOverflowX": false
         },
         "returned": {
@@ -115,8 +115,8 @@
           "topbarPosition": "static",
           "topbarTop": 188.03125,
           "topbarHeight": 42.765625,
-          "labelWidth": 157.25,
-          "labelScrollWidth": 157,
+          "labelWidth": 147.546875,
+          "labelScrollWidth": 148,
           "resetTop": 188.03125,
           "resetVisible": true,
           "topbarInsideFrame": true,
@@ -131,10 +131,7 @@
       "collapsedProductsRetained": true,
       "returnPositionError": 0,
       "focusReturned": true,
-      "failures": [
-        "focused:horizontal-overflow",
-        "deep:horizontal-overflow"
-      ]
+      "failures": []
     },
     "390": {
       "pageErrors": [],
@@ -403,13 +400,5 @@
       "failures": []
     }
   },
-  "failures": [
-    {
-      "viewport": "320",
-      "failures": [
-        "focused:horizontal-overflow",
-        "deep:horizontal-overflow"
-      ]
-    }
-  ]
+  "failures": []
 }
