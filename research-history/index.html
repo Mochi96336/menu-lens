@@ -47,6 +47,10 @@
           </p>
         </div>
 
+        <noscript>
+          <p class="archive-error">研究物件目錄需要 JavaScript 才能從 canonical catalog 產生；各個既有原型入口仍保持原網址。</p>
+        </noscript>
+
         <div class="archive-controls" aria-label="篩選研究物件">
           <label class="archive-control">
             <span>物件類型</span>
@@ -75,8 +79,8 @@
           </label>
         </div>
 
-        <div id="archive-objects" class="prototype-object-grid" aria-live="polite"></div>
-        <p id="catalog-empty" class="archive-empty" hidden>目前沒有符合篩選條件的研究物件。</p>
+        <div id="archive-objects" class="prototype-object-grid"></div>
+        <p id="catalog-empty" class="archive-empty" role="status" hidden>目前沒有符合篩選條件的研究物件。</p>
       </section>
 
       <section class="section site-shell" aria-labelledby="original-title">
