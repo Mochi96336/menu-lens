@@ -98,6 +98,8 @@ for (const forbiddenReference of ["spatial-drag.js", "horizontal-ribbon", "fishe
 for (const interactionContract of [
   'button.addEventListener("click"',
   'scroll.addEventListener("scroll"',
+  'scroll.scrollTo({ top: targetTop',
+  "sectionBounds.top - scrollBounds.top",
   'product.addEventListener("toggle"',
   'event.key !== "Escape"',
   'openProduct.querySelector("summary").focus',
@@ -106,6 +108,9 @@ for (const interactionContract of [
   if (!page.includes(interactionContract)) {
     throw new Error(`07 page is missing baseline interaction contract: ${interactionContract}`);
   }
+}
+if (page.includes("section.scrollIntoView")) {
+  throw new Error("07 category navigation must not scroll the outer research page.");
 }
 
 const css = await readArchive("horizontal-menu-atlas.css");
