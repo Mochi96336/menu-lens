@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 25P 任務證據 runner：以既定分享料理任務觀察陌生讀者能否自行使用三個語意投影。" />
+    <title>25P Task Evidence — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <style>
+      .study-shell { width: min(100% - 1rem, 96rem); margin-inline: auto; }
+      .study-grid { display: grid; grid-template-columns: minmax(17rem, 25rem) minmax(0, 1fr); gap: 1rem; align-items: start; }
+      .study-panel { border: 1px solid var(--line-strong); background: var(--surface); padding: .9rem; }
+      .study-panel h2, .study-panel h3 { margin-top: 0; }
+      .study-panel ol, .study-panel ul { padding-left: 1.2rem; }
+      .study-panel li + li { margin-top: .42rem; }
+      .study-meta { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .3rem .75rem; margin: 0; font-size: .76rem; }
+      .study-meta dt { color: var(--faint); }
+      .study-meta dd { margin: 0; font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; }
+      .study-task { margin: .75rem 0; padding: .8rem; border-left: 3px solid var(--accent); background: var(--accent-soft); font-weight: 720; }
+      .study-task p { margin: 0; }
+      .study-controls { display: flex; flex-wrap: wrap; gap: .4rem; margin: .75rem 0; }
+      .study-controls button { min-height: 2.25rem; padding: .35rem .65rem; border: 1px solid var(--line-strong); border-radius: 0; background: transparent; color: inherit; font: inherit; font-weight: 800; cursor: pointer; }
+      .study-controls button[aria-pressed="true"] { background: var(--ink); color: var(--surface-strong); }
+      .study-controls button:disabled { opacity: .35; cursor: default; }
+      .study-frame-wrap { width: 100%; overflow: auto; border: 1px solid var(--line-strong); background: var(--paper); padding: .5rem; }
+      .study-frame-stage { width: var(--study-width, 390px); min-width: var(--study-width, 390px); margin-inline: auto; }
+      .study-frame { display: block; width: 100%; height: var(--study-height, 880px); border: 0; background: var(--paper); }
+      .study-clock { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .45rem; margin: .8rem 0; }
+      .study-clock div { border-top: 1px solid var(--line); padding-top: .35rem; }
+      .study-clock span { display: block; color: var(--faint); font-size: .66rem; }
+      .study-clock strong { display: block; margin-top: .15rem; font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: .84rem; }
+      .study-debrief { margin-top: .75rem; padding: .75rem; border: 1px solid var(--line); background: var(--surface-strong); }
+      .study-debrief[hidden] { display: none; }
+      .study-warning { color: var(--accent); font-weight: 800; }
+      @media (max-width: 900px) { .study-grid { grid-template-columns: 1fr; } }
+      @media (max-width: 430px) { .study-clock { grid-template-columns: 1fr; } }
+      @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+    </style>
+  </head>
+  <body data-study="25p-task-evidence">
+    <a class="skip-link" href="#study">跳到任務研究</a>
+
+    <header class="masthead study-shell">
+      <p class="eyebrow">25P / direct reader evidence gate</p>
+      <h1>Task evidence runner</h1>
+      <p class="lede">用既定任務觀察陌生讀者是否能自行理解 25P 的價格、份量與準備時間投影。這個頁面不儲存答案、不送出資料，也不修改 iframe 內的 25P 操作。</p>
+      <div class="meta-row" aria-label="研究限制">
+        <span class="pill">single existing prototype</span>
+        <span class="pill">no projection hints</span>
+        <span class="pill">ephemeral timing only</span>
+        <span class="pill">no response collection</span>
+        <span class="pill">25PA not implemented</span>
+      </div>
+    </header>
+
+    <main id="study" class="section study-shell">
+      <div class="study-grid">
+        <aside class="study-panel" aria-labelledby="facilitator-title">
+          <h2 id="facilitator-title">Facilitator</h2>
+          <dl class="study-meta">
+            <dt>Session</dt><dd id="session-code">—</dd>
+            <dt>Status</dt><dd id="session-status">尚未開始</dd>
+            <dt>Viewport</dt><dd id="viewport-label">390px</dd>
+          </dl>
+
+          <div class="study-controls" aria-label="測試 viewport">
+            <button type="button" data-viewport="320" aria-pressed="false">320px</button>
+            <button type="button" data-viewport="390" aria-pressed="true">390px</button>
+            <button type="button" data-viewport="1280" aria-pressed="false">desktop</button>
+          </div>
+
+          <div class="study-task" aria-labelledby="task-title">
+            <h3 id="task-title">Participant task</h3>
+            <p>你和兩位朋友要點一道分享料理。每道料理預算不超過 NT$500，而且不想選「較慢」的料理。請找出所有符合條件的料理，再說明：若優先最快會選哪一道；若優先最低價會選哪一道？</p>
+          </div>
+
+          <p class="study-warning">不要提示應先切到哪個投影，也不要解釋「未標註」應如何處理。</p>
+
+          <div class="study-controls">
+            <button id="start-task" type="button">開始任務</button>
+            <button id="mark-first" type="button" disabled>標記首個正確項目</button>
+            <button id="mark-complete" type="button" disabled>標記完整三項</button>
+            <button id="end-task" type="button" disabled>結束任務</button>
+            <button id="new-session" type="button">新 session</button>
+          </div>
+
+          <div class="study-clock" aria-live="polite">
+            <div><span>Elapsed</span><strong id="elapsed-time">00:00.0</strong></div>
+            <div><span>First correct</span><strong id="first-time">—</strong></div>
+            <div><span>Complete set</span><strong id="complete-time">—</strong></div>
+          </div>
+
+          <div id="debrief" class="study-debrief" hidden>
+            <h3>結束後詢問</h3>
+            <ol>
+              <li>你如何判斷哪些料理屬於「分享」？</li>
+              <li>你如何排除「較慢」與「未標註」？</li>
+              <li>你用了哪些投影？為什麼是這個順序？</li>
+              <li>最快與最低價為何是不同選擇？</li>
+            </ol>
+            <p>把觀察記到 repository 的 observation sheet；runner 不接收答案。</p>
+          </div>
+        </aside>
+
+        <section class="study-panel" aria-labelledby="prototype-title">
+          <p class="eyebrow">Unmodified parent interface</p>
+          <h2 id="prototype-title">25P Menu Projections</h2>
+          <p>開始前 iframe 保持空白。開始後只隱藏研究說明與版本名稱，保留原 25P phone prototype、三個 projection buttons、band labels、30 個 Product nodes 與原互動。</p>
+          <div class="study-frame-wrap">
+            <div id="frame-stage" class="study-frame-stage">
+              <iframe id="prototype-frame" class="study-frame" title="25P 任務測試原型" src="about:blank"></iframe>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="research-footer study-shell">
+      <p>Evidence-only runner · session code and timing remain in memory only · no participant result is persisted.</p>
+    </footer>
+
+    <script>
+      (() => {
+        const prototypeHref = "../../phases/25-menu-depth/projections.html";
+        const frame = document.querySelector("#prototype-frame");
+        const frameStage = document.querySelector("#frame-stage");
+        const sessionCode = document.querySelector("#session-code");
+        const sessionStatus = document.querySelector("#session-status");
+        const viewportLabel = document.querySelector("#viewport-label");
+        const elapsedOutput = document.querySelector("#elapsed-time");
+        const firstOutput = document.querySelector("#first-time");
+        const completeOutput = document.querySelector("#complete-time");
+        const startButton = document.querySelector("#start-task");
+        const firstButton = document.querySelector("#mark-first");
+        const completeButton = document.querySelector("#mark-complete");
+        const endButton = document.querySelector("#end-task");
+        const newSessionButton = document.querySelector("#new-session");
+        const debrief = document.querySelector("#debrief");
+
+        let startedAt = null;
+        let stoppedAt = null;
+        let timerHandle = null;
+        let firstAt = null;
+        let completeAt = null;
+
+        const makeSessionCode = () => {
+          const values = globalThis.crypto?.getRandomValues
+            ? globalThis.crypto.getRandomValues(new Uint8Array(4))
+            : Uint8Array.from({ length: 4 }, () => Math.floor(Math.random() * 256));
+          return [...values].map((value) => value.toString(16).padStart(2, "0")).join("").toUpperCase();
+        };
+
+        const formatDuration = (milliseconds) => {
+          const tenths = Math.max(0, Math.round(milliseconds / 100));
+          const minutes = Math.floor(tenths / 600);
+          const seconds = Math.floor((tenths % 600) / 10);
+          const decimal = tenths % 10;
+          return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${decimal}`;
+        };
+
+        const elapsedMilliseconds = () => {
+          if (startedAt === null) return 0;
+          return (stoppedAt ?? performance.now()) - startedAt;
+        };
+
+        const renderClock = () => {
+          elapsedOutput.textContent = formatDuration(elapsedMilliseconds());
+        };
+
+        const startClock = () => {
+          clearInterval(timerHandle);
+          timerHandle = setInterval(renderClock, 100);
+          renderClock();
+        };
+
+        const isolatePrototype = () => {
+          try {
+            const documentRoot = frame.contentDocument;
+            if (!documentRoot) return;
+            documentRoot.querySelectorAll(".skip-link, .prototype-header, .projection-intent, .projection-notes").forEach((element) => {
+              element.hidden = true;
+            });
+            const shell = documentRoot.querySelector(".prototype-shell");
+            const prototype = documentRoot.querySelector("#prototype");
+            if (shell) {
+              shell.style.width = "100%";
+              shell.style.margin = "0";
+              shell.style.padding = "0";
+            }
+            if (prototype) {
+              prototype.style.margin = "0 auto";
+              prototype.scrollIntoView({ block: "start" });
+            }
+          } catch {
+            // Repository preview keeps the runner and prototype same-origin.
+          }
+        };
+
+        const setViewport = (width) => {
+          const desktop = width === 1280;
+          frameStage.style.setProperty("--study-width", `${width}px`);
+          frameStage.style.setProperty("--study-height", desktop ? "980px" : "880px");
+          viewportLabel.textContent = desktop ? "desktop · 1280px" : `${width}px`;
+          document.querySelectorAll("[data-viewport]").forEach((button) => {
+            button.setAttribute("aria-pressed", String(Number(button.dataset.viewport) === width));
+          });
+        };
+
+        const startTask = () => {
+          startedAt = performance.now();
+          stoppedAt = null;
+          firstAt = null;
+          completeAt = null;
+          firstOutput.textContent = "—";
+          completeOutput.textContent = "—";
+          debrief.hidden = true;
+          sessionStatus.textContent = "進行中";
+          frame.src = prototypeHref;
+          startButton.disabled = true;
+          firstButton.disabled = false;
+          completeButton.disabled = false;
+          endButton.disabled = false;
+          startClock();
+        };
+
+        const markFirst = () => {
+          if (startedAt === null || firstAt !== null) return;
+          firstAt = elapsedMilliseconds();
+          firstOutput.textContent = formatDuration(firstAt);
+          firstButton.disabled = true;
+        };
+
+        const markComplete = () => {
+          if (startedAt === null || completeAt !== null) return;
+          completeAt = elapsedMilliseconds();
+          completeOutput.textContent = formatDuration(completeAt);
+          completeButton.disabled = true;
+        };
+
+        const endTask = () => {
+          if (startedAt === null || stoppedAt !== null) return;
+          stoppedAt = performance.now();
+          clearInterval(timerHandle);
+          renderClock();
+          sessionStatus.textContent = "已結束；記錄 debrief";
+          firstButton.disabled = true;
+          completeButton.disabled = true;
+          endButton.disabled = true;
+          debrief.hidden = false;
+        };
+
+        frame.addEventListener("load", () => requestAnimationFrame(isolatePrototype));
+        document.querySelectorAll("[data-viewport]").forEach((button) => {
+          button.addEventListener("click", () => setViewport(Number(button.dataset.viewport)));
+        });
+        startButton.addEventListener("click", startTask);
+        firstButton.addEventListener("click", markFirst);
+        completeButton.addEventListener("click", markComplete);
+        endButton.addEventListener("click", endTask);
+        newSessionButton.addEventListener("click", () => globalThis.location.reload());
+
+        sessionCode.textContent = makeSessionCode();
+        setViewport(390);
+        globalThis.__menuLens25PTaskEvidence = {
+          prototypeHref,
+          getState: () => ({
+            running: startedAt !== null && stoppedAt === null,
+            firstMarked: firstAt !== null,
+            completeMarked: completeAt !== null,
+          }),
+        };
+      })();
+    </script>
+  </body>
+</html>

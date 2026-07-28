@@ -1,0 +1,64 @@
+{
+  "viewports": {
+    "320": {
+      "stageWidth": 320,
+      "framePath": "/phases/25-menu-depth/projections.html",
+      "nodeCount": 30,
+      "uniqueProductCount": 30,
+      "projectionCount": 3,
+      "activeProjection": "price-serving",
+      "bandSummaryPresent": true,
+      "researchChromeHidden": true,
+      "milestoneFlowPassed": true,
+      "storageKeys": 0,
+      "pageErrors": []
+    },
+    "390": {
+      "stageWidth": 390,
+      "framePath": "/phases/25-menu-depth/projections.html",
+      "nodeCount": 30,
+      "uniqueProductCount": 30,
+      "projectionCount": 3,
+      "activeProjection": "price-serving",
+      "bandSummaryPresent": true,
+      "researchChromeHidden": true,
+      "milestoneFlowPassed": true,
+      "storageKeys": 0,
+      "pageErrors": []
+    },
+    "1280": {
+      "stageWidth": 1280,
+      "framePath": "/phases/25-menu-depth/projections.html",
+      "nodeCount": 30,
+      "uniqueProductCount": 30,
+      "projectionCount": 3,
+      "activeProjection": "price-serving",
+      "bandSummaryPresent": true,
+      "researchChromeHidden": true,
+      "milestoneFlowPassed": true,
+      "storageKeys": 0,
+      "pageErrors": []
+    }
+  },
+  "privacy": {
+    "320": {
+      "cookies": 0,
+      "storageKeys": 0
+    },
+    "390": {
+      "cookies": 0,
+      "storageKeys": 0
+    },
+    "1280": {
+      "cookies": 0,
+      "storageKeys": 0
+    }
+  },
+  "reset": {
+    "frameSrc": "about:blank",
+    "first": "—",
+    "complete": "—",
+    "status": "尚未開始",
+    "startDisabled": false
+  }
+}
