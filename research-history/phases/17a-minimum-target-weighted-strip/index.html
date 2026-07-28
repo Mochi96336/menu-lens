@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 17A Minimum-target Weighted Strip：保留分類內容權重，同時為每個橫帶分類設定最低可操作寬度。" />
+    <title>17A Minimum-target Weighted Strip — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../weighted-horizontal-strip.css" />
+    <link rel="stylesheet" href="../../minimum-target-weighted-strip.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">17A · Minimum operable category width</p>
+          <h1>Minimum-target Weighted Strip</h1>
+          <p class="lede">延續17的單一無捲動橫帶與內容權重，但每個分類至少保留2.5rem寬度。極小分類不再縮成幾乎無法辨認的細縫，剩餘空間仍依料理數量分配。</p>
+        </div>
+        <a class="ghost-button" href="../17-weighted-horizontal-strip/">回17 Weighted Horizontal Strip</a>
+      </header>
+
+      <p class="study-note">單一變因：在17的8:6:6:4:4:2內容比例與×4聚焦倍率之外，只加入每分類2.5rem最低寬度；不改資料、排字、detail、拖曳命中或焦點公式。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Minimum-target Weighted Strip互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="target-strip-restaurant-name" class="restaurant-name"></h2>
+            <p id="target-strip-restaurant-meta" class="restaurant-meta"></p>
+            <p id="target-strip-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="target-strip-overview" type="button" aria-pressed="true">最低寬度</button>
+            <button id="target-strip-previous" type="button" aria-label="上一個分類">←</button>
+            <button id="target-strip-next" type="button" aria-label="下一個分類">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="target-strip-location-title">完整橫帶</strong>
+              <span id="target-strip-location-meta">8:6:6:4:4:2 · 每欄至少2.5rem</span>
+            </div>
+          </div>
+
+          <div id="target-strip-viewport" class="paper-viewport weighted-strip-viewport minimum-target-viewport" data-scale="overview" tabindex="0" aria-label="拖曳以改變最低寬度橫帶焦點">
+            <div id="target-strip" class="weighted-strip minimum-target-strip"></div>
+            <aside id="target-strip-detail" class="paper-detail" data-open="false" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="target-strip-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="target-strip-detail-title"></h3>
+                <p id="target-strip-detail-meta" class="paper-detail__meta"></p>
+                <p id="target-strip-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">左右拖曳焦點；六分類始終同時在場，每欄至少保留2.5rem。點已聚焦分類中的料理查看細節。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>比例先服從可操作下限</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>內容權重不變</h3><p>分類仍以8:6:6:4:4:2作為flex grow，聚焦分類仍把原始權重乘以4。</p></article>
+          <article class="phase-card"><h3>最低2.5rem</h3><p>每個分類先取得約40px的可見與可點擊寬度，再由flex把剩餘空間依內容權重分配。</p></article>
+          <article class="phase-card"><h3>全貌仍不捲動</h3><p>六分類仍被限制在同一個手機寬度；沒有長軌道、camera或自動水平位移。</p></article>
+          <article class="phase-card"><h3>判定風險</h3><p>下限可能救回小分類，卻也可能吃掉聚焦分類真正需要的閱讀寬度，使內容比例只剩弱差異。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const viewport = document.querySelector("#target-strip-viewport");
+      const strip = document.querySelector("#target-strip");
+      const overviewButton = document.querySelector("#target-strip-overview");
+      const previousButton = document.querySelector("#target-strip-previous");
+      const nextButton = document.querySelector("#target-strip-next");
+      const locationTitle = document.querySelector("#target-strip-location-title");
+      const locationMeta = document.querySelector("#target-strip-location-meta");
+      const detail = document.querySelector("#target-strip-detail");
+      const detailClose = document.querySelector("#target-strip-detail-close");
+
+      document.querySelector("#target-strip-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#target-strip-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#target-strip-restaurant-meta").textContent = menu.restaurant.summary;
+      strip.innerHTML = window.renderMenuLensPaperField(menu);
+
+      const categories = [...strip.querySelectorAll(".paper-category")];
+      const productButtons = [...strip.querySelectorAll(".paper-product")];
+      categories.forEach((category) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+      });
+      const categoryCounts = menu.categories.map((category) =>
+        menu.products.filter((product) => product.categoryId === category.id).length,
+      );
+      const focusFactor = 4;
+      const minimumTargetWidth = "2.5rem";
+      let activeCategoryIndex = null;
+      let selectedProductIndex = null;
+      let pointerState = null;
+      let suppressClick = false;
+
+      const closeDetail = (restoreFocus = false) => {
+        detail.dataset.open = "false";
+        productButtons.forEach((button) => delete button.dataset.selected);
+        if (restoreFocus && selectedProductIndex !== null) {
+          productButtons.find((button) => Number(button.dataset.productIndex) === selectedProductIndex)?.focus();
+        }
+        selectedProductIndex = null;
+      };
+
+      const applyWeights = () => {
+        categories.forEach((category, index) => {
+          const focused = index === activeCategoryIndex;
+          const weight = categoryCounts[index] * (focused ? focusFactor : 1);
+          category.style.setProperty("--strip-weight", weight);
+          category.style.setProperty("--minimum-target-width", minimumTargetWidth);
+          if (focused) category.dataset.focused = "true";
+          else delete category.dataset.focused;
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", String(focused));
+        });
+      };
+
+      const focusCategory = (nextIndex) => {
+        activeCategoryIndex = Math.max(0, Math.min(categories.length - 1, nextIndex));
+        viewport.dataset.scale = "focus";
+        overviewButton.setAttribute("aria-pressed", "false");
+        applyWeights();
+        const category = menu.categories[activeCategoryIndex];
+        const focusedWeight = categoryCounts[activeCategoryIndex] * focusFactor;
+        const unconstrainedShare = focusedWeight / (menu.products.length - categoryCounts[activeCategoryIndex] + focusedWeight);
+        locationTitle.textContent = category.name;
+        locationMeta.textContent = `${categoryCounts[activeCategoryIndex]} 道 · 原比例約 ${Math.round(unconstrainedShare * 100)}% · 其他欄保留下限`;
+        previousButton.disabled = activeCategoryIndex === 0;
+        nextButton.disabled = activeCategoryIndex === categories.length - 1;
+      };
+
+      const showOverview = () => {
+        activeCategoryIndex = null;
+        viewport.dataset.scale = "overview";
+        overviewButton.setAttribute("aria-pressed", "true");
+        applyWeights();
+        locationTitle.textContent = "完整橫帶";
+        locationMeta.textContent = `${categoryCounts.join(":")} · 每欄至少 ${minimumTargetWidth}`;
+        previousButton.disabled = true;
+        nextButton.disabled = true;
+        closeDetail();
+      };
+
+      const openDetail = (productIndex, button) => {
+        const product = menu.products[productIndex];
+        selectedProductIndex = productIndex;
+        productButtons.forEach((candidate) => {
+          if (candidate === button) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+        });
+        document.querySelector("#target-strip-detail-title").textContent = product.name;
+        document.querySelector("#target-strip-detail-meta").textContent = `NT$${product.price} · ${product.cue}${product.availability === "sold_out" ? " · 售完" : ""}`;
+        document.querySelector("#target-strip-detail-copy").textContent = product.description;
+        detail.dataset.open = "true";
+      };
+
+      const categoryFromPointer = (clientX, clientY) => {
+        const hitCategory = document.elementFromPoint(clientX, clientY)?.closest(".paper-category");
+        return hitCategory && strip.contains(hitCategory) ? Number(hitCategory.dataset.categoryIndex) : activeCategoryIndex ?? 0;
+      };
+
+      categories.forEach((category, index) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          closeDetail();
+          if (activeCategoryIndex === index) showOverview();
+          else focusCategory(index);
+        });
+      });
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+          if (categoryIndex !== activeCategoryIndex) {
+            closeDetail();
+            focusCategory(categoryIndex);
+            return;
+          }
+          openDetail(Number(button.dataset.productIndex), button);
+        });
+      });
+
+      viewport.addEventListener("pointerdown", (event) => {
+        if (detail.contains(event.target)) return;
+        if (!event.isPrimary || pointerState || (event.pointerType === "mouse" && event.button !== 0)) return;
+        pointerState = { id: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false };
+      });
+      viewport.addEventListener("pointermove", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        if (!pointerState.moved && Math.hypot(event.clientX - pointerState.startX, event.clientY - pointerState.startY) < 6) return;
+        if (!pointerState.moved) {
+          pointerState.moved = true;
+          viewport.setPointerCapture(event.pointerId);
+          viewport.classList.add("is-dragging");
+          closeDetail();
+        }
+        event.preventDefault();
+        focusCategory(categoryFromPointer(event.clientX, event.clientY));
+      });
+      const endPointer = (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        if (pointerState.moved) suppressClick = true;
+        pointerState = null;
+        viewport.classList.remove("is-dragging");
+      };
+      viewport.addEventListener("pointerup", endPointer);
+      viewport.addEventListener("pointercancel", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        pointerState = null;
+        suppressClick = false;
+        viewport.classList.remove("is-dragging");
+      });
+      viewport.addEventListener("click", (event) => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        suppressClick = false;
+      }, true);
+
+      overviewButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => {
+        if (activeCategoryIndex === null) return;
+        closeDetail();
+        focusCategory(activeCategoryIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        if (activeCategoryIndex === null) return;
+        closeDetail();
+        focusCategory(activeCategoryIndex + 1);
+      });
+      detailClose.addEventListener("click", () => closeDetail(true));
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.dataset.open === "true") closeDetail(true);
+        else if (activeCategoryIndex !== null) showOverview();
+      });
+
+      showOverview();
+    </script>
+  </body>
+</html>

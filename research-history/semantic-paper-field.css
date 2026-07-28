@@ -1,0 +1,86 @@
+/* 12A changes semantic visibility only. The 2 × 3 sheet geometry and camera remain in paper-menu-field.css. */
+.semantic-paper-viewport .paper-category__header small { font-variant-numeric: tabular-nums; }
+.semantic-paper-viewport .paper-category__header[data-semantic-level="overview"] {
+  cursor: zoom-in;
+}
+
+/* Whole-sheet overview and non-focused landmarks keep every Product anchor in place,
+   but translate unreadable micro-copy into one truthful density mark per Product. */
+.semantic-paper-viewport[data-information-level="overview"] .paper-product,
+.semantic-paper-viewport[data-information-level="near"] .paper-category:not([data-focused="true"]) .paper-product {
+  position: relative;
+  display: block;
+  min-height: 0;
+  padding: 0 .3rem;
+  border-bottom: 0;
+  cursor: default;
+  pointer-events: none;
+}
+.semantic-paper-viewport[data-information-level="overview"] .paper-product span,
+.semantic-paper-viewport[data-information-level="overview"] .paper-product strong,
+.semantic-paper-viewport[data-information-level="near"] .paper-category:not([data-focused="true"]) .paper-product span,
+.semantic-paper-viewport[data-information-level="near"] .paper-category:not([data-focused="true"]) .paper-product strong {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.semantic-paper-viewport[data-information-level="overview"] .paper-product::after,
+.semantic-paper-viewport[data-information-level="near"] .paper-category:not([data-focused="true"]) .paper-product::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: .32rem;
+  left: .32rem;
+  height: 1px;
+  background: var(--line-strong);
+  opacity: .56;
+  transform: translateY(-50%);
+}
+.semantic-paper-viewport[data-information-level="overview"] .paper-product[data-essential-state="sold-out"]::after,
+.semantic-paper-viewport[data-information-level="near"] .paper-category:not([data-focused="true"]) .paper-product[data-essential-state="sold-out"]::after {
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--accent) 0 4px, transparent 4px 7px);
+  opacity: .75;
+}
+.semantic-paper-viewport[data-information-level="overview"] .paper-category__header,
+.semantic-paper-viewport[data-information-level="near"] .paper-category:not([data-focused="true"]) .paper-category__header {
+  background: var(--surface);
+}
+.semantic-paper-viewport[data-information-level="overview"] .paper-category__header strong {
+  color: var(--ink);
+}
+
+/* Near-category reading restores the renderer's canonical Product names, prices and state. */
+.semantic-paper-viewport[data-information-level="near"] .paper-category[data-focused="true"] .paper-product {
+  pointer-events: auto;
+}
+.semantic-paper-viewport[data-information-level="near"] .paper-category[data-focused="true"] .paper-product[data-essential-state="sold-out"] {
+  color: var(--accent);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.semantic-detail dl {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: .12rem .55rem;
+  margin: .45rem 0 0;
+  font-size: .62rem;
+}
+.semantic-detail dt { color: var(--faint); }
+.semantic-detail dd { margin: 0; }
+.semantic-scale-note {
+  display: inline-block;
+  margin-left: .3rem;
+  color: var(--accent);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: .56rem;
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .semantic-paper-viewport .paper-product::after { transition: none; }
+}

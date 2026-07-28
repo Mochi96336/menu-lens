@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 12A 直接讀者比較：以盲化、循序條件檢查固定紙面加 semantic zoom 是否已足夠。" />
+    <title>12A Reader Comparison — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <style>
+      .study-shell { width: min(100% - 1rem, 96rem); margin-inline: auto; }
+      .study-grid { display: grid; grid-template-columns: minmax(16rem, 24rem) minmax(0, 1fr); gap: 1rem; align-items: start; }
+      .study-panel { border: 1px solid var(--line-strong); background: var(--surface); padding: .9rem; }
+      .study-panel h2, .study-panel h3 { margin-top: 0; }
+      .study-panel ol, .study-panel ul { padding-left: 1.2rem; }
+      .study-panel li + li { margin-top: .45rem; }
+      .study-meta { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .3rem .75rem; margin: 0; font-size: .76rem; }
+      .study-meta dt { color: var(--faint); }
+      .study-meta dd { margin: 0; font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; }
+      .study-controls { display: flex; flex-wrap: wrap; gap: .4rem; margin: .75rem 0; }
+      .study-controls button { min-height: 2.25rem; padding: .35rem .65rem; border: 1px solid var(--line-strong); border-radius: 0; background: transparent; color: inherit; font: inherit; font-weight: 800; cursor: pointer; }
+      .study-controls button[aria-pressed="true"] { background: var(--ink); color: var(--surface-strong); }
+      .study-controls button:disabled { opacity: .35; cursor: default; }
+      .study-condition { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; margin-bottom: .5rem; }
+      .study-condition strong { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; }
+      .study-frame-wrap { width: 100%; overflow: auto; border: 1px solid var(--line-strong); background: var(--paper); padding: .5rem; }
+      .study-frame-stage { width: var(--study-width, 390px); min-width: var(--study-width, 390px); margin-inline: auto; }
+      .study-frame { display: block; width: 100%; height: var(--study-height, 840px); border: 0; background: var(--paper); }
+      .study-debrief { margin-top: .75rem; padding: .7rem; border-left: 3px solid var(--accent); background: var(--accent-soft); }
+      .study-debrief[hidden] { display: none; }
+      .study-warning { color: var(--accent); font-weight: 800; }
+      code { overflow-wrap: anywhere; }
+      @media (max-width: 900px) {
+        .study-grid { grid-template-columns: 1fr; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * { scroll-behavior: auto !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#comparison">跳到比較原型</a>
+
+    <header class="masthead study-shell">
+      <p class="eyebrow">12A / evidence gate</p>
+      <h1>Direct reader comparison</h1>
+      <p class="lede">
+        依隨機順序逐一呈現 parent 12 與 child 12A。頁面不儲存答案、不送出網路請求，也不改動任何 prototype；觀察者需另外填寫 repository 內的 observation sheet。
+      </p>
+      <div class="meta-row" aria-label="研究限制">
+        <span class="pill">sequential, not side-by-side</span>
+        <span class="pill">condition order randomized</span>
+        <span class="pill">no response collection</span>
+        <span class="pill">no geometry change</span>
+      </div>
+    </header>
+
+    <main id="comparison" class="section study-shell">
+      <div class="study-grid">
+        <aside class="study-panel" aria-labelledby="facilitator-title">
+          <h2 id="facilitator-title">Facilitator sequence</h2>
+          <dl class="study-meta">
+            <dt>Session</dt><dd id="session-code"></dd>
+            <dt>Progress</dt><dd id="condition-progress"></dd>
+            <dt>Viewport</dt><dd id="viewport-label">390px</dd>
+          </dl>
+
+          <div class="study-controls" aria-label="測試 viewport">
+            <button type="button" data-viewport="320" aria-pressed="false">320px</button>
+            <button type="button" data-viewport="390" aria-pressed="true">390px</button>
+            <button type="button" data-viewport="1280" aria-pressed="false">desktop</button>
+          </div>
+
+          <h3>Whole-sheet overview</h3>
+          <ol>
+            <li>讓參與者自由看整張紙 8 秒，不提示 semantic zoom。</li>
+            <li>請他描述這張全貌實際傳達了什麼。</li>
+            <li>請指出最密與最疏的分類，並說明判斷依據。</li>
+            <li>詢問縮小內容像「完整菜單」還是裝飾性紋理。</li>
+          </ol>
+
+          <h3>Near category</h3>
+          <ol>
+            <li>請參與者進入「個人主餐」。</li>
+            <li>找出售完料理，讀出名稱與價格。</li>
+            <li>觀察長名稱是否需要額外重試、猜測或縮放。</li>
+          </ol>
+
+          <h3>Reading and return</h3>
+          <ol>
+            <li>開啟該料理 detail，請參與者描述可取得的資訊。</li>
+            <li>關閉 detail，再回到整張紙。</li>
+            <li>請參與者指出剛才分類原本位於哪個區塊。</li>
+          </ol>
+
+          <p class="study-warning">在兩個條件都完成前，不揭露哪一個是 12A。</p>
+
+          <div class="study-controls">
+            <button id="next-condition" type="button">下一個條件</button>
+            <button id="reveal-condition" type="button" disabled>揭露條件</button>
+            <button id="new-session" type="button">新 session</button>
+          </div>
+
+          <div id="debrief" class="study-debrief" hidden aria-live="polite"></div>
+        </aside>
+
+        <section class="study-panel" aria-labelledby="condition-title">
+          <div class="study-condition">
+            <div>
+              <p class="eyebrow">Blinded condition</p>
+              <h2 id="condition-title">條件 A</h2>
+            </div>
+            <strong id="condition-position">1 / 2</strong>
+          </div>
+          <p>畫面只保留 phone prototype；研究標題、版本名稱與 mechanism notes 會在 iframe 載入後隱藏。</p>
+          <div class="study-frame-wrap">
+            <div id="frame-stage" class="study-frame-stage">
+              <iframe id="condition-frame" class="study-frame" title="條件 A 的 Menu Lens prototype"></iframe>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="research-footer study-shell">
+      <p>Evidence-only study runner · no Product state, response, identifier, or analytics is persisted.</p>
+    </footer>
+
+    <script>
+      (() => {
+        const conditions = [
+          { key: "parent-12", href: "../../phases/12-paper-menu-field/" },
+          { key: "child-12a", href: "../../phases/12a-semantic-paper-field/" },
+        ];
+        const randomBit = () => {
+          if (globalThis.crypto?.getRandomValues) {
+            return globalThis.crypto.getRandomValues(new Uint32Array(1))[0] % 2;
+          }
+          return Math.random() < .5 ? 0 : 1;
+        };
+        const makeSessionCode = () => {
+          const values = globalThis.crypto?.getRandomValues
+            ? globalThis.crypto.getRandomValues(new Uint8Array(4))
+            : Uint8Array.from({ length: 4 }, () => Math.floor(Math.random() * 256));
+          return [...values].map((value) => value.toString(16).padStart(2, "0")).join("").toUpperCase();
+        };
+
+        const order = randomBit() === 0 ? [...conditions] : [...conditions].reverse();
+        const frame = document.querySelector("#condition-frame");
+        const frameStage = document.querySelector("#frame-stage");
+        const sessionCode = document.querySelector("#session-code");
+        const progress = document.querySelector("#condition-progress");
+        const conditionTitle = document.querySelector("#condition-title");
+        const conditionPosition = document.querySelector("#condition-position");
+        const viewportLabel = document.querySelector("#viewport-label");
+        const nextButton = document.querySelector("#next-condition");
+        const revealButton = document.querySelector("#reveal-condition");
+        const newSessionButton = document.querySelector("#new-session");
+        const debrief = document.querySelector("#debrief");
+        let currentIndex = 0;
+
+        const blindPrototypeChrome = () => {
+          try {
+            const documentRoot = frame.contentDocument;
+            if (!documentRoot) return;
+            documentRoot.querySelectorAll(".skip-link, .prototype-header, .study-note, main > .section").forEach((element) => {
+              element.hidden = true;
+            });
+            const shell = documentRoot.querySelector(".prototype-shell");
+            const prototype = documentRoot.querySelector("#prototype");
+            if (shell) {
+              shell.style.width = "100%";
+              shell.style.margin = "0";
+              shell.style.padding = "0";
+            }
+            if (prototype) {
+              prototype.style.margin = "0 auto";
+              prototype.scrollIntoView({ block: "start" });
+            }
+          } catch {
+            // The prototypes are expected to be same-origin in the repository preview.
+          }
+        };
+
+        const loadCondition = () => {
+          const publicLabel = currentIndex === 0 ? "條件 A" : "條件 B";
+          conditionTitle.textContent = publicLabel;
+          conditionPosition.textContent = `${currentIndex + 1} / ${order.length}`;
+          progress.textContent = `${publicLabel} · ${currentIndex + 1} / ${order.length}`;
+          frame.title = `${publicLabel} 的 Menu Lens prototype`;
+          frame.src = order[currentIndex].href;
+          nextButton.textContent = currentIndex === order.length - 1 ? "完成比較" : "下一個條件";
+        };
+
+        const setViewport = (width) => {
+          const desktop = width === 1280;
+          frameStage.style.setProperty("--study-width", `${width}px`);
+          frameStage.style.setProperty("--study-height", desktop ? "920px" : "840px");
+          viewportLabel.textContent = desktop ? "desktop · 1280px" : `${width}px`;
+          document.querySelectorAll("[data-viewport]").forEach((button) => {
+            button.setAttribute("aria-pressed", String(Number(button.dataset.viewport) === width));
+          });
+        };
+
+        frame.addEventListener("load", () => requestAnimationFrame(blindPrototypeChrome));
+        document.querySelectorAll("[data-viewport]").forEach((button) => {
+          button.addEventListener("click", () => setViewport(Number(button.dataset.viewport)));
+        });
+        nextButton.addEventListener("click", () => {
+          if (currentIndex < order.length - 1) {
+            currentIndex += 1;
+            loadCondition();
+            return;
+          }
+          frame.src = "about:blank";
+          progress.textContent = "兩個條件已完成；先記錄總結，再揭露版本";
+          nextButton.disabled = true;
+          revealButton.disabled = false;
+        });
+        revealButton.addEventListener("click", () => {
+          debrief.hidden = false;
+          debrief.textContent = `條件 A：${order[0].key === "parent-12" ? "Parent 12" : "Child 12A"}；條件 B：${order[1].key === "parent-12" ? "Parent 12" : "Child 12A"}。`;
+          revealButton.disabled = true;
+        });
+        newSessionButton.addEventListener("click", () => globalThis.location.reload());
+
+        sessionCode.textContent = makeSessionCode();
+        setViewport(390);
+        loadCondition();
+      })();
+    </script>
+  </body>
+</html>

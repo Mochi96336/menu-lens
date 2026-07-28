@@ -1,0 +1,35 @@
+{
+  "geometry": {
+    "320": {
+      "overview_max_delta": 0.0,
+      "focus_max_delta": 0.0001220703125
+    },
+    "390": {
+      "overview_max_delta": 0.0,
+      "focus_max_delta": 0.0
+    },
+    "1280": {
+      "overview_max_delta": 0.0,
+      "focus_max_delta": 0.00006103515625
+    }
+  },
+  "states": {
+    "overview": "overview",
+    "near": "near",
+    "reading": "reading",
+    "reset": "overview",
+    "detail_close_preserves_transform": true
+  },
+  "accessibility": {
+    "overview_tabbable_products": 0,
+    "near_tabbable_products": 8,
+    "detail_focus": "close button",
+    "escape_returns": "origin product",
+    "reduced_motion_transition": "0s"
+  },
+  "fixture": {
+    "categories": 6,
+    "products": 30,
+    "unique_products": 30
+  }
+}
