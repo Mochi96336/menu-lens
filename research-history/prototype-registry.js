@@ -102,9 +102,9 @@
     {
       id: "07", slug: "horizontal-menu-atlas", title: "Horizontal Menu Atlas", family: "horizontal", parentId: null,
       kind: "baseline", status: "baseline-recorded", statusLabel: "market baseline",
-      path: null,
-      summary: "市場常見的橫向分類、分類內垂直列表；只記錄，不重建。",
-      assets: { styles: [], scripts: [] },
+      path: "phases/07-horizontal-menu-atlas/index.html", validationProfile: "horizontal-market-baseline",
+      summary: "市場常見的橫向分類、分類內垂直列表，使用共同 fixture 重建為可執行基準。",
+      assets: { styles: ["history.css", "horizontal-menu-atlas.css"], scripts: ["menu-fixture.js", "horizontal-menu-atlas-renderer.js"] },
     },
     {
       id: "08", slug: "menu-spread", title: "Menu Spread", family: "horizontal", parentId: "07",
