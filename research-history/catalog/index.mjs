@@ -31,8 +31,8 @@ const STATUS_TO_DISPOSITION = Object.freeze({
   "baseline-recorded": "reference",
   "reference-variant": "reference",
   preserved: "keep-controlled",
-  "active-variant": "keep-controlled",
-  "active-hypothesis": "keep-controlled",
+  "active-variant": "provisional",
+  "active-hypothesis": "provisional",
   "unresolved-revisit": "provisional",
   "reviewed-stop": "negative-evidence",
   "product-invalid": "rejected",
@@ -129,8 +129,14 @@ const normalizeExtension = (extension) => Object.freeze({
 });
 
 export function buildArchiveCatalog(legacyRegistry, extensions = []) {
-  if (!legacyRegistry || !Array.isArray(legacyRegistry.families) || !Array.isArray(legacyRegistry.prototypes)) {
-    throw new TypeError("Archive catalog requires the legacy prototype registry during migration.");
+  if (!legacyRegistry || legacyRegistry.schemaVersion !== 1) {
+    throw new TypeError("Archive catalog migration requires prototype registry schemaVersion 1.");
+  }
+  if (!Array.isArray(legacyRegistry.families) || !Array.isArray(legacyRegistry.prototypes)) {
+    throw new TypeError("Archive catalog requires legacy families and prototypes arrays.");
+  }
+  if (!Array.isArray(extensions)) {
+    throw new TypeError("Archive catalog extensions must be an array.");
   }
 
   const objects = [
@@ -140,7 +146,7 @@ export function buildArchiveCatalog(legacyRegistry, extensions = []) {
 
   return Object.freeze({
     schemaVersion: 2,
-    migrationSourceSchemaVersion: legacyRegistry.schemaVersion ?? null,
+    migrationSourceSchemaVersion: legacyRegistry.schemaVersion,
     objectTypes: OBJECT_TYPES,
     dispositions: DISPOSITIONS,
     evidenceStates: EVIDENCE_STATES,
