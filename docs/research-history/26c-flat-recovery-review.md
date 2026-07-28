@@ -108,6 +108,10 @@ These SVGs are controlled comparison diagrams, not live-page screenshots.
 - changed 26A landmark wording or behavior;
 - a second Product geometry formula.
 
+## Formal validation routing
+
+The repository workflow only runs for pull requests targeting `main`. The Draft PR may be temporarily retargeted to `main` solely to execute the unchanged Typecheck／Test／Build workflow, then returned to the 26A branch so the final review diff remains parent-to-child.
+
 ## Current implementation judgment
 
 The code supports **KEEP as a controlled research child**, subject to repository formal checks. The range reaches the existing near-flat and deep states while preserving orientation and the same Product depth equation. It does not establish product preference or reader comprehension.
