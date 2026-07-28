@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 25PA Task-first Entry：先讀取固定三條件任務，再進入不篩選、不排序的 25P 三軸投影。" />
+    <title>25PA Task-first Entry — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../menu-projections.css" />
+    <link rel="stylesheet" href="../../menu-projection-band-labels.css" />
+    <link rel="stylesheet" href="../../task-first-projection-entry.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../menu-projections.js"></script>
+    <script src="../../menu-projection-band-labels.js"></script>
+    <script src="../../task-first-projection-entry.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到 25PA 任務入口</a>
+    <main class="prototype-shell site-shell projections-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">25PA · task first, projection unchanged</p>
+          <h1>Task-first Entry</h1>
+          <p class="lede">先讓使用者看見一個完整、固定的取捨任務，再進入 25P。任務入口不替使用者選投影、不篩選料理，也不給答案。</p>
+        </div>
+        <a class="ghost-button" href="../25-menu-depth/projections.html">回 25P</a>
+      </header>
+
+      <section class="projection-intent" aria-label="25PA 唯一變因">
+        <p><strong>唯一變因是進入順序</strong>初始畫面先呈現任務契約；使用者主動進入後，仍操作 25P 原本的三個 projection、30 個 Product node 與語意格展開。</p>
+        <div class="projection-coordinate">
+          <span><b>先讀任務</b>三人分享 · 每道 ≤ NT$500 · 時間已知且不較慢</span>
+          <span><b>再看投影</b>不指定價格／份量／時間的查看順序</span>
+          <span><b>狀態保留</b>重開任務不重設 projection 或已展開語意格</span>
+        </div>
+      </section>
+
+      <section id="prototype" class="projection-layout" aria-label="25PA Task-first Entry 互動原型">
+        <div class="phone-frame projection-phone task-first-phone" data-task-state="briefing">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+
+          <section id="task-first-entry" class="task-first-entry" aria-labelledby="task-first-title">
+            <p class="task-first-kicker">今晚的任務</p>
+            <h2 id="task-first-title" tabindex="-1">找出所有符合條件的分享料理</h2>
+            <p class="task-first-lede">你和兩位朋友一起用餐。先記住三個條件，再自由使用投影找出完整集合。</p>
+
+            <div class="task-first-conditions" aria-label="三個固定條件">
+              <article class="task-first-condition">
+                <span aria-hidden="true">01</span>
+                <div><strong>份量是「分享」</strong><p>不是小份，也不是單份。</p></div>
+              </article>
+              <article class="task-first-condition">
+                <span aria-hidden="true">02</span>
+                <div><strong>每道不超過 NT$500</strong><p>價格上限套用到每一道料理。</p></div>
+              </article>
+              <article class="task-first-condition">
+                <span aria-hidden="true">03</span>
+                <div><strong>只接受「較快」或「一般」</strong><p>「較慢」與「未標註」都不算符合。</p></div>
+              </article>
+            </div>
+
+            <div class="task-first-goal">
+              <span>最後要回答</span>
+              <p>有哪些料理全部符合？若優先最快會選哪一道；若優先最低價會選哪一道？</p>
+            </div>
+
+            <p class="task-first-note">三個 projection 可用任何順序。系統不會替你篩選、排序或判分，30 道料理會一直留在場內。</p>
+            <div class="task-first-action">
+              <button id="enter-projection" type="button">進入投影</button>
+            </div>
+          </section>
+
+          <div id="task-first-workspace" class="task-first-workspace" hidden>
+            <header class="projection-restaurant"><h2 id="projection-restaurant-name"></h2><p id="projection-restaurant-summary"></p></header>
+            <div class="task-first-reminder" role="region" aria-label="目前任務摘要">
+              <span>任務</span>
+              <strong>分享 · 每道 ≤ NT$500 · 較快／一般</strong>
+              <button id="show-task" type="button" aria-controls="task-first-entry">查看</button>
+            </div>
+            <nav class="projection-controls" aria-label="選擇主要觀察面">
+              <button type="button" data-projection="price-serving" aria-pressed="true">價格<br />× 份量</button>
+              <button type="button" data-projection="price-preparation" aria-pressed="false">價格<br />× 時間</button>
+              <button type="button" data-projection="serving-preparation" aria-pressed="false">份量<br />× 時間</button>
+            </nav>
+            <div class="projection-status" aria-live="polite">
+              <strong id="projection-status-title">價格 × 份量</strong>
+              <span id="projection-status-meta">深度：準備時間</span>
+            </div>
+            <div id="projection-band-summary" class="projection-band-summary" role="status" aria-live="polite"></div>
+            <div class="projection-plot">
+              <div id="projection-field" class="projection-field" aria-label="30 道料理的三維關係投影">
+                <svg id="projection-volume" class="projection-volume" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                  <g id="projection-volume-grids"></g>
+                  <polygon id="projection-cell-highlight" class="projection-cell-highlight"></polygon>
+                  <g id="projection-volume-edges"></g>
+                  <g id="projection-volume-axes"></g>
+                  <g id="projection-volume-band-labels" class="projection-volume-band-labels"></g>
+                </svg>
+                <div id="projection-node-layer" class="projection-node-layer"></div>
+                <div id="projection-focus-card" class="projection-focus-card" data-open="false" role="status" aria-live="polite"></div>
+                <div class="projection-depth-cue"><span>目前深度軸</span><strong id="projection-depth-axis">準備時間</strong></div>
+              </div>
+            </div>
+            <p class="projection-footnote">30 / 30 道始終存在 · 任務不會改變投影 · 點節點展開目前語意格</p>
+          </div>
+        </div>
+
+        <div class="projection-notes" aria-label="25PA 研究判斷條件">
+          <article><h3>不是 wizard</h3><p>只有一張固定任務契約與一個進入動作，沒有逐步問答、分支或設定流程。</p></article>
+          <article><h3>不指定 projection</h3><p>進入後維持 25P 預設的價格 × 份量畫面；任務入口不點擊或切換任何 projection。</p></article>
+          <article><h3>不改資料模型</h3><p>沿用 30 道料理、價格連續座標、份量與時間 bands、三個 view matrices 與相同 Product node。</p></article>
+          <article><h3>任務可回看</h3><p>查看任務只暫時遮住 workspace；返回時保留目前 projection、選取語意格與卡片內容。</p></article>
+          <article><h3>沒有結果捷徑</h3><p>不篩選、不排序、不推薦、不判分，也不顯示符合料理名稱。</p></article>
+          <article class="gate"><h3>證據狀態</h3><p>這是依 owner 明確要求提前實作的 provisional child。沒有陌生讀者結果，不代表 25P 或 25PA 已通過產品方向門檻。</p></article>
+          <article>
+            <h3>分類顏色</h3>
+            <div id="projection-category-legend" class="projection-category-legend" aria-label="分類顏色圖例"></div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
