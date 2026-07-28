@@ -9,11 +9,13 @@ const runnerPath = "research-history/studies/25p-reader-task/index.html";
 const protocolPath = "docs/research-history/25p-reader-task-study-protocol.md";
 const observationPath = "docs/research-history/25p-reader-task-study-observation-sheet.md";
 const workflowPath = ".github/workflows/25p-reader-task-study-validation.yml";
+const layoutReportPath = "research-history/review-assets/25p-reader-task/layout-report.json";
 
 const runner = read(runnerPath);
 const protocol = read(protocolPath);
 const observation = read(observationPath);
 const workflow = read(workflowPath);
+const layoutReport = JSON.parse(read(layoutReportPath));
 const script = runner.match(/<script>([\s\S]*?)<\/script>/)?.[1] ?? "";
 
 const task = "你和兩位朋友要點一道分享料理。每道料理預算不超過 NT$500，而且不想選「較慢」的料理。請找出所有符合條件的料理。接著回答：若優先最快，會選哪一道；若優先最低價，會選哪一道？";
@@ -81,6 +83,30 @@ assert.match(
   "Protocol must retain the full prohibited-rescue stop boundary.",
 );
 
+for (const layoutContract of [
+  'data-state="setup"',
+  '.study-grid[data-state="active"] .facilitator-panel',
+  'grid-template-columns: minmax(0, 1fr)',
+  '#study.study--desktop-active',
+  'overflow: hidden; padding: 0; border-right: 0; border-left: 0',
+  'studyGrid.dataset.state = "active"',
+  'studyGrid.dataset.state = "finished"',
+  'study.classList.toggle("study--desktop-active", sessionStarted && viewport === 1280)',
+]) {
+  assert.ok(runner.includes(layoutContract), `Runner layout repair is missing: ${layoutContract}`);
+}
+
+assert.equal(layoutReport.cases.length, 11, "Runner layout report must cover setup, active, and finished states.");
+assert.equal(layoutReport.checks["all-cases-no-document-overflow"], true);
+assert.equal(layoutReport.checks["active-session-hides-facilitator-column"], true);
+assert.equal(layoutReport.checks["mobile-frame-overflow-contained-inside-frame-wrapper"], true);
+assert.equal(layoutReport.checks["desktop-1280-frame-fully-visible-at-1280"], true);
+assert.equal(layoutReport.checks["desktop-1280-frame-centered-at-wider-viewports"], true);
+assert.equal(layoutReport.checks["finished-state-restores-observer-column"], true);
+for (const item of layoutReport.cases) {
+  assert.equal(item.documentOverflow, false, `Runner layout overflowed in ${item.state} at ${item.outerViewport}px.`);
+}
+
 assert.match(workflow, /node scripts\/validate-25p-reader-task-study\.mjs/, "Study workflow must invoke the dedicated validator.");
 assert.match(workflow, /npm run typecheck/, "Study workflow must typecheck the repository.");
 assert.match(workflow, /npm test/, "Study workflow must run repository tests.");
@@ -89,6 +115,7 @@ assert.match(workflow, /npm run build/, "Study workflow must build the repositor
 console.log("25P reader task study validation passed.");
 console.log("- one unchanged 25P condition");
 console.log("- 320px / 390px / 1280px frames");
+console.log("- active-session facilitator column removed and desktop frame fully visible");
 console.log("- three counterbalanced starting projections");
 console.log("- no answer key, persistence, analytics, or automated scoring in participant runner");
 console.log("- six-session eligibility and stop gates recorded");
