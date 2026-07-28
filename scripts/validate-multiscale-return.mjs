@@ -52,9 +52,11 @@ for (const text of [
   "window.createMenuLensMultiscaleController",
   'aria-label="回到全店概覽"',
   ">回全店</button>",
-  "全店尺度",
 ]) {
   if (!html.includes(text)) throw new Error(`A-M3 page is missing ${text}.`);
+}
+if (!html.includes("全店尺度") && !html.includes("完整菜單 · 6 分類 30 道")) {
+  throw new Error("A-M3 page must expose either its original scale label or the approved A-M4 complete-menu label.");
 }
 for (const forbidden of ["retained-menu", "30 道仍在同一份菜單", "Product landmark", "代表料理", "推薦料理"]) {
   if (html.includes(forbidden)) throw new Error(`A-M3 must not include A-M4 or 06A content: ${forbidden}.`);
