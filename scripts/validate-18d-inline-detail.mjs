@@ -23,7 +23,7 @@ for (const required of [
   'button.after(detail)',
   'productContainer.dataset.inlineDetailOpen = "true"',
   'detail.dataset.open = "true"',
-  'window.createSpatialDragController',
+  'window.enableMenuLensHorizontalDrag',
 ]) {
   assert.ok(html.includes(required), `18D is missing its inline-detail contract: ${required}`);
 }

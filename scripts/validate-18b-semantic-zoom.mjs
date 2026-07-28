@@ -21,7 +21,7 @@ for (const required of [
   'copy.textContent = categoryData.summary',
   'scope.textContent = `完整 ${products.length} 道料理 · 放大後閱讀`',
   'viewport.dataset.scale = scale',
-  'window.createSpatialDragController',
+  'window.enableMenuLensHorizontalDrag',
 ]) {
   assert.ok(html.includes(required), `18B is missing its semantic-overview contract: ${required}`);
 }

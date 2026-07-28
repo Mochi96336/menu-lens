@@ -22,7 +22,7 @@ for (const required of [
   'button.setAttribute("aria-hidden", String(overviewMode))',
   'if (scale !== "overview") return',
   'if (scale !== "reading") return',
-  'window.createSpatialDragController',
+  'window.enableMenuLensHorizontalDrag',
 ]) {
   assert.ok(html.includes(required), `18C is missing its category-entry contract: ${required}`);
 }
