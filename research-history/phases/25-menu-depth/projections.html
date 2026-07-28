@@ -7,8 +7,10 @@
     <title>Menu Projections — Menu Lens research archive</title>
     <link rel="stylesheet" href="../../history.css" />
     <link rel="stylesheet" href="../../menu-projections.css" />
+    <link rel="stylesheet" href="../../menu-projection-band-labels.css" />
     <script src="../../menu-fixture.js"></script>
     <script src="../../menu-projections.js"></script>
+    <script src="../../menu-projection-band-labels.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#prototype">跳到三維投影原型</a>
@@ -44,6 +46,7 @@
             <strong id="projection-status-title">價格 × 份量</strong>
             <span id="projection-status-meta">深度：準備時間</span>
           </div>
+          <div id="projection-band-summary" class="projection-band-summary" role="status" aria-live="polite"></div>
           <div class="projection-plot">
             <div id="projection-field" class="projection-field" aria-label="30 道料理的三維關係投影">
               <svg id="projection-volume" class="projection-volume" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
@@ -51,6 +54,7 @@
                 <polygon id="projection-cell-highlight" class="projection-cell-highlight"></polygon>
                 <g id="projection-volume-edges"></g>
                 <g id="projection-volume-axes"></g>
+                <g id="projection-volume-band-labels" class="projection-volume-band-labels"></g>
               </svg>
               <div id="projection-node-layer" class="projection-node-layer"></div>
               <div id="projection-focus-card" class="projection-focus-card" data-open="false" role="status" aria-live="polite"></div>
@@ -66,6 +70,7 @@
           <article><h3>同一個三維模型</h3><p>30 個料理節點只建立一次。切換按鈕旋轉同一組座標、三張矩陣、框線與軸，不重新排一張圖。</p></article>
           <article><h3>原地展開</h3><p>點料理後展開目前語意格內的菜名與價格；換觀察面時保留錨點，再顯示它在新矩陣所屬的格。</p></article>
           <article><h3>資料限制可見</h3><p>份量是小份／單份／分享的 ordinal band，不假裝精確人數；缺少準備時間的料理落在未標註帶。</p></article>
+          <article><h3>固定使用任務</h3><p>三人共享、每道不超過 NT$500、排除較慢料理；先找出所有符合項目，再比較最快與最低價。完整 protocol 與 answer key 記錄於研究文件。</p></article>
           <article class="gate"><h3>淘汰門檻</h3><p>若三個投影只像資料 dashboard、無法幫助理解實際取捨，或節點碰撞使料理不可辨識，就否決這組軸，但繼續研究其他維度模型。</p></article>
           <article>
             <h3>分類顏色</h3>
