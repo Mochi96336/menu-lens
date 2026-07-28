@@ -1,0 +1,39 @@
+.narrow-ledger-screen {
+  overflow-x: clip;
+}
+
+@media (max-width: 340px) {
+  .narrow-ledger-screen .ledger-row summary {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "identity identity"
+      "cue price";
+    gap: .28rem .75rem;
+  }
+
+  .narrow-ledger-screen .ledger-identity {
+    grid-area: identity;
+    min-width: 0;
+  }
+
+  .narrow-ledger-screen .ledger-cue {
+    grid-area: cue;
+    align-self: baseline;
+    text-align: left;
+  }
+
+  .narrow-ledger-screen .ledger-price {
+    grid-area: price;
+    align-self: baseline;
+  }
+
+  .narrow-ledger-screen .ledger-product-copy {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .narrow-ledger-screen .ledger-observer {
+    backdrop-filter: none;
+  }
+}

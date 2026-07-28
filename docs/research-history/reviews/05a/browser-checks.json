@@ -1,0 +1,142 @@
+{
+  "320": {
+    "innerWidth": 320,
+    "documentScrollWidth": 320,
+    "bodyScrollWidth": 320,
+    "horizontalOverflow": false,
+    "categories": 6,
+    "products": 30,
+    "uniqueProducts": 30,
+    "openInitial": 0,
+    "firstDomOrder": [
+      "minimal-ledger-name-wrap",
+      "minimal-ledger-cue",
+      "minimal-ledger-price",
+      "minimal-ledger-disclosure"
+    ],
+    "maxSummaryRight": 296.609375,
+    "minSummaryLeft": 23.390625,
+    "longestName": "塔香三杯杏鮑菇定食",
+    "longestCue": {
+      "text": "3–4 人、慢烤",
+      "client": 147,
+      "scroll": 147,
+      "overflow": "ellipsis"
+    },
+    "soldOutWithinViewport": true,
+    "priceRightEdges": [
+      249,
+      249,
+      249,
+      249,
+      249,
+      249,
+      249,
+      249
+    ],
+    "hasForbiddenFlow": false
+  },
+  "390": {
+    "innerWidth": 390,
+    "documentScrollWidth": 390,
+    "bodyScrollWidth": 390,
+    "horizontalOverflow": false,
+    "categories": 6,
+    "products": 30,
+    "uniqueProducts": 30,
+    "openInitial": 0,
+    "firstDomOrder": [
+      "minimal-ledger-name-wrap",
+      "minimal-ledger-cue",
+      "minimal-ledger-price",
+      "minimal-ledger-disclosure"
+    ],
+    "maxSummaryRight": 366.609375,
+    "minSummaryLeft": 23.390625,
+    "longestName": "塔香三杯杏鮑菇定食",
+    "longestCue": {
+      "text": "3–4 人、慢烤",
+      "client": 205,
+      "scroll": 205,
+      "overflow": "ellipsis"
+    },
+    "soldOutWithinViewport": true,
+    "priceRightEdges": [
+      313,
+      313,
+      313,
+      313,
+      313,
+      313,
+      313,
+      313
+    ],
+    "hasForbiddenFlow": false
+  },
+  "desktop": {
+    "innerWidth": 1280,
+    "documentScrollWidth": 1280,
+    "bodyScrollWidth": 1280,
+    "horizontalOverflow": false,
+    "categories": 6,
+    "products": 30,
+    "uniqueProducts": 30,
+    "openInitial": 0,
+    "firstDomOrder": [
+      "minimal-ledger-name-wrap",
+      "minimal-ledger-cue",
+      "minimal-ledger-price",
+      "minimal-ledger-disclosure"
+    ],
+    "maxSummaryRight": 835.609375,
+    "minSummaryLeft": 444.390625,
+    "longestName": "塔香三杯杏鮑菇定食",
+    "longestCue": {
+      "text": "3–4 人、慢烤",
+      "client": 253,
+      "scroll": 253,
+      "overflow": "ellipsis"
+    },
+    "soldOutWithinViewport": true,
+    "priceRightEdges": [
+      782,
+      782,
+      782,
+      782,
+      782,
+      782,
+      782,
+      782
+    ],
+    "hasForbiddenFlow": false
+  },
+  "pointer": {
+    "open": 1,
+    "description": true,
+    "close": true,
+    "closed": true,
+    "focusReturned": true
+  },
+  "keyboard": {
+    "openedWithEnter": true,
+    "closeButtonFocusedOnOpen": true,
+    "closedWithEscape": true,
+    "focusReturned": true
+  },
+  "detailSwitch": {
+    "openCount": 1,
+    "firstOpen": false,
+    "secondOpen": true
+  },
+  "reset": {
+    "openCount": 0,
+    "scrollY": 0,
+    "products": 30
+  },
+  "reducedMotion": {
+    "matches": true,
+    "htmlScrollBehavior": "auto",
+    "animationName": "none",
+    "transitionDuration": "0s"
+  }
+}

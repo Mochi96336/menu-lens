@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="05A Minimal Ledger Row：縮短 collapsed row，但把完整料理資訊保留在原位 inline detail。" />
+    <title>05A Minimal Ledger Row — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+  </head>
+  <body>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">05A · prototype · provisional · browser verified</p>
+          <h1>Minimal Ledger Row</h1>
+          <p class="lede">05A 只改變 05 collapsed Product row 的資訊密度：名稱、單一 cue、價格、必要狀態與 disclosure 留在列上，完整描述與其他資訊仍在原位 detail。</p>
+        </div>
+        <a class="ghost-button" href="../../phases/05a-minimal-ledger/index.html">開啟 05A</a>
+      </header>
+
+      <section class="section" aria-labelledby="change-title">
+        <div class="section-heading"><p class="eyebrow">Unique variable</p><h2 id="change-title">縮短列，不縮減可取得資訊</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>Collapsed row</h3><p>移除完整描述，只保留一個料理 cue、價格與必要狀態。</p></article>
+          <article class="phase-card"><h3>Inline detail</h3><p>完整描述、份量、備餐節奏、設定與 availability 仍從來源列展開。</p></article>
+          <article class="phase-card"><h3>Preserved</h3><p>六分類、30 個 Product、canonical order、單一 detail open、focus return 與交易行為禁區不變。</p></article>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="evidence-title">
+        <div class="section-heading"><p class="eyebrow">Evidence</p><h2 id="evidence-title">實作通過，產品方向仍暫定</h2><p>320px、390px 與 desktop 均保留 30 個唯一 Product、無水平 overflow，pointer、keyboard、reset 與 reduced-motion evidence 均通過。這不證明陌生讀者比較更快或理解更好。</p></div>
+        <p><a class="ghost-button" href="../../review-assets/05a/browser-checks.json">查看 machine-readable checks</a> <a class="ghost-button" href="../../../docs/research-history/reviews/05a/README.md">查看完整 implementation review</a></p>
+      </section>
+
+      <section class="section" aria-labelledby="gate-title">
+        <div class="section-heading"><p class="eyebrow">Next gate</p><h2 id="gate-title">直接對照 parent 05 的陌生讀者閱讀</h2><p>檢查較短 rows 是否改善掃描與料理辨識，而不只是增加同一 viewport 中可見的列數。</p></div>
+      </section>
+    </main>
+    <footer class="research-footer site-shell"><p>Source: PR #17 · b13526d9033cca9b55a9e8a6c77127a807907f39.</p></footer>
+  </body>
+</html>
