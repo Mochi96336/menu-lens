@@ -1,0 +1,78 @@
+name: Validate A-M4 retained-menu truth
+
+on:
+  pull_request:
+    branches:
+      - agent/menu-lens-06-return-continuity
+
+permissions:
+  contents: write
+
+jobs:
+  validate-retained-truth:
+    if: github.head_ref == 'agent/menu-lens-06-retained-menu-truth'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out A-M4 branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/menu-lens-06-retained-menu-truth
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Chromium runner
+        run: |
+          npm install --no-save --package-lock=false playwright@1.54.2
+          npx playwright install --with-deps chromium
+
+      - name: Run retained-menu truth and layout checks
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory research-history > /tmp/menu-lens-06-a-m4-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" || true' EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4173/phases/06-multiscale-menu-map/ > /dev/null; then
+              break
+            fi
+            sleep 0.5
+          done
+          node scripts/06-retained-menu-truth-browser.mjs
+
+      - name: Commit deterministic browser report
+        if: always()
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/research-history/reviews/06-retained-menu-truth/browser-checks.json
+          if ! git diff --cached --quiet; then
+            git commit -m "test(06): record retained-menu truth layout evidence"
+            git push origin HEAD:agent/menu-lens-06-retained-menu-truth
+          fi
+
+      - name: Upload A-M4 layout screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a-m4-retained-menu-layout
+          path: /tmp/menu-lens-06-retained-menu-truth
+          if-no-files-found: error
