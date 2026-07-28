@@ -75,13 +75,11 @@ assert.match(observation, /Exact-set pass: 0 \/ 1/, "Observation sheet must supp
 assert.match(observation, /Do not record names, email addresses, phone numbers/, "Observation sheet must state the privacy boundary.");
 assert.doesNotMatch(observation, /Participant name:|Email:|Phone:|Contact:|IP address:/i, "Observation sheet must not request identifying fields.");
 
-for (const forbiddenMechanism of [
-  "task wizard",
-  "automatic projection selection",
-  "filtering, ranking, recommendation",
-]) {
-  assert.ok(protocol.includes(forbiddenMechanism), `Protocol must retain the ${forbiddenMechanism} stop boundary.`);
-}
+assert.match(
+  protocol,
+  /wizard, filter, ranking, recommendation, or automatic projection selection/,
+  "Protocol must retain the full prohibited-rescue stop boundary.",
+);
 
 assert.match(workflow, /node scripts\/validate-25p-reader-task-study\.mjs/, "Study workflow must invoke the dedicated validator.");
 assert.match(workflow, /npm run typecheck/, "Study workflow must typecheck the repository.");
