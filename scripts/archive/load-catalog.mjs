@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { runInNewContext } from "node:vm";
 import { buildArchiveCatalog } from "../../research-history/catalog/index.mjs";
+import { archiveExtensions } from "../../research-history/catalog/extensions.mjs";
 
 const root = new URL("../../", import.meta.url);
 
@@ -10,7 +11,7 @@ export async function loadArchiveCatalog() {
   runInNewContext(registrySource, sandbox, {
     filename: "research-history/prototype-registry.js",
   });
-  return buildArchiveCatalog(sandbox.window.menuLensPrototypeRegistry);
+  return buildArchiveCatalog(sandbox.window.menuLensPrototypeRegistry, archiveExtensions);
 }
 
 export { root };
