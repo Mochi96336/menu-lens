@@ -64,11 +64,30 @@ for (const contract of [
   'window.matchMedia("(prefers-reduced-motion: reduce)")',
   'attributeFilter: ["aria-pressed"]',
   "projection-band-summary__row",
+  "layoutFocusCard",
+  "focusCard.dataset.layoutSide",
+  'focusCard.style.setProperty("--focus-clamp-x"',
+  'focusCard.style.setProperty("--focus-clamp-y"',
+  'focusCard.style.setProperty("--focus-pointer-y"',
+  "focusCard.tabIndex = 0",
+  "new ResizeObserver",
+  "trackFor(700)",
 ]) {
   if (!addonSource.includes(contract)) throw new Error(`Band-label add-on is missing controller contract: ${contract}`);
 }
 if (!addonStyles.includes("pointer-events: none") || !addonStyles.includes("projection-band-label")) {
   throw new Error("Band labels must remain non-interactive presentation, not controls.");
+}
+for (const layoutStyle of [
+  '.projection-focus-card[data-open="true"]',
+  "pointer-events: auto",
+  "overscroll-behavior: contain",
+  "touch-action: pan-y",
+  'data-layout-side="right"',
+  'data-layout-side="left"',
+  "--focus-pointer-y",
+]) {
+  if (!addonStyles.includes(layoutStyle)) throw new Error(`25P focus-card layout repair is missing: ${layoutStyle}`);
 }
 
 for (const forbidden of [
@@ -118,6 +137,14 @@ for (const width of ["320", "390", "1280"]) {
     || states["serving-preparation"].labels.length !== 7) {
     throw new Error(`25P band-label counts drifted at ${width}px.`);
   }
+  const focusCardLayout = viewport.focusCardLayout;
+  if (!focusCardLayout
+    || focusCardLayout.cases !== 168
+    || focusCardLayout.clipped !== 0
+    || focusCardLayout.minimumFieldGapPx < 5
+    || focusCardLayout.largeResultScrollable !== true) {
+    throw new Error(`25P focus-card layout evidence failed at ${width}px.`);
+  }
 }
 
-console.log("25P band-label and task-definition validation passed: 11 bands, 3 projections, 30 Products, one fixed task, no 25PA implementation.");
+console.log("25P band-label and task-definition validation passed: 11 bands, 3 projections, 30 Products, contained scrollable focus cards, one fixed task, no 25PA implementation.");
