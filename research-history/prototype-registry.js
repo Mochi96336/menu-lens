@@ -267,6 +267,13 @@
       summary: "保留 26 的同一排版體積，只在中間角度標示離開與接近的分類、料理數與範圍線索。",
       assets: { styles: ["history.css", "parallax-menu-volume.css", "parallax-transition-landmarks.css"], scripts: ["menu-fixture.js", "parallax-menu-volume.js", "parallax-transition-landmarks.js"] },
     },
+    {
+      id: "26C", slug: "flat-recovery", title: "Flat Recovery", family: "depth", parentId: "26A",
+      kind: "spatial-prototype", status: "active-variant", statusLabel: "active flat recovery variant",
+      path: "phases/26c-flat-recovery/index.html", validationProfile: "parallax-flat-recovery",
+      summary: "保留 26A 的中間地標與 26 的空間模型，新增可直接操作的連續深度滑桿，讓使用者不依賴雙指手勢也能回到接近平面的閱讀狀態。",
+      assets: { styles: ["history.css", "parallax-menu-volume.css", "parallax-transition-landmarks.css", "parallax-flat-recovery.css"], scripts: ["menu-fixture.js", "parallax-flat-recovery.js", "parallax-transition-landmarks.js"] },
+    },
   ];
 
   window.menuLensPrototypeRegistry = Object.freeze({
