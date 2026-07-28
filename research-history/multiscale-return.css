@@ -32,6 +32,12 @@
   scroll-margin-top: 3.3rem;
 }
 
+@media (max-width: 340px) {
+  .multiscale-screen #scale-label {
+    font-size: .84rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .multiscale-screen { scroll-behavior: auto; }
 }
