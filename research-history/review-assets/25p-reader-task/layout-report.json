@@ -1,0 +1,24 @@
+{
+  "scope": "bounded Chromium layout harness using the runner's active-state grid and frame rules; prototype interaction and participant evidence are outside this report",
+  "cases": [
+    { "state": "setup", "frame": 320, "outerViewport": 320, "documentOverflow": false },
+    { "state": "setup", "frame": 390, "outerViewport": 390, "documentOverflow": false },
+    { "state": "setup", "frame": 1280, "outerViewport": 1280, "documentOverflow": false },
+    { "state": "active", "frame": 320, "outerViewport": 320, "documentOverflow": false, "facilitatorHidden": true, "frameContainedByInnerScroller": true },
+    { "state": "active", "frame": 390, "outerViewport": 390, "documentOverflow": false, "facilitatorHidden": true, "frameContainedByInnerScroller": true },
+    { "state": "active", "frame": 1280, "outerViewport": 1280, "documentOverflow": false, "facilitatorHidden": true, "frameFullyVisible": true, "frameLeft": 0, "frameRight": 1280 },
+    { "state": "active", "frame": 1280, "outerViewport": 1440, "documentOverflow": false, "facilitatorHidden": true, "frameFullyVisible": true, "frameLeft": 80, "frameRight": 1360 },
+    { "state": "active", "frame": 1280, "outerViewport": 1920, "documentOverflow": false, "facilitatorHidden": true, "frameFullyVisible": true, "frameLeft": 320, "frameRight": 1600 },
+    { "state": "finished", "frame": 320, "outerViewport": 320, "documentOverflow": false, "facilitatorVisible": true },
+    { "state": "finished", "frame": 390, "outerViewport": 390, "documentOverflow": false, "facilitatorVisible": true },
+    { "state": "finished", "frame": 1280, "outerViewport": 1280, "documentOverflow": false, "facilitatorVisible": true }
+  ],
+  "checks": {
+    "all-cases-no-document-overflow": true,
+    "active-session-hides-facilitator-column": true,
+    "mobile-frame-overflow-contained-inside-frame-wrapper": true,
+    "desktop-1280-frame-fully-visible-at-1280": true,
+    "desktop-1280-frame-centered-at-wider-viewports": true,
+    "finished-state-restores-observer-column": true
+  }
+}
