@@ -10,8 +10,14 @@
 
     const categories = [...root.querySelectorAll('.scale-category')];
     const details = [...root.querySelectorAll('.scale-product')];
+    const overviewLabel = `完整菜單 · ${categories.length} 分類 ${details.length} 道`;
     let expandedCategory = null;
     let returnContext = null;
+
+    const categoryName = (category) => category
+      .querySelector('.scale-category-title')
+      .textContent
+      .split(' · ')[0];
 
     const applyExpandedState = (target) => {
       categories.forEach((category) => {
@@ -24,8 +30,8 @@
       collapseAll.disabled = !target;
       if (screen) screen.dataset.focused = String(Boolean(target));
       scaleLabel.textContent = target
-        ? `分類尺度 · ${target.querySelector('.scale-category-title').textContent}`
-        : '全店尺度';
+        ? `閱讀 ${categoryName(target)} · 其餘料理未篩除`
+        : overviewLabel;
     };
 
     const expandCategory = (target) => {
