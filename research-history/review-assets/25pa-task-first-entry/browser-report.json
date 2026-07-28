@@ -1,0 +1,96 @@
+{
+  "scope": "real Chromium child page; implementation and layout evidence only",
+  "viewports": {
+    "320": {
+      "viewport": {
+        "width": 320,
+        "height": 900
+      },
+      "initial": {
+        "noDocumentOverflow": true,
+        "taskContained": true,
+        "noConditionOverflow": true,
+        "noBriefingScroll": true,
+        "workspaceHidden": true,
+        "activeProjection": "price-serving"
+      },
+      "workspace": {
+        "noDocumentOverflow": true,
+        "nodeCount": 30,
+        "activeProjectionAfterEntry": "price-serving",
+        "reminderVisible": true
+      },
+      "recall": {
+        "projectionPreserved": true,
+        "semanticCellPreserved": true,
+        "escapeReturnsToWorkspace": true
+      },
+      "storageKeys": 0,
+      "cookies": 0,
+      "pageErrors": []
+    },
+    "390": {
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "initial": {
+        "noDocumentOverflow": true,
+        "taskContained": true,
+        "noConditionOverflow": true,
+        "noBriefingScroll": true,
+        "workspaceHidden": true,
+        "activeProjection": "price-serving"
+      },
+      "workspace": {
+        "noDocumentOverflow": true,
+        "nodeCount": 30,
+        "activeProjectionAfterEntry": "price-serving",
+        "reminderVisible": true
+      },
+      "recall": {
+        "projectionPreserved": true,
+        "semanticCellPreserved": true,
+        "escapeReturnsToWorkspace": true
+      },
+      "storageKeys": 0,
+      "cookies": 0,
+      "pageErrors": []
+    },
+    "1280": {
+      "viewport": {
+        "width": 1280,
+        "height": 1000
+      },
+      "initial": {
+        "noDocumentOverflow": true,
+        "taskContained": true,
+        "noConditionOverflow": true,
+        "noBriefingScroll": true,
+        "workspaceHidden": true,
+        "activeProjection": "price-serving"
+      },
+      "workspace": {
+        "noDocumentOverflow": true,
+        "nodeCount": 30,
+        "activeProjectionAfterEntry": "price-serving",
+        "reminderVisible": true
+      },
+      "recall": {
+        "projectionPreserved": true,
+        "semanticCellPreserved": true,
+        "escapeReturnsToWorkspace": true
+      },
+      "storageKeys": 0,
+      "cookies": 0,
+      "pageErrors": []
+    }
+  },
+  "checks": {
+    "allViewportsNoOverflow": true,
+    "allTaskBriefingsContained": true,
+    "allParentIdentitiesRetained": true,
+    "allRecallStatesPreserved": true,
+    "noPersistenceOrPageErrors": true
+  }
+}
