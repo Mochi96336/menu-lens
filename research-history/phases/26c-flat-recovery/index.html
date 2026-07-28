@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Menu Lens 26C Flat Recovery：保留 26A 的中間地標與 26 的空間模型，新增一個直接、連續的排版深度控制。"
+    />
+    <title>26C Flat Recovery — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../parallax-menu-volume.css" />
+    <link rel="stylesheet" href="../../parallax-transition-landmarks.css" />
+    <link rel="stylesheet" href="../../parallax-flat-recovery.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../parallax-flat-recovery.js" defer></script>
+    <script src="../../parallax-transition-landmarks.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">26C · flat recovery</p>
+          <h1>Flat Recovery</h1>
+          <p class="lede">沿用 26A 的 landmark grammar、六個觀看方向與全部料理位置；只增加一個可直接操作的連續深度滑桿，讓使用者不依賴雙指手勢也能回到接近平面的閱讀狀態。</p>
+        </div>
+        <a class="ghost-button" href="../26a-transition-landmarks/">比較 parent 26A</a>
+      </header>
+
+      <p class="study-note">拖曳或使用方向鍵改變 orientation；雙指張合、加減鍵與「排版深度」滑桿都控制同一個 spread 值。滑桿不新增模式、平面 endpoint 或自動攤平。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="26C Flat Recovery 手機互動原型">
+        <div class="phone-screen parallax-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="parallax-restaurant">
+            <div>
+              <p class="parallax-restaurant__kicker">視差菜單體</p>
+              <h2 id="parallax-restaurant-name"></h2>
+            </div>
+            <p id="parallax-restaurant-meta"></p>
+          </header>
+
+          <div
+            id="parallax-stage"
+            class="parallax-stage"
+            tabindex="0"
+            role="application"
+            aria-label="可旋轉的立體菜單。拖曳旋轉，雙指張合或排版深度滑桿改變深度；中間角度保留 26A 的分類地標。方向鍵旋轉，加減鍵改變深度。"
+          >
+            <div class="parallax-space" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <div id="parallax-volume" class="parallax-volume"></div>
+
+            <div
+              id="parallax-transition-landmarks"
+              class="parallax-transition-landmarks"
+              data-visible="false"
+              aria-hidden="true"
+            >
+              <article class="parallax-transition-landmark" data-landmark-role="origin">
+                <p id="parallax-landmark-origin-label" class="parallax-transition-landmark__role">從這裡離開</p>
+                <div class="parallax-transition-landmark__heading">
+                  <strong id="parallax-landmark-origin-title"></strong>
+                  <small id="parallax-landmark-origin-count"></small>
+                </div>
+                <div class="parallax-transition-landmark__meter"><i></i></div>
+                <small id="parallax-landmark-origin-extent" class="parallax-transition-landmark__extent"></small>
+              </article>
+              <article class="parallax-transition-landmark" data-landmark-role="target">
+                <p id="parallax-landmark-target-label" class="parallax-transition-landmark__role">往下一個方向</p>
+                <div class="parallax-transition-landmark__heading">
+                  <strong id="parallax-landmark-target-title"></strong>
+                  <small id="parallax-landmark-target-count"></small>
+                </div>
+                <div class="parallax-transition-landmark__meter"><i></i></div>
+                <small id="parallax-landmark-target-extent" class="parallax-transition-landmark__extent"></small>
+              </article>
+            </div>
+            <p id="parallax-transition-announcement" class="parallax-transition-announcement" aria-live="polite"></p>
+
+            <div id="parallax-compass" class="parallax-compass" role="img" aria-label="六個觀看方向；目前朝向個人主餐">
+              <div id="parallax-compass-markers" class="parallax-compass__markers"></div>
+              <i id="parallax-compass-cursor" class="parallax-compass__cursor" aria-hidden="true"></i>
+            </div>
+
+            <div id="parallax-reticle" class="parallax-reticle" data-state="locked" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+
+            <div id="parallax-depth-guide" class="parallax-depth-guide" data-visible="false" aria-hidden="true">
+              <span>立體</span>
+              <i><b id="parallax-depth-knob"></b></i>
+              <span>平面</span>
+            </div>
+
+            <aside id="parallax-detail" class="parallax-detail" data-open="false" aria-hidden="true" aria-live="polite">
+              <div>
+                <p id="parallax-detail-category"></p>
+                <h3 id="parallax-detail-title"></h3>
+                <p id="parallax-detail-meta" class="parallax-detail__meta"></p>
+                <p id="parallax-detail-copy" class="parallax-detail__copy"></p>
+              </div>
+              <button id="parallax-detail-close" type="button" aria-label="關閉料理資訊">×</button>
+            </aside>
+
+            <div class="parallax-readout" aria-live="polite">
+              <div>
+                <span id="parallax-state-label">可以點料理</span>
+                <strong id="parallax-current-category">個人主餐</strong>
+              </div>
+              <div class="parallax-readout__metrics">
+                <span id="parallax-alignment">正面已對齊</span>
+                <span id="parallax-depth">立體</span>
+              </div>
+              <div class="parallax-meter" aria-hidden="true"><i id="parallax-meter-fill"></i></div>
+              <div id="parallax-flat-recovery" class="parallax-flat-recovery" data-level="立體">
+                <label for="parallax-flat-range">排版深度</label>
+                <input
+                  id="parallax-flat-range"
+                  type="range"
+                  min="0.02"
+                  max="1"
+                  step="0.01"
+                  value="0.58"
+                  aria-label="排版深度；向左接近平面，向右增加立體深度"
+                  aria-valuetext="立體，58%"
+                />
+                <output id="parallax-flat-output" for="parallax-flat-range">立體 · 58%</output>
+              </div>
+            </div>
+
+            <button id="parallax-reset" class="parallax-reset" type="button">回到正面</button>
+            <p class="parallax-gesture" aria-hidden="true">拖曳旋轉 · 深度滑桿或雙指張合 · 點料理看資訊</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="parallax-study-notes" aria-label="26C 研究註記">
+        <article>
+          <p class="phase-index">Single variable</p>
+          <h3>只增加直接的連續深度控制</h3>
+          <p>range 直接寫入 parent 的同一個 spread `.02–1`；不改 orientation、Product geometry、readability threshold 或 snap。</p>
+        </article>
+        <article>
+          <p class="phase-index">Retains</p>
+          <h3>26A landmark grammar 不變</h3>
+          <p>origin／target、料理數、extent cue、live region 與不可操作邊界完全沿用 26A。</p>
+        </article>
+        <article>
+          <p class="phase-index">Success</p>
+          <h3>不用 pinch 也能找回可讀平面</h3>
+          <p>使用者可在保持目前 orientation 的情況下連續降低 spread，再恢復立體深度；產品位置只依既有公式縮放。</p>
+        </article>
+        <article>
+          <p class="phase-index">Stop condition</p>
+          <h3>不可變成模式切換</h3>
+          <p>若需要「平面模式」、自動攤平、額外 endpoint、camera tracking 或改寫 landmarks 才有用，26C 判定失敗。</p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
