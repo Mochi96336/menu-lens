@@ -1,0 +1,11 @@
+.fixed-type-reading[data-scale="reading"] .vertical-category .paper-product__name {
+  font-size: .72rem;
+}
+
+.fixed-type-reading[data-scale="reading"] .vertical-category .paper-product strong {
+  font-size: .58rem;
+}
+
+.fixed-type-reading[data-scale="reading"] .vertical-category .paper-category__header strong {
+  font-size: .82rem;
+}
