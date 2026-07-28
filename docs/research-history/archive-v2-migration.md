@@ -57,6 +57,10 @@ Catalog paths are relative to `research-history/`, because that directory become
 
 Repository coordination documents may remain under `docs/research-history/`, but a catalog card can link only to material included in the published archive.
 
+## Known publication boundary
+
+The catalog landing page is rendered by a JavaScript module. A `<noscript>` notice is provided, and all existing prototype URLs remain stable, but the complete object list is not currently pre-rendered into static HTML. If crawlable or no-JavaScript catalog navigation becomes a requirement, add a build-time catalog renderer rather than restoring a hand-maintained list.
+
 ## Intake rules after this PR
 
 1. Preserve source PR and commit provenance.
