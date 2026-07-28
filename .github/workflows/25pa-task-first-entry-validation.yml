@@ -1,0 +1,82 @@
+name: Validate 25PA Task-first Entry
+
+on:
+  pull_request:
+    branches:
+      - agent/menu-lens-25p-band-labels-task
+
+permissions:
+  contents: write
+
+jobs:
+  validate-25pa:
+    if: github.head_ref == 'agent/menu-lens-25pa-task-first-entry'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out 25PA branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/menu-lens-25pa-task-first-entry
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Validate 25PA boundary
+        run: node scripts/validate-25pa-task-first-entry.mjs
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Chromium runner
+        run: |
+          npm install --no-save --package-lock=false playwright@1.54.2
+          npx playwright install --with-deps chromium
+
+      - name: Run 25PA browser matrix
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory research-history > /tmp/menu-lens-25pa-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" || true' EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4173/phases/25pa-task-first-entry/ > /dev/null; then
+              break
+            fi
+            sleep 0.5
+          done
+          node scripts/25pa-task-first-entry-browser.mjs
+
+      - name: Upload viewport screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 25pa-task-first-entry-browser
+          path: |
+            research-history/review-assets/25pa-task-first-entry/browser-report.json
+            research-history/review-assets/25pa-task-first-entry/screenshots/*.png
+          if-no-files-found: error
+
+      - name: Commit deterministic browser report
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research-history/review-assets/25pa-task-first-entry/browser-report.json
+          if ! git diff --cached --quiet; then
+            git commit -m "test(research): record 25pa browser evidence"
+            git push origin HEAD:agent/menu-lens-25pa-task-first-entry
+          fi
