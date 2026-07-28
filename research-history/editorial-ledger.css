@@ -1,0 +1,137 @@
+.editorial-ledger-screen {
+  overflow-x: clip;
+}
+
+.editorial-ledger-category {
+  margin-top: 3.35rem;
+  scroll-margin-top: 4.2rem;
+}
+
+.editorial-ledger-category:first-child {
+  margin-top: 2rem;
+}
+
+.editorial-ledger-opener {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+  gap: .3rem .7rem;
+  padding: .78rem 0 .82rem;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 2px solid var(--ink);
+}
+
+.editorial-ledger-index {
+  grid-row: 1 / span 2;
+  align-self: start;
+  padding-top: .15rem;
+  color: var(--faint);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: .68rem;
+  font-weight: 750;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+.editorial-ledger-heading {
+  min-width: 0;
+}
+
+.editorial-ledger-heading h2 {
+  margin: 0;
+  font-size: 1.42rem;
+  line-height: 1.08;
+}
+
+.editorial-ledger-summary {
+  margin: .28rem 0 0;
+  color: var(--ink);
+  font-size: .9rem;
+  font-weight: 680;
+  line-height: 1.35;
+}
+
+.editorial-ledger-meta {
+  display: grid;
+  align-content: start;
+  gap: .18rem;
+  color: var(--faint);
+  font-size: .72rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.editorial-ledger-description {
+  grid-column: 2 / -1;
+  margin: .12rem 0 0;
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.45;
+}
+
+.editorial-ledger-rows {
+  display: block;
+}
+
+.editorial-ledger-variant-note {
+  display: grid;
+  gap: .75rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line-strong);
+}
+
+.editorial-ledger-variant-note h2,
+.editorial-ledger-variant-note p {
+  margin: 0;
+}
+
+.editorial-ledger-variant-note h2 {
+  font-size: 1.25rem;
+}
+
+.editorial-ledger-variant-note p {
+  color: var(--muted);
+  font-size: .84rem;
+}
+
+@media (max-width: 390px) {
+  .editorial-ledger-opener {
+    grid-template-columns: 2.8rem minmax(0, 1fr) auto;
+    column-gap: .55rem;
+  }
+
+  .editorial-ledger-heading h2 {
+    font-size: 1.32rem;
+  }
+
+  .editorial-ledger-summary {
+    font-size: .84rem;
+  }
+}
+
+@media (max-width: 340px) {
+  .editorial-ledger-opener {
+    grid-template-columns: 2.65rem minmax(0, 1fr);
+  }
+
+  .editorial-ledger-meta {
+    grid-column: 2;
+    grid-row: 2;
+    grid-template-columns: auto auto;
+    justify-content: start;
+    gap: .25rem .55rem;
+    text-align: left;
+  }
+
+  .editorial-ledger-description {
+    grid-column: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editorial-ledger-screen .ledger-observer {
+    backdrop-filter: none;
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "320": {
+    "innerWidth": 320,
+    "documentScrollWidth": 320,
+    "horizontalOverflow": false,
+    "categories": 6,
+    "products": 30,
+    "uniqueProducts": 30,
+    "openInitial": 0,
+    "editorialSummaries": 6,
+    "soldOutWithinViewport": true,
+    "categoryMarginTopParent": 32,
+    "categoryMarginTopChild": 53.6,
+    "rowGeometryMatchesParent": true,
+    "productOrderMatchesParent": true
+  },
+  "390": {
+    "innerWidth": 390,
+    "documentScrollWidth": 390,
+    "horizontalOverflow": false,
+    "categories": 6,
+    "products": 30,
+    "uniqueProducts": 30,
+    "openInitial": 0,
+    "editorialSummaries": 6,
+    "soldOutWithinViewport": true,
+    "categoryMarginTopParent": 32,
+    "categoryMarginTopChild": 53.6,
+    "rowGeometryMatchesParent": true,
+    "productOrderMatchesParent": true
+  },
+  "desktop": {
+    "innerWidth": 1280,
+    "documentScrollWidth": 1265,
+    "horizontalOverflow": false,
+    "categories": 6,
+    "products": 30,
+    "uniqueProducts": 30,
+    "openInitial": 0,
+    "editorialSummaries": 6,
+    "soldOutWithinViewport": true,
+    "categoryMarginTopParent": 32,
+    "categoryMarginTopChild": 53.6,
+    "rowGeometryMatchesParent": true,
+    "productOrderMatchesParent": true
+  },
+  "pointer": {
+    "opened": true,
+    "closed": true
+  },
+  "keyboard": {
+    "openedWithSpace": true,
+    "closedWithSpace": true,
+    "focusRetained": true
+  },
+  "detailSwitch": {
+    "openCount": 1,
+    "firstOpen": false,
+    "secondOpen": true
+  },
+  "reset": {
+    "openCount": 0,
+    "products": 30
+  },
+  "reducedMotion": {
+    "matches": true,
+    "htmlScrollBehavior": "auto",
+    "animationName": "none",
+    "transitionDuration": "0s"
+  }
+}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="05C Narrow Column Collapse：只在 340px 以下重排 identity、cue 與 price。" />
+    <title>05C Narrow Column Collapse — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+  </head>
+  <body>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">05C · prototype · provisional · browser verified</p>
+          <h1>Narrow Column Collapse</h1>
+          <p class="lede">05C 只在 340px 以下改變 05 的欄位 grammar：identity 使用完整第一列，cue 與 price 共用下方 meta row；390px 與 desktop 保持 parent 幾何。</p>
+        </div>
+        <a class="ghost-button" href="../../phases/05c-narrow-column-collapse/index.html">開啟 05C</a>
+      </header>
+
+      <section class="section" aria-labelledby="change-title">
+        <div class="section-heading"><p class="eyebrow">Unique variable</p><h2 id="change-title">把最窄畫面的欄位競爭拆成兩列</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>Identity</h3><p>名稱與描述取得完整第一列寬度，不再與 trailing price track 競爭。</p></article>
+          <article class="phase-card"><h3>Meta row</h3><p>cue 與 price 在下方同一 baseline 對齊，價格右緣維持 parent 位置。</p></article>
+          <article class="phase-card"><h3>Breakpoint boundary</h3><p>變更只存在於 max-width: 340px；較寬手機與 desktop 完全保持 05。</p></article>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="evidence-title">
+        <div class="section-heading"><p class="eyebrow">Evidence</p><h2 id="evidence-title">320px grammar 改變，390px 與 desktop 相等</h2><p>六分類、30 個唯一 Product、描述可見、DOM order、pointer、keyboard、reset 與 reduced-motion 均保留。這仍未證明把價格移到較低列會提升價格掃描。</p></div>
+        <p><a class="ghost-button" href="../../review-assets/05c/browser-checks.json">查看 machine-readable checks</a> <a class="ghost-button" href="../../../docs/research-history/reviews/05c/README.md">查看完整 implementation review</a></p>
+      </section>
+
+      <section class="section" aria-labelledby="gate-title">
+        <div class="section-heading"><p class="eyebrow">Next gate</p><h2 id="gate-title">名稱辨識收益與價格掃描成本</h2><p>直接比較 320px 下 unfamiliar readers 的 Product identity 辨識、price search 與 row continuity。</p></div>
+      </section>
+    </main>
+    <footer class="research-footer site-shell"><p>Source: PR #28 · 04f948197c7dcfb4a06480d571da76c16013794b.</p></footer>
+  </body>
+</html>

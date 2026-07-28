@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 05A Minimal Ledger Row 研究 prototype。" />
+    <title>05A Minimal Ledger Row — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../minimal-ledger.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../minimal-ledger.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">05A · Mechanism variant</p>
+          <h1>Minimal Ledger Row</h1>
+          <p class="lede">只改 collapsed row 的可見資訊量：保留料理名稱、單一 cue、價格與必要狀態，完整 description 與 metadata 回到 inline detail。</p>
+        </div>
+        <a class="ghost-button" href="../05-ledger-document/">回到 parent 05</a>
+      </header>
+
+      <p class="study-note">
+        比較任務：先不要開詳情，沿價格欄掃描個人主餐，再找出料理特徵。接著開啟最長名稱、售完料理與分享料理的詳情，確認縮減的資訊是否能由原地 detail 完整補回。
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="05A 最小 ledger row 互動 prototype">
+        <div class="phone-screen minimal-ledger-screen">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>●●● 100%</span></div>
+
+          <header id="minimal-ledger-top">
+            <h2 class="restaurant-name">潮巷小館</h2>
+            <p class="restaurant-copy">以台灣家常風味、日式洋食與適合分享的熱菜組成的虛構休閒餐廳。</p>
+            <p class="restaurant-meta"><span>30 道料理</span><span>6 個分類</span><span>NT$120–NT$560</span></p>
+          </header>
+
+          <nav id="minimal-ledger-nav" class="category-nav minimal-ledger-nav" aria-label="菜單分類目錄"></nav>
+
+          <div class="minimal-ledger-observer" aria-live="polite">
+            <span>目前分類</span>
+            <strong id="current-minimal-ledger-category">個人主餐</strong>
+            <small>六分類與 30 道料理仍永久存在於同一份垂直文件。</small>
+          </div>
+
+          <div id="minimal-ledger-root"></div>
+
+          <p class="archive-source-note">
+            05A 不排序、不過濾、不收合分類，也不建立 table header。唯一變因是 collapsed Product row 的可見資訊量。
+          </p>
+        </div>
+      </section>
+
+      <section class="minimal-ledger-variant-note" aria-labelledby="variant-note-title">
+        <h2 id="variant-note-title">相對 05 改了什麼？</h2>
+        <p><strong>唯一變因：</strong>collapsed row 不再重複完整 description，只保留名稱、單一 cue、價格與必要狀態。</p>
+        <p><strong>保留：</strong>完整長文件、shared-column ledger、六分類、30 道料理、canonical order、inline detail、單一展開與 close return。</p>
+        <p><strong>仍未解決：</strong>長頁移動成本、跨分類比較與 category map 返回路徑都不是本 variant 的研究問題。</p>
+      </section>
+    </main>
+  </body>
+</html>
