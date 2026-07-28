@@ -1,0 +1,90 @@
+{
+  "scope": "bounded Chromium harness using exact band-label addon and focus-card layout repair with a 30-node projection fixture; not deployed-page or participant evidence",
+  "viewports": {
+    "320": {
+      "nodes": 30,
+      "overflow": false,
+      "errors": [],
+      "focusCardLayout": {
+        "cases": 168,
+        "clipped": 0,
+        "minimumFieldGapPx": 5.09,
+        "largeResultScrollable": true
+      },
+      "states": {
+        "price-serving": {
+          "labels": ["NT$120–229", "NT$230–339", "NT$340–449", "NT$450–560", "小份", "單份", "分享"],
+          "summary": "X · 價格 / Y · 份量 / 深度 · 時間"
+        },
+        "price-preparation": {
+          "labels": ["NT$120–229", "NT$230–339", "NT$340–449", "NT$450–560", "較快", "一般", "較慢", "未標註"],
+          "summary": "X · 價格 / Y · 時間 / 深度 · 份量"
+        },
+        "serving-preparation": {
+          "labels": ["小份", "單份", "分享", "較快", "一般", "較慢", "未標註"],
+          "summary": "X · 份量 / Y · 時間 / 深度 · 價格"
+        }
+      }
+    },
+    "390": {
+      "nodes": 30,
+      "overflow": false,
+      "errors": [],
+      "focusCardLayout": {
+        "cases": 168,
+        "clipped": 0,
+        "minimumFieldGapPx": 5.09,
+        "largeResultScrollable": true
+      },
+      "states": {
+        "price-serving": {
+          "labels": ["NT$120–229", "NT$230–339", "NT$340–449", "NT$450–560", "小份", "單份", "分享"],
+          "summary": "X · 價格 / Y · 份量 / 深度 · 時間"
+        },
+        "price-preparation": {
+          "labels": ["NT$120–229", "NT$230–339", "NT$340–449", "NT$450–560", "較快", "一般", "較慢", "未標註"],
+          "summary": "X · 價格 / Y · 時間 / 深度 · 份量"
+        },
+        "serving-preparation": {
+          "labels": ["小份", "單份", "分享", "較快", "一般", "較慢", "未標註"],
+          "summary": "X · 份量 / Y · 時間 / 深度 · 價格"
+        }
+      }
+    },
+    "1280": {
+      "nodes": 30,
+      "overflow": false,
+      "errors": [],
+      "focusCardLayout": {
+        "cases": 168,
+        "clipped": 0,
+        "minimumFieldGapPx": 5.09,
+        "largeResultScrollable": true
+      },
+      "states": {
+        "price-serving": {
+          "labels": ["NT$120–229", "NT$230–339", "NT$340–449", "NT$450–560", "小份", "單份", "分享"],
+          "summary": "X · 價格 / Y · 份量 / 深度 · 時間"
+        },
+        "price-preparation": {
+          "labels": ["NT$120–229", "NT$230–339", "NT$340–449", "NT$450–560", "較快", "一般", "較慢", "未標註"],
+          "summary": "X · 價格 / Y · 時間 / 深度 · 份量"
+        },
+        "serving-preparation": {
+          "labels": ["小份", "單份", "分享", "較快", "一般", "較慢", "未標註"],
+          "summary": "X · 份量 / Y · 時間 / 深度 · 價格"
+        }
+      }
+    }
+  },
+  "checks": {
+    "price-serving-label-count": 7,
+    "price-preparation-label-count": 8,
+    "serving-preparation-label-count": 7,
+    "all-viewports-no-overflow": true,
+    "all-viewports-no-errors": true,
+    "focus-card-cases-per-viewport": 168,
+    "all-focus-cards-contained": true,
+    "large-focus-card-scrollable": true
+  }
+}
