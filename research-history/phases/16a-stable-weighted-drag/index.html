@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 16A Stable Weighted Drag：保留內容加權紙面形變，但拖曳命中使用固定的基礎加權座標。" />
+    <title>16A Stable Weighted Drag — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../weighted-elastic-paper.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">16A · Stable base-coordinate drag</p>
+          <h1>Stable Weighted Drag</h1>
+          <p class="lede">完整保留 16 的內容比例與 1.8× 聚焦形變，只把拖曳判定從變形後 DOM 邊界移回固定的基礎加權座標。畫面可以移動，但同一個紙面位置不會因目前焦點而改變所指分類。</p>
+        </div>
+        <a class="ghost-button" href="../16-weighted-elastic-paper/">回 16 Weighted Elastic Paper</a>
+      </header>
+
+      <p class="study-note">單一變因：pointer mapping。視覺列高仍依 14:10:6，列內欄寬仍依 8:6／6:4／4:2，焦點仍將該分類權重乘以 1.8；拖曳命中則永遠使用未聚焦的基礎分區。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Stable Weighted Drag 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="stable-weighted-restaurant-name" class="restaurant-name"></h2>
+            <p id="stable-weighted-restaurant-meta" class="restaurant-meta"></p>
+            <p id="stable-weighted-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="stable-weighted-overview" type="button" aria-pressed="true">比例紙面</button>
+            <button id="stable-weighted-previous" type="button" aria-label="上一個分類">←</button>
+            <button id="stable-weighted-next" type="button" aria-label="下一個分類">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="stable-weighted-location-title">穩定內容比例</strong>
+              <span id="stable-weighted-location-meta">命中列 14:10:6 · 欄 8:6／6:4／4:2</span>
+            </div>
+          </div>
+
+          <div id="stable-weighted-viewport" class="paper-viewport weighted-elastic-viewport" data-scale="overview" data-pointer-map="base-weighted" tabindex="0" aria-label="以固定基礎座標拖曳加權紙面焦點">
+            <div id="stable-weighted-sheet" class="weighted-elastic-sheet"></div>
+            <aside id="stable-weighted-detail" class="paper-detail" data-open="false" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="stable-weighted-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="stable-weighted-detail-title"></h3>
+                <p id="stable-weighted-detail-meta" class="paper-detail__meta"></p>
+                <p id="stable-weighted-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">拖曳穿過固定的內容比例分區；聚焦後視覺格線會移動，但命中邊界不跟著移動。「比例紙面」恢復基礎權重。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>視覺形變與操作座標分離</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>視覺完全沿用 16</h3><p>六分類仍由料理數量配置面積；聚焦分類的原始權重仍乘以 1.8，沒有改動任何面積公式。</p></article>
+          <article class="phase-card"><h3>固定列界</h3><p>拖曳的垂直分區永遠使用 14:10:6，因此第一、第二列邊界不會隨焦點列增高而漂移。</p></article>
+          <article class="phase-card"><h3>固定欄界</h3><p>三列左右分界固定為 8:6、6:4、4:2；從 A 到 B 與從 B 回 A 使用相同切換位置。</p></article>
+          <article class="phase-card"><h3>判定風險</h3><p>穩定命中可能與當下可見格線不重合。若使用者必須忽略畫面邊界才能拖曳，穩定性仍不足以證明機制成立。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const viewport = document.querySelector("#stable-weighted-viewport");
+      const sheet = document.querySelector("#stable-weighted-sheet");
+      const overviewButton = document.querySelector("#stable-weighted-overview");
+      const previousButton = document.querySelector("#stable-weighted-previous");
+      const nextButton = document.querySelector("#stable-weighted-next");
+      const locationTitle = document.querySelector("#stable-weighted-location-title");
+      const locationMeta = document.querySelector("#stable-weighted-location-meta");
+      const detail = document.querySelector("#stable-weighted-detail");
+      const detailClose = document.querySelector("#stable-weighted-detail-close");
+
+      document.querySelector("#stable-weighted-restaurant-name").textContent = menu.restaurant.name;
+      document.querySelector("#stable-weighted-restaurant-copy").textContent = menu.restaurant.description;
+      document.querySelector("#stable-weighted-restaurant-meta").textContent = menu.restaurant.summary;
+      const projection = document.createElement("div");
+      projection.innerHTML = window.renderMenuLensPaperField(menu);
+      const projectedCategories = [...projection.querySelectorAll(".paper-category")];
+      const rows = [];
+      for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
+        const row = document.createElement("div");
+        row.className = "weighted-elastic-row";
+        row.dataset.rowIndex = String(rowIndex);
+        row.append(projectedCategories[rowIndex * 2], projectedCategories[rowIndex * 2 + 1]);
+        sheet.append(row);
+        rows.push(row);
+      }
+
+      const categories = [...sheet.querySelectorAll(".paper-category")];
+      const productButtons = [...sheet.querySelectorAll(".paper-product")];
+      categories.forEach((category) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+      });
+      const categoryCounts = menu.categories.map((category) =>
+        menu.products.filter((product) => product.categoryId === category.id).length,
+      );
+      const baseRows = [
+        categoryCounts[0] + categoryCounts[1],
+        categoryCounts[2] + categoryCounts[3],
+        categoryCounts[4] + categoryCounts[5],
+      ];
+      const focusFactor = 1.8;
+      let activeCategoryIndex = null;
+      let selectedProductIndex = null;
+      let pointerState = null;
+      let suppressClick = false;
+
+      const applyContentWeights = (weights) => {
+        const rowWeights = rows.map((_, rowIndex) => weights[rowIndex * 2] + weights[rowIndex * 2 + 1]);
+        rows.forEach((row, rowIndex) => {
+          row.style.setProperty("--weighted-columns", `${weights[rowIndex * 2]}fr ${weights[rowIndex * 2 + 1]}fr`);
+        });
+        sheet.style.setProperty("--weighted-rows", rowWeights.map((weight) => `${weight}fr`).join(" "));
+        return rowWeights;
+      };
+
+      const closeDetail = (restoreFocus = false) => {
+        detail.dataset.open = "false";
+        productButtons.forEach((button) => delete button.dataset.selected);
+        if (restoreFocus && selectedProductIndex !== null) {
+          productButtons.find((button) => Number(button.dataset.productIndex) === selectedProductIndex)?.focus();
+        }
+        selectedProductIndex = null;
+      };
+
+      const focusCategory = (nextIndex) => {
+        activeCategoryIndex = Math.max(0, Math.min(categories.length - 1, nextIndex));
+        const weightedCounts = categoryCounts.map((count, index) => count * (index === activeCategoryIndex ? focusFactor : 1));
+        applyContentWeights(weightedCounts);
+        viewport.dataset.scale = "focus";
+        overviewButton.setAttribute("aria-pressed", "false");
+        categories.forEach((category, index) => {
+          const focused = index === activeCategoryIndex;
+          if (focused) category.dataset.focused = "true";
+          else delete category.dataset.focused;
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", String(focused));
+        });
+
+        const category = menu.categories[activeCategoryIndex];
+        const areaShare = weightedCounts[activeCategoryIndex] / weightedCounts.reduce((sum, weight) => sum + weight, 0);
+        locationTitle.textContent = category.name;
+        locationMeta.textContent = `${categoryCounts[activeCategoryIndex]} 道 · 視覺約 ${Math.round(areaShare * 100)}% · 固定基礎命中`;
+        previousButton.disabled = activeCategoryIndex === 0;
+        nextButton.disabled = activeCategoryIndex === categories.length - 1;
+      };
+
+      const showOverview = () => {
+        activeCategoryIndex = null;
+        applyContentWeights(categoryCounts);
+        viewport.dataset.scale = "overview";
+        overviewButton.setAttribute("aria-pressed", "true");
+        categories.forEach((category) => {
+          delete category.dataset.focused;
+          category.querySelector(".paper-category__header").setAttribute("aria-pressed", "false");
+        });
+        locationTitle.textContent = "穩定內容比例";
+        locationMeta.textContent = `命中列 ${baseRows.join(":")} · 欄 ${categoryCounts[0]}:${categoryCounts[1]}／${categoryCounts[2]}:${categoryCounts[3]}／${categoryCounts[4]}:${categoryCounts[5]}`;
+        previousButton.disabled = true;
+        nextButton.disabled = true;
+        closeDetail();
+      };
+
+      const openDetail = (productIndex, button) => {
+        const product = menu.products[productIndex];
+        selectedProductIndex = productIndex;
+        productButtons.forEach((candidate) => {
+          if (candidate === button) candidate.dataset.selected = "true";
+          else delete candidate.dataset.selected;
+        });
+        document.querySelector("#stable-weighted-detail-title").textContent = product.name;
+        document.querySelector("#stable-weighted-detail-meta").textContent = `NT$${product.price} · ${product.cue}${product.availability === "sold_out" ? " · 售完" : ""}`;
+        document.querySelector("#stable-weighted-detail-copy").textContent = product.description;
+        detail.dataset.open = "true";
+      };
+
+      const categoryIndexFromStableRatios = (xRatio, yRatio) => {
+        const x = Math.max(0, Math.min(.999999, xRatio));
+        const y = Math.max(0, Math.min(.999999, yRatio));
+        const rowTotal = baseRows.reduce((sum, weight) => sum + weight, 0);
+        let rowIndex = baseRows.length - 1;
+        let cumulative = 0;
+        for (let index = 0; index < baseRows.length; index += 1) {
+          cumulative += baseRows[index] / rowTotal;
+          if (y < cumulative) {
+            rowIndex = index;
+            break;
+          }
+        }
+        const leftIndex = rowIndex * 2;
+        const pairTotal = categoryCounts[leftIndex] + categoryCounts[leftIndex + 1];
+        const stableSplit = categoryCounts[leftIndex] / pairTotal;
+        return leftIndex + (x < stableSplit ? 0 : 1);
+      };
+
+      const categoryFromStablePointer = (clientX, clientY) => {
+        const bounds = sheet.getBoundingClientRect();
+        const xRatio = (clientX - bounds.left) / Math.max(1, bounds.width);
+        const yRatio = (clientY - bounds.top) / Math.max(1, bounds.height);
+        return categoryIndexFromStableRatios(xRatio, yRatio);
+      };
+
+      categories.forEach((category, index) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          closeDetail();
+          if (activeCategoryIndex === index) showOverview();
+          else focusCategory(index);
+        });
+      });
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+          if (categoryIndex !== activeCategoryIndex) {
+            closeDetail();
+            focusCategory(categoryIndex);
+            return;
+          }
+          openDetail(Number(button.dataset.productIndex), button);
+        });
+      });
+
+      viewport.addEventListener("pointerdown", (event) => {
+        if (detail.contains(event.target)) return;
+        if (!event.isPrimary || pointerState || (event.pointerType === "mouse" && event.button !== 0)) return;
+        pointerState = { id: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false };
+      });
+      viewport.addEventListener("pointermove", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        if (!pointerState.moved && Math.hypot(event.clientX - pointerState.startX, event.clientY - pointerState.startY) < 6) return;
+        if (!pointerState.moved) {
+          pointerState.moved = true;
+          viewport.setPointerCapture(event.pointerId);
+          viewport.classList.add("is-dragging");
+          closeDetail();
+        }
+        event.preventDefault();
+        focusCategory(categoryFromStablePointer(event.clientX, event.clientY));
+      });
+      const endPointer = (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        if (pointerState.moved) suppressClick = true;
+        pointerState = null;
+        viewport.classList.remove("is-dragging");
+      };
+      viewport.addEventListener("pointerup", endPointer);
+      viewport.addEventListener("pointercancel", (event) => {
+        if (!pointerState || pointerState.id !== event.pointerId) return;
+        pointerState = null;
+        suppressClick = false;
+        viewport.classList.remove("is-dragging");
+      });
+      viewport.addEventListener("click", (event) => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        suppressClick = false;
+      }, true);
+
+      overviewButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => {
+        if (activeCategoryIndex === null) return;
+        closeDetail();
+        focusCategory(activeCategoryIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        if (activeCategoryIndex === null) return;
+        closeDetail();
+        focusCategory(activeCategoryIndex + 1);
+      });
+      detailClose.addEventListener("click", () => closeDetail(true));
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.dataset.open === "true") closeDetail(true);
+        else if (activeCategoryIndex !== null) showOverview();
+      });
+
+      showOverview();
+    </script>
+  </body>
+</html>
