@@ -29,3 +29,7 @@ archive/v2-foundation
 2. Consolidate PR #34 and PR #35 into one canonical 25P reader study object.
 3. Treat PR #4 as rejected historical source and PR #5 as a superseded planning record.
 4. Preserve all current public prototype URLs during intake.
+
+## Foundation review gate
+
+PR #40 has passed the adversarial review and automated gate for catalog schema, relation cycles, archive-relative paths, browser/Node extension parity, DOM renderer execution, filtering, manifest rendering, legacy contracts, typecheck, tests, and static build. It remains Draft for direct visual inspection of the rendered landing page before merge.
