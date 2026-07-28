@@ -74,8 +74,9 @@ for (const phrase of [
   "16A evidence contribution",
 ]) assert.ok(observation.includes(phrase), `12A-S1 observation sheet is missing ${phrase}.`);
 assert.doesNotMatch(observation, /Participant name:|Email:|Phone:|IP address:/i);
+const evidenceIndexLower = evidenceIndex.toLowerCase();
 for (const phrase of ["participant-study-ready", "no participant results", "protocol", "observation sheet"]) {
-  assert.ok(evidenceIndex.includes(phrase), `12A-S1 evidence index is missing ${phrase}.`);
+  assert.ok(evidenceIndexLower.includes(phrase), `12A-S1 evidence index is missing ${phrase}.`);
 }
 assert.ok(!catalog.objects.some((entry) => entry.id === "15A-S1" || entry.slug === "elastic-study-result"), "Study intake must not fabricate participant results or elastic approval.");
 
