@@ -191,6 +191,13 @@
       assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "proportional-landscape.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
     },
     {
+      id: "18C", slug: "tap-to-read-landscape", title: "Tap-to-Read", family: "landscape", parentId: "18",
+      kind: "spatial-prototype", status: "active-variant", statusLabel: "active activation variant",
+      path: "phases/18c-tap-to-read/index.html", validationProfile: "paper-field-variant",
+      summary: "只改 18 overview 的 activation grammar：分類標頭是閱讀入口，Product 僅在 reading scale 可操作。",
+      assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "tap-to-read-landscape.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "spatial-drag.js"] },
+    },
+    {
       id: "19", slug: "rigid-horizontal-sheet", title: "Rigid Horizontal Sheet", family: "landscape", parentId: "18",
       kind: "spatial-prototype", status: "reviewed-stop", statusLabel: "reviewed; stop extending",
       path: "phases/19-rigid-horizontal-sheet/index.html", validationProfile: "paper-field-variant",

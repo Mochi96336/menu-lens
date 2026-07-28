@@ -75,7 +75,7 @@ for (const objectCatalogContract of [
     throw new Error(`Research archive must render every exact prototype id as an independent object: ${objectCatalogContract}`);
   }
 }
-for (const distinctId of ["18", "18A", "25", "25P", "25B"]) {
+for (const distinctId of ["18", "18A", "18C", "25", "25P", "25B"]) {
   if (!registry.prototypes.some((prototype) => prototype.id === distinctId)) {
     throw new Error(`Prototype object catalog is missing the distinct id ${distinctId}.`);
   }
@@ -695,6 +695,45 @@ for (const variant of paperVariantSnapshots) {
   if (variant.phase === "18-landscape-paper"
     && !snapshot.includes('class="landscape-sheet landscape-sheet--equal-columns"')) {
     throw new Error("Landscape Paper must opt into the explicit 1:1:1 column contract.");
+  }
+  if (variant.phase === "18c-tap-to-read") {
+    for (const reference of [
+      '<script src="../../spatial-drag.js"></script>',
+      'class="landscape-sheet landscape-sheet--equal-columns"',
+      'data-activation="category-entry"',
+      'header.dataset.tapEntry = "true"',
+      'header.tabIndex = overviewMode ? 0 : -1',
+      'button.inert = overviewMode',
+      'button.setAttribute("aria-hidden", String(overviewMode))',
+      'if (scale !== "reading") return;',
+      'activeColumnIndex + (event.key === "ArrowLeft" ? -1 : 1)',
+    ]) {
+      if (!snapshot.includes(reference)) {
+        throw new Error(`Tap-to-Read must change only overview activation grammar: ${reference}`);
+      }
+    }
+    for (const styleContract of [
+      'content: "閱讀";',
+      '#landscape-viewport[data-scale="overview"] .paper-product',
+      'pointer-events: none;',
+    ]) {
+      if (!variantStyles.includes(styleContract)) {
+        throw new Error(`Tap-to-Read must expose a visible category entry and suppress overview Product actions: ${styleContract}`);
+      }
+    }
+    for (const forbiddenMechanism of [
+      "semantic-overview",
+      "columnWeight:",
+      "focusFactor",
+      "tracked ?",
+      "data.collapsed",
+      "writing-mode:",
+      "category-tabs",
+    ]) {
+      if (snapshot.includes(forbiddenMechanism) || variantStyles.includes(forbiddenMechanism)) {
+        throw new Error(`Tap-to-Read must not accumulate another mechanism: ${forbiddenMechanism}`);
+      }
+    }
   }
   if (variant.phase === "22-weighted-pinch-sheet") {
     for (const reference of [

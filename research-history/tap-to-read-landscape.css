@@ -1,0 +1,41 @@
+/* 18C changes only the activation grammar at the existing overview scale. */
+#landscape-viewport[data-scale="overview"] .paper-category__header[data-tap-entry="true"] {
+  position: relative;
+  padding-right: 2.7rem;
+  background: rgb(121 65 42 / 4%);
+  box-shadow: inset 0 -1px 0 rgb(121 65 42 / 18%);
+}
+
+#landscape-viewport[data-scale="overview"] .paper-category__header[data-tap-entry="true"]::after {
+  content: "閱讀";
+  position: absolute;
+  right: .3rem;
+  top: 50%;
+  padding: .12rem .26rem;
+  border: 1px solid var(--accent);
+  background: var(--surface-strong);
+  color: var(--accent);
+  font-size: .4rem;
+  font-weight: 800;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+#landscape-viewport[data-scale="overview"] .paper-category__header[data-tap-entry="true"]:hover {
+  background: var(--accent-soft);
+}
+
+#landscape-viewport[data-scale="overview"] .paper-category__header[data-tap-entry="true"]:focus-visible {
+  z-index: 3;
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+#landscape-viewport[data-scale="overview"] .paper-product {
+  pointer-events: none;
+  cursor: default;
+}
+
+#landscape-viewport[data-scale="reading"] .paper-category__header[data-tap-entry="true"] {
+  cursor: default;
+}
