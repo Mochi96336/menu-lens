@@ -191,6 +191,13 @@
       assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "proportional-landscape.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "paper-landscape-core.js", "spatial-drag.js"] },
     },
     {
+      id: "18D", slug: "inline-detail-landscape", title: "Inline Detail", family: "landscape", parentId: "18",
+      kind: "spatial-prototype", status: "active-variant", statusLabel: "active detail-placement variant",
+      path: "phases/18d-inline-detail/index.html", validationProfile: "paper-field-variant",
+      summary: "只改 18 的 detail placement：料理說明插在來源 Product row 後方，不再跨紙面覆蓋。",
+      assets: { styles: ["history.css", "paper-menu-field.css", "landscape-paper.css", "inline-detail-landscape.css"], scripts: ["menu-fixture.js", "paper-menu-field-renderer.js", "spatial-drag.js"] },
+    },
+    {
       id: "19", slug: "rigid-horizontal-sheet", title: "Rigid Horizontal Sheet", family: "landscape", parentId: "18",
       kind: "spatial-prototype", status: "reviewed-stop", statusLabel: "reviewed; stop extending",
       path: "phases/19-rigid-horizontal-sheet/index.html", validationProfile: "paper-field-variant",

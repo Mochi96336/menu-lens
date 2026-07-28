@@ -1,0 +1,3654 @@
+{
+  "viewports": {
+    "320": {
+      "parentClosed": {
+        "scale": "overview",
+        "detailPlacement": null,
+        "sheetWidth": 736,
+        "sheetHeight": 527.15625,
+        "scrollWidth": 736,
+        "columns": [
+          {
+            "left": 10.390625,
+            "top": 10.390625,
+            "width": 238.078125,
+            "height": 506.375
+          },
+          {
+            "left": 248.46875,
+            "top": 10.390625,
+            "width": 238.078125,
+            "height": 506.375
+          },
+          {
+            "left": 486.546875,
+            "top": 10.390625,
+            "width": 239.078125,
+            "height": 506.375
+          }
+        ],
+        "categories": [
+          {
+            "id": "personal-mains",
+            "left": 11.390625,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 288.203125
+          },
+          {
+            "id": "rice-noodles",
+            "left": 11.390625,
+            "top": 299.59375,
+            "width": 237.078125,
+            "height": 216.171875
+          },
+          {
+            "id": "shared-dishes",
+            "left": 249.46875,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 302.625
+          },
+          {
+            "id": "small-plates",
+            "left": 249.46875,
+            "top": 314.015625,
+            "width": 237.078125,
+            "height": 201.75
+          },
+          {
+            "id": "drinks",
+            "left": 487.546875,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 336.25
+          },
+          {
+            "id": "desserts",
+            "left": 487.546875,
+            "top": 347.640625,
+            "width": 237.078125,
+            "height": 168.125
+          }
+        ],
+        "products": [
+          {
+            "id": "miso-grilled-chicken-set",
+            "left": 11.390625,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 32
+          },
+          {
+            "id": "lemon-koji-salmon-set",
+            "left": 11.390625,
+            "top": 74.53125,
+            "width": 237.078125,
+            "height": 32.015625
+          },
+          {
+            "id": "black-garlic-beef-short-rib",
+            "left": 11.390625,
+            "top": 106.546875,
+            "width": 237.078125,
+            "height": 32
+          },
+          {
+            "id": "basil-three-cup-mushroom-set",
+            "left": 11.390625,
+            "top": 138.546875,
+            "width": 237.078125,
+            "height": 32.015625
+          },
+          {
+            "id": "sichuan-mapo-tofu-pot",
+            "left": 11.390625,
+            "top": 170.5625,
+            "width": 237.078125,
+            "height": 32
+          },
+          {
+            "id": "red-wine-braised-pork-cheek",
+            "left": 11.390625,
+            "top": 202.5625,
+            "width": 237.078125,
+            "height": 32.015625
+          },
+          {
+            "id": "herb-pork-loin-pesto",
+            "left": 11.390625,
+            "top": 234.578125,
+            "width": 237.078125,
+            "height": 32
+          },
+          {
+            "id": "yuzu-teriyaki-tofu-steak",
+            "left": 11.390625,
+            "top": 266.578125,
+            "width": 237.078125,
+            "height": 32.015625
+          },
+          {
+            "id": "char-siu-onsen-egg-rice",
+            "left": 11.390625,
+            "top": 330.734375,
+            "width": 237.078125,
+            "height": 30.828125
+          },
+          {
+            "id": "truffle-mushroom-risotto",
+            "left": 11.390625,
+            "top": 361.5625,
+            "width": 237.078125,
+            "height": 30.84375
+          },
+          {
+            "id": "mentaiko-shrimp-udon",
+            "left": 11.390625,
+            "top": 392.40625,
+            "width": 237.078125,
+            "height": 30.828125
+          },
+          {
+            "id": "green-peppercorn-chicken-noodles",
+            "left": 11.390625,
+            "top": 423.234375,
+            "width": 237.078125,
+            "height": 30.84375
+          },
+          {
+            "id": "tomato-beef-wide-noodles",
+            "left": 11.390625,
+            "top": 454.078125,
+            "width": 237.078125,
+            "height": 30.84375
+          },
+          {
+            "id": "plum-cold-soba",
+            "left": 11.390625,
+            "top": 484.921875,
+            "width": 237.078125,
+            "height": 30.828125
+          },
+          {
+            "id": "sansho-roast-half-chicken",
+            "left": 249.46875,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 45.078125
+          },
+          {
+            "id": "shaoxing-butter-prawns",
+            "left": 249.46875,
+            "top": 87.609375,
+            "width": 237.078125,
+            "height": 45.078125
+          },
+          {
+            "id": "garlic-salt-pepper-soft-shell-crab",
+            "left": 249.46875,
+            "top": 132.6875,
+            "width": 237.078125,
+            "height": 45.078125
+          },
+          {
+            "id": "black-bean-steamed-seabass",
+            "left": 249.46875,
+            "top": 177.765625,
+            "width": 237.078125,
+            "height": 45.078125
+          },
+          {
+            "id": "kung-pao-king-oyster-mushroom",
+            "left": 249.46875,
+            "top": 222.84375,
+            "width": 237.078125,
+            "height": 45.078125
+          },
+          {
+            "id": "seasonal-vegetable-tofu-pot",
+            "left": 249.46875,
+            "top": 267.921875,
+            "width": 237.078125,
+            "height": 45.09375
+          },
+          {
+            "id": "pickled-chili-fried-chicken",
+            "left": 249.46875,
+            "top": 345.15625,
+            "width": 237.078125,
+            "height": 42.640625
+          },
+          {
+            "id": "sesame-dragon-whisker-vegetable",
+            "left": 249.46875,
+            "top": 387.796875,
+            "width": 237.078125,
+            "height": 42.65625
+          },
+          {
+            "id": "seared-zucchini-miso",
+            "left": 249.46875,
+            "top": 430.453125,
+            "width": 237.078125,
+            "height": 42.65625
+          },
+          {
+            "id": "salted-egg-yolk-potato-wedges",
+            "left": 249.46875,
+            "top": 473.109375,
+            "width": 237.078125,
+            "height": 42.65625
+          },
+          {
+            "id": "osmanthus-oolong-cold-brew",
+            "left": 487.546875,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 76.015625
+          },
+          {
+            "id": "brown-sugar-lemon-soda",
+            "left": 487.546875,
+            "top": 118.546875,
+            "width": 237.078125,
+            "height": 76.03125
+          },
+          {
+            "id": "shiso-plum-tomato-iced-tea",
+            "left": 487.546875,
+            "top": 194.578125,
+            "width": 237.078125,
+            "height": 76.03125
+          },
+          {
+            "id": "sea-salt-caramel-milk-tea",
+            "left": 487.546875,
+            "top": 270.609375,
+            "width": 237.078125,
+            "height": 76.03125
+          },
+          {
+            "id": "caramel-creme-brulee",
+            "left": 487.546875,
+            "top": 378.78125,
+            "width": 237.078125,
+            "height": 68.484375
+          },
+          {
+            "id": "yuzu-soy-milk-panna-cotta",
+            "left": 487.546875,
+            "top": 447.265625,
+            "width": 237.078125,
+            "height": 68.5
+          }
+        ]
+      },
+      "childClosed": {
+        "scale": "overview",
+        "detailPlacement": "inline",
+        "sheetWidth": 736,
+        "sheetHeight": 527.15625,
+        "scrollWidth": 736,
+        "columns": [
+          {
+            "left": 10.390625,
+            "top": 10.390625,
+            "width": 238.078125,
+            "height": 506.375
+          },
+          {
+            "left": 248.46875,
+            "top": 10.390625,
+            "width": 238.078125,
+            "height": 506.375
+          },
+          {
+            "left": 486.546875,
+            "top": 10.390625,
+            "width": 239.078125,
+            "height": 506.375
+          }
+        ],
+        "categories": [
+          {
+            "id": "personal-mains",
+            "left": 11.390625,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 288.203125
+          },
+          {
+            "id": "rice-noodles",
+            "left": 11.390625,
+            "top": 299.59375,
+            "width": 237.078125,
+            "height": 216.171875
+          },
+          {
+            "id": "shared-dishes",
+            "left": 249.46875,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 302.625
+          },
+          {
+            "id": "small-plates",
+            "left": 249.46875,
+            "top": 314.015625,
+            "width": 237.078125,
+            "height": 201.75
+          },
+          {
+            "id": "drinks",
+            "left": 487.546875,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 336.25
+          },
+          {
+            "id": "desserts",
+            "left": 487.546875,
+            "top": 347.640625,
+            "width": 237.078125,
+            "height": 168.125
+          }
+        ],
+        "products": [
+          {
+            "id": "miso-grilled-chicken-set",
+            "left": 11.390625,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 32
+          },
+          {
+            "id": "lemon-koji-salmon-set",
+            "left": 11.390625,
+            "top": 74.53125,
+            "width": 237.078125,
+            "height": 32.015625
+          },
+          {
+            "id": "black-garlic-beef-short-rib",
+            "left": 11.390625,
+            "top": 106.546875,
+            "width": 237.078125,
+            "height": 32
+          },
+          {
+            "id": "basil-three-cup-mushroom-set",
+            "left": 11.390625,
+            "top": 138.546875,
+            "width": 237.078125,
+            "height": 32.015625
+          },
+          {
+            "id": "sichuan-mapo-tofu-pot",
+            "left": 11.390625,
+            "top": 170.5625,
+            "width": 237.078125,
+            "height": 32
+          },
+          {
+            "id": "red-wine-braised-pork-cheek",
+            "left": 11.390625,
+            "top": 202.5625,
+            "width": 237.078125,
+            "height": 32.015625
+          },
+          {
+            "id": "herb-pork-loin-pesto",
+            "left": 11.390625,
+            "top": 234.578125,
+            "width": 237.078125,
+            "height": 32
+          },
+          {
+            "id": "yuzu-teriyaki-tofu-steak",
+            "left": 11.390625,
+            "top": 266.578125,
+            "width": 237.078125,
+            "height": 32.015625
+          },
+          {
+            "id": "char-siu-onsen-egg-rice",
+            "left": 11.390625,
+            "top": 330.734375,
+            "width": 237.078125,
+            "height": 30.828125
+          },
+          {
+            "id": "truffle-mushroom-risotto",
+            "left": 11.390625,
+            "top": 361.5625,
+            "width": 237.078125,
+            "height": 30.84375
+          },
+          {
+            "id": "mentaiko-shrimp-udon",
+            "left": 11.390625,
+            "top": 392.40625,
+            "width": 237.078125,
+            "height": 30.828125
+          },
+          {
+            "id": "green-peppercorn-chicken-noodles",
+            "left": 11.390625,
+            "top": 423.234375,
+            "width": 237.078125,
+            "height": 30.84375
+          },
+          {
+            "id": "tomato-beef-wide-noodles",
+            "left": 11.390625,
+            "top": 454.078125,
+            "width": 237.078125,
+            "height": 30.84375
+          },
+          {
+            "id": "plum-cold-soba",
+            "left": 11.390625,
+            "top": 484.921875,
+            "width": 237.078125,
+            "height": 30.828125
+          },
+          {
+            "id": "sansho-roast-half-chicken",
+            "left": 249.46875,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 45.078125
+          },
+          {
+            "id": "shaoxing-butter-prawns",
+            "left": 249.46875,
+            "top": 87.609375,
+            "width": 237.078125,
+            "height": 45.078125
+          },
+          {
+            "id": "garlic-salt-pepper-soft-shell-crab",
+            "left": 249.46875,
+            "top": 132.6875,
+            "width": 237.078125,
+            "height": 45.078125
+          },
+          {
+            "id": "black-bean-steamed-seabass",
+            "left": 249.46875,
+            "top": 177.765625,
+            "width": 237.078125,
+            "height": 45.078125
+          },
+          {
+            "id": "kung-pao-king-oyster-mushroom",
+            "left": 249.46875,
+            "top": 222.84375,
+            "width": 237.078125,
+            "height": 45.078125
+          },
+          {
+            "id": "seasonal-vegetable-tofu-pot",
+            "left": 249.46875,
+            "top": 267.921875,
+            "width": 237.078125,
+            "height": 45.09375
+          },
+          {
+            "id": "pickled-chili-fried-chicken",
+            "left": 249.46875,
+            "top": 345.15625,
+            "width": 237.078125,
+            "height": 42.640625
+          },
+          {
+            "id": "sesame-dragon-whisker-vegetable",
+            "left": 249.46875,
+            "top": 387.796875,
+            "width": 237.078125,
+            "height": 42.65625
+          },
+          {
+            "id": "seared-zucchini-miso",
+            "left": 249.46875,
+            "top": 430.453125,
+            "width": 237.078125,
+            "height": 42.65625
+          },
+          {
+            "id": "salted-egg-yolk-potato-wedges",
+            "left": 249.46875,
+            "top": 473.109375,
+            "width": 237.078125,
+            "height": 42.65625
+          },
+          {
+            "id": "osmanthus-oolong-cold-brew",
+            "left": 487.546875,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 76.015625
+          },
+          {
+            "id": "brown-sugar-lemon-soda",
+            "left": 487.546875,
+            "top": 118.546875,
+            "width": 237.078125,
+            "height": 76.03125
+          },
+          {
+            "id": "shiso-plum-tomato-iced-tea",
+            "left": 487.546875,
+            "top": 194.578125,
+            "width": 237.078125,
+            "height": 76.03125
+          },
+          {
+            "id": "sea-salt-caramel-milk-tea",
+            "left": 487.546875,
+            "top": 270.609375,
+            "width": 237.078125,
+            "height": 76.03125
+          },
+          {
+            "id": "caramel-creme-brulee",
+            "left": 487.546875,
+            "top": 378.78125,
+            "width": 237.078125,
+            "height": 68.484375
+          },
+          {
+            "id": "yuzu-soy-milk-panna-cotta",
+            "left": 487.546875,
+            "top": 447.265625,
+            "width": 237.078125,
+            "height": 68.5
+          }
+        ]
+      },
+      "parentOpen": {
+        "outerGeometry": {
+          "scale": "reading",
+          "detailPlacement": null,
+          "sheetWidth": 1024,
+          "sheetHeight": 527.15625,
+          "scrollWidth": 1024,
+          "columns": [
+            {
+              "left": 10.390625,
+              "top": 10.390625,
+              "width": 334.078125,
+              "height": 506.375
+            },
+            {
+              "left": 344.46875,
+              "top": 10.390625,
+              "width": 334.078125,
+              "height": 506.375
+            },
+            {
+              "left": 678.546875,
+              "top": 10.390625,
+              "width": 335.078125,
+              "height": 506.375
+            }
+          ],
+          "categories": [
+            {
+              "id": "personal-mains",
+              "left": 11.390625,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 288.203125
+            },
+            {
+              "id": "rice-noodles",
+              "left": 11.390625,
+              "top": 299.59375,
+              "width": 333.078125,
+              "height": 216.171875
+            },
+            {
+              "id": "shared-dishes",
+              "left": 345.46875,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 302.625
+            },
+            {
+              "id": "small-plates",
+              "left": 345.46875,
+              "top": 314.015625,
+              "width": 333.078125,
+              "height": 201.75
+            },
+            {
+              "id": "drinks",
+              "left": 679.546875,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 336.25
+            },
+            {
+              "id": "desserts",
+              "left": 679.546875,
+              "top": 347.640625,
+              "width": 333.078125,
+              "height": 168.125
+            }
+          ],
+          "products": [
+            {
+              "id": "miso-grilled-chicken-set",
+              "left": 11.390625,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 31.421875
+            },
+            {
+              "id": "lemon-koji-salmon-set",
+              "left": 11.390625,
+              "top": 78.640625,
+              "width": 333.078125,
+              "height": 31.421875
+            },
+            {
+              "id": "black-garlic-beef-short-rib",
+              "left": 11.390625,
+              "top": 110.0625,
+              "width": 333.078125,
+              "height": 31.421875
+            },
+            {
+              "id": "basil-three-cup-mushroom-set",
+              "left": 11.390625,
+              "top": 141.484375,
+              "width": 333.078125,
+              "height": 31.421875
+            },
+            {
+              "id": "sichuan-mapo-tofu-pot",
+              "left": 11.390625,
+              "top": 172.90625,
+              "width": 333.078125,
+              "height": 31.421875
+            },
+            {
+              "id": "red-wine-braised-pork-cheek",
+              "left": 11.390625,
+              "top": 204.328125,
+              "width": 333.078125,
+              "height": 31.421875
+            },
+            {
+              "id": "herb-pork-loin-pesto",
+              "left": 11.390625,
+              "top": 235.75,
+              "width": 333.078125,
+              "height": 31.421875
+            },
+            {
+              "id": "yuzu-teriyaki-tofu-steak",
+              "left": 11.390625,
+              "top": 267.171875,
+              "width": 333.078125,
+              "height": 31.421875
+            },
+            {
+              "id": "char-siu-onsen-egg-rice",
+              "left": 11.390625,
+              "top": 335.421875,
+              "width": 333.078125,
+              "height": 30.046875
+            },
+            {
+              "id": "truffle-mushroom-risotto",
+              "left": 11.390625,
+              "top": 365.46875,
+              "width": 333.078125,
+              "height": 30.0625
+            },
+            {
+              "id": "mentaiko-shrimp-udon",
+              "left": 11.390625,
+              "top": 395.53125,
+              "width": 333.078125,
+              "height": 30.046875
+            },
+            {
+              "id": "green-peppercorn-chicken-noodles",
+              "left": 11.390625,
+              "top": 425.578125,
+              "width": 333.078125,
+              "height": 30.0625
+            },
+            {
+              "id": "tomato-beef-wide-noodles",
+              "left": 11.390625,
+              "top": 455.640625,
+              "width": 333.078125,
+              "height": 30.0625
+            },
+            {
+              "id": "plum-cold-soba",
+              "left": 11.390625,
+              "top": 485.703125,
+              "width": 333.078125,
+              "height": 30.046875
+            },
+            {
+              "id": "sansho-roast-half-chicken",
+              "left": 345.46875,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 44.296875
+            },
+            {
+              "id": "shaoxing-butter-prawns",
+              "left": 345.46875,
+              "top": 91.515625,
+              "width": 333.078125,
+              "height": 44.296875
+            },
+            {
+              "id": "garlic-salt-pepper-soft-shell-crab",
+              "left": 345.46875,
+              "top": 135.8125,
+              "width": 333.078125,
+              "height": 44.296875
+            },
+            {
+              "id": "black-bean-steamed-seabass",
+              "left": 345.46875,
+              "top": 180.109375,
+              "width": 333.078125,
+              "height": 44.296875
+            },
+            {
+              "id": "kung-pao-king-oyster-mushroom",
+              "left": 345.46875,
+              "top": 224.40625,
+              "width": 333.078125,
+              "height": 44.296875
+            },
+            {
+              "id": "seasonal-vegetable-tofu-pot",
+              "left": 345.46875,
+              "top": 268.703125,
+              "width": 333.078125,
+              "height": 44.3125
+            },
+            {
+              "id": "pickled-chili-fried-chicken",
+              "left": 345.46875,
+              "top": 349.84375,
+              "width": 333.078125,
+              "height": 41.46875
+            },
+            {
+              "id": "sesame-dragon-whisker-vegetable",
+              "left": 345.46875,
+              "top": 391.3125,
+              "width": 333.078125,
+              "height": 41.484375
+            },
+            {
+              "id": "seared-zucchini-miso",
+              "left": 345.46875,
+              "top": 432.796875,
+              "width": 333.078125,
+              "height": 41.484375
+            },
+            {
+              "id": "salted-egg-yolk-potato-wedges",
+              "left": 345.46875,
+              "top": 474.28125,
+              "width": 333.078125,
+              "height": 41.484375
+            },
+            {
+              "id": "osmanthus-oolong-cold-brew",
+              "left": 679.546875,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 74.84375
+            },
+            {
+              "id": "brown-sugar-lemon-soda",
+              "left": 679.546875,
+              "top": 122.0625,
+              "width": 333.078125,
+              "height": 74.859375
+            },
+            {
+              "id": "shiso-plum-tomato-iced-tea",
+              "left": 679.546875,
+              "top": 196.921875,
+              "width": 333.078125,
+              "height": 74.859375
+            },
+            {
+              "id": "sea-salt-caramel-milk-tea",
+              "left": 679.546875,
+              "top": 271.78125,
+              "width": 333.078125,
+              "height": 74.859375
+            },
+            {
+              "id": "caramel-creme-brulee",
+              "left": 679.546875,
+              "top": 383.46875,
+              "width": 333.078125,
+              "height": 66.140625
+            },
+            {
+              "id": "yuzu-soy-milk-panna-cotta",
+              "left": 679.546875,
+              "top": 449.609375,
+              "width": 333.078125,
+              "height": 66.15625
+            }
+          ]
+        },
+        "detailPlacement": {
+          "open": "true",
+          "placement": null,
+          "position": "absolute",
+          "display": "block",
+          "parentClass": "landscape-stage",
+          "selectedProductId": "miso-grilled-chicken-set",
+          "previousProductId": null,
+          "adjacentToSource": false,
+          "selectedExpanded": null,
+          "selectedCategoryId": "personal-mains",
+          "containedByCategory": false,
+          "visibleRatio": 0,
+          "siblingOverlaps": 1,
+          "sourceGap": 331.15625,
+          "containerOpen": null,
+          "containerClientHeight": null,
+          "containerScrollHeight": null,
+          "detailRect": {
+            "left": 19.390625,
+            "top": 1010.296875,
+            "width": 281.21875,
+            "height": 106.96875
+          }
+        }
+      },
+      "childOpen": {
+        "outerGeometry": {
+          "scale": "reading",
+          "detailPlacement": "inline",
+          "sheetWidth": 1024,
+          "sheetHeight": 527.15625,
+          "scrollWidth": 1024,
+          "columns": [
+            {
+              "left": 10.390625,
+              "top": 10.390625,
+              "width": 334.078125,
+              "height": 506.375
+            },
+            {
+              "left": 344.46875,
+              "top": 10.390625,
+              "width": 334.078125,
+              "height": 506.375
+            },
+            {
+              "left": 678.546875,
+              "top": 10.390625,
+              "width": 335.078125,
+              "height": 506.375
+            }
+          ],
+          "categories": [
+            {
+              "id": "personal-mains",
+              "left": 11.390625,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 288.203125
+            },
+            {
+              "id": "rice-noodles",
+              "left": 11.390625,
+              "top": 299.59375,
+              "width": 333.078125,
+              "height": 216.171875
+            },
+            {
+              "id": "shared-dishes",
+              "left": 345.46875,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 302.625
+            },
+            {
+              "id": "small-plates",
+              "left": 345.46875,
+              "top": 314.015625,
+              "width": 333.078125,
+              "height": 201.75
+            },
+            {
+              "id": "drinks",
+              "left": 679.546875,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 336.25
+            },
+            {
+              "id": "desserts",
+              "left": 679.546875,
+              "top": 347.640625,
+              "width": 333.078125,
+              "height": 168.125
+            }
+          ],
+          "products": [
+            {
+              "id": "miso-grilled-chicken-set",
+              "left": 11.390625,
+              "top": 47.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "lemon-koji-salmon-set",
+              "left": 11.390625,
+              "top": 175.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "black-garlic-beef-short-rib",
+              "left": 11.390625,
+              "top": 207.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "basil-three-cup-mushroom-set",
+              "left": 11.390625,
+              "top": 239.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "sichuan-mapo-tofu-pot",
+              "left": 11.390625,
+              "top": 271.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "red-wine-braised-pork-cheek",
+              "left": 11.390625,
+              "top": 303.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "herb-pork-loin-pesto",
+              "left": 11.390625,
+              "top": 335.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "yuzu-teriyaki-tofu-steak",
+              "left": 11.390625,
+              "top": 367.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "char-siu-onsen-egg-rice",
+              "left": 11.390625,
+              "top": 335.421875,
+              "width": 333.078125,
+              "height": 30.046875
+            },
+            {
+              "id": "truffle-mushroom-risotto",
+              "left": 11.390625,
+              "top": 365.46875,
+              "width": 333.078125,
+              "height": 30.0625
+            },
+            {
+              "id": "mentaiko-shrimp-udon",
+              "left": 11.390625,
+              "top": 395.53125,
+              "width": 333.078125,
+              "height": 30.046875
+            },
+            {
+              "id": "green-peppercorn-chicken-noodles",
+              "left": 11.390625,
+              "top": 425.578125,
+              "width": 333.078125,
+              "height": 30.0625
+            },
+            {
+              "id": "tomato-beef-wide-noodles",
+              "left": 11.390625,
+              "top": 455.640625,
+              "width": 333.078125,
+              "height": 30.0625
+            },
+            {
+              "id": "plum-cold-soba",
+              "left": 11.390625,
+              "top": 485.703125,
+              "width": 333.078125,
+              "height": 30.046875
+            },
+            {
+              "id": "sansho-roast-half-chicken",
+              "left": 345.46875,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 44.296875
+            },
+            {
+              "id": "shaoxing-butter-prawns",
+              "left": 345.46875,
+              "top": 91.515625,
+              "width": 333.078125,
+              "height": 44.296875
+            },
+            {
+              "id": "garlic-salt-pepper-soft-shell-crab",
+              "left": 345.46875,
+              "top": 135.8125,
+              "width": 333.078125,
+              "height": 44.296875
+            },
+            {
+              "id": "black-bean-steamed-seabass",
+              "left": 345.46875,
+              "top": 180.109375,
+              "width": 333.078125,
+              "height": 44.296875
+            },
+            {
+              "id": "kung-pao-king-oyster-mushroom",
+              "left": 345.46875,
+              "top": 224.40625,
+              "width": 333.078125,
+              "height": 44.296875
+            },
+            {
+              "id": "seasonal-vegetable-tofu-pot",
+              "left": 345.46875,
+              "top": 268.703125,
+              "width": 333.078125,
+              "height": 44.3125
+            },
+            {
+              "id": "pickled-chili-fried-chicken",
+              "left": 345.46875,
+              "top": 349.84375,
+              "width": 333.078125,
+              "height": 41.46875
+            },
+            {
+              "id": "sesame-dragon-whisker-vegetable",
+              "left": 345.46875,
+              "top": 391.3125,
+              "width": 333.078125,
+              "height": 41.484375
+            },
+            {
+              "id": "seared-zucchini-miso",
+              "left": 345.46875,
+              "top": 432.796875,
+              "width": 333.078125,
+              "height": 41.484375
+            },
+            {
+              "id": "salted-egg-yolk-potato-wedges",
+              "left": 345.46875,
+              "top": 474.28125,
+              "width": 333.078125,
+              "height": 41.484375
+            },
+            {
+              "id": "osmanthus-oolong-cold-brew",
+              "left": 679.546875,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 74.84375
+            },
+            {
+              "id": "brown-sugar-lemon-soda",
+              "left": 679.546875,
+              "top": 122.0625,
+              "width": 333.078125,
+              "height": 74.859375
+            },
+            {
+              "id": "shiso-plum-tomato-iced-tea",
+              "left": 679.546875,
+              "top": 196.921875,
+              "width": 333.078125,
+              "height": 74.859375
+            },
+            {
+              "id": "sea-salt-caramel-milk-tea",
+              "left": 679.546875,
+              "top": 271.78125,
+              "width": 333.078125,
+              "height": 74.859375
+            },
+            {
+              "id": "caramel-creme-brulee",
+              "left": 679.546875,
+              "top": 383.46875,
+              "width": 333.078125,
+              "height": 66.140625
+            },
+            {
+              "id": "yuzu-soy-milk-panna-cotta",
+              "left": 679.546875,
+              "top": 449.609375,
+              "width": 333.078125,
+              "height": 66.15625
+            }
+          ]
+        },
+        "detailPlacement": {
+          "open": "true",
+          "placement": "inline",
+          "position": "static",
+          "display": "block",
+          "parentClass": "paper-category__products",
+          "selectedProductId": "miso-grilled-chicken-set",
+          "previousProductId": "miso-grilled-chicken-set",
+          "adjacentToSource": true,
+          "selectedExpanded": "true",
+          "selectedCategoryId": "personal-mains",
+          "containedByCategory": true,
+          "visibleRatio": 1,
+          "siblingOverlaps": 0,
+          "sourceGap": 0,
+          "containerOpen": "true",
+          "containerClientHeight": 251,
+          "containerScrollHeight": 352,
+          "detailRect": {
+            "left": -5.609375,
+            "top": 785.28125,
+            "width": 318.078125,
+            "height": 96
+          }
+        }
+      },
+      "maximumColumnDelta": 0,
+      "maximumCategoryDelta": 0,
+      "maximumProductDelta": 0,
+      "childOpenColumnDelta": 0,
+      "childOpenCategoryDelta": 0
+    },
+    "390": {
+      "parentClosed": {
+        "scale": "overview",
+        "detailPlacement": null,
+        "sheetWidth": 736,
+        "sheetHeight": 623.140625,
+        "scrollWidth": 736,
+        "columns": [
+          {
+            "left": 10.390625,
+            "top": 10.390625,
+            "width": 238.078125,
+            "height": 602.359375
+          },
+          {
+            "left": 248.46875,
+            "top": 10.390625,
+            "width": 238.078125,
+            "height": 602.359375
+          },
+          {
+            "left": 486.546875,
+            "top": 10.390625,
+            "width": 239.078125,
+            "height": 602.359375
+          }
+        ],
+        "categories": [
+          {
+            "id": "personal-mains",
+            "left": 11.390625,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 343.0625
+          },
+          {
+            "id": "rice-noodles",
+            "left": 11.390625,
+            "top": 354.453125,
+            "width": 237.078125,
+            "height": 257.296875
+          },
+          {
+            "id": "shared-dishes",
+            "left": 249.46875,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 360.203125
+          },
+          {
+            "id": "small-plates",
+            "left": 249.46875,
+            "top": 371.59375,
+            "width": 237.078125,
+            "height": 240.15625
+          },
+          {
+            "id": "drinks",
+            "left": 487.546875,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 400.234375
+          },
+          {
+            "id": "desserts",
+            "left": 487.546875,
+            "top": 411.625,
+            "width": 237.078125,
+            "height": 200.125
+          }
+        ],
+        "products": [
+          {
+            "id": "miso-grilled-chicken-set",
+            "left": 11.390625,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 38.859375
+          },
+          {
+            "id": "lemon-koji-salmon-set",
+            "left": 11.390625,
+            "top": 81.390625,
+            "width": 237.078125,
+            "height": 38.859375
+          },
+          {
+            "id": "black-garlic-beef-short-rib",
+            "left": 11.390625,
+            "top": 120.25,
+            "width": 237.078125,
+            "height": 38.875
+          },
+          {
+            "id": "basil-three-cup-mushroom-set",
+            "left": 11.390625,
+            "top": 159.125,
+            "width": 237.078125,
+            "height": 38.859375
+          },
+          {
+            "id": "sichuan-mapo-tofu-pot",
+            "left": 11.390625,
+            "top": 197.984375,
+            "width": 237.078125,
+            "height": 38.859375
+          },
+          {
+            "id": "red-wine-braised-pork-cheek",
+            "left": 11.390625,
+            "top": 236.84375,
+            "width": 237.078125,
+            "height": 38.875
+          },
+          {
+            "id": "herb-pork-loin-pesto",
+            "left": 11.390625,
+            "top": 275.71875,
+            "width": 237.078125,
+            "height": 38.859375
+          },
+          {
+            "id": "yuzu-teriyaki-tofu-steak",
+            "left": 11.390625,
+            "top": 314.578125,
+            "width": 237.078125,
+            "height": 38.875
+          },
+          {
+            "id": "char-siu-onsen-egg-rice",
+            "left": 11.390625,
+            "top": 385.59375,
+            "width": 237.078125,
+            "height": 37.6875
+          },
+          {
+            "id": "truffle-mushroom-risotto",
+            "left": 11.390625,
+            "top": 423.28125,
+            "width": 237.078125,
+            "height": 37.6875
+          },
+          {
+            "id": "mentaiko-shrimp-udon",
+            "left": 11.390625,
+            "top": 460.96875,
+            "width": 237.078125,
+            "height": 37.6875
+          },
+          {
+            "id": "green-peppercorn-chicken-noodles",
+            "left": 11.390625,
+            "top": 498.65625,
+            "width": 237.078125,
+            "height": 37.703125
+          },
+          {
+            "id": "tomato-beef-wide-noodles",
+            "left": 11.390625,
+            "top": 536.359375,
+            "width": 237.078125,
+            "height": 37.6875
+          },
+          {
+            "id": "plum-cold-soba",
+            "left": 11.390625,
+            "top": 574.046875,
+            "width": 237.078125,
+            "height": 37.6875
+          },
+          {
+            "id": "sansho-roast-half-chicken",
+            "left": 249.46875,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 54.671875
+          },
+          {
+            "id": "shaoxing-butter-prawns",
+            "left": 249.46875,
+            "top": 97.203125,
+            "width": 237.078125,
+            "height": 54.671875
+          },
+          {
+            "id": "garlic-salt-pepper-soft-shell-crab",
+            "left": 249.46875,
+            "top": 151.875,
+            "width": 237.078125,
+            "height": 54.671875
+          },
+          {
+            "id": "black-bean-steamed-seabass",
+            "left": 249.46875,
+            "top": 206.546875,
+            "width": 237.078125,
+            "height": 54.6875
+          },
+          {
+            "id": "kung-pao-king-oyster-mushroom",
+            "left": 249.46875,
+            "top": 261.234375,
+            "width": 237.078125,
+            "height": 54.671875
+          },
+          {
+            "id": "seasonal-vegetable-tofu-pot",
+            "left": 249.46875,
+            "top": 315.90625,
+            "width": 237.078125,
+            "height": 54.671875
+          },
+          {
+            "id": "pickled-chili-fried-chicken",
+            "left": 249.46875,
+            "top": 402.734375,
+            "width": 237.078125,
+            "height": 52.25
+          },
+          {
+            "id": "sesame-dragon-whisker-vegetable",
+            "left": 249.46875,
+            "top": 454.984375,
+            "width": 237.078125,
+            "height": 52.25
+          },
+          {
+            "id": "seared-zucchini-miso",
+            "left": 249.46875,
+            "top": 507.234375,
+            "width": 237.078125,
+            "height": 52.25
+          },
+          {
+            "id": "salted-egg-yolk-potato-wedges",
+            "left": 249.46875,
+            "top": 559.484375,
+            "width": 237.078125,
+            "height": 52.265625
+          },
+          {
+            "id": "osmanthus-oolong-cold-brew",
+            "left": 487.546875,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 92.015625
+          },
+          {
+            "id": "brown-sugar-lemon-soda",
+            "left": 487.546875,
+            "top": 134.546875,
+            "width": 237.078125,
+            "height": 92.03125
+          },
+          {
+            "id": "shiso-plum-tomato-iced-tea",
+            "left": 487.546875,
+            "top": 226.578125,
+            "width": 237.078125,
+            "height": 92.015625
+          },
+          {
+            "id": "sea-salt-caramel-milk-tea",
+            "left": 487.546875,
+            "top": 318.59375,
+            "width": 237.078125,
+            "height": 92.03125
+          },
+          {
+            "id": "caramel-creme-brulee",
+            "left": 487.546875,
+            "top": 442.765625,
+            "width": 237.078125,
+            "height": 84.484375
+          },
+          {
+            "id": "yuzu-soy-milk-panna-cotta",
+            "left": 487.546875,
+            "top": 527.25,
+            "width": 237.078125,
+            "height": 84.5
+          }
+        ]
+      },
+      "childClosed": {
+        "scale": "overview",
+        "detailPlacement": "inline",
+        "sheetWidth": 736,
+        "sheetHeight": 623.140625,
+        "scrollWidth": 736,
+        "columns": [
+          {
+            "left": 10.390625,
+            "top": 10.390625,
+            "width": 238.078125,
+            "height": 602.359375
+          },
+          {
+            "left": 248.46875,
+            "top": 10.390625,
+            "width": 238.078125,
+            "height": 602.359375
+          },
+          {
+            "left": 486.546875,
+            "top": 10.390625,
+            "width": 239.078125,
+            "height": 602.359375
+          }
+        ],
+        "categories": [
+          {
+            "id": "personal-mains",
+            "left": 11.390625,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 343.0625
+          },
+          {
+            "id": "rice-noodles",
+            "left": 11.390625,
+            "top": 354.453125,
+            "width": 237.078125,
+            "height": 257.296875
+          },
+          {
+            "id": "shared-dishes",
+            "left": 249.46875,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 360.203125
+          },
+          {
+            "id": "small-plates",
+            "left": 249.46875,
+            "top": 371.59375,
+            "width": 237.078125,
+            "height": 240.15625
+          },
+          {
+            "id": "drinks",
+            "left": 487.546875,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 400.234375
+          },
+          {
+            "id": "desserts",
+            "left": 487.546875,
+            "top": 411.625,
+            "width": 237.078125,
+            "height": 200.125
+          }
+        ],
+        "products": [
+          {
+            "id": "miso-grilled-chicken-set",
+            "left": 11.390625,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 38.859375
+          },
+          {
+            "id": "lemon-koji-salmon-set",
+            "left": 11.390625,
+            "top": 81.390625,
+            "width": 237.078125,
+            "height": 38.859375
+          },
+          {
+            "id": "black-garlic-beef-short-rib",
+            "left": 11.390625,
+            "top": 120.25,
+            "width": 237.078125,
+            "height": 38.875
+          },
+          {
+            "id": "basil-three-cup-mushroom-set",
+            "left": 11.390625,
+            "top": 159.125,
+            "width": 237.078125,
+            "height": 38.859375
+          },
+          {
+            "id": "sichuan-mapo-tofu-pot",
+            "left": 11.390625,
+            "top": 197.984375,
+            "width": 237.078125,
+            "height": 38.859375
+          },
+          {
+            "id": "red-wine-braised-pork-cheek",
+            "left": 11.390625,
+            "top": 236.84375,
+            "width": 237.078125,
+            "height": 38.875
+          },
+          {
+            "id": "herb-pork-loin-pesto",
+            "left": 11.390625,
+            "top": 275.71875,
+            "width": 237.078125,
+            "height": 38.859375
+          },
+          {
+            "id": "yuzu-teriyaki-tofu-steak",
+            "left": 11.390625,
+            "top": 314.578125,
+            "width": 237.078125,
+            "height": 38.875
+          },
+          {
+            "id": "char-siu-onsen-egg-rice",
+            "left": 11.390625,
+            "top": 385.59375,
+            "width": 237.078125,
+            "height": 37.6875
+          },
+          {
+            "id": "truffle-mushroom-risotto",
+            "left": 11.390625,
+            "top": 423.28125,
+            "width": 237.078125,
+            "height": 37.6875
+          },
+          {
+            "id": "mentaiko-shrimp-udon",
+            "left": 11.390625,
+            "top": 460.96875,
+            "width": 237.078125,
+            "height": 37.6875
+          },
+          {
+            "id": "green-peppercorn-chicken-noodles",
+            "left": 11.390625,
+            "top": 498.65625,
+            "width": 237.078125,
+            "height": 37.703125
+          },
+          {
+            "id": "tomato-beef-wide-noodles",
+            "left": 11.390625,
+            "top": 536.359375,
+            "width": 237.078125,
+            "height": 37.6875
+          },
+          {
+            "id": "plum-cold-soba",
+            "left": 11.390625,
+            "top": 574.046875,
+            "width": 237.078125,
+            "height": 37.6875
+          },
+          {
+            "id": "sansho-roast-half-chicken",
+            "left": 249.46875,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 54.671875
+          },
+          {
+            "id": "shaoxing-butter-prawns",
+            "left": 249.46875,
+            "top": 97.203125,
+            "width": 237.078125,
+            "height": 54.671875
+          },
+          {
+            "id": "garlic-salt-pepper-soft-shell-crab",
+            "left": 249.46875,
+            "top": 151.875,
+            "width": 237.078125,
+            "height": 54.671875
+          },
+          {
+            "id": "black-bean-steamed-seabass",
+            "left": 249.46875,
+            "top": 206.546875,
+            "width": 237.078125,
+            "height": 54.6875
+          },
+          {
+            "id": "kung-pao-king-oyster-mushroom",
+            "left": 249.46875,
+            "top": 261.234375,
+            "width": 237.078125,
+            "height": 54.671875
+          },
+          {
+            "id": "seasonal-vegetable-tofu-pot",
+            "left": 249.46875,
+            "top": 315.90625,
+            "width": 237.078125,
+            "height": 54.671875
+          },
+          {
+            "id": "pickled-chili-fried-chicken",
+            "left": 249.46875,
+            "top": 402.734375,
+            "width": 237.078125,
+            "height": 52.25
+          },
+          {
+            "id": "sesame-dragon-whisker-vegetable",
+            "left": 249.46875,
+            "top": 454.984375,
+            "width": 237.078125,
+            "height": 52.25
+          },
+          {
+            "id": "seared-zucchini-miso",
+            "left": 249.46875,
+            "top": 507.234375,
+            "width": 237.078125,
+            "height": 52.25
+          },
+          {
+            "id": "salted-egg-yolk-potato-wedges",
+            "left": 249.46875,
+            "top": 559.484375,
+            "width": 237.078125,
+            "height": 52.265625
+          },
+          {
+            "id": "osmanthus-oolong-cold-brew",
+            "left": 487.546875,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 92.015625
+          },
+          {
+            "id": "brown-sugar-lemon-soda",
+            "left": 487.546875,
+            "top": 134.546875,
+            "width": 237.078125,
+            "height": 92.03125
+          },
+          {
+            "id": "shiso-plum-tomato-iced-tea",
+            "left": 487.546875,
+            "top": 226.578125,
+            "width": 237.078125,
+            "height": 92.015625
+          },
+          {
+            "id": "sea-salt-caramel-milk-tea",
+            "left": 487.546875,
+            "top": 318.59375,
+            "width": 237.078125,
+            "height": 92.03125
+          },
+          {
+            "id": "caramel-creme-brulee",
+            "left": 487.546875,
+            "top": 442.765625,
+            "width": 237.078125,
+            "height": 84.484375
+          },
+          {
+            "id": "yuzu-soy-milk-panna-cotta",
+            "left": 487.546875,
+            "top": 527.25,
+            "width": 237.078125,
+            "height": 84.5
+          }
+        ]
+      },
+      "parentOpen": {
+        "outerGeometry": {
+          "scale": "reading",
+          "detailPlacement": null,
+          "sheetWidth": 1024,
+          "sheetHeight": 623.140625,
+          "scrollWidth": 1024,
+          "columns": [
+            {
+              "left": 10.390625,
+              "top": 10.390625,
+              "width": 334.078125,
+              "height": 602.359375
+            },
+            {
+              "left": 344.46875,
+              "top": 10.390625,
+              "width": 334.078125,
+              "height": 602.359375
+            },
+            {
+              "left": 678.546875,
+              "top": 10.390625,
+              "width": 335.078125,
+              "height": 602.359375
+            }
+          ],
+          "categories": [
+            {
+              "id": "personal-mains",
+              "left": 11.390625,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 343.0625
+            },
+            {
+              "id": "rice-noodles",
+              "left": 11.390625,
+              "top": 354.453125,
+              "width": 333.078125,
+              "height": 257.296875
+            },
+            {
+              "id": "shared-dishes",
+              "left": 345.46875,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 360.203125
+            },
+            {
+              "id": "small-plates",
+              "left": 345.46875,
+              "top": 371.59375,
+              "width": 333.078125,
+              "height": 240.15625
+            },
+            {
+              "id": "drinks",
+              "left": 679.546875,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 400.234375
+            },
+            {
+              "id": "desserts",
+              "left": 679.546875,
+              "top": 411.625,
+              "width": 333.078125,
+              "height": 200.125
+            }
+          ],
+          "products": [
+            {
+              "id": "miso-grilled-chicken-set",
+              "left": 11.390625,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 38.265625
+            },
+            {
+              "id": "lemon-koji-salmon-set",
+              "left": 11.390625,
+              "top": 85.484375,
+              "width": 333.078125,
+              "height": 38.28125
+            },
+            {
+              "id": "black-garlic-beef-short-rib",
+              "left": 11.390625,
+              "top": 123.765625,
+              "width": 333.078125,
+              "height": 38.28125
+            },
+            {
+              "id": "basil-three-cup-mushroom-set",
+              "left": 11.390625,
+              "top": 162.046875,
+              "width": 333.078125,
+              "height": 38.28125
+            },
+            {
+              "id": "sichuan-mapo-tofu-pot",
+              "left": 11.390625,
+              "top": 200.328125,
+              "width": 333.078125,
+              "height": 38.28125
+            },
+            {
+              "id": "red-wine-braised-pork-cheek",
+              "left": 11.390625,
+              "top": 238.609375,
+              "width": 333.078125,
+              "height": 38.28125
+            },
+            {
+              "id": "herb-pork-loin-pesto",
+              "left": 11.390625,
+              "top": 276.890625,
+              "width": 333.078125,
+              "height": 38.28125
+            },
+            {
+              "id": "yuzu-teriyaki-tofu-steak",
+              "left": 11.390625,
+              "top": 315.171875,
+              "width": 333.078125,
+              "height": 38.28125
+            },
+            {
+              "id": "char-siu-onsen-egg-rice",
+              "left": 11.390625,
+              "top": 390.28125,
+              "width": 333.078125,
+              "height": 36.90625
+            },
+            {
+              "id": "truffle-mushroom-risotto",
+              "left": 11.390625,
+              "top": 427.1875,
+              "width": 333.078125,
+              "height": 36.90625
+            },
+            {
+              "id": "mentaiko-shrimp-udon",
+              "left": 11.390625,
+              "top": 464.09375,
+              "width": 333.078125,
+              "height": 36.90625
+            },
+            {
+              "id": "green-peppercorn-chicken-noodles",
+              "left": 11.390625,
+              "top": 501,
+              "width": 333.078125,
+              "height": 36.921875
+            },
+            {
+              "id": "tomato-beef-wide-noodles",
+              "left": 11.390625,
+              "top": 537.921875,
+              "width": 333.078125,
+              "height": 36.90625
+            },
+            {
+              "id": "plum-cold-soba",
+              "left": 11.390625,
+              "top": 574.828125,
+              "width": 333.078125,
+              "height": 36.90625
+            },
+            {
+              "id": "sansho-roast-half-chicken",
+              "left": 345.46875,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 53.890625
+            },
+            {
+              "id": "shaoxing-butter-prawns",
+              "left": 345.46875,
+              "top": 101.109375,
+              "width": 333.078125,
+              "height": 53.890625
+            },
+            {
+              "id": "garlic-salt-pepper-soft-shell-crab",
+              "left": 345.46875,
+              "top": 155,
+              "width": 333.078125,
+              "height": 53.890625
+            },
+            {
+              "id": "black-bean-steamed-seabass",
+              "left": 345.46875,
+              "top": 208.890625,
+              "width": 333.078125,
+              "height": 53.90625
+            },
+            {
+              "id": "kung-pao-king-oyster-mushroom",
+              "left": 345.46875,
+              "top": 262.796875,
+              "width": 333.078125,
+              "height": 53.890625
+            },
+            {
+              "id": "seasonal-vegetable-tofu-pot",
+              "left": 345.46875,
+              "top": 316.6875,
+              "width": 333.078125,
+              "height": 53.890625
+            },
+            {
+              "id": "pickled-chili-fried-chicken",
+              "left": 345.46875,
+              "top": 407.421875,
+              "width": 333.078125,
+              "height": 51.078125
+            },
+            {
+              "id": "sesame-dragon-whisker-vegetable",
+              "left": 345.46875,
+              "top": 458.5,
+              "width": 333.078125,
+              "height": 51.078125
+            },
+            {
+              "id": "seared-zucchini-miso",
+              "left": 345.46875,
+              "top": 509.578125,
+              "width": 333.078125,
+              "height": 51.078125
+            },
+            {
+              "id": "salted-egg-yolk-potato-wedges",
+              "left": 345.46875,
+              "top": 560.65625,
+              "width": 333.078125,
+              "height": 51.09375
+            },
+            {
+              "id": "osmanthus-oolong-cold-brew",
+              "left": 679.546875,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 90.84375
+            },
+            {
+              "id": "brown-sugar-lemon-soda",
+              "left": 679.546875,
+              "top": 138.0625,
+              "width": 333.078125,
+              "height": 90.859375
+            },
+            {
+              "id": "shiso-plum-tomato-iced-tea",
+              "left": 679.546875,
+              "top": 228.921875,
+              "width": 333.078125,
+              "height": 90.84375
+            },
+            {
+              "id": "sea-salt-caramel-milk-tea",
+              "left": 679.546875,
+              "top": 319.765625,
+              "width": 333.078125,
+              "height": 90.859375
+            },
+            {
+              "id": "caramel-creme-brulee",
+              "left": 679.546875,
+              "top": 447.453125,
+              "width": 333.078125,
+              "height": 82.140625
+            },
+            {
+              "id": "yuzu-soy-milk-panna-cotta",
+              "left": 679.546875,
+              "top": 529.59375,
+              "width": 333.078125,
+              "height": 82.15625
+            }
+          ]
+        },
+        "detailPlacement": {
+          "open": "true",
+          "placement": null,
+          "position": "absolute",
+          "display": "block",
+          "parentClass": "landscape-stage",
+          "selectedProductId": "miso-grilled-chicken-set",
+          "previousProductId": null,
+          "adjacentToSource": false,
+          "selectedExpanded": null,
+          "selectedCategoryId": "personal-mains",
+          "containedByCategory": false,
+          "visibleRatio": 0,
+          "siblingOverlaps": 2,
+          "sourceGap": 436.0625,
+          "containerOpen": null,
+          "containerClientHeight": null,
+          "containerScrollHeight": null,
+          "detailRect": {
+            "left": 19.390625,
+            "top": 1095.890625,
+            "width": 351.21875,
+            "height": 91.203125
+          }
+        }
+      },
+      "childOpen": {
+        "outerGeometry": {
+          "scale": "reading",
+          "detailPlacement": "inline",
+          "sheetWidth": 1024,
+          "sheetHeight": 623.140625,
+          "scrollWidth": 1024,
+          "columns": [
+            {
+              "left": 10.390625,
+              "top": 10.390625,
+              "width": 334.078125,
+              "height": 602.359375
+            },
+            {
+              "left": 344.46875,
+              "top": 10.390625,
+              "width": 334.078125,
+              "height": 602.359375
+            },
+            {
+              "left": 678.546875,
+              "top": 10.390625,
+              "width": 335.078125,
+              "height": 602.359375
+            }
+          ],
+          "categories": [
+            {
+              "id": "personal-mains",
+              "left": 11.390625,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 343.0625
+            },
+            {
+              "id": "rice-noodles",
+              "left": 11.390625,
+              "top": 354.453125,
+              "width": 333.078125,
+              "height": 257.296875
+            },
+            {
+              "id": "shared-dishes",
+              "left": 345.46875,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 360.203125
+            },
+            {
+              "id": "small-plates",
+              "left": 345.46875,
+              "top": 371.59375,
+              "width": 333.078125,
+              "height": 240.15625
+            },
+            {
+              "id": "drinks",
+              "left": 679.546875,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 400.234375
+            },
+            {
+              "id": "desserts",
+              "left": 679.546875,
+              "top": 411.625,
+              "width": 333.078125,
+              "height": 200.125
+            }
+          ],
+          "products": [
+            {
+              "id": "miso-grilled-chicken-set",
+              "left": 11.390625,
+              "top": 47.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "lemon-koji-salmon-set",
+              "left": 11.390625,
+              "top": 175.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "black-garlic-beef-short-rib",
+              "left": 11.390625,
+              "top": 207.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "basil-three-cup-mushroom-set",
+              "left": 11.390625,
+              "top": 239.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "sichuan-mapo-tofu-pot",
+              "left": 11.390625,
+              "top": 271.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "red-wine-braised-pork-cheek",
+              "left": 11.390625,
+              "top": 303.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "herb-pork-loin-pesto",
+              "left": 11.390625,
+              "top": 335.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "yuzu-teriyaki-tofu-steak",
+              "left": 11.390625,
+              "top": 367.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "char-siu-onsen-egg-rice",
+              "left": 11.390625,
+              "top": 390.28125,
+              "width": 333.078125,
+              "height": 36.90625
+            },
+            {
+              "id": "truffle-mushroom-risotto",
+              "left": 11.390625,
+              "top": 427.1875,
+              "width": 333.078125,
+              "height": 36.90625
+            },
+            {
+              "id": "mentaiko-shrimp-udon",
+              "left": 11.390625,
+              "top": 464.09375,
+              "width": 333.078125,
+              "height": 36.90625
+            },
+            {
+              "id": "green-peppercorn-chicken-noodles",
+              "left": 11.390625,
+              "top": 501,
+              "width": 333.078125,
+              "height": 36.921875
+            },
+            {
+              "id": "tomato-beef-wide-noodles",
+              "left": 11.390625,
+              "top": 537.921875,
+              "width": 333.078125,
+              "height": 36.90625
+            },
+            {
+              "id": "plum-cold-soba",
+              "left": 11.390625,
+              "top": 574.828125,
+              "width": 333.078125,
+              "height": 36.90625
+            },
+            {
+              "id": "sansho-roast-half-chicken",
+              "left": 345.46875,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 53.890625
+            },
+            {
+              "id": "shaoxing-butter-prawns",
+              "left": 345.46875,
+              "top": 101.109375,
+              "width": 333.078125,
+              "height": 53.890625
+            },
+            {
+              "id": "garlic-salt-pepper-soft-shell-crab",
+              "left": 345.46875,
+              "top": 155,
+              "width": 333.078125,
+              "height": 53.890625
+            },
+            {
+              "id": "black-bean-steamed-seabass",
+              "left": 345.46875,
+              "top": 208.890625,
+              "width": 333.078125,
+              "height": 53.90625
+            },
+            {
+              "id": "kung-pao-king-oyster-mushroom",
+              "left": 345.46875,
+              "top": 262.796875,
+              "width": 333.078125,
+              "height": 53.890625
+            },
+            {
+              "id": "seasonal-vegetable-tofu-pot",
+              "left": 345.46875,
+              "top": 316.6875,
+              "width": 333.078125,
+              "height": 53.890625
+            },
+            {
+              "id": "pickled-chili-fried-chicken",
+              "left": 345.46875,
+              "top": 407.421875,
+              "width": 333.078125,
+              "height": 51.078125
+            },
+            {
+              "id": "sesame-dragon-whisker-vegetable",
+              "left": 345.46875,
+              "top": 458.5,
+              "width": 333.078125,
+              "height": 51.078125
+            },
+            {
+              "id": "seared-zucchini-miso",
+              "left": 345.46875,
+              "top": 509.578125,
+              "width": 333.078125,
+              "height": 51.078125
+            },
+            {
+              "id": "salted-egg-yolk-potato-wedges",
+              "left": 345.46875,
+              "top": 560.65625,
+              "width": 333.078125,
+              "height": 51.09375
+            },
+            {
+              "id": "osmanthus-oolong-cold-brew",
+              "left": 679.546875,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 90.84375
+            },
+            {
+              "id": "brown-sugar-lemon-soda",
+              "left": 679.546875,
+              "top": 138.0625,
+              "width": 333.078125,
+              "height": 90.859375
+            },
+            {
+              "id": "shiso-plum-tomato-iced-tea",
+              "left": 679.546875,
+              "top": 228.921875,
+              "width": 333.078125,
+              "height": 90.84375
+            },
+            {
+              "id": "sea-salt-caramel-milk-tea",
+              "left": 679.546875,
+              "top": 319.765625,
+              "width": 333.078125,
+              "height": 90.859375
+            },
+            {
+              "id": "caramel-creme-brulee",
+              "left": 679.546875,
+              "top": 447.453125,
+              "width": 333.078125,
+              "height": 82.140625
+            },
+            {
+              "id": "yuzu-soy-milk-panna-cotta",
+              "left": 679.546875,
+              "top": 529.59375,
+              "width": 333.078125,
+              "height": 82.15625
+            }
+          ]
+        },
+        "detailPlacement": {
+          "open": "true",
+          "placement": "inline",
+          "position": "static",
+          "display": "block",
+          "parentClass": "paper-category__products",
+          "selectedProductId": "miso-grilled-chicken-set",
+          "previousProductId": "miso-grilled-chicken-set",
+          "adjacentToSource": true,
+          "selectedExpanded": "true",
+          "selectedCategoryId": "personal-mains",
+          "containedByCategory": true,
+          "visibleRatio": 1,
+          "siblingOverlaps": 0,
+          "sourceGap": 0,
+          "containerOpen": "true",
+          "containerClientHeight": 306,
+          "containerScrollHeight": 352,
+          "detailRect": {
+            "left": 20.390625,
+            "top": 706.34375,
+            "width": 318.078125,
+            "height": 96
+          }
+        }
+      },
+      "maximumColumnDelta": 0,
+      "maximumCategoryDelta": 0,
+      "maximumProductDelta": 0,
+      "childOpenColumnDelta": 0,
+      "childOpenCategoryDelta": 0
+    },
+    "desktop": {
+      "parentClosed": {
+        "scale": "overview",
+        "detailPlacement": null,
+        "sheetWidth": 736,
+        "sheetHeight": 610.671875,
+        "scrollWidth": 736,
+        "columns": [
+          {
+            "left": 10.390625,
+            "top": 10.390625,
+            "width": 238.078125,
+            "height": 589.890625
+          },
+          {
+            "left": 248.46875,
+            "top": 10.390625,
+            "width": 238.078125,
+            "height": 589.890625
+          },
+          {
+            "left": 486.546875,
+            "top": 10.390625,
+            "width": 239.078125,
+            "height": 589.890625
+          }
+        ],
+        "categories": [
+          {
+            "id": "personal-mains",
+            "left": 11.390625,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 335.9375
+          },
+          {
+            "id": "rice-noodles",
+            "left": 11.390625,
+            "top": 347.328125,
+            "width": 237.078125,
+            "height": 251.953125
+          },
+          {
+            "id": "shared-dishes",
+            "left": 249.46875,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 352.734375
+          },
+          {
+            "id": "small-plates",
+            "left": 249.46875,
+            "top": 364.125,
+            "width": 237.078125,
+            "height": 235.15625
+          },
+          {
+            "id": "drinks",
+            "left": 487.546875,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 391.921875
+          },
+          {
+            "id": "desserts",
+            "left": 487.546875,
+            "top": 403.3125,
+            "width": 237.078125,
+            "height": 195.96875
+          }
+        ],
+        "products": [
+          {
+            "id": "miso-grilled-chicken-set",
+            "left": 11.390625,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 37.96875
+          },
+          {
+            "id": "lemon-koji-salmon-set",
+            "left": 11.390625,
+            "top": 80.5,
+            "width": 237.078125,
+            "height": 37.96875
+          },
+          {
+            "id": "black-garlic-beef-short-rib",
+            "left": 11.390625,
+            "top": 118.46875,
+            "width": 237.078125,
+            "height": 37.984375
+          },
+          {
+            "id": "basil-three-cup-mushroom-set",
+            "left": 11.390625,
+            "top": 156.453125,
+            "width": 237.078125,
+            "height": 37.96875
+          },
+          {
+            "id": "sichuan-mapo-tofu-pot",
+            "left": 11.390625,
+            "top": 194.421875,
+            "width": 237.078125,
+            "height": 37.96875
+          },
+          {
+            "id": "red-wine-braised-pork-cheek",
+            "left": 11.390625,
+            "top": 232.390625,
+            "width": 237.078125,
+            "height": 37.984375
+          },
+          {
+            "id": "herb-pork-loin-pesto",
+            "left": 11.390625,
+            "top": 270.375,
+            "width": 237.078125,
+            "height": 37.96875
+          },
+          {
+            "id": "yuzu-teriyaki-tofu-steak",
+            "left": 11.390625,
+            "top": 308.34375,
+            "width": 237.078125,
+            "height": 37.984375
+          },
+          {
+            "id": "char-siu-onsen-egg-rice",
+            "left": 11.390625,
+            "top": 378.46875,
+            "width": 237.078125,
+            "height": 36.796875
+          },
+          {
+            "id": "truffle-mushroom-risotto",
+            "left": 11.390625,
+            "top": 415.265625,
+            "width": 237.078125,
+            "height": 36.796875
+          },
+          {
+            "id": "mentaiko-shrimp-udon",
+            "left": 11.390625,
+            "top": 452.0625,
+            "width": 237.078125,
+            "height": 36.796875
+          },
+          {
+            "id": "green-peppercorn-chicken-noodles",
+            "left": 11.390625,
+            "top": 488.859375,
+            "width": 237.078125,
+            "height": 36.8125
+          },
+          {
+            "id": "tomato-beef-wide-noodles",
+            "left": 11.390625,
+            "top": 525.671875,
+            "width": 237.078125,
+            "height": 36.796875
+          },
+          {
+            "id": "plum-cold-soba",
+            "left": 11.390625,
+            "top": 562.46875,
+            "width": 237.078125,
+            "height": 36.796875
+          },
+          {
+            "id": "sansho-roast-half-chicken",
+            "left": 249.46875,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 53.421875
+          },
+          {
+            "id": "shaoxing-butter-prawns",
+            "left": 249.46875,
+            "top": 95.953125,
+            "width": 237.078125,
+            "height": 53.4375
+          },
+          {
+            "id": "garlic-salt-pepper-soft-shell-crab",
+            "left": 249.46875,
+            "top": 149.390625,
+            "width": 237.078125,
+            "height": 53.4375
+          },
+          {
+            "id": "black-bean-steamed-seabass",
+            "left": 249.46875,
+            "top": 202.828125,
+            "width": 237.078125,
+            "height": 53.421875
+          },
+          {
+            "id": "kung-pao-king-oyster-mushroom",
+            "left": 249.46875,
+            "top": 256.25,
+            "width": 237.078125,
+            "height": 53.4375
+          },
+          {
+            "id": "seasonal-vegetable-tofu-pot",
+            "left": 249.46875,
+            "top": 309.6875,
+            "width": 237.078125,
+            "height": 53.4375
+          },
+          {
+            "id": "pickled-chili-fried-chicken",
+            "left": 249.46875,
+            "top": 395.265625,
+            "width": 237.078125,
+            "height": 51
+          },
+          {
+            "id": "sesame-dragon-whisker-vegetable",
+            "left": 249.46875,
+            "top": 446.265625,
+            "width": 237.078125,
+            "height": 51
+          },
+          {
+            "id": "seared-zucchini-miso",
+            "left": 249.46875,
+            "top": 497.265625,
+            "width": 237.078125,
+            "height": 51
+          },
+          {
+            "id": "salted-egg-yolk-potato-wedges",
+            "left": 249.46875,
+            "top": 548.265625,
+            "width": 237.078125,
+            "height": 51.015625
+          },
+          {
+            "id": "osmanthus-oolong-cold-brew",
+            "left": 487.546875,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 89.9375
+          },
+          {
+            "id": "brown-sugar-lemon-soda",
+            "left": 487.546875,
+            "top": 132.46875,
+            "width": 237.078125,
+            "height": 89.953125
+          },
+          {
+            "id": "shiso-plum-tomato-iced-tea",
+            "left": 487.546875,
+            "top": 222.421875,
+            "width": 237.078125,
+            "height": 89.9375
+          },
+          {
+            "id": "sea-salt-caramel-milk-tea",
+            "left": 487.546875,
+            "top": 312.359375,
+            "width": 237.078125,
+            "height": 89.953125
+          },
+          {
+            "id": "caramel-creme-brulee",
+            "left": 487.546875,
+            "top": 434.453125,
+            "width": 237.078125,
+            "height": 82.40625
+          },
+          {
+            "id": "yuzu-soy-milk-panna-cotta",
+            "left": 487.546875,
+            "top": 516.859375,
+            "width": 237.078125,
+            "height": 82.421875
+          }
+        ]
+      },
+      "childClosed": {
+        "scale": "overview",
+        "detailPlacement": "inline",
+        "sheetWidth": 736,
+        "sheetHeight": 610.671875,
+        "scrollWidth": 736,
+        "columns": [
+          {
+            "left": 10.390625,
+            "top": 10.390625,
+            "width": 238.078125,
+            "height": 589.890625
+          },
+          {
+            "left": 248.46875,
+            "top": 10.390625,
+            "width": 238.078125,
+            "height": 589.890625
+          },
+          {
+            "left": 486.546875,
+            "top": 10.390625,
+            "width": 239.078125,
+            "height": 589.890625
+          }
+        ],
+        "categories": [
+          {
+            "id": "personal-mains",
+            "left": 11.390625,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 335.9375
+          },
+          {
+            "id": "rice-noodles",
+            "left": 11.390625,
+            "top": 347.328125,
+            "width": 237.078125,
+            "height": 251.953125
+          },
+          {
+            "id": "shared-dishes",
+            "left": 249.46875,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 352.734375
+          },
+          {
+            "id": "small-plates",
+            "left": 249.46875,
+            "top": 364.125,
+            "width": 237.078125,
+            "height": 235.15625
+          },
+          {
+            "id": "drinks",
+            "left": 487.546875,
+            "top": 11.390625,
+            "width": 237.078125,
+            "height": 391.921875
+          },
+          {
+            "id": "desserts",
+            "left": 487.546875,
+            "top": 403.3125,
+            "width": 237.078125,
+            "height": 195.96875
+          }
+        ],
+        "products": [
+          {
+            "id": "miso-grilled-chicken-set",
+            "left": 11.390625,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 37.96875
+          },
+          {
+            "id": "lemon-koji-salmon-set",
+            "left": 11.390625,
+            "top": 80.5,
+            "width": 237.078125,
+            "height": 37.96875
+          },
+          {
+            "id": "black-garlic-beef-short-rib",
+            "left": 11.390625,
+            "top": 118.46875,
+            "width": 237.078125,
+            "height": 37.984375
+          },
+          {
+            "id": "basil-three-cup-mushroom-set",
+            "left": 11.390625,
+            "top": 156.453125,
+            "width": 237.078125,
+            "height": 37.96875
+          },
+          {
+            "id": "sichuan-mapo-tofu-pot",
+            "left": 11.390625,
+            "top": 194.421875,
+            "width": 237.078125,
+            "height": 37.96875
+          },
+          {
+            "id": "red-wine-braised-pork-cheek",
+            "left": 11.390625,
+            "top": 232.390625,
+            "width": 237.078125,
+            "height": 37.984375
+          },
+          {
+            "id": "herb-pork-loin-pesto",
+            "left": 11.390625,
+            "top": 270.375,
+            "width": 237.078125,
+            "height": 37.96875
+          },
+          {
+            "id": "yuzu-teriyaki-tofu-steak",
+            "left": 11.390625,
+            "top": 308.34375,
+            "width": 237.078125,
+            "height": 37.984375
+          },
+          {
+            "id": "char-siu-onsen-egg-rice",
+            "left": 11.390625,
+            "top": 378.46875,
+            "width": 237.078125,
+            "height": 36.796875
+          },
+          {
+            "id": "truffle-mushroom-risotto",
+            "left": 11.390625,
+            "top": 415.265625,
+            "width": 237.078125,
+            "height": 36.796875
+          },
+          {
+            "id": "mentaiko-shrimp-udon",
+            "left": 11.390625,
+            "top": 452.0625,
+            "width": 237.078125,
+            "height": 36.796875
+          },
+          {
+            "id": "green-peppercorn-chicken-noodles",
+            "left": 11.390625,
+            "top": 488.859375,
+            "width": 237.078125,
+            "height": 36.8125
+          },
+          {
+            "id": "tomato-beef-wide-noodles",
+            "left": 11.390625,
+            "top": 525.671875,
+            "width": 237.078125,
+            "height": 36.796875
+          },
+          {
+            "id": "plum-cold-soba",
+            "left": 11.390625,
+            "top": 562.46875,
+            "width": 237.078125,
+            "height": 36.796875
+          },
+          {
+            "id": "sansho-roast-half-chicken",
+            "left": 249.46875,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 53.421875
+          },
+          {
+            "id": "shaoxing-butter-prawns",
+            "left": 249.46875,
+            "top": 95.953125,
+            "width": 237.078125,
+            "height": 53.4375
+          },
+          {
+            "id": "garlic-salt-pepper-soft-shell-crab",
+            "left": 249.46875,
+            "top": 149.390625,
+            "width": 237.078125,
+            "height": 53.4375
+          },
+          {
+            "id": "black-bean-steamed-seabass",
+            "left": 249.46875,
+            "top": 202.828125,
+            "width": 237.078125,
+            "height": 53.421875
+          },
+          {
+            "id": "kung-pao-king-oyster-mushroom",
+            "left": 249.46875,
+            "top": 256.25,
+            "width": 237.078125,
+            "height": 53.4375
+          },
+          {
+            "id": "seasonal-vegetable-tofu-pot",
+            "left": 249.46875,
+            "top": 309.6875,
+            "width": 237.078125,
+            "height": 53.4375
+          },
+          {
+            "id": "pickled-chili-fried-chicken",
+            "left": 249.46875,
+            "top": 395.265625,
+            "width": 237.078125,
+            "height": 51
+          },
+          {
+            "id": "sesame-dragon-whisker-vegetable",
+            "left": 249.46875,
+            "top": 446.265625,
+            "width": 237.078125,
+            "height": 51
+          },
+          {
+            "id": "seared-zucchini-miso",
+            "left": 249.46875,
+            "top": 497.265625,
+            "width": 237.078125,
+            "height": 51
+          },
+          {
+            "id": "salted-egg-yolk-potato-wedges",
+            "left": 249.46875,
+            "top": 548.265625,
+            "width": 237.078125,
+            "height": 51.015625
+          },
+          {
+            "id": "osmanthus-oolong-cold-brew",
+            "left": 487.546875,
+            "top": 42.53125,
+            "width": 237.078125,
+            "height": 89.9375
+          },
+          {
+            "id": "brown-sugar-lemon-soda",
+            "left": 487.546875,
+            "top": 132.46875,
+            "width": 237.078125,
+            "height": 89.953125
+          },
+          {
+            "id": "shiso-plum-tomato-iced-tea",
+            "left": 487.546875,
+            "top": 222.421875,
+            "width": 237.078125,
+            "height": 89.9375
+          },
+          {
+            "id": "sea-salt-caramel-milk-tea",
+            "left": 487.546875,
+            "top": 312.359375,
+            "width": 237.078125,
+            "height": 89.953125
+          },
+          {
+            "id": "caramel-creme-brulee",
+            "left": 487.546875,
+            "top": 434.453125,
+            "width": 237.078125,
+            "height": 82.40625
+          },
+          {
+            "id": "yuzu-soy-milk-panna-cotta",
+            "left": 487.546875,
+            "top": 516.859375,
+            "width": 237.078125,
+            "height": 82.421875
+          }
+        ]
+      },
+      "parentOpen": {
+        "outerGeometry": {
+          "scale": "reading",
+          "detailPlacement": null,
+          "sheetWidth": 1024,
+          "sheetHeight": 610.671875,
+          "scrollWidth": 1024,
+          "columns": [
+            {
+              "left": 10.390625,
+              "top": 10.390625,
+              "width": 334.078125,
+              "height": 589.890625
+            },
+            {
+              "left": 344.46875,
+              "top": 10.390625,
+              "width": 334.078125,
+              "height": 589.890625
+            },
+            {
+              "left": 678.546875,
+              "top": 10.390625,
+              "width": 335.078125,
+              "height": 589.890625
+            }
+          ],
+          "categories": [
+            {
+              "id": "personal-mains",
+              "left": 11.390625,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 335.9375
+            },
+            {
+              "id": "rice-noodles",
+              "left": 11.390625,
+              "top": 347.328125,
+              "width": 333.078125,
+              "height": 251.953125
+            },
+            {
+              "id": "shared-dishes",
+              "left": 345.46875,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 352.734375
+            },
+            {
+              "id": "small-plates",
+              "left": 345.46875,
+              "top": 364.125,
+              "width": 333.078125,
+              "height": 235.15625
+            },
+            {
+              "id": "drinks",
+              "left": 679.546875,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 391.921875
+            },
+            {
+              "id": "desserts",
+              "left": 679.546875,
+              "top": 403.3125,
+              "width": 333.078125,
+              "height": 195.96875
+            }
+          ],
+          "products": [
+            {
+              "id": "miso-grilled-chicken-set",
+              "left": 11.390625,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 37.375
+            },
+            {
+              "id": "lemon-koji-salmon-set",
+              "left": 11.390625,
+              "top": 84.59375,
+              "width": 333.078125,
+              "height": 37.390625
+            },
+            {
+              "id": "black-garlic-beef-short-rib",
+              "left": 11.390625,
+              "top": 121.984375,
+              "width": 333.078125,
+              "height": 37.390625
+            },
+            {
+              "id": "basil-three-cup-mushroom-set",
+              "left": 11.390625,
+              "top": 159.375,
+              "width": 333.078125,
+              "height": 37.390625
+            },
+            {
+              "id": "sichuan-mapo-tofu-pot",
+              "left": 11.390625,
+              "top": 196.765625,
+              "width": 333.078125,
+              "height": 37.390625
+            },
+            {
+              "id": "red-wine-braised-pork-cheek",
+              "left": 11.390625,
+              "top": 234.15625,
+              "width": 333.078125,
+              "height": 37.390625
+            },
+            {
+              "id": "herb-pork-loin-pesto",
+              "left": 11.390625,
+              "top": 271.546875,
+              "width": 333.078125,
+              "height": 37.390625
+            },
+            {
+              "id": "yuzu-teriyaki-tofu-steak",
+              "left": 11.390625,
+              "top": 308.9375,
+              "width": 333.078125,
+              "height": 37.390625
+            },
+            {
+              "id": "char-siu-onsen-egg-rice",
+              "left": 11.390625,
+              "top": 383.15625,
+              "width": 333.078125,
+              "height": 36.015625
+            },
+            {
+              "id": "truffle-mushroom-risotto",
+              "left": 11.390625,
+              "top": 419.171875,
+              "width": 333.078125,
+              "height": 36.015625
+            },
+            {
+              "id": "mentaiko-shrimp-udon",
+              "left": 11.390625,
+              "top": 455.1875,
+              "width": 333.078125,
+              "height": 36.015625
+            },
+            {
+              "id": "green-peppercorn-chicken-noodles",
+              "left": 11.390625,
+              "top": 491.203125,
+              "width": 333.078125,
+              "height": 36.03125
+            },
+            {
+              "id": "tomato-beef-wide-noodles",
+              "left": 11.390625,
+              "top": 527.234375,
+              "width": 333.078125,
+              "height": 36.015625
+            },
+            {
+              "id": "plum-cold-soba",
+              "left": 11.390625,
+              "top": 563.25,
+              "width": 333.078125,
+              "height": 36.015625
+            },
+            {
+              "id": "sansho-roast-half-chicken",
+              "left": 345.46875,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 52.640625
+            },
+            {
+              "id": "shaoxing-butter-prawns",
+              "left": 345.46875,
+              "top": 99.859375,
+              "width": 333.078125,
+              "height": 52.65625
+            },
+            {
+              "id": "garlic-salt-pepper-soft-shell-crab",
+              "left": 345.46875,
+              "top": 152.515625,
+              "width": 333.078125,
+              "height": 52.65625
+            },
+            {
+              "id": "black-bean-steamed-seabass",
+              "left": 345.46875,
+              "top": 205.171875,
+              "width": 333.078125,
+              "height": 52.640625
+            },
+            {
+              "id": "kung-pao-king-oyster-mushroom",
+              "left": 345.46875,
+              "top": 257.8125,
+              "width": 333.078125,
+              "height": 52.65625
+            },
+            {
+              "id": "seasonal-vegetable-tofu-pot",
+              "left": 345.46875,
+              "top": 310.46875,
+              "width": 333.078125,
+              "height": 52.65625
+            },
+            {
+              "id": "pickled-chili-fried-chicken",
+              "left": 345.46875,
+              "top": 399.953125,
+              "width": 333.078125,
+              "height": 49.828125
+            },
+            {
+              "id": "sesame-dragon-whisker-vegetable",
+              "left": 345.46875,
+              "top": 449.78125,
+              "width": 333.078125,
+              "height": 49.828125
+            },
+            {
+              "id": "seared-zucchini-miso",
+              "left": 345.46875,
+              "top": 499.609375,
+              "width": 333.078125,
+              "height": 49.828125
+            },
+            {
+              "id": "salted-egg-yolk-potato-wedges",
+              "left": 345.46875,
+              "top": 549.4375,
+              "width": 333.078125,
+              "height": 49.84375
+            },
+            {
+              "id": "osmanthus-oolong-cold-brew",
+              "left": 679.546875,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 88.765625
+            },
+            {
+              "id": "brown-sugar-lemon-soda",
+              "left": 679.546875,
+              "top": 135.984375,
+              "width": 333.078125,
+              "height": 88.78125
+            },
+            {
+              "id": "shiso-plum-tomato-iced-tea",
+              "left": 679.546875,
+              "top": 224.765625,
+              "width": 333.078125,
+              "height": 88.765625
+            },
+            {
+              "id": "sea-salt-caramel-milk-tea",
+              "left": 679.546875,
+              "top": 313.53125,
+              "width": 333.078125,
+              "height": 88.78125
+            },
+            {
+              "id": "caramel-creme-brulee",
+              "left": 679.546875,
+              "top": 439.140625,
+              "width": 333.078125,
+              "height": 80.0625
+            },
+            {
+              "id": "yuzu-soy-milk-panna-cotta",
+              "left": 679.546875,
+              "top": 519.203125,
+              "width": 333.078125,
+              "height": 80.078125
+            }
+          ]
+        },
+        "detailPlacement": {
+          "open": "true",
+          "placement": null,
+          "position": "absolute",
+          "display": "block",
+          "parentClass": "landscape-stage",
+          "selectedProductId": "miso-grilled-chicken-set",
+          "previousProductId": null,
+          "adjacentToSource": false,
+          "selectedExpanded": null,
+          "selectedCategoryId": "personal-mains",
+          "containedByCategory": false,
+          "visibleRatio": 0,
+          "siblingOverlaps": 2,
+          "sourceGap": 424.484375,
+          "containerOpen": null,
+          "containerClientHeight": null,
+          "containerScrollHeight": null,
+          "detailRect": {
+            "left": 516.390625,
+            "top": 1008.265625,
+            "width": 407.21875,
+            "height": 91.203125
+          }
+        }
+      },
+      "childOpen": {
+        "outerGeometry": {
+          "scale": "reading",
+          "detailPlacement": "inline",
+          "sheetWidth": 1024,
+          "sheetHeight": 610.671875,
+          "scrollWidth": 1024,
+          "columns": [
+            {
+              "left": 10.390625,
+              "top": 10.390625,
+              "width": 334.078125,
+              "height": 589.890625
+            },
+            {
+              "left": 344.46875,
+              "top": 10.390625,
+              "width": 334.078125,
+              "height": 589.890625
+            },
+            {
+              "left": 678.546875,
+              "top": 10.390625,
+              "width": 335.078125,
+              "height": 589.890625
+            }
+          ],
+          "categories": [
+            {
+              "id": "personal-mains",
+              "left": 11.390625,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 335.9375
+            },
+            {
+              "id": "rice-noodles",
+              "left": 11.390625,
+              "top": 347.328125,
+              "width": 333.078125,
+              "height": 251.953125
+            },
+            {
+              "id": "shared-dishes",
+              "left": 345.46875,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 352.734375
+            },
+            {
+              "id": "small-plates",
+              "left": 345.46875,
+              "top": 364.125,
+              "width": 333.078125,
+              "height": 235.15625
+            },
+            {
+              "id": "drinks",
+              "left": 679.546875,
+              "top": 11.390625,
+              "width": 333.078125,
+              "height": 391.921875
+            },
+            {
+              "id": "desserts",
+              "left": 679.546875,
+              "top": 403.3125,
+              "width": 333.078125,
+              "height": 195.96875
+            }
+          ],
+          "products": [
+            {
+              "id": "miso-grilled-chicken-set",
+              "left": 11.390625,
+              "top": 47.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "lemon-koji-salmon-set",
+              "left": 11.390625,
+              "top": 175.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "black-garlic-beef-short-rib",
+              "left": 11.390625,
+              "top": 207.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "basil-three-cup-mushroom-set",
+              "left": 11.390625,
+              "top": 239.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "sichuan-mapo-tofu-pot",
+              "left": 11.390625,
+              "top": 271.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "red-wine-braised-pork-cheek",
+              "left": 11.390625,
+              "top": 303.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "herb-pork-loin-pesto",
+              "left": 11.390625,
+              "top": 335.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "yuzu-teriyaki-tofu-steak",
+              "left": 11.390625,
+              "top": 367.21875,
+              "width": 318.078125,
+              "height": 32
+            },
+            {
+              "id": "char-siu-onsen-egg-rice",
+              "left": 11.390625,
+              "top": 383.15625,
+              "width": 333.078125,
+              "height": 36.015625
+            },
+            {
+              "id": "truffle-mushroom-risotto",
+              "left": 11.390625,
+              "top": 419.171875,
+              "width": 333.078125,
+              "height": 36.015625
+            },
+            {
+              "id": "mentaiko-shrimp-udon",
+              "left": 11.390625,
+              "top": 455.1875,
+              "width": 333.078125,
+              "height": 36.015625
+            },
+            {
+              "id": "green-peppercorn-chicken-noodles",
+              "left": 11.390625,
+              "top": 491.203125,
+              "width": 333.078125,
+              "height": 36.03125
+            },
+            {
+              "id": "tomato-beef-wide-noodles",
+              "left": 11.390625,
+              "top": 527.234375,
+              "width": 333.078125,
+              "height": 36.015625
+            },
+            {
+              "id": "plum-cold-soba",
+              "left": 11.390625,
+              "top": 563.25,
+              "width": 333.078125,
+              "height": 36.015625
+            },
+            {
+              "id": "sansho-roast-half-chicken",
+              "left": 345.46875,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 52.640625
+            },
+            {
+              "id": "shaoxing-butter-prawns",
+              "left": 345.46875,
+              "top": 99.859375,
+              "width": 333.078125,
+              "height": 52.65625
+            },
+            {
+              "id": "garlic-salt-pepper-soft-shell-crab",
+              "left": 345.46875,
+              "top": 152.515625,
+              "width": 333.078125,
+              "height": 52.65625
+            },
+            {
+              "id": "black-bean-steamed-seabass",
+              "left": 345.46875,
+              "top": 205.171875,
+              "width": 333.078125,
+              "height": 52.640625
+            },
+            {
+              "id": "kung-pao-king-oyster-mushroom",
+              "left": 345.46875,
+              "top": 257.8125,
+              "width": 333.078125,
+              "height": 52.65625
+            },
+            {
+              "id": "seasonal-vegetable-tofu-pot",
+              "left": 345.46875,
+              "top": 310.46875,
+              "width": 333.078125,
+              "height": 52.65625
+            },
+            {
+              "id": "pickled-chili-fried-chicken",
+              "left": 345.46875,
+              "top": 399.953125,
+              "width": 333.078125,
+              "height": 49.828125
+            },
+            {
+              "id": "sesame-dragon-whisker-vegetable",
+              "left": 345.46875,
+              "top": 449.78125,
+              "width": 333.078125,
+              "height": 49.828125
+            },
+            {
+              "id": "seared-zucchini-miso",
+              "left": 345.46875,
+              "top": 499.609375,
+              "width": 333.078125,
+              "height": 49.828125
+            },
+            {
+              "id": "salted-egg-yolk-potato-wedges",
+              "left": 345.46875,
+              "top": 549.4375,
+              "width": 333.078125,
+              "height": 49.84375
+            },
+            {
+              "id": "osmanthus-oolong-cold-brew",
+              "left": 679.546875,
+              "top": 47.21875,
+              "width": 333.078125,
+              "height": 88.765625
+            },
+            {
+              "id": "brown-sugar-lemon-soda",
+              "left": 679.546875,
+              "top": 135.984375,
+              "width": 333.078125,
+              "height": 88.78125
+            },
+            {
+              "id": "shiso-plum-tomato-iced-tea",
+              "left": 679.546875,
+              "top": 224.765625,
+              "width": 333.078125,
+              "height": 88.765625
+            },
+            {
+              "id": "sea-salt-caramel-milk-tea",
+              "left": 679.546875,
+              "top": 313.53125,
+              "width": 333.078125,
+              "height": 88.78125
+            },
+            {
+              "id": "caramel-creme-brulee",
+              "left": 679.546875,
+              "top": 439.140625,
+              "width": 333.078125,
+              "height": 80.0625
+            },
+            {
+              "id": "yuzu-soy-milk-panna-cotta",
+              "left": 679.546875,
+              "top": 519.203125,
+              "width": 333.078125,
+              "height": 80.078125
+            }
+          ]
+        },
+        "detailPlacement": {
+          "open": "true",
+          "placement": "inline",
+          "position": "static",
+          "display": "block",
+          "parentClass": "paper-category__products",
+          "selectedProductId": "miso-grilled-chicken-set",
+          "previousProductId": "miso-grilled-chicken-set",
+          "adjacentToSource": true,
+          "selectedExpanded": "true",
+          "selectedCategoryId": "personal-mains",
+          "containedByCategory": true,
+          "visibleRatio": 1,
+          "siblingOverlaps": 0,
+          "sourceGap": 0,
+          "containerOpen": "true",
+          "containerClientHeight": 299,
+          "containerScrollHeight": 352,
+          "detailRect": {
+            "left": 517.390625,
+            "top": 604.796875,
+            "width": 318.078125,
+            "height": 96
+          }
+        }
+      },
+      "maximumColumnDelta": 0,
+      "maximumCategoryDelta": 0,
+      "maximumProductDelta": 0,
+      "childOpenColumnDelta": 0,
+      "childOpenCategoryDelta": 0
+    }
+  },
+  "states": {
+    "firstActivation": {
+      "scale": "reading",
+      "detailOpen": "false",
+      "activeColumnIndex": 0
+    },
+    "firstOpen": {
+      "open": "true",
+      "placement": "inline",
+      "position": "static",
+      "display": "block",
+      "parentClass": "paper-category__products",
+      "selectedProductId": "miso-grilled-chicken-set",
+      "previousProductId": "miso-grilled-chicken-set",
+      "adjacentToSource": true,
+      "selectedExpanded": "true",
+      "selectedCategoryId": "personal-mains",
+      "containedByCategory": true,
+      "visibleRatio": 1,
+      "siblingOverlaps": 0,
+      "sourceGap": 0,
+      "containerOpen": "true",
+      "containerClientHeight": 306,
+      "containerScrollHeight": 352,
+      "detailRect": {
+        "left": 20.390625,
+        "top": 706.34375,
+        "width": 318.078125,
+        "height": 96
+      }
+    },
+    "movedDetail": {
+      "selectedCount": 1,
+      "expandedCount": 1,
+      "selectedProductId": "lemon-koji-salmon-set",
+      "previousProductId": "lemon-koji-salmon-set"
+    },
+    "close": {
+      "open": "false",
+      "focusReturned": true,
+      "parentClass": "landscape-stage",
+      "expandedCount": 0
+    },
+    "escapeClose": {
+      "scale": "reading",
+      "open": "false",
+      "focusReturned": true
+    },
+    "columnChange": {
+      "open": "false",
+      "activeColumnIndex": 1,
+      "parentClass": "landscape-stage"
+    },
+    "reset": {
+      "scale": "overview",
+      "scrollLeft": 0,
+      "detailOpen": "false",
+      "selectedCount": 0
+    },
+    "pointerDrag": {
+      "end": 182
+    },
+    "reducedMotion": [
+      "auto"
+    ]
+  },
+  "identity": {
+    "categoryCount": 6,
+    "productCount": 30,
+    "uniqueProductCount": 30
+  }
+}

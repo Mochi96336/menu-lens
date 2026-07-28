@@ -75,7 +75,7 @@ for (const objectCatalogContract of [
     throw new Error(`Research archive must render every exact prototype id as an independent object: ${objectCatalogContract}`);
   }
 }
-for (const distinctId of ["18", "18A", "25", "25P", "25B"]) {
+for (const distinctId of ["18", "18A", "18D", "25", "25P", "25B"]) {
   if (!registry.prototypes.some((prototype) => prototype.id === distinctId)) {
     throw new Error(`Prototype object catalog is missing the distinct id ${distinctId}.`);
   }
@@ -695,6 +695,52 @@ for (const variant of paperVariantSnapshots) {
   if (variant.phase === "18-landscape-paper"
     && !snapshot.includes('class="landscape-sheet landscape-sheet--equal-columns"')) {
     throw new Error("Landscape Paper must opt into the explicit 1:1:1 column contract.");
+  }
+  if (variant.phase === "18d-inline-detail") {
+    for (const reference of [
+      '<script src="../../spatial-drag.js"></script>',
+      'class="landscape-sheet landscape-sheet--equal-columns"',
+      'data-detail-placement="inline"',
+      'const detailHome = document.createComment("inline-detail-home")',
+      'button.after(detail)',
+      'productContainer.dataset.inlineDetailOpen = "true"',
+      'detailHome.after(detail)',
+      'button.setAttribute("aria-controls", "landscape-detail")',
+      'candidate.setAttribute("aria-expanded", String(selected))',
+    ]) {
+      if (!snapshot.includes(reference)) {
+        throw new Error(`Inline Detail must change only detail placement: ${reference}`);
+      }
+    }
+    for (const styleContract of [
+      '#landscape-detail.inline-paper-detail',
+      'position: static;',
+      'grid-row: span 3;',
+      '.paper-category__products[data-inline-detail-open="true"]',
+      'overflow-y: auto;',
+    ]) {
+      if (!variantStyles.includes(styleContract)) {
+        throw new Error(`Inline Detail must remain in the selected category flow: ${styleContract}`);
+      }
+    }
+    for (const forbiddenMechanism of [
+      "semantic-overview",
+      'data-activation="category-entry"',
+      "header.dataset.tapEntry",
+      "columnWeight:",
+      "focusFactor",
+      "tracked ?",
+      "data.collapsed",
+      "writing-mode:",
+      "category-tabs",
+    ]) {
+      if (snapshot.includes(forbiddenMechanism) || variantStyles.includes(forbiddenMechanism)) {
+        throw new Error(`Inline Detail must not accumulate another mechanism: ${forbiddenMechanism}`);
+      }
+    }
+    if (variantStyles.includes("position: absolute;")) {
+      throw new Error("Inline Detail child stylesheet must not reintroduce an overlay position.");
+    }
   }
   if (variant.phase === "22-weighted-pinch-sheet") {
     for (const reference of [
