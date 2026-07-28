@@ -20,6 +20,10 @@
   writing-mode: horizontal-tb;
 }
 
+.horizontal-price-viewport[data-scale="overview"] .vertical-category .paper-product strong {
+  letter-spacing: -.04em;
+}
+
 .horizontal-price-viewport[data-scale="reading"] .vertical-category .paper-product {
   padding-bottom: 2.35rem;
 }
