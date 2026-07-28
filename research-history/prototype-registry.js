@@ -244,7 +244,7 @@
       kind: "spatial-prototype", status: "active-variant", statusLabel: "active dimensional projection",
       path: "phases/25-menu-depth/projections.html", validationProfile: "dimension-projection",
       summary: "以價格、份量與準備時間建立同一個淺立體資料空間，讓 30 道料理隨軸向旋轉並保持身份連續。",
-      assets: { styles: ["history.css", "menu-projections.css"], scripts: ["menu-fixture.js", "menu-projections.js"] },
+      assets: { styles: ["history.css", "menu-projections.css", "menu-projection-band-labels.css"], scripts: ["menu-fixture.js", "menu-projections.js", "menu-projection-band-labels.js"] },
     },
     {
       id: "25B", slug: "menu-volume", title: "Menu Volume", family: "depth", parentId: "25",
