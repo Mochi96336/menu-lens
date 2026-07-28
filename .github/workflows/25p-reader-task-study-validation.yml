@@ -1,0 +1,44 @@
+name: Validate 25P reader task study
+
+on:
+  pull_request:
+    paths:
+      - "research-history/studies/25p-reader-task/**"
+      - "docs/research-history/25p-reader-task-study-*.md"
+      - "scripts/validate-25p-reader-task-study.mjs"
+      - ".github/workflows/25p-reader-task-study-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  validate-study:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Validate study boundary
+        run: node scripts/validate-25p-reader-task-study.mjs
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
