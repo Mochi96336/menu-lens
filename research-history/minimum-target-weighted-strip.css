@@ -1,0 +1,11 @@
+.minimum-target-strip .paper-category {
+  min-width: var(--minimum-target-width, 2.5rem);
+}
+
+.minimum-target-strip .paper-category__header {
+  min-width: 0;
+}
+
+.minimum-target-strip .paper-category[data-focused="true"] {
+  min-width: var(--minimum-target-width, 2.5rem);
+}

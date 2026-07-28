@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 12A Semantic Paper Field：保留 12 的固定 2×3 紙面與 camera，只讓資訊隨閱讀尺度增加。" />
+    <title>12A Semantic Paper Field — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../semantic-paper-field.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../semantic-paper-field.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">12A · Scale-specific information</p>
+          <h1>Semantic Paper Field</h1>
+          <p class="lede">保留 12 的同一張 2×3 紙面、分類位置與 camera。整張紙先說明分類、料理數、價位與密度；放大分類後才顯示料理名稱、價格與售完狀態；料理細節是完整閱讀層。</p>
+        </div>
+        <a class="ghost-button" href="../12-paper-menu-field/">比較 parent 12</a>
+      </header>
+
+      <p class="study-note">
+        唯一變因：不同既有 scale 顯示的資訊層級。沒有改變 category geometry、Product membership、canonical order、camera 公式或 detail overlay。
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="Semantic Paper Field 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+
+          <header class="paper-restaurant">
+            <h2 id="semantic-restaurant-name" class="restaurant-name"></h2>
+            <p id="semantic-restaurant-meta" class="restaurant-meta"></p>
+            <p id="semantic-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+
+          <div class="paper-toolbar">
+            <button id="semantic-overview" type="button" aria-pressed="true">整張</button>
+            <button id="semantic-previous" type="button" aria-label="上一個分類">←</button>
+            <button id="semantic-next" type="button" aria-label="下一個分類">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="semantic-location-title">完整紙面</strong>
+              <span id="semantic-location-meta">6 個分類 · 30 道完整料理</span>
+            </div>
+          </div>
+
+          <div id="semantic-viewport" class="paper-viewport semantic-paper-viewport" data-scale="overview" data-information-level="overview" tabindex="0" aria-label="固定二乘三菜單紙面">
+            <div id="semantic-sheet" class="paper-sheet"></div>
+            <aside id="semantic-detail" class="paper-detail semantic-detail" data-open="false" aria-live="polite" aria-label="料理閱讀細節">
+              <div class="paper-detail__inner">
+                <button id="semantic-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="semantic-detail-title"></h3>
+                <p id="semantic-detail-meta" class="paper-detail__meta"></p>
+                <p id="semantic-detail-copy" class="paper-detail__copy"></p>
+                <dl>
+                  <dt>份量</dt><dd id="semantic-detail-portion"></dd>
+                  <dt>準備時間</dt><dd id="semantic-detail-preparation"></dd>
+                  <dt>必要選項</dt><dd id="semantic-detail-configuration"></dd>
+                </dl>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">點分類放大同一張紙；放大後點料理看細節。整張按鈕回到原比例。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Mechanism notes</p>
+          <h2>同一張紙，資訊隨閱讀距離增加</h2>
+        </div>
+        <div class="timeline">
+          <article class="phase-card"><h3>Whole sheet</h3><p>分類名稱、料理數與 fixture 價位摘要保留；每道 Product 以一個密度記號留在原本分類與次序。</p></article>
+          <article class="phase-card"><h3>Near category</h3><p>同一 category 原位放大後，顯示 Product 名稱、價格與售完狀態；其他分類仍是縮小地標。</p></article>
+          <article class="phase-card"><h3>Reading</h3><p>點料理開啟原本的 detail overlay，加入 description、份量、準備時間與必要選項，不切換頁面。</p></article>
+          <article class="phase-card"><h3>不改 geometry</h3><p>2×3 grid、sheet inset、category coordinates、2.05 scale cap 與 translate + scale camera 均沿用 12。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      document.querySelector("#semantic-sheet").innerHTML = window.renderMenuLensPaperField(menu);
+    </script>
+  </body>
+</html>
