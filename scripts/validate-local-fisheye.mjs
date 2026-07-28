@@ -1,0 +1,125 @@
+import { access, readFile } from "node:fs/promises";
+import { runInNewContext } from "node:vm";
+import { loadArchiveCatalog } from "./archive/load-catalog.mjs";
+
+const root = new URL("../", import.meta.url);
+const archiveRoot = new URL("research-history/", root);
+const childPath = "phases/10a-local-fisheye/index.html";
+
+await Promise.all([
+  access(new URL(childPath, archiveRoot)),
+  access(new URL("local-fisheye.css", archiveRoot)),
+  access(new URL("local-fisheye.js", archiveRoot)),
+  access(new URL("records/10a/index.html", archiveRoot)),
+  access(new URL("review-assets/10a/README.md", archiveRoot)),
+  access(new URL("review-assets/10a/compare-320.svg", archiveRoot)),
+  access(new URL("review-assets/10a/compare-390.svg", archiveRoot)),
+  access(new URL("review-assets/10a/compare-desktop.svg", archiveRoot)),
+  access(new URL("docs/research-history/10a-local-fisheye-review.md", root)),
+]);
+
+const catalog = await loadArchiveCatalog();
+const child = catalog.objects.find((object) => object.id === "10A");
+if (!child) throw new Error("Archive v2 catalog must contain 10A Local Fisheye.");
+for (const [field, expected] of Object.entries({
+  family: "horizontal",
+  objectType: "prototype",
+  researchParentId: "10",
+  disposition: "keep-controlled",
+  evidenceState: "implementation-only",
+  entrypoint: childPath,
+  validationProfile: "fisheye-local",
+  reviewDocument: "records/10a/index.html",
+  evidencePath: "review-assets/10a/README.md",
+  sourcePr: 8,
+  sourceCommit: "576e9d3c820b8f4902edd3ebdd4351ea1e81ba3a",
+})) {
+  if (child[field] !== expected) throw new Error(`10A Archive v2 ${field} drifted.`);
+}
+const expectedStyles = ["history.css", "fisheye-ribbon.css", "local-fisheye.css"];
+const expectedScripts = ["menu-fixture.js", "fisheye-ribbon-renderer.js", "local-fisheye.js"];
+if (child.assets.styles.join("|") !== expectedStyles.join("|")
+  || child.assets.scripts.join("|") !== expectedScripts.join("|")) {
+  throw new Error("10A assets must contain only parent assets plus local-fisheye CSS/JS.");
+}
+
+const childHtml = await readFile(new URL(childPath, archiveRoot), "utf8");
+const childCss = await readFile(new URL("local-fisheye.css", archiveRoot), "utf8");
+for (const reference of [
+  '<link rel="stylesheet" href="../../fisheye-ribbon.css" />',
+  '<link rel="stylesheet" href="../../local-fisheye.css" />',
+  '<script src="../../menu-fixture.js"></script>',
+  '<script src="../../fisheye-ribbon-renderer.js"></script>',
+  '<script src="../../local-fisheye.js" defer></script>',
+]) {
+  if (!childHtml.includes(reference)) throw new Error(`10A is missing ${reference}.`);
+}
+if (childHtml.includes("選這道") || childHtml.includes("加入購物車")) throw new Error("10A must remain a menu-reading study without an order action.");
+if (childHtml.includes("local-fisheye-readout") || childCss.includes(".local-fisheye-readout")) {
+  throw new Error("10A must not add child-only phone chrome that reduces the parent stage height.");
+}
+for (const forbiddenLayoutRule of ["padding:", "border-bottom:", "font-size:", "flex:", "height:"]) {
+  if (childCss.includes(forbiddenLayoutRule)) throw new Error(`10A child CSS must not alter phone or stage layout: ${forbiddenLayoutRule}`);
+}
+
+const controllerSource = await readFile(new URL("local-fisheye.js", archiveRoot), "utf8");
+const controllerSandbox = { window: {} };
+runInNewContext(controllerSource, controllerSandbox, { filename: "research-history/local-fisheye.js" });
+const helpers = controllerSandbox.window.MenuLensLocalFisheye;
+if (!helpers || typeof helpers.computeProductLayout !== "function") throw new Error("10A must expose a pure computeProductLayout helper.");
+if (!controllerSource.includes("const focusCurrentProductSummary = () =>")
+  || !controllerSource.includes("if (summaryHadFocus) focusCurrentProductSummary();")) {
+  throw new Error("10A keyboard product navigation must keep DOM focus aligned with visual focus.");
+}
+
+const productCount = 30;
+const categoryEndIndices = [7, 13, 19, 23, 27, 29];
+const epsilon = 1e-8;
+const cumulativeBoundaries = (layout) => {
+  let position = 0;
+  const boundaries = [];
+  layout.bases.forEach((basis, index) => {
+    position += basis;
+    if (categoryEndIndices.includes(index)) boundaries.push(position);
+  });
+  return boundaries;
+};
+
+for (const focusIndex of [0, 1, 2, 15, 27, 28, 29]) {
+  const layout = helpers.computeProductLayout(productCount, focusIndex);
+  const total = layout.bases.reduce((sum, basis) => sum + basis, 0);
+  if (Math.abs(total - 100) > epsilon) throw new Error(`10A allocation must total 100%; received ${total}.`);
+  if (layout.bases.length !== productCount || layout.bases.some((basis) => !Number.isFinite(basis) || basis <= 0)) {
+    throw new Error("10A must allocate a positive finite width to all 30 products.");
+  }
+  layout.bases.forEach((basis, index) => {
+    const distance = Math.abs(index - focusIndex);
+    if (distance > helpers.LOCAL_RADIUS && Math.abs(basis - layout.farBasis) > epsilon) {
+      throw new Error(`10A far product ${index} changed width at focus ${focusIndex}.`);
+    }
+  });
+  const focusBasis = layout.bases[focusIndex];
+  const neighbourIndex = focusIndex < productCount - 1 ? focusIndex + 1 : focusIndex - 1;
+  const firstNeighbour = layout.bases[neighbourIndex] ?? 0;
+  if (focusBasis <= firstNeighbour || focusBasis < 40) throw new Error("10A focus product must retain the largest readable allocation.");
+}
+
+for (const [from, to] of [[0, 1], [1, 2], [14, 15], [28, 29]]) {
+  const first = helpers.computeProductLayout(productCount, from);
+  const second = helpers.computeProductLayout(productCount, to);
+  const firstBoundaries = cumulativeBoundaries(first);
+  const secondBoundaries = cumulativeBoundaries(second);
+  const localMin = Math.min(from, to) - helpers.LOCAL_RADIUS;
+  const localMax = Math.max(from, to) + helpers.LOCAL_RADIUS;
+  categoryEndIndices.forEach((endIndex, boundaryIndex) => {
+    if (endIndex >= localMin && endIndex <= localMax) return;
+    if (Math.abs(firstBoundaries[boundaryIndex] - secondBoundaries[boundaryIndex]) > epsilon) {
+      throw new Error(`10A moved far category boundary ${boundaryIndex} from focus ${from} to ${to}.`);
+    }
+  });
+}
+for (const bannedMechanism of ["scrollLeft", "scrollTo(", "enableMenuLensHorizontalDrag", "snap"]) {
+  if (controllerSource.includes(bannedMechanism)) throw new Error(`10A must not add a scrolling or snapping mechanism: ${bannedMechanism}`);
+}
+
+console.log("10A Archive v2 validation passed: fixed ±2 neighbourhood, stable far widths and category boundaries, keyboard focus parity and 30 Products.");

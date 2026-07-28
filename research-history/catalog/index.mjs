@@ -72,15 +72,21 @@ const CURRENT_OVERRIDES = Object.freeze({
 });
 
 const freezeArray = (value) => Object.freeze([...(value ?? [])]);
+const hasOwn = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
+const overridden = (override, key, fallback) => hasOwn(override, key) ? override[key] : fallback;
 
-const normalizeLegacyObject = (legacyObject) => {
-  const override = CURRENT_OVERRIDES[legacyObject.id] ?? {};
+const normalizeLegacyObject = (legacyObject, importedOverride = {}) => {
+  const override = {
+    ...(CURRENT_OVERRIDES[legacyObject.id] ?? {}),
+    ...importedOverride,
+  };
   const objectType = override.objectType
     ?? KIND_TO_OBJECT_TYPE[legacyObject.kind]
     ?? DEFAULT_METADATA.objectType;
   const disposition = override.disposition
     ?? STATUS_TO_DISPOSITION[legacyObject.status]
     ?? DEFAULT_METADATA.disposition;
+  const assets = overridden(override, "assets", legacyObject.assets ?? {});
 
   return Object.freeze({
     id: legacyObject.id,
@@ -94,12 +100,12 @@ const normalizeLegacyObject = (legacyObject) => {
     mechanismsFrom: freezeArray(override.mechanismsFrom ?? DEFAULT_METADATA.mechanismsFrom),
     disposition,
     evidenceState: override.evidenceState ?? DEFAULT_METADATA.evidenceState,
-    entrypoint: legacyObject.path ?? null,
-    validationProfile: legacyObject.validationProfile ?? null,
-    summary: legacyObject.summary,
+    entrypoint: overridden(override, "entrypoint", legacyObject.path ?? null),
+    validationProfile: overridden(override, "validationProfile", legacyObject.validationProfile ?? null),
+    summary: overridden(override, "summary", legacyObject.summary),
     assets: Object.freeze({
-      styles: freezeArray(legacyObject.assets?.styles),
-      scripts: freezeArray(legacyObject.assets?.scripts),
+      styles: freezeArray(assets?.styles),
+      scripts: freezeArray(assets?.scripts),
     }),
     nextGate: override.nextGate ?? DEFAULT_METADATA.nextGate,
     reviewDocument: override.reviewDocument ?? DEFAULT_METADATA.reviewDocument,
@@ -128,7 +134,7 @@ const normalizeExtension = (extension) => Object.freeze({
   legacy: extension.legacy ? Object.freeze({ ...extension.legacy }) : null,
 });
 
-export function buildArchiveCatalog(legacyRegistry, extensions = []) {
+export function buildArchiveCatalog(legacyRegistry, extensions = [], legacyOverrides = {}) {
   if (!legacyRegistry || legacyRegistry.schemaVersion !== 1) {
     throw new TypeError("Archive catalog migration requires prototype registry schemaVersion 1.");
   }
@@ -138,9 +144,17 @@ export function buildArchiveCatalog(legacyRegistry, extensions = []) {
   if (!Array.isArray(extensions)) {
     throw new TypeError("Archive catalog extensions must be an array.");
   }
+  if (!legacyOverrides || typeof legacyOverrides !== "object" || Array.isArray(legacyOverrides)) {
+    throw new TypeError("Archive legacy overrides must be an object keyed by existing object ID.");
+  }
+
+  const legacyIds = new Set(legacyRegistry.prototypes.map((object) => object.id));
+  for (const id of Object.keys(legacyOverrides)) {
+    if (!legacyIds.has(id)) throw new TypeError(`Archive legacy override references unknown object ${id}.`);
+  }
 
   const objects = [
-    ...legacyRegistry.prototypes.map(normalizeLegacyObject),
+    ...legacyRegistry.prototypes.map((object) => normalizeLegacyObject(object, legacyOverrides[object.id])),
     ...extensions.map(normalizeExtension),
   ];
 

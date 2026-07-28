@@ -1,0 +1,16 @@
+/* 08A changes only whether existing product-derived marks remain visible in compressed siblings. */
+.spread-map[data-mode="focus"] .spread-category:not([data-focused="true"]) .spread-category__marks {
+  display: flex;
+  align-items: center;
+  gap: .28rem;
+  padding: .55rem .35rem .75rem;
+}
+
+.spread-map[data-mode="focus"] .spread-category:not([data-focused="true"]) .spread-category__marks span {
+  min-width: .55rem;
+  opacity: .8;
+}
+
+.spread-map[data-mode="focus"] .spread-category[data-focused="true"] .spread-category__marks {
+  display: none;
+}

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 07 Horizontal Menu Atlas 市場基準重建。" />
+    <title>07 Horizontal Menu Atlas — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../horizontal-menu-atlas.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../horizontal-menu-atlas-renderer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">07 · Executable market baseline</p>
+          <h1>Horizontal Menu Atlas</h1>
+          <p class="lede">橫向分類導覽，分類內維持垂直料理清單。這是熟悉度基準，不是新的空間假說。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案</a>
+      </header>
+
+      <p class="study-note">
+        基準提示：先用上方分類 tab 跳到不同區段，再直接向下閱讀與展開料理。觀察它的熟悉與清楚，也觀察跨分類內容仍如何依賴垂直往返。
+      </p>
+
+      <section id="prototype" class="phone-frame" aria-label="Horizontal Menu Atlas 市場基準">
+        <div class="phone-screen atlas-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>●●● 100%</span></div>
+
+          <header class="atlas-restaurant">
+            <h2 id="atlas-restaurant-name" class="restaurant-name"></h2>
+            <p id="atlas-restaurant-copy" class="restaurant-copy"></p>
+            <p id="atlas-restaurant-meta" class="restaurant-meta"></p>
+          </header>
+
+          <div id="atlas-root" class="atlas-root"></div>
+          <p id="atlas-hint" class="atlas-hint" aria-live="polite">六個分類都保留在同一份垂直文件中。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Baseline contract</p>
+          <h2>熟悉、可讀，但不聲稱解決跨分類距離</h2>
+        </div>
+        <div class="timeline">
+          <article class="phase-card"><h3>橫向只做分類</h3><p>tab 只定位同一份文件中的六個分類，不篩選、不換頁，也不改變料理順序。</p></article>
+          <article class="phase-card"><h3>垂直只做內容</h3><p>30 道料理依 canonical order 排列；菜名、價格與 inline detail 使用一般文件閱讀模式。</p></article>
+          <article class="phase-card"><h3>基準用途</h3><p>以熟悉度、直接可讀性與低控制成本，對照 08–10 額外空間機制是否真的值得。</p></article>
+          <article class="phase-card"><h3>限制</h3><p>分類之間仍需上下往返；橫向 tab 並沒有提供整份菜單的內容全貌。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const menu = window.menuLensResearchMenu;
+        const root = document.querySelector("#atlas-root");
+        const hint = document.querySelector("#atlas-hint");
+
+        document.querySelector("#atlas-restaurant-name").textContent = menu.restaurant.name;
+        document.querySelector("#atlas-restaurant-copy").textContent = menu.restaurant.description;
+        document.querySelector("#atlas-restaurant-meta").textContent = menu.restaurant.summary;
+        root.innerHTML = window.renderMenuLensHorizontalMenuAtlas(menu);
+
+        const navigation = root.querySelector("#atlas-category-nav");
+        const scroll = root.querySelector("#atlas-scroll");
+        const buttons = [...navigation.querySelectorAll("button[data-category-id]")];
+        const sections = [...scroll.querySelectorAll(".atlas-category")];
+        const products = [...scroll.querySelectorAll(".atlas-product")];
+        let activeCategoryId = menu.categories[0].id;
+        let scrollFrame = null;
+
+        const scrollBehavior = () =>
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+        const setActiveCategory = (categoryId, revealTab = true) => {
+          activeCategoryId = categoryId;
+          buttons.forEach((button) => {
+            if (button.dataset.categoryId === categoryId) {
+              button.setAttribute("aria-current", "true");
+              if (revealTab) button.scrollIntoView({ inline: "center", block: "nearest", behavior: scrollBehavior() });
+            } else {
+              button.removeAttribute("aria-current");
+            }
+          });
+          const category = menu.categories.find((candidate) => candidate.id === categoryId);
+          hint.textContent = `${category.name} · 所有分類仍保留在同一份垂直文件中。`;
+        };
+
+        buttons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const section = sections.find((candidate) => candidate.dataset.categoryId === button.dataset.categoryId);
+            if (!section) return;
+            setActiveCategory(button.dataset.categoryId, false);
+            const scrollBounds = scroll.getBoundingClientRect();
+            const sectionBounds = section.getBoundingClientRect();
+            const targetTop = Math.max(0, scroll.scrollTop + sectionBounds.top - scrollBounds.top);
+            scroll.scrollTo({ top: targetTop, behavior: scrollBehavior() });
+          });
+        });
+
+        scroll.addEventListener("scroll", () => {
+          if (scrollFrame !== null) return;
+          scrollFrame = requestAnimationFrame(() => {
+            scrollFrame = null;
+            const scrollTop = scroll.getBoundingClientRect().top + 16;
+            let nextCategoryId = sections[0].dataset.categoryId;
+            sections.forEach((section) => {
+              if (section.getBoundingClientRect().top <= scrollTop) nextCategoryId = section.dataset.categoryId;
+            });
+            if (nextCategoryId !== activeCategoryId) setActiveCategory(nextCategoryId);
+          });
+        }, { passive: true });
+
+        products.forEach((product) => {
+          product.addEventListener("toggle", () => {
+            if (!product.open) return;
+            products.forEach((candidate) => {
+              if (candidate !== product) candidate.removeAttribute("open");
+            });
+            const productData = menu.products[Number(product.dataset.productIndex)];
+            hint.textContent = `${productData.name} · inline detail 保留在原本列表位置。`;
+          });
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key !== "Escape") return;
+          const openProduct = scroll.querySelector("details[open]");
+          if (!openProduct) return;
+          openProduct.removeAttribute("open");
+          openProduct.querySelector("summary").focus({ preventScroll: true });
+          const category = menu.categories.find((candidate) => candidate.id === activeCategoryId);
+          hint.textContent = `${category.name} · 所有分類仍保留在同一份垂直文件中。`;
+        });
+
+        setActiveCategory(activeCategoryId, false);
+      })();
+    </script>
+  </body>
+</html>
