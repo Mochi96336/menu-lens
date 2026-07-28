@@ -6,6 +6,14 @@
   font-size: .58rem;
 }
 
+.fixed-type-reading[data-scale="reading"] .vertical-category .paper-category__header > span {
+  font-size: .56rem;
+}
+
 .fixed-type-reading[data-scale="reading"] .vertical-category .paper-category__header strong {
   font-size: .82rem;
+}
+
+.fixed-type-reading[data-scale="reading"] .vertical-category .paper-category__header small {
+  font-size: .52rem;
 }
