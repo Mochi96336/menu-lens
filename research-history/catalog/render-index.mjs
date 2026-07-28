@@ -139,24 +139,29 @@ async function renderArchiveIndex() {
     dispositionFilter.addEventListener("change", applyFilters);
     applyFilters();
 
-    const response = await fetch("./originals/manifest.json");
-    if (!response.ok) throw new Error(`manifest request failed: ${response.status}`);
-    const manifest = await response.json();
-    for (const snapshot of manifest.snapshots ?? []) {
-      const article = document.createElement("article");
-      article.className = "phase-card";
-      const source = `PR #${snapshot.pullRequest} · ${String(snapshot.commit).slice(0, 7)}`;
-      article.append(
-        makeText("p", "phase-index", source),
-        makeText("h3", "", snapshot.title ?? snapshot.label ?? snapshot.slug),
-        makeText("p", "", "固定 commit 重新建置後保存的原始輸出。"),
-      );
-      const footer = document.createElement("footer");
-      const link = makeText("a", "button", "開啟原始實作");
-      link.href = `./${snapshot.path.replace(/^\/research-history\//, "")}`;
-      footer.append(link);
-      article.append(footer);
-      originalRoot.append(article);
+    try {
+      const response = await fetch("./originals/manifest.json");
+      if (!response.ok) throw new Error(`manifest request failed: ${response.status}`);
+      const manifest = await response.json();
+      for (const snapshot of manifest.snapshots ?? []) {
+        const article = document.createElement("article");
+        article.className = "phase-card";
+        const source = `PR #${snapshot.pullRequest} · ${String(snapshot.commit).slice(0, 7)}`;
+        article.append(
+          makeText("p", "phase-index", source),
+          makeText("h3", "", snapshot.title ?? snapshot.label ?? snapshot.slug),
+          makeText("p", "", "固定 commit 重新建置後保存的原始輸出。"),
+        );
+        const footer = document.createElement("footer");
+        const link = makeText("a", "button", "開啟原始實作");
+        link.href = `./${snapshot.path.replace(/^\/research-history\//, "")}`;
+        footer.append(link);
+        article.append(footer);
+        originalRoot.append(article);
+      }
+    } catch (error) {
+      originalRoot.append(makeText("p", "archive-error", `無法載入原始快照清單：${error.message}`));
+      console.error(error);
     }
   } catch (error) {
     objectRoot.append(makeText("p", "archive-error", `研究檔案目錄無法載入：${error.message}`));
