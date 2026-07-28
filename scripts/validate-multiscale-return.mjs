@@ -49,7 +49,8 @@ for (const text of [
   'class="phone-screen multiscale-screen"',
   'data-focused="false"',
   "window.createMenuLensMultiscaleController",
-  "回到全店概覽",
+  'aria-label="回到全店概覽"',
+  ">回全店</button>",
   "全店尺度",
 ]) {
   if (!html.includes(text)) throw new Error(`A-M3 page is missing ${text}.`);
@@ -80,9 +81,12 @@ for (const forbidden of ["candidate", "comparison", "cart", "orderTotal", "featu
 
 const styles = await readFile(new URL("multiscale-return.css", archive), "utf8");
 for (const text of [
+  ".phone-frame",
+  "overflow: clip",
   '.multiscale-screen[data-focused="true"] .workspace-topbar',
   "position: sticky",
-  "min-height: 2.85rem",
+  "min-height: 2.6rem",
+  "white-space: nowrap",
   "scroll-margin-top: 3.3rem",
   "@media (prefers-reduced-motion: reduce)",
 ]) {
