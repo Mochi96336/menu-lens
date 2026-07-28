@@ -42,6 +42,16 @@ This branch is stacked on the repaired A-M3 and preserves:
 
 A-M4 does not claim those mechanisms as its own change.
 
+## Narrow wording fit
+
+The full focused truth wording was 8px wider than its available label box at 320px even though the topbar and document themselves did not overflow. A-M4 therefore applies one typographic fit rule below 341px:
+
+```text
+scale label font size: .88rem → .84rem
+```
+
+The wording, button, topbar height, interaction, and category geometry remain unchanged. At 320px the focused label now measures about 188px with a 188px scroll width, so no text is clipped.
+
 ## Preserved 06 identity
 
 - one category expanded at a time;
@@ -53,28 +63,41 @@ A-M4 does not claim those mechanisms as its own change.
 - renderer and shared fixture remain unchanged;
 - no Candidate, comparison, cart, order, or transaction behavior.
 
-## Browser gate
+## Final browser result
 
-The dedicated Chromium matrix covers 320px, 390px, and 1280px across initial, focused, deep, and returned states.
+The Chromium matrix covers 320px, 390px, and 1280px across initial, focused, deep, and returned states.
 
-Required at every width:
+At every width:
 
-- exact complete-menu and focused truth wording;
-- one expanded category and five collapsed categories;
-- all 30 Product nodes retained, including collapsed siblings;
-- focused and deep topbar at viewport `top=0`;
-- reset action physically visible;
-- topbar height at most 48px;
-- source-position error at most 1px;
-- focus return and detail clearing;
+- overview label is exactly `完整菜單 · 6 分類 30 道`;
+- focused and deep label is exactly `閱讀 分享料理 · 其餘料理未篩除`;
+- one category is expanded and five remain collapsed;
+- all 30 Product nodes remain present, including 24 Products under collapsed siblings;
+- focused and deep topbar viewport top is `0px`;
+- focused and deep topbar height is about `46.95px`;
+- reset action is physically visible;
+- source-position error after reset is `0px`;
+- focus returns and open detail clears;
 - no document, frame, screen, topbar, label, or reset horizontal overflow;
 - no page errors.
 
-Machine-readable evidence is written to `browser-checks.json`; screenshots are uploaded by the dedicated workflow.
+Initial and returned topbar height is about `42.77px`. The final report contains no failures.
+
+Machine-readable evidence is in `browser-checks.json`; viewport screenshots are uploaded by the dedicated workflow.
+
+## Actual judgment
+
+```text
+Implementation result: PASS after inherited sticky repair and narrow label fit
+Mechanism result: KEEP as a prerequisite correction
+Participant result: not collected
+```
+
+A-M4 makes the existing state truthful without adding another explanation surface or changing the collapse model. It is technically suitable for direct trust evaluation together with repaired A-M3.
+
+This does not establish that unfamiliar readers believe the collapsed categories still contain the complete menu. That remains the external evidence gate.
 
 ## Decision boundary
-
-KEEP only if the truth wording remains compact and physically reachable at every viewport without becoming a second explanation surface.
 
 If unfamiliar readers still interpret focus as filtering after this exact wording is visible, stop the 06 line before 06A Product-bearing Landmarks rather than adding more reassurance copy.
 
