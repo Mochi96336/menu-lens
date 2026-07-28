@@ -1,5 +1,5 @@
 .minimum-target-strip .paper-category {
-  min-width: 2.5rem;
+  min-width: var(--minimum-target-width, 2.5rem);
 }
 
 .minimum-target-strip .paper-category__header {
@@ -7,5 +7,5 @@
 }
 
 .minimum-target-strip .paper-category[data-focused="true"] {
-  min-width: 2.5rem;
+  min-width: var(--minimum-target-width, 2.5rem);
 }
