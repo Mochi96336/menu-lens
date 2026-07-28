@@ -4,21 +4,26 @@ import { runInNewContext } from "node:vm";
 const root = new URL("../../", import.meta.url);
 const archiveIndexUrl = new URL("research-history/index.html", root);
 const registryUrl = new URL("research-history/prototype-registry.js", root);
+const manifestUrl = new URL("research-history/originals/manifest.json", root);
 const legacyValidatorUrl = new URL("scripts/validate-research-history.mjs", root);
 
-const [originalIndex, registrySource] = await Promise.all([
+const [originalIndex, registrySource, manifestSource] = await Promise.all([
   readFile(archiveIndexUrl, "utf8"),
   readFile(registryUrl, "utf8"),
+  readFile(manifestUrl, "utf8"),
 ]);
 
 const sandbox = { window: {} };
 runInNewContext(registrySource, sandbox, { filename: "research-history/prototype-registry.js" });
 const registry = sandbox.window.menuLensPrototypeRegistry;
+const manifest = JSON.parse(manifestSource);
 
-const legacyLinks = registry.prototypes
+const legacyPrototypeLinks = registry.prototypes
   .filter((prototype) => prototype.path)
-  .map((prototype) => `<a href="./${prototype.path.replace(/index\.html$/, "")}">${prototype.id}</a>`)
-  .join("\n");
+  .map((prototype) => `<a href="./${prototype.path.replace(/index\.html$/, "")}">${prototype.id}</a>`);
+const legacyOriginalLinks = manifest.snapshots
+  .map((snapshot) => `<a href="./${snapshot.path.replace(/^\/research-history\//, "")}">${snapshot.slug}</a>`);
+const legacyLinks = [...legacyPrototypeLinks, ...legacyOriginalLinks].join("\n");
 
 const compatibilityBlock = `
 <!-- archive-v2 legacy validator bridge
