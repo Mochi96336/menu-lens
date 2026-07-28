@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "npm run build && node scripts/serve.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "node scripts/clean.mjs && tsc && node dist/src/domain/menu-validation.test.js && node dist/src/customer/menu-reading.test.js && node scripts/validate-research-history.mjs && node scripts/validate-menu-depth.mjs",
-    "build": "node scripts/clean.mjs && tsc && node scripts/validate-research-history.mjs && node scripts/validate-menu-depth.mjs && node scripts/build-static.mjs"
+    "test": "node scripts/clean.mjs && tsc && node dist/src/domain/menu-validation.test.js && node dist/src/customer/menu-reading.test.js && node scripts/archive/run-archive-validators.mjs && node scripts/validate-menu-depth.mjs",
+    "build": "node scripts/clean.mjs && tsc && node scripts/archive/run-archive-validators.mjs && node scripts/validate-menu-depth.mjs && node scripts/build-static.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
