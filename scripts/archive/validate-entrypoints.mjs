@@ -11,6 +11,7 @@ const requiredPaths = new Set([
   "catalog/index.mjs",
   "catalog/extensions.mjs",
   "catalog/landscape-ablations.mjs",
+  "catalog/closure-intakes.mjs",
   "catalog/all-extensions.mjs",
   "catalog/render-index.mjs",
   "originals/manifest.json",

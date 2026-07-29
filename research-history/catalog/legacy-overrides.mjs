@@ -1,4 +1,20 @@
 export const archiveLegacyOverrides = Object.freeze({
+  "06": Object.freeze({
+    disposition: "provisional",
+    evidenceState: "browser-verified",
+    entrypoint: "phases/06-multiscale-menu-map/index.html",
+    validationProfile: "multiscale",
+    summary: "一次展開一個分類，其餘分類保留為壓縮地標；Archive v2 snapshot 已納入 A-M3 return continuity 與 A-M4 retained-menu truth wording。",
+    assets: Object.freeze({
+      styles: Object.freeze(["history.css", "multiscale-return.css"]),
+      scripts: Object.freeze(["menu-fixture.js", "multiscale-menu-renderer.js", "multiscale-menu-controller.js"]),
+    }),
+    nextGate: "Run direct unfamiliar-reader trust evaluation; stop the 06 line if category focus is still interpreted as filtering.",
+    reviewDocument: null,
+    evidencePath: "review-assets/06-retained-menu-truth/browser-checks.json",
+    sourcePr: null,
+    sourceCommit: null,
+  }),
   "07": Object.freeze({
     disposition: "reference",
     evidenceState: "implementation-only",
