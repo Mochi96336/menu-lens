@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 22G Collapse-only Focus：從 18 重建，只把 focused category 的同欄配對分類收成標頭，不改欄寬、字級、padding 或 camera。" />
+    <title>22G Collapse-only Focus — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../landscape-paper.css" />
+    <link rel="stylesheet" href="../../collapse-only-focus.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../paper-landscape-core.js"></script>
+    <script src="../../spatial-drag.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">22G · 18 + paired-category collapse only</p>
+          <h1>Collapse-only Focus</h1>
+          <p class="lede">從 18 的乾淨 landscape substrate 重建。選中分類後，只把同紙欄的配對分類縮成 2.2rem 標頭；紙欄寬度、料理字級、padding、line-height 與 camera 都不改。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">這是 23 式空間讓渡機制的獨立 sibling，不是 current 22 的成分。收合只在 focus 期間成立；配對分類仍保留可點擊標頭並可立即反轉焦點。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="22G Collapse-only Focus 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="collapse-only-restaurant-name" class="restaurant-name"></h2>
+            <p id="collapse-only-restaurant-meta" class="restaurant-meta"></p>
+            <p id="collapse-only-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="collapse-only-reset" type="button" aria-pressed="true">完整紙面</button>
+            <button id="collapse-only-previous" type="button" aria-label="上一個紙欄">←</button>
+            <button id="collapse-only-next" type="button" aria-label="下一個紙欄">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="collapse-only-location-title">18 完整紙面</strong>
+              <span id="collapse-only-location-meta">六分類完整 · 配對內容可見</span>
+            </div>
+          </div>
+
+          <div class="landscape-stage collapse-only-stage">
+            <div id="collapse-only-viewport" class="landscape-viewport collapse-only-viewport" tabindex="0" aria-label="只收合同欄配對分類的 18 橫向紙面">
+              <div id="collapse-only-sheet" class="landscape-sheet landscape-sheet--equal-columns collapse-only-sheet"></div>
+            </div>
+            <aside id="collapse-only-detail" class="paper-detail" data-open="false" aria-hidden="true" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="collapse-only-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="collapse-only-detail-title"></h3>
+                <p id="collapse-only-detail-meta" class="paper-detail__meta"></p>
+                <p id="collapse-only-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">點分類只收合同欄配對內容；再點同分類回完整紙面，點收合標頭則交換焦點。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Controlled comparison</p><h2>只測 paired-category collapse</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>Control parent：18</h3><p>固定 46rem、1:1:1 外欄、8:6／6:4／4:2 rows，六分類與 30 道料理同時存在。</p></article>
+          <article class="phase-card"><h3>唯一變因</h3><p>Focused category 的同欄鄰居縮成 2.2rem 標頭；焦點分類取得該欄其餘高度。</p></article>
+          <article class="phase-card"><h3>刻意沒有加入</h3><p>沒有 row factor、column expansion、camera tracking、字級／padding 增加或 shared runtime 修改。</p></article>
+          <article class="phase-card"><h3>停止條件</h3><p>若暫時隱藏配對料理破壞 overview 與比較價值，結論應是 paired-category collapse alone is too destructive。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const core = window.MenuLensLandscapeCore;
+      const viewport = document.querySelector("#collapse-only-viewport");
+      const sheet = document.querySelector("#collapse-only-sheet");
+      const resetButton = document.querySelector("#collapse-only-reset");
+      const previousButton = document.querySelector("#collapse-only-previous");
+      const nextButton = document.querySelector("#collapse-only-next");
+      const locationTitle = document.querySelector("#collapse-only-location-title");
+      const locationMeta = document.querySelector("#collapse-only-location-meta");
+
+      core.hydrateRestaurant({
+        menu,
+        name: document.querySelector("#collapse-only-restaurant-name"),
+        meta: document.querySelector("#collapse-only-restaurant-meta"),
+        copy: document.querySelector("#collapse-only-restaurant-copy"),
+      });
+
+      const { categories, categoryCounts, columns, productButtons } = core.buildLandscape({
+        menu,
+        sheet,
+        columnClass: "landscape-column collapse-only-column",
+        columnWeight: () => 1,
+      });
+
+      const detail = core.createDishDetail({
+        menu,
+        detail: document.querySelector("#collapse-only-detail"),
+        closeButton: document.querySelector("#collapse-only-detail-close"),
+        title: document.querySelector("#collapse-only-detail-title"),
+        meta: document.querySelector("#collapse-only-detail-meta"),
+        copy: document.querySelector("#collapse-only-detail-copy"),
+        productButtons,
+      });
+
+      let activeCategoryIndex = null;
+      let activeColumnIndex = 0;
+      let scrollFrame = null;
+
+      const updateState = () => {
+        const atOverview = activeCategoryIndex === null;
+        resetButton.setAttribute("aria-pressed", String(atOverview));
+        previousButton.disabled = activeColumnIndex === 0;
+        nextButton.disabled = activeColumnIndex === columns.length - 1;
+
+        columns.forEach((column, columnIndex) => {
+          const firstIndex = columnIndex * 2;
+          const activeLocalIndex = atOverview ? -1 : activeCategoryIndex - firstIndex;
+          const focusedHere = activeLocalIndex === 0 || activeLocalIndex === 1;
+          column.dataset.collapseFocus = focusedHere ? (activeLocalIndex === 0 ? "first" : "second") : "none";
+
+          [...column.querySelectorAll(".paper-category")].forEach((category, localIndex) => {
+            const categoryIndex = firstIndex + localIndex;
+            const focused = categoryIndex === activeCategoryIndex;
+            const collapsed = focusedHere && !focused;
+            category.dataset.collapsed = String(collapsed);
+            if (focused) category.dataset.focused = "true";
+            else delete category.dataset.focused;
+            const header = category.querySelector(".paper-category__header");
+            header.setAttribute("aria-expanded", String(!collapsed));
+            header.setAttribute("aria-pressed", String(focused));
+            header.setAttribute(
+              "aria-label",
+              `${menu.categories[categoryIndex].name}，${focused ? "恢復完整紙面" : collapsed ? "交換為這個分類" : "收合同欄配對分類"}`,
+            );
+          });
+        });
+
+        if (atOverview) {
+          locationTitle.textContent = "18 完整紙面";
+          locationMeta.textContent = "六分類完整 · 配對內容可見";
+          return;
+        }
+
+        const pairStart = Math.floor(activeCategoryIndex / 2) * 2;
+        const pairIndex = pairStart + (activeCategoryIndex === pairStart ? 1 : 0);
+        locationTitle.textContent = menu.categories[activeCategoryIndex].name;
+        locationMeta.textContent = `${categoryCounts[activeCategoryIndex]} 道 · ${menu.categories[pairIndex].name} 收成標頭`;
+      };
+
+      const showOverview = () => {
+        activeCategoryIndex = null;
+        updateState();
+        detail.close();
+      };
+
+      const focusCategory = (categoryIndex) => {
+        activeCategoryIndex = Math.max(0, Math.min(categories.length - 1, categoryIndex));
+        updateState();
+        detail.close();
+      };
+
+      const nearestColumnIndex = () => {
+        const viewportBounds = viewport.getBoundingClientRect();
+        const center = viewportBounds.left + viewportBounds.width / 2;
+        let nearestIndex = activeColumnIndex;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+        columns.forEach((column, index) => {
+          const bounds = column.getBoundingClientRect();
+          const distance = Math.abs(bounds.left + bounds.width / 2 - center);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+        return nearestIndex;
+      };
+
+      const snapToColumn = (columnIndex) => {
+        activeColumnIndex = Math.max(0, Math.min(columns.length - 1, columnIndex));
+        const column = columns[activeColumnIndex];
+        const targetLeft = column.offsetLeft + column.offsetWidth / 2 - viewport.clientWidth / 2;
+        viewport.scrollTo({
+          left: Math.max(0, targetLeft),
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        });
+        updateState();
+      };
+
+      categories.forEach((category, categoryIndex) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          if (activeCategoryIndex === categoryIndex) showOverview();
+          else focusCategory(categoryIndex);
+        });
+      });
+
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+          if (categoryIndex !== activeCategoryIndex) {
+            focusCategory(categoryIndex);
+            return;
+          }
+          detail.open(button);
+        });
+      });
+
+      resetButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => {
+        detail.close();
+        snapToColumn(activeColumnIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        detail.close();
+        snapToColumn(activeColumnIndex + 1);
+      });
+      viewport.addEventListener("scroll", () => {
+        if (scrollFrame !== null) return;
+        scrollFrame = requestAnimationFrame(() => {
+          scrollFrame = null;
+          activeColumnIndex = nearestColumnIndex();
+          updateState();
+        });
+      }, { passive: true });
+      viewport.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        detail.close();
+        snapToColumn(activeColumnIndex + (event.key === "ArrowLeft" ? -1 : 1));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.isOpen()) detail.close(true);
+        else if (activeCategoryIndex !== null) showOverview();
+      });
+
+      window.enableMenuLensHorizontalDrag(viewport, {
+        enabled: () => !detail.isOpen(),
+        onSettle: () => snapToColumn(nearestColumnIndex()),
+      });
+
+      showOverview();
+    </script>
+  </body>
+</html>

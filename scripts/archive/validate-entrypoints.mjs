@@ -10,6 +10,8 @@ const requiredPaths = new Set([
   "prototype-registry.js",
   "catalog/index.mjs",
   "catalog/extensions.mjs",
+  "catalog/landscape-ablations.mjs",
+  "catalog/all-extensions.mjs",
   "catalog/render-index.mjs",
   "originals/manifest.json",
 ]);
@@ -46,8 +48,8 @@ for (const contract of [
 }
 
 for (const source of [renderer, loader]) {
-  if (!source.includes("archiveExtensions")) {
-    throw new Error("Browser renderer and Node loader must both consume catalog/extensions.mjs.");
+  if (!source.includes("archiveExtensions") || !source.includes("all-extensions.mjs")) {
+    throw new Error("Browser renderer and Node loader must both consume catalog/all-extensions.mjs.");
   }
 }
 

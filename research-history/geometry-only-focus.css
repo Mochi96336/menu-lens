@@ -1,0 +1,53 @@
+.geometry-only-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Flex resizing must not make the browser move the camera implicitly. */
+  scroll-snap-type: none;
+  scrollbar-width: none;
+}
+
+.geometry-only-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.geometry-only-sheet {
+  width: 46rem;
+  min-width: 46rem;
+}
+
+.geometry-only-sheet > .geometry-only-column {
+  flex: var(--column-count) 1 0;
+  transition:
+    flex-grow 220ms cubic-bezier(.2, .75, .25, 1),
+    grid-template-rows 220ms cubic-bezier(.2, .75, .25, 1);
+}
+
+/* Preserve 18's initial typography, padding, and Product presentation exactly. */
+.geometry-only-viewport .paper-category__header {
+  gap: .35rem;
+  padding: .42rem .5rem;
+}
+
+.geometry-only-viewport .paper-category__header > span { font-size: .52rem; }
+.geometry-only-viewport .paper-category__header strong { font-size: .84rem; }
+.geometry-only-viewport .paper-category__header small { font-size: .5rem; }
+
+.geometry-only-viewport .paper-product {
+  gap: .35rem;
+  padding-inline: .5rem;
+  font-size: .64rem;
+  line-height: 1.2;
+}
+
+.geometry-only-viewport .paper-product strong { font-size: .58rem; }
+
+.geometry-only-stage .paper-detail {
+  right: .65rem;
+  left: .65rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .geometry-only-sheet > .geometry-only-column {
+    transition: none;
+  }
+}

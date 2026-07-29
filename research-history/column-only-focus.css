@@ -1,0 +1,52 @@
+.column-only-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Native snap re-centers flex items when their widths change. 22B keeps the
+     camera fixed during focus/reset and settles only after explicit navigation. */
+  scroll-snap-type: none;
+  scrollbar-width: none;
+}
+
+.column-only-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.column-only-sheet {
+  width: 46rem;
+  min-width: 46rem;
+}
+
+.column-only-sheet > .column-only-column {
+  flex: var(--column-count) 1 0;
+  transition: flex-grow 220ms cubic-bezier(.2, .75, .25, 1);
+}
+
+/* Preserve 18's initial typography, padding, and row presentation exactly. */
+.column-only-viewport .paper-category__header {
+  gap: .35rem;
+  padding: .42rem .5rem;
+}
+
+.column-only-viewport .paper-category__header > span { font-size: .52rem; }
+.column-only-viewport .paper-category__header strong { font-size: .84rem; }
+.column-only-viewport .paper-category__header small { font-size: .5rem; }
+
+.column-only-viewport .paper-product {
+  gap: .35rem;
+  padding-inline: .5rem;
+  font-size: .64rem;
+  line-height: 1.2;
+}
+
+.column-only-viewport .paper-product strong { font-size: .58rem; }
+
+.column-only-stage .paper-detail {
+  right: .65rem;
+  left: .65rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .column-only-sheet > .column-only-column {
+    transition: none;
+  }
+}

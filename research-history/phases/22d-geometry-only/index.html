@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 22D Geometry-only Focus：從 18 重建，只合併 22A 的 1.8× row weighting 與 22B 的 1.65× column weighting。" />
+    <title>22D Geometry-only Focus — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../landscape-paper.css" />
+    <link rel="stylesheet" href="../../geometry-only-focus.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../paper-landscape-core.js"></script>
+    <script src="../../spatial-drag.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">22D · 18 + row and column geometry</p>
+          <h1>Geometry-only Focus</h1>
+          <p class="lede">從 18 的乾淨 landscape substrate 重建。選中分類同時取得 1.8× row weight，所在紙欄由 1 展為 1.65；camera、字級、padding 與 paired content 都不改。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">22A 與 22B 已各自完成比較後，22D 才測試兩個幾何變因的組合。Focus 與 reset 保留目前水平位置；camera 只由使用者明示導航。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="22D Geometry-only Focus 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="geometry-only-restaurant-name" class="restaurant-name"></h2>
+            <p id="geometry-only-restaurant-meta" class="restaurant-meta"></p>
+            <p id="geometry-only-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="geometry-only-reset" type="button" aria-pressed="true">原比例</button>
+            <button id="geometry-only-previous" type="button" aria-label="上一個紙欄">←</button>
+            <button id="geometry-only-next" type="button" aria-label="下一個紙欄">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="geometry-only-location-title">18 原比例</strong>
+              <span id="geometry-only-location-meta">欄寬 1:1:1 · 列高 8:6／6:4／4:2</span>
+            </div>
+          </div>
+
+          <div class="landscape-stage geometry-only-stage">
+            <div id="geometry-only-viewport" class="landscape-viewport geometry-only-viewport" tabindex="0" aria-label="只合併 row 與 column geometry 的 18 橫向紙面">
+              <div id="geometry-only-sheet" class="landscape-sheet geometry-only-sheet"></div>
+            </div>
+            <aside id="geometry-only-detail" class="paper-detail" data-open="false" aria-hidden="true" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="geometry-only-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="geometry-only-detail-title"></h3>
+                <p id="geometry-only-detail-meta" class="paper-detail__meta"></p>
+                <p id="geometry-only-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">點分類只改變 row 與 column geometry；camera 不會跟著 focus 或 reset 自動移動。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Controlled combination</p><h2>只合併兩個已分別成立的幾何變因</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>Control parent：18</h3><p>固定 46rem 紙面、1:1:1 外欄、8:6／6:4／4:2 基礎列高，以及相同 drag、detail、typography 與 padding。</p></article>
+          <article class="phase-card"><h3>22A transfer</h3><p>焦點分類的原始料理數權重乘以 1.8，再與 paired category 重新分配同欄高度。</p></article>
+          <article class="phase-card"><h3>22B transfer</h3><p>焦點分類所在紙欄的 flex weight 從 1 改為 1.65；同欄兩分類完整保留。</p></article>
+          <article class="phase-card"><h3>刻意排除</h3><p>沒有 camera tracking、focused typography、focused padding、paired-category collapse 或 shared drag 修改。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const core = window.MenuLensLandscapeCore;
+      const viewport = document.querySelector("#geometry-only-viewport");
+      const sheet = document.querySelector("#geometry-only-sheet");
+      const resetButton = document.querySelector("#geometry-only-reset");
+      const previousButton = document.querySelector("#geometry-only-previous");
+      const nextButton = document.querySelector("#geometry-only-next");
+      const locationTitle = document.querySelector("#geometry-only-location-title");
+      const locationMeta = document.querySelector("#geometry-only-location-meta");
+
+      core.hydrateRestaurant({
+        menu,
+        name: document.querySelector("#geometry-only-restaurant-name"),
+        meta: document.querySelector("#geometry-only-restaurant-meta"),
+        copy: document.querySelector("#geometry-only-restaurant-copy"),
+      });
+
+      // core.buildLandscape projects the fixture through window.renderMenuLensPaperField(menu).
+      const { categories, categoryCounts, columns, productButtons } = core.buildLandscape({
+        menu,
+        sheet,
+        columnClass: "landscape-column geometry-only-column",
+        columnWeight: () => 1,
+      });
+
+      const detail = core.createDishDetail({
+        menu,
+        detail: document.querySelector("#geometry-only-detail"),
+        closeButton: document.querySelector("#geometry-only-detail-close"),
+        title: document.querySelector("#geometry-only-detail-title"),
+        meta: document.querySelector("#geometry-only-detail-meta"),
+        copy: document.querySelector("#geometry-only-detail-copy"),
+        productButtons,
+      });
+
+      categories.forEach((category, categoryIndex) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+        header.setAttribute("aria-label", `${menu.categories[categoryIndex].name}，聚焦這個分類`);
+      });
+
+      const focusRowWeight = 1.8;
+      const focusColumnWeight = 1.65;
+      let activeCategoryIndex = null;
+      let activeColumnIndex = 0;
+      let scrollFrame = null;
+
+      const applyGeometry = () => {
+        columns.forEach((column, columnIndex) => {
+          const firstIndex = columnIndex * 2;
+          const focusedColumn = activeCategoryIndex !== null && Math.floor(activeCategoryIndex / 2) === columnIndex;
+          const firstWeight = categoryCounts[firstIndex] * (activeCategoryIndex === firstIndex ? focusRowWeight : 1);
+          const secondWeight = categoryCounts[firstIndex + 1] * (activeCategoryIndex === firstIndex + 1 ? focusRowWeight : 1);
+          column.style.setProperty("--column-count", focusedColumn ? String(focusColumnWeight) : "1");
+          column.style.setProperty("--column-rows", `${firstWeight}fr ${secondWeight}fr`);
+        });
+      };
+
+      const updateState = () => {
+        const atOverview = activeCategoryIndex === null;
+        resetButton.setAttribute("aria-pressed", String(atOverview));
+        previousButton.disabled = activeColumnIndex === 0;
+        nextButton.disabled = activeColumnIndex === columns.length - 1;
+
+        categories.forEach((category, index) => {
+          const focused = index === activeCategoryIndex;
+          if (focused) category.dataset.focused = "true";
+          else delete category.dataset.focused;
+          const header = category.querySelector(".paper-category__header");
+          header.setAttribute("aria-pressed", String(focused));
+          header.setAttribute(
+            "aria-label",
+            `${menu.categories[index].name}，${focused ? "恢復原比例" : "聚焦這個分類"}`,
+          );
+        });
+
+        if (atOverview) {
+          locationTitle.textContent = "18 原比例";
+          locationMeta.textContent = "欄寬 1:1:1 · 列高 8:6／6:4／4:2";
+          return;
+        }
+
+        const pairStart = Math.floor(activeCategoryIndex / 2) * 2;
+        const pairedIndex = pairStart + (activeCategoryIndex === pairStart ? 1 : 0);
+        const focusedWeight = categoryCounts[activeCategoryIndex] * focusRowWeight;
+        const pairWeight = focusedWeight + categoryCounts[pairedIndex];
+        locationTitle.textContent = menu.categories[activeCategoryIndex].name;
+        locationMeta.textContent = `${categoryCounts[activeCategoryIndex]} 道 · 欄寬 1.65 份 · 同欄高度約 ${Math.round(focusedWeight / pairWeight * 100)}%`;
+      };
+
+      const showOverview = () => {
+        activeCategoryIndex = null;
+        applyGeometry();
+        updateState();
+        detail.close();
+      };
+
+      const focusCategory = (categoryIndex) => {
+        activeCategoryIndex = Math.max(0, Math.min(categories.length - 1, categoryIndex));
+        applyGeometry();
+        updateState();
+        detail.close();
+      };
+
+      const nearestColumnIndex = () => {
+        const viewportBounds = viewport.getBoundingClientRect();
+        const center = viewportBounds.left + viewportBounds.width / 2;
+        let nearestIndex = activeColumnIndex;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+        columns.forEach((column, index) => {
+          const bounds = column.getBoundingClientRect();
+          const distance = Math.abs(bounds.left + bounds.width / 2 - center);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+        return nearestIndex;
+      };
+
+      const snapToColumn = (columnIndex) => {
+        activeColumnIndex = Math.max(0, Math.min(columns.length - 1, columnIndex));
+        const column = columns[activeColumnIndex];
+        const targetLeft = column.offsetLeft + column.offsetWidth / 2 - viewport.clientWidth / 2;
+        viewport.scrollTo({
+          left: Math.max(0, targetLeft),
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        });
+        updateState();
+      };
+
+      categories.forEach((category, categoryIndex) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          if (activeCategoryIndex === categoryIndex) showOverview();
+          else focusCategory(categoryIndex);
+        });
+      });
+
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+          if (categoryIndex !== activeCategoryIndex) {
+            focusCategory(categoryIndex);
+            return;
+          }
+          detail.open(button);
+        });
+      });
+
+      resetButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => {
+        detail.close();
+        snapToColumn(activeColumnIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        detail.close();
+        snapToColumn(activeColumnIndex + 1);
+      });
+      viewport.addEventListener("scroll", () => {
+        if (scrollFrame !== null) return;
+        scrollFrame = requestAnimationFrame(() => {
+          scrollFrame = null;
+          activeColumnIndex = nearestColumnIndex();
+          updateState();
+        });
+      }, { passive: true });
+      viewport.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        detail.close();
+        snapToColumn(activeColumnIndex + (event.key === "ArrowLeft" ? -1 : 1));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.isOpen()) detail.close(true);
+        else if (activeCategoryIndex !== null) showOverview();
+      });
+
+      window.enableMenuLensHorizontalDrag(viewport, {
+        enabled: () => !detail.isOpen(),
+        onSettle: () => snapToColumn(nearestColumnIndex()),
+      });
+
+      showOverview();
+    </script>
+  </body>
+</html>

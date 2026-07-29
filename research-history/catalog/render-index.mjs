@@ -1,5 +1,5 @@
 import { buildArchiveCatalog } from "./index.mjs";
-import { archiveExtensions } from "./extensions.mjs";
+import { archiveExtensions } from "./all-extensions.mjs";
 import { archiveLegacyOverrides } from "./legacy-overrides.mjs";
 
 const makeText = (tag, className, text) => {
