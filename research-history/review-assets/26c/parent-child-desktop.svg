@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2640" height="610" viewBox="0 0 2640 610">
+<style>
+  text{font-family:system-ui,sans-serif;fill:#2f2922} .title{font-size:18px;font-weight:700}
+  .phone{fill:#f2ede4;stroke:#544a40;stroke-width:2} .header,.readout{fill:#e6ded2;stroke:#8e8174}
+  .volume{fill:#f9f6ef;stroke:#8b6f62;stroke-width:2} .axis{stroke:#b7aa9d;stroke-width:1}
+  .landmark{fill:#efe1dc;stroke:#95543d} .range{stroke:#544a40;stroke-width:3} .thumb{fill:#95543d}
+  .small{font-size:11px} .note{font-size:12px;fill:#6a6056}
+</style>
+<text x="1320.0" y="600" text-anchor="middle" class="note">Deterministic comparison capture · desktop · not a deployed-page screenshot</text>
+<g transform="translate(24,0)">
+          <text x="642.0" y="30" text-anchor="middle" class="title">Parent 26A</text>
+          <rect x="512.0" y="48" width="260" height="500" rx="18" class="phone"/>
+          <rect x="524.0" y="66" width="236" height="46" class="header"/>
+          <ellipse cx="642.0" cy="285" rx="86" ry="116" class="volume"/>
+          <line x1="572.0" y1="210" x2="712.0" y2="360" class="axis"/>
+          <line x1="712.0" y1="210" x2="572.0" y2="360" class="axis"/>
+          <rect x="536.0" y="128" width="212" height="42" class="landmark"/>
+          <rect x="536.0" y="178" width="212" height="42" class="landmark"/>
+          <rect x="530.0" y="442" width="224" height="74" class="readout"/><text x="642.0" y="577" text-anchor="middle" class="note">同一 orientation、anchors、30 Product geometry</text>
+        </g>
+<g transform="translate(1332,0)">
+          <text x="642.0" y="30" text-anchor="middle" class="title">Child 26C</text>
+          <rect x="512.0" y="48" width="260" height="500" rx="18" class="phone"/>
+          <rect x="524.0" y="66" width="236" height="46" class="header"/>
+          <ellipse cx="642.0" cy="285" rx="86" ry="116" class="volume"/>
+          <line x1="572.0" y1="210" x2="712.0" y2="360" class="axis"/>
+          <line x1="712.0" y1="210" x2="572.0" y2="360" class="axis"/>
+          <rect x="536.0" y="128" width="212" height="42" class="landmark"/>
+          <rect x="536.0" y="178" width="212" height="42" class="landmark"/>
+          <rect x="530.0" y="442" width="224" height="74" class="readout"/><text x="542.0" y="486" class="small">排版深度</text>
+          <line x1="600.0" y1="482" x2="722.0" y2="482" class="range"/>
+          <circle cx="667.0" cy="482" r="7" class="thumb"/><text x="642.0" y="577" text-anchor="middle" class="note">同一 orientation、anchors、30 Product geometry</text>
+        </g>
+</svg>

@@ -1,0 +1,61 @@
+{
+  "harness": "inline bounded Chromium controller smoke; not full repository CSS",
+  "initial": {
+    "categories": 6,
+    "products": 30,
+    "range": 0.58,
+    "transform": "translate(-50%, -50%) translate3d(-75.5px, -68.5px, -64.96px) rotateX(-2.436deg) rotateY(-3.596deg)",
+    "orientation": "translate3d(-50%, -50%, -38px) rotateX(0deg) rotateY(0deg)",
+    "landmarks": "false"
+  },
+  "rangeKeyboard": {
+    "orientationSame": true
+  },
+  "flat": {
+    "value": 0.02,
+    "text": "接近平面 · 2%",
+    "transform": "translate(-50%, -50%) translate3d(-75.5px, -68.5px, -2.24px) rotateX(-0.084deg) rotateY(-0.124deg)",
+    "orientationSame": true
+  },
+  "deep": {
+    "value": 1,
+    "text": "深層 · 100%",
+    "transform": "translate(-50%, -50%) translate3d(-75.5px, -68.5px, -112px) rotateX(-4.2deg) rotateY(-6.2deg)"
+  },
+  "intermediate": {
+    "visible": "true",
+    "origin": "0",
+    "target": "4",
+    "range": 1
+  },
+  "reset": {
+    "range": 0.58,
+    "orientation": "translate3d(-50%, -50%, -38px) rotateX(0deg) rotateY(0deg)",
+    "landmarks": "false"
+  },
+  "detail": {
+    "opened": "true",
+    "closed": "false"
+  },
+  "viewports": [
+    {
+      "viewport": "320x720",
+      "width": 320,
+      "client": 320,
+      "products": 30
+    },
+    {
+      "viewport": "390x844",
+      "width": 390,
+      "client": 390,
+      "products": 30
+    },
+    {
+      "viewport": "1280x1000",
+      "width": 1265,
+      "client": 1265,
+      "products": 30
+    }
+  ],
+  "reducedMotion": true
+}

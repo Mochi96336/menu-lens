@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Menu Lens 26A Transition Landmarks：保留 26 的同一排版體積，只在中間觀看角度標示離開與接近的分類範圍。"
+    />
+    <title>26A Transition Landmarks — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../parallax-menu-volume.css" />
+    <link rel="stylesheet" href="../../parallax-transition-landmarks.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../parallax-menu-volume.js" defer></script>
+    <script src="../../parallax-transition-landmarks.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">26A · transition landmarks</p>
+          <h1>Transition Landmarks</h1>
+          <p class="lede">沿用 26 的同一個排版體積、六個觀看方向與全部料理位置；只在離開 endpoint 後顯示上一分類仍保留多少範圍，以及哪個分類正在接近。</p>
+        </div>
+        <a class="ghost-button" href="../26-parallax-menu-volume/">比較 parent 26</a>
+      </header>
+
+      <p class="study-note">拖曳或使用方向鍵穿越兩個分類方向。中間地標只描述離開與接近的分類、料理數與範圍線索；它不可點擊，不會建立新終點，也不改變 26 的料理幾何。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="26A Transition Landmarks 手機互動原型">
+        <div class="phone-screen parallax-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="parallax-restaurant">
+            <div>
+              <p class="parallax-restaurant__kicker">視差菜單體</p>
+              <h2 id="parallax-restaurant-name"></h2>
+            </div>
+            <p id="parallax-restaurant-meta"></p>
+          </header>
+
+          <div
+            id="parallax-stage"
+            class="parallax-stage"
+            tabindex="0"
+            role="application"
+            aria-label="可旋轉的立體菜單。拖曳旋轉，雙指張合改變深度；中間角度會標示離開與接近的分類。方向鍵旋轉，加減鍵改變深度。"
+          >
+            <div class="parallax-space" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <div id="parallax-volume" class="parallax-volume"></div>
+
+            <div
+              id="parallax-transition-landmarks"
+              class="parallax-transition-landmarks"
+              data-visible="false"
+              aria-hidden="true"
+            >
+              <article class="parallax-transition-landmark" data-landmark-role="origin">
+                <p id="parallax-landmark-origin-label" class="parallax-transition-landmark__role">從這裡離開</p>
+                <div class="parallax-transition-landmark__heading">
+                  <strong id="parallax-landmark-origin-title"></strong>
+                  <small id="parallax-landmark-origin-count"></small>
+                </div>
+                <div class="parallax-transition-landmark__meter"><i></i></div>
+                <small id="parallax-landmark-origin-extent" class="parallax-transition-landmark__extent"></small>
+              </article>
+              <article class="parallax-transition-landmark" data-landmark-role="target">
+                <p id="parallax-landmark-target-label" class="parallax-transition-landmark__role">往下一個方向</p>
+                <div class="parallax-transition-landmark__heading">
+                  <strong id="parallax-landmark-target-title"></strong>
+                  <small id="parallax-landmark-target-count"></small>
+                </div>
+                <div class="parallax-transition-landmark__meter"><i></i></div>
+                <small id="parallax-landmark-target-extent" class="parallax-transition-landmark__extent"></small>
+              </article>
+            </div>
+            <p id="parallax-transition-announcement" class="parallax-transition-announcement" aria-live="polite"></p>
+
+            <div id="parallax-compass" class="parallax-compass" role="img" aria-label="六個觀看方向；目前朝向個人主餐">
+              <div id="parallax-compass-markers" class="parallax-compass__markers"></div>
+              <i id="parallax-compass-cursor" class="parallax-compass__cursor" aria-hidden="true"></i>
+            </div>
+
+            <div id="parallax-reticle" class="parallax-reticle" data-state="locked" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+
+            <div id="parallax-depth-guide" class="parallax-depth-guide" data-visible="false" aria-hidden="true">
+              <span>立體</span>
+              <i><b id="parallax-depth-knob"></b></i>
+              <span>平面</span>
+            </div>
+
+            <aside id="parallax-detail" class="parallax-detail" data-open="false" aria-hidden="true" aria-live="polite">
+              <div>
+                <p id="parallax-detail-category"></p>
+                <h3 id="parallax-detail-title"></h3>
+                <p id="parallax-detail-meta" class="parallax-detail__meta"></p>
+                <p id="parallax-detail-copy" class="parallax-detail__copy"></p>
+              </div>
+              <button id="parallax-detail-close" type="button" aria-label="關閉料理資訊">×</button>
+            </aside>
+
+            <div class="parallax-readout" aria-live="polite">
+              <div>
+                <span id="parallax-state-label">可以點料理</span>
+                <strong id="parallax-current-category">個人主餐</strong>
+              </div>
+              <div class="parallax-readout__metrics">
+                <span id="parallax-alignment">正面已對齊</span>
+                <span id="parallax-depth">立體</span>
+              </div>
+              <div class="parallax-meter" aria-hidden="true"><i id="parallax-meter-fill"></i></div>
+            </div>
+
+            <button id="parallax-reset" class="parallax-reset" type="button">回到正面</button>
+            <p class="parallax-gesture" aria-hidden="true">拖曳旋轉 · 兩指張合深度 · 點料理看資訊</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="parallax-study-notes" aria-label="26A 研究註記">
+        <article>
+          <p class="phase-index">Single variable</p>
+          <h3>只補中間角度的分類地標</h3>
+          <p>離開 endpoint 後，最多顯示一個 origin 與一個 approaching category；不列料理、不接受操作、不增加 endpoint。</p>
+        </article>
+        <article>
+          <p class="phase-index">Retains</p>
+          <h3>26 的體積與操作完全保留</h3>
+          <p>六個 anchors、30 個料理位置、camera、spread、snap threshold、pointer、two-pointer depth、detail 與 reset 都沿用 parent。</p>
+        </article>
+        <article>
+          <p class="phase-index">Success</p>
+          <h3>轉途中可預測下一分類</h3>
+          <p>在 25%、50%、75% 位置，使用者應能說出從哪個分類離開、哪個分類正在成形，以及兩者仍在同一個 volume。</p>
+        </article>
+        <article>
+          <p class="phase-index">Stop condition</p>
+          <h3>不可再加第二套導航</h3>
+          <p>若仍需 tutorial、完整 ghosts、auto-flat、更多 snap 或 camera tracking 才能理解，26A 判定失敗並停止 26。</p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
