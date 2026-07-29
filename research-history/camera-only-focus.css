@@ -1,0 +1,43 @@
+.camera-only-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: none;
+  scrollbar-width: none;
+}
+
+.camera-only-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.camera-only-sheet {
+  width: 46rem;
+  min-width: 46rem;
+}
+
+.camera-only-sheet > .camera-only-column {
+  flex: 1 1 0;
+}
+
+/* Preserve 18's initial typography, padding, and row presentation exactly. */
+.camera-only-viewport .paper-category__header {
+  gap: .35rem;
+  padding: .42rem .5rem;
+}
+
+.camera-only-viewport .paper-category__header > span { font-size: .52rem; }
+.camera-only-viewport .paper-category__header strong { font-size: .84rem; }
+.camera-only-viewport .paper-category__header small { font-size: .5rem; }
+
+.camera-only-viewport .paper-product {
+  gap: .35rem;
+  padding-inline: .5rem;
+  font-size: .64rem;
+  line-height: 1.2;
+}
+
+.camera-only-viewport .paper-product strong { font-size: .58rem; }
+
+.camera-only-stage .paper-detail {
+  right: .65rem;
+  left: .65rem;
+}

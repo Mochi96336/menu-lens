@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 22F Padding-only Focus：從 18 重建，只增加 focused category 的料理列水平 padding，不改字級、row、column、camera 或 paired content。" />
+    <title>22F Padding-only Focus — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../landscape-paper.css" />
+    <link rel="stylesheet" href="../../padding-only-focus.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../paper-landscape-core.js"></script>
+    <script src="../../spatial-drag.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">22F · 18 + padding-only focus</p>
+          <h1>Padding-only Focus</h1>
+          <p class="lede">從 18 的乾淨 landscape substrate 重建。選中分類後，只把料理列左右 padding 由 .5rem 增加到 .55rem；字級、line-height、紙面幾何與 camera 都不改。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">唯一變因是 focused Product 的水平留白。這可能讓名稱與價格的分隔更清楚，也可能因可用文字寬度縮小而增加截斷壓力。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="22F Padding-only Focus 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="padding-only-restaurant-name" class="restaurant-name"></h2>
+            <p id="padding-only-restaurant-meta" class="restaurant-meta"></p>
+            <p id="padding-only-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="padding-only-reset" type="button" aria-pressed="true">原留白</button>
+            <button id="padding-only-previous" type="button" aria-label="上一個紙欄">←</button>
+            <button id="padding-only-next" type="button" aria-label="下一個紙欄">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="padding-only-location-title">18 原留白</strong>
+              <span id="padding-only-location-meta">料理左右 .5rem</span>
+            </div>
+          </div>
+
+          <div class="landscape-stage padding-only-stage">
+            <div id="padding-only-viewport" class="landscape-viewport padding-only-viewport" tabindex="0" aria-label="只增加焦點料理列水平留白的 18 橫向紙面">
+              <div id="padding-only-sheet" class="landscape-sheet landscape-sheet--equal-columns padding-only-sheet"></div>
+            </div>
+            <aside id="padding-only-detail" class="paper-detail" data-open="false" aria-hidden="true" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="padding-only-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="padding-only-detail-title"></h3>
+                <p id="padding-only-detail-meta" class="paper-detail__meta"></p>
+                <p id="padding-only-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">點分類只增加該分類料理列的左右 padding；字級、紙欄、列高與 camera 不會因 focus 或 reset 改變。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Controlled comparison</p><h2>只測 focused Product padding</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>Control parent：18</h3><p>固定 46rem、1:1:1 外欄、8:6／6:4／4:2 rows，以及 .5rem Product 水平 padding。</p></article>
+          <article class="phase-card"><h3>唯一變因</h3><p>Focused category 的料理列左右 padding 由 .5rem 增加為 .55rem；料理與價格字級仍是 .64rem／.58rem。</p></article>
+          <article class="phase-card"><h3>刻意沒有加入</h3><p>沒有 1.8 row weight、1.65 column weight、camera tracking、字級放大、line-height 變化或 paired-category collapse。</p></article>
+          <article class="phase-card"><h3>停止條件</h3><p>若額外留白只壓縮名稱寬度而沒有更清楚的名稱／價格分隔，結論應是 focused padding alone is insufficient。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const core = window.MenuLensLandscapeCore;
+      const viewport = document.querySelector("#padding-only-viewport");
+      const sheet = document.querySelector("#padding-only-sheet");
+      const resetButton = document.querySelector("#padding-only-reset");
+      const previousButton = document.querySelector("#padding-only-previous");
+      const nextButton = document.querySelector("#padding-only-next");
+      const locationTitle = document.querySelector("#padding-only-location-title");
+      const locationMeta = document.querySelector("#padding-only-location-meta");
+
+      core.hydrateRestaurant({
+        menu,
+        name: document.querySelector("#padding-only-restaurant-name"),
+        meta: document.querySelector("#padding-only-restaurant-meta"),
+        copy: document.querySelector("#padding-only-restaurant-copy"),
+      });
+
+      // core.buildLandscape projects the fixture through window.renderMenuLensPaperField(menu).
+      const { categories, categoryCounts, columns, productButtons } = core.buildLandscape({
+        menu,
+        sheet,
+        columnClass: "landscape-column padding-only-column",
+        columnWeight: () => 1,
+      });
+
+      const detail = core.createDishDetail({
+        menu,
+        detail: document.querySelector("#padding-only-detail"),
+        closeButton: document.querySelector("#padding-only-detail-close"),
+        title: document.querySelector("#padding-only-detail-title"),
+        meta: document.querySelector("#padding-only-detail-meta"),
+        copy: document.querySelector("#padding-only-detail-copy"),
+        productButtons,
+      });
+
+      categories.forEach((category, categoryIndex) => {
+        const header = category.querySelector(".paper-category__header");
+        header.removeAttribute("aria-expanded");
+        header.setAttribute("aria-pressed", "false");
+        header.setAttribute("aria-label", `${menu.categories[categoryIndex].name}，增加這個分類的料理列留白`);
+      });
+
+      let activeCategoryIndex = null;
+      let activeColumnIndex = 0;
+      let scrollFrame = null;
+
+      const updateState = () => {
+        const atOverview = activeCategoryIndex === null;
+        resetButton.setAttribute("aria-pressed", String(atOverview));
+        previousButton.disabled = activeColumnIndex === 0;
+        nextButton.disabled = activeColumnIndex === columns.length - 1;
+
+        categories.forEach((category, index) => {
+          const focused = index === activeCategoryIndex;
+          if (focused) category.dataset.focused = "true";
+          else delete category.dataset.focused;
+          const header = category.querySelector(".paper-category__header");
+          header.setAttribute("aria-pressed", String(focused));
+          header.setAttribute(
+            "aria-label",
+            `${menu.categories[index].name}，${focused ? "恢復原留白" : "增加這個分類的料理列留白"}`,
+          );
+        });
+
+        if (atOverview) {
+          locationTitle.textContent = "18 原留白";
+          locationMeta.textContent = "料理左右 .5rem";
+          return;
+        }
+
+        locationTitle.textContent = menu.categories[activeCategoryIndex].name;
+        locationMeta.textContent = `${categoryCounts[activeCategoryIndex]} 道 · 料理左右 .55rem`;
+      };
+
+      const showOverview = () => {
+        activeCategoryIndex = null;
+        updateState();
+        detail.close();
+      };
+
+      const focusCategory = (categoryIndex) => {
+        activeCategoryIndex = Math.max(0, Math.min(categories.length - 1, categoryIndex));
+        updateState();
+        detail.close();
+      };
+
+      const nearestColumnIndex = () => {
+        const viewportBounds = viewport.getBoundingClientRect();
+        const center = viewportBounds.left + viewportBounds.width / 2;
+        let nearestIndex = activeColumnIndex;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+        columns.forEach((column, index) => {
+          const bounds = column.getBoundingClientRect();
+          const distance = Math.abs(bounds.left + bounds.width / 2 - center);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+        return nearestIndex;
+      };
+
+      const snapToColumn = (columnIndex) => {
+        activeColumnIndex = Math.max(0, Math.min(columns.length - 1, columnIndex));
+        const column = columns[activeColumnIndex];
+        const targetLeft = column.offsetLeft + column.offsetWidth / 2 - viewport.clientWidth / 2;
+        viewport.scrollTo({
+          left: Math.max(0, targetLeft),
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        });
+        updateState();
+      };
+
+      categories.forEach((category, categoryIndex) => {
+        category.querySelector(".paper-category__header").addEventListener("click", () => {
+          if (activeCategoryIndex === categoryIndex) showOverview();
+          else focusCategory(categoryIndex);
+        });
+      });
+
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryIndex = Number(button.closest(".paper-category").dataset.categoryIndex);
+          if (categoryIndex !== activeCategoryIndex) {
+            focusCategory(categoryIndex);
+            return;
+          }
+          detail.open(button);
+        });
+      });
+
+      resetButton.addEventListener("click", showOverview);
+      previousButton.addEventListener("click", () => {
+        detail.close();
+        snapToColumn(activeColumnIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        detail.close();
+        snapToColumn(activeColumnIndex + 1);
+      });
+      viewport.addEventListener("scroll", () => {
+        if (scrollFrame !== null) return;
+        scrollFrame = requestAnimationFrame(() => {
+          scrollFrame = null;
+          activeColumnIndex = nearestColumnIndex();
+          updateState();
+        });
+      }, { passive: true });
+      viewport.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        detail.close();
+        snapToColumn(activeColumnIndex + (event.key === "ArrowLeft" ? -1 : 1));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.isOpen()) detail.close(true);
+        else if (activeCategoryIndex !== null) showOverview();
+      });
+
+      window.enableMenuLensHorizontalDrag(viewport, {
+        enabled: () => !detail.isOpen(),
+        onSettle: () => snapToColumn(nearestColumnIndex()),
+      });
+
+      showOverview();
+    </script>
+  </body>
+</html>

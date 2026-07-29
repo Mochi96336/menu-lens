@@ -1,0 +1,55 @@
+.padding-only-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.padding-only-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.padding-only-sheet {
+  width: 46rem;
+  min-width: 46rem;
+}
+
+.padding-only-sheet > .padding-only-column {
+  flex: 1 1 0;
+}
+
+/* Preserve 18 geometry, typography, and line-height exactly. */
+.padding-only-viewport .paper-category__header {
+  gap: .35rem;
+  padding: .42rem .5rem;
+}
+
+.padding-only-viewport .paper-category__header > span { font-size: .52rem; }
+.padding-only-viewport .paper-category__header strong { font-size: .84rem; }
+.padding-only-viewport .paper-category__header small { font-size: .5rem; }
+
+.padding-only-viewport .paper-product {
+  gap: .35rem;
+  padding-inline: .5rem;
+  font-size: .64rem;
+  line-height: 1.2;
+  transition: padding-inline 180ms cubic-bezier(.2, .75, .25, 1);
+}
+
+.padding-only-viewport .paper-product strong {
+  font-size: .58rem;
+}
+
+.padding-only-viewport .paper-category[data-focused="true"] .paper-product {
+  padding-inline: .55rem;
+}
+
+.padding-only-stage .paper-detail {
+  right: .65rem;
+  left: .65rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .padding-only-viewport .paper-product {
+    transition: none;
+  }
+}

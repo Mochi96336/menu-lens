@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { runInNewContext } from "node:vm";
 import { buildArchiveCatalog } from "../../research-history/catalog/index.mjs";
-import { archiveExtensions } from "../../research-history/catalog/extensions.mjs";
+import { archiveExtensions } from "../../research-history/catalog/all-extensions.mjs";
 import { archiveLegacyOverrides } from "../../research-history/catalog/legacy-overrides.mjs";
 
 const root = new URL("../../", import.meta.url);

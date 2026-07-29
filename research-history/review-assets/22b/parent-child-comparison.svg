@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1660" viewBox="0 0 1200 1660" role="img" aria-labelledby="title desc">
+  <title id="title">22B parent and child comparison</title>
+  <desc id="desc">18 Landscape Paper, current 22 mixed focus, and 22B column-only focus compared at 320 pixel, 390 pixel, and desktop viewports.</desc>
+  <defs>
+    <style>
+      .bg{fill:#e8e2d7}.card{fill:#f7f3eb;stroke:#8e8579}.phone{fill:#f8f5ef;stroke:#3c3731;stroke-width:2}.bar{fill:#f4f0e9;stroke:#b8b0a5}.paper{fill:#efe9df}.cat{fill:#f8f4ed;stroke:#5f584f}.focus{fill:none;stroke:#a54a2a;stroke-width:3}.rule{stroke:#c5beb3}.prod{stroke:#d4cdc2}.ink{fill:#201d19}.muted{fill:#665f56}.accent{fill:#a54a2a}.t{font-family:"Noto Sans CJK TC",Arial,sans-serif}.s{font-family:"Noto Serif CJK TC",Georgia,serif}.tiny{font-size:8px}.small{font-size:10px}.body{font-size:12px}.label{font-size:15px}.head{font-size:25px}
+    </style>
+    <g id="chrome">
+      <rect class="phone" x="0" y="0" width="350" height="470"/>
+      <text class="t tiny ink" x="12" y="17">9:41</text><text class="t tiny ink" x="290" y="17">5G · 100%</text>
+      <text class="s label ink" x="12" y="48">潮巷小館</text><text class="t tiny muted" x="12" y="64">30 道料理 · 6 個分類 · NT$120–NT$560</text>
+      <rect class="bar" x="0" y="76" width="350" height="40"/>
+      <rect fill="none" stroke="#5f584f" x="8" y="83" width="50" height="26"/><text class="t tiny ink" x="19" y="100">原比例</text>
+      <rect fill="none" stroke="#5f584f" x="64" y="83" width="28" height="26"/><text class="t small ink" x="74" y="101">←</text>
+      <rect fill="none" stroke="#5f584f" x="98" y="83" width="28" height="26"/><text class="t small ink" x="108" y="101">→</text>
+      <rect class="paper" x="8" y="124" width="334" height="305"/>
+      <rect class="bar" x="0" y="438" width="350" height="32"/>
+    </g>
+    <g id="products8">
+      <path class="prod" d="M0 22H100M0 44H100M0 66H100M0 88H100M0 110H100M0 132H100M0 154H100"/>
+      <text class="t tiny ink" x="5" y="15">炙烤味噌雞腿定食</text><text class="t tiny ink" x="5" y="37">檸香鹽麴鮭魚定食</text><text class="t tiny ink" x="5" y="59">黑蒜胡椒牛小排</text><text class="t tiny ink" x="5" y="81">塔香三杯杏鮑菇定食</text><text class="t tiny ink" x="5" y="103">川味麻婆豆腐鍋</text><text class="t tiny ink" x="5" y="125">紅酒番茄燉豬頰</text><text class="t tiny ink" x="5" y="147">青醬香草豬里肌</text><text class="t tiny ink" x="5" y="169">柚香照燒豆腐排</text>
+    </g>
+    <g id="parent">
+      <use href="#chrome"/>
+      <text class="t small ink" x="270" y="92">18 原比例</text><text class="t tiny muted" x="220" y="106">1:1:1 · 8:6／6:4／4:2</text>
+      <g transform="translate(18 134)">
+        <g><rect class="cat" width="104" height="285"/><line class="rule" x1="0" y1="30" x2="104" y2="30"/><text class="s small ink" x="22" y="20">個人主餐</text><text class="t tiny accent" x="5" y="20">01</text><g transform="translate(2 36) scale(1 .75)"><use href="#products8"/></g><line class="rule" x1="0" y1="185" x2="104" y2="185"/><text class="s small ink" x="22" y="204">飯麵類</text></g>
+        <g transform="translate(104)"><rect class="cat" width="104" height="285"/><line class="rule" x1="0" y1="30" x2="104" y2="30"/><text class="s small ink" x="22" y="20">分享料理</text><text class="t tiny accent" x="5" y="20">03</text><line class="rule" x1="0" y1="171" x2="104" y2="171"/><text class="s small ink" x="22" y="190">小食</text></g>
+        <g transform="translate(208)"><rect class="cat" width="104" height="285"/><line class="rule" x1="0" y1="30" x2="104" y2="30"/><text class="s small ink" x="22" y="20">飲料</text><text class="t tiny accent" x="5" y="20">05</text><line class="rule" x1="0" y1="190" x2="104" y2="190"/><text class="s small ink" x="22" y="209">甜點</text></g>
+      </g>
+      <text class="t tiny muted" x="115" y="457">18 baseline geometry</text>
+    </g>
+    <g id="current">
+      <use href="#chrome"/>
+      <text class="t small ink" x="275" y="92">個人主餐</text><text class="t tiny muted" x="197" y="106">row 1.8× · column 1.65× · camera</text>
+      <g transform="translate(18 134)">
+        <g><rect class="cat" width="142" height="285"/><rect class="focus" x="1" y="1" width="140" height="199"/><line class="rule" x1="0" y1="30" x2="142" y2="30"/><text class="s body ink" x="22" y="20">個人主餐</text><text class="t tiny accent" x="5" y="20">01</text><g transform="translate(2 36) scale(1.35 .92)"><use href="#products8"/></g><line class="rule" x1="0" y1="201" x2="142" y2="201"/><text class="s small ink" x="22" y="220">飯麵類</text></g>
+        <g transform="translate(142)"><rect class="cat" width="85" height="285"/><line class="rule" x1="0" y1="30" x2="85" y2="30"/><text class="s small ink" x="20" y="20">分享料理</text><line class="rule" x1="0" y1="171" x2="85" y2="171"/></g>
+        <g transform="translate(227)"><rect class="cat" width="85" height="285"/><line class="rule" x1="0" y1="30" x2="85" y2="30"/><text class="s small ink" x="20" y="20">飲料</text><line class="rule" x1="0" y1="190" x2="85" y2="190"/></g>
+      </g>
+      <text class="t tiny muted" x="70" y="457">mixed: row + width + camera + type</text>
+    </g>
+    <g id="child">
+      <use href="#chrome"/>
+      <text class="t small ink" x="275" y="92">個人主餐</text><text class="t tiny muted" x="215" y="106">row fixed · column 1.65× · camera fixed</text>
+      <g transform="translate(18 134)">
+        <g><rect class="cat" width="142" height="285"/><rect class="focus" x="1" y="1" width="140" height="161"/><line class="rule" x1="0" y1="30" x2="142" y2="30"/><text class="s small ink" x="22" y="20">個人主餐</text><text class="t tiny accent" x="5" y="20">01</text><g transform="translate(2 36) scale(1.35 .72)"><use href="#products8"/></g><line class="rule" x1="0" y1="163" x2="142" y2="163"/><text class="s small ink" x="22" y="182">飯麵類</text></g>
+        <g transform="translate(142)"><rect class="cat" width="85" height="285"/><line class="rule" x1="0" y1="30" x2="85" y2="30"/><text class="s small ink" x="20" y="20">分享料理</text><line class="rule" x1="0" y1="171" x2="85" y2="171"/></g>
+        <g transform="translate(227)"><rect class="cat" width="85" height="285"/><line class="rule" x1="0" y1="30" x2="85" y2="30"/><text class="s small ink" x="20" y="20">飲料</text><line class="rule" x1="0" y1="190" x2="85" y2="190"/></g>
+      </g>
+      <text class="t tiny muted" x="55" y="457">rows stay 8:6 / 6:4 / 4:2; width only</text>
+    </g>
+  </defs>
+  <rect class="bg" width="1200" height="1660"/>
+  <text class="s head ink" x="30" y="38">Menu Lens — 22B Column-only controlled comparison</text>
+  <text class="t body muted" x="30" y="62">Control parent 18 vs current 22 mixed focus vs 22B. Rendered from the same 46rem, 1.65 and row-ratio contracts.</text>
+  <g transform="translate(25 100)"><rect class="card" width="370" height="490"/><text class="t label ink" x="10" y="22">18 parent — 320px</text><g transform="translate(10 30) scale(.99)"><use href="#parent"/></g></g>
+  <g transform="translate(415 100)"><rect class="card" width="370" height="490"/><text class="t label ink" x="10" y="22">current 22 — 320px</text><g transform="translate(10 30) scale(.99)"><use href="#current"/></g></g>
+  <g transform="translate(805 100)"><rect class="card" width="370" height="490"/><text class="t label ink" x="10" y="22">22B column-only — 320px</text><g transform="translate(10 30) scale(.99)"><use href="#child"/></g></g>
+  <g transform="translate(25 620)"><rect class="card" width="370" height="490"/><text class="t label ink" x="10" y="22">18 parent — 390px</text><g transform="translate(10 30) scale(.99)"><use href="#parent"/></g></g>
+  <g transform="translate(415 620)"><rect class="card" width="370" height="490"/><text class="t label ink" x="10" y="22">current 22 — 390px</text><g transform="translate(10 30) scale(.99)"><use href="#current"/></g></g>
+  <g transform="translate(805 620)"><rect class="card" width="370" height="490"/><text class="t label ink" x="10" y="22">22B column-only — 390px</text><g transform="translate(10 30) scale(.99)"><use href="#child"/></g></g>
+  <g transform="translate(25 1140)"><rect class="card" width="370" height="490"/><text class="t label ink" x="10" y="22">18 parent — desktop</text><g transform="translate(10 30) scale(.99)"><use href="#parent"/></g></g>
+  <g transform="translate(415 1140)"><rect class="card" width="370" height="490"/><text class="t label ink" x="10" y="22">current 22 — desktop</text><g transform="translate(10 30) scale(.99)"><use href="#current"/></g></g>
+  <g transform="translate(805 1140)"><rect class="card" width="370" height="490"/><text class="t label ink" x="10" y="22">22B column-only — desktop</text><g transform="translate(10 30) scale(.99)"><use href="#child"/></g></g>
+</svg>
