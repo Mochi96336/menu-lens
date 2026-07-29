@@ -3,31 +3,95 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#eeeae2" />
     <meta name="description" content="Menu Lens 手機菜單閱讀研究檔案：原始實作、可執行原型、修正、負面證據與研究工具。" />
     <title>Menu Lens — Research History</title>
     <link rel="stylesheet" href="./history.css" />
     <link rel="stylesheet" href="./archive-index.css" />
     <script src="./prototype-registry.js"></script>
   </head>
-  <body>
+  <body class="archive-index-page">
     <a class="skip-link" href="#main">跳到主要內容</a>
 
-    <header class="masthead site-shell">
-      <p class="eyebrow">Menu Lens / research archive v2</p>
-      <h1>手機菜單閱讀研究檔案</h1>
-      <p class="lede">
-        保存真正做過的版本，也分開標示產品原型、前置修正、負面證據與研究工具。這裡不是進步階梯，也不把「值得保存」寫成「產品方向已成功」。
-      </p>
-      <div class="meta-row" aria-label="研究檔案資訊">
-        <span id="object-count" class="pill">研究物件</span>
-        <span id="executable-count" class="pill">可執行入口</span>
-        <span id="study-count" class="pill">研究工具</span>
-        <span class="pill">原件與後續實驗分開</span>
+    <header class="masthead archive-hero">
+      <nav class="archive-nav site-shell" aria-label="研究檔案導覽">
+        <a class="archive-wordmark" href="./">Menu Lens</a>
+        <div class="archive-nav__links">
+          <a href="#status">現況</a>
+          <a href="#families">家族</a>
+          <a href="#catalog">物件</a>
+          <a href="#originals">原件</a>
+        </div>
+      </nav>
+
+      <div class="archive-hero__body site-shell">
+        <div class="archive-hero__copy">
+          <p class="eyebrow">Research archive v2 / intake complete</p>
+          <h1>手機菜單閱讀研究檔案</h1>
+          <p class="lede">
+            保存真正做過的版本，也分開標示產品原型、前置修正、負面證據與研究工具。這裡不是進步階梯，也不把「值得保存」寫成「產品方向已成功」。
+          </p>
+          <div class="meta-row" aria-label="研究檔案資訊">
+            <span id="object-count" class="pill">研究物件</span>
+            <span id="executable-count" class="pill">可執行入口</span>
+            <span id="study-count" class="pill">研究工具</span>
+            <span class="pill">原件與後續實驗分開</span>
+          </div>
+        </div>
+
+        <aside class="archive-status-panel" aria-labelledby="current-phase-title">
+          <div class="archive-status-panel__topline">
+            <p class="phase-index">Current phase</p>
+            <span class="status active">Evidence closure</span>
+          </div>
+          <h2 id="current-phase-title">Archive v2 已完成</h2>
+          <p>目前不再擴張原型。下一階段只收直接檢視、受試研究與產品方向整理，產品程式仍暫停。</p>
+          <a class="ghost-button" href="#status">查看目前工作</a>
+        </aside>
       </div>
     </header>
 
-    <main id="main">
-      <section class="section site-shell" aria-labelledby="read-title">
+    <main id="main" class="archive-index-main">
+      <section id="status" class="section site-shell archive-current" aria-labelledby="status-title">
+        <div class="section-heading archive-current__heading">
+          <p class="eyebrow">Current status</p>
+          <h2 id="status-title">入庫完成，證據尚未完成</h2>
+          <p>
+            Archive v2 已把研究物件、來源與證據邊界收進同一套 catalog。現在只處理既有 gate，不新增 family、不組合 best-of，也不提前回到交易流程。
+          </p>
+        </div>
+
+        <div class="archive-status-grid">
+          <article class="archive-status-card" data-state="active">
+            <div class="archive-status-card__topline">
+              <p class="phase-index">01 / Direct review</p>
+              <span>進行中</span>
+            </div>
+            <h3>收掉七個待檢視物件</h3>
+            <p><code>22D–22G</code> 與 <code>24A–24C</code> 只做一致尺度的直接檢視，最後留下明確 disposition。</p>
+          </article>
+
+          <article class="archive-status-card" data-state="queued">
+            <div class="archive-status-card__topline">
+              <p class="phase-index">02 / Participant evidence</p>
+              <span>排隊中</span>
+            </div>
+            <h3>先跑 12A-S1</h3>
+            <p>先驗證 semantic paper field 的陌生讀者理解；只有 25P 仍值得作為 secondary lens，才執行 25P-S1。</p>
+          </article>
+
+          <article class="archive-status-card" data-state="paused">
+            <div class="archive-status-card__topline">
+              <p class="phase-index">03 / Product work</p>
+              <span>暫停</span>
+            </div>
+            <h3>產品方向仍未選定</h3>
+            <p>完成 evidence closure 與 product-direction synthesis 後，才從最新 <code>main</code> 乾淨重建 <code>src/</code>。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="families" class="section site-shell" aria-labelledby="read-title">
         <div class="section-heading">
           <p class="eyebrow">How to read</p>
           <h2 id="read-title">先看物件性質，再看研究家族</h2>
@@ -35,15 +99,15 @@
             同一個家族內可能同時存在 substrate、controlled keep、provisional、negative evidence 與 study。物件狀態描述它在研究中的處置，不等於正式使用者研究結論。
           </p>
         </div>
-        <div id="archive-families" class="timeline" aria-label="研究家族"></div>
+        <div id="archive-families" class="timeline archive-family-grid" aria-label="研究家族"></div>
       </section>
 
-      <section class="section site-shell" aria-labelledby="catalog-title">
+      <section id="catalog" class="section site-shell" aria-labelledby="catalog-title">
         <div class="section-heading">
           <p class="eyebrow">Object catalog</p>
           <h2 id="catalog-title">一個 ID，就是一個可追溯研究物件</h2>
           <p>
-            Catalog v2 將物件類型、研究處置與證據狀態拆開。既有 prototype registry 暫時保留為 migration source，首頁不再維護第二份手寫物件清單。
+            Catalog v2 將物件類型、研究處置與證據狀態拆開。既有 prototype registry 只作為 migration source，首頁不再維護第二份手寫物件清單。
           </p>
         </div>
 
@@ -79,32 +143,32 @@
           </label>
         </div>
 
-        <div id="archive-objects" class="prototype-object-grid"></div>
+        <div id="archive-objects" class="prototype-object-grid archive-object-grid"></div>
         <p id="catalog-empty" class="archive-empty" role="status" hidden>目前沒有符合篩選條件的研究物件。</p>
       </section>
 
-      <section class="section site-shell" aria-labelledby="original-title">
+      <section id="originals" class="section site-shell" aria-labelledby="original-title">
         <div class="section-heading">
           <p class="eyebrow">Original implementations</p>
           <h2 id="original-title">固定 commit 的歷史原件</h2>
           <p>原始輸出由 manifest 產生，不與後續 reconstruction 或 prototype 混在同一種來源標籤裡。</p>
         </div>
-        <div id="archive-originals" class="timeline"></div>
+        <div id="archive-originals" class="timeline archive-original-grid"></div>
       </section>
 
-      <section class="section site-shell" aria-labelledby="migration-title">
+      <section class="section site-shell archive-boundary" aria-labelledby="boundary-title">
         <div class="section-heading">
-          <p class="eyebrow">Migration boundary</p>
-          <h2 id="migration-title">這一階段只整理控制層</h2>
+          <p class="eyebrow">Archive boundary</p>
+          <h2 id="boundary-title">整理完成，不代表方向已選定</h2>
           <p class="archive-note">
-            現有 prototype UI、研究資料、入口 URL 與歷史快照都保持不變。後續家族入庫會在 catalog 中新增 prototype、correction、study 與 negative evidence，而不再手改首頁卡片與比較表。
+            Prototype UI、研究資料、入口 URL 與歷史快照都保持可追溯。接下來只更新證據與 disposition；沒有新的直接觀察或 participant evidence，就不把物件提升為產品方向。
           </p>
         </div>
       </section>
     </main>
 
     <footer class="research-footer site-shell">
-      <p>Menu Lens research record · 保存原件、承認回圈、延後結論。</p>
+      <p>Menu Lens research record · Archive v2 complete · Evidence closure active · Product direction unselected.</p>
     </footer>
 
     <script type="module" src="./catalog/render-index.mjs"></script>

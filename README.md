@@ -4,7 +4,9 @@ Menu Lens is an executable research archive for mobile restaurant-menu reading.
 
 The current public artifact is the [Research History](https://a20030824.github.io/menu-lens/): a catalog of complete-menu, relational, horizontal, matrix, landscape-paper, and depth prototypes built from the same 30-product fixture. Each prototype remains a distinct research object with its own status and lineage.
 
-This publication does not select a production UI or turn the archive into an ordering product. The product baseline remains in `src/`, while Candidate, comparison, Decision, Configuration, and Current order work stays paused during spatial exploration.
+Archive v2 intake is complete. The active phase is now **evidence closure**: direct review of the remaining provisional mechanisms, execution of the prepared participant studies, and a later product-direction synthesis. This publication still does not select a production UI or turn the archive into an ordering product.
+
+The product baseline remains in `src/`. Candidate, comparison, Decision, Configuration, and Current order work stays paused until evidence closure intentionally selects a reading substrate and records which mechanisms should remain controlled, secondary, or stopped.
 
 It explores a simple problem: most QR ordering interfaces begin with transaction mechanics—product cards, modifiers, cart, and checkout—before helping people understand the menu, compare possibilities, or coordinate a table.
 
@@ -51,7 +53,7 @@ The initial implementation investigates only three primary questions:
 
 A conventional comparison interface is deliberately parked. The project should first make the Menu Lens interaction internally coherent and observable before deciding whether a formal baseline is useful.
 
-## Product direction (currently paused)
+## Product direction (paused during evidence closure)
 
 The following flow remains the intended product direction, not the current GitHub Pages experience.
 
@@ -131,12 +133,19 @@ Use [`docs/handoff.md`](docs/handoff.md) when opening or closing a separate work
 
 ## Current status
 
-The cross-conversation foundation, domain dataset, formative protocol, and first complete-menu slice are complete. New workstreams can rely on the repository instead of prior chat history.
+The cross-conversation foundation, domain dataset, formative protocol, first complete-menu slice, spatial prototype exploration, and Archive v2 intake are complete.
 
-The active workstream is spatial interaction exploration. Prototypes are organized into six families—document, relational, horizontal, matrix-paper, 18-derived landscape, and depth—rather than maintained as another numbered list in this README.
+The active workstream is **evidence closure**:
 
-The canonical catalog is [`research-history/prototype-registry.js`](research-history/prototype-registry.js). It records each object's family, parent, status, executable path, and required assets; the research archive and validator both consume it. See [`docs/workstreams.md`](docs/workstreams.md) for current work, [`docs/research-history/spatial-exploration.md`](docs/research-history/spatial-exploration.md) for mechanism notes, and [`docs/research-history/product-direction-review.md`](docs/research-history/product-direction-review.md) for explicitly sourced product review.
+1. directly review `22D`–`22G` and `24A`–`24C` at the agreed mobile and desktop widths;
+2. execute `12A-S1` before authorizing any elastic-geometry continuation;
+3. decide whether `25P-S1` is still worth executing as a secondary-lens study;
+4. produce a product-direction synthesis only after those evidence gates are recorded.
 
-GitHub Pages currently publishes `research-history/` as the site root. This is a publication choice for the active research archive, not a decision to replace the product baseline in `src/`.
+No new prototype family or combined “best-of” direction is authorized during this phase. Product implementation in `src/` remains paused.
 
-Candidate, comparison, Decision, Configuration, and Current order implementation remain paused while the current spatial variants are refined.
+The Archive v2 catalog is assembled from the legacy migration source plus schema-v2 extensions and overrides in [`research-history/catalog/`](research-history/catalog/). The archive homepage and validators consume the same catalog, so object type, disposition, evidence state, lineage, and executable paths do not require a second handwritten list.
+
+GitHub Pages publishes `research-history/` as the site root. This is a publication choice for the research archive, not a decision to replace the product baseline in `src/`.
+
+Candidate, comparison, Decision, Configuration, and Current order implementation remain paused until evidence closure and product-direction synthesis are complete.
