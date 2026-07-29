@@ -1,0 +1,71 @@
+.parallax-readout {
+  row-gap: .35rem;
+}
+
+.parallax-flat-recovery {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: .45rem;
+  align-items: center;
+  padding-top: .18rem;
+  border-top: 1px solid rgb(45 38 31 / 16%);
+  pointer-events: none;
+}
+
+.parallax-flat-recovery label,
+.parallax-flat-recovery output {
+  color: var(--faint);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: .5rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.parallax-flat-recovery output {
+  min-width: 4.3rem;
+  color: var(--ink);
+  text-align: right;
+}
+
+.parallax-flat-recovery input[type="range"] {
+  width: 100%;
+  min-width: 0;
+  height: 1.25rem;
+  margin: 0;
+  accent-color: var(--current-color, var(--accent));
+  cursor: ew-resize;
+  pointer-events: auto;
+  touch-action: pan-x;
+}
+
+.parallax-flat-recovery input[type="range"]:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.parallax-detail {
+  bottom: 8rem;
+}
+
+@media (max-width: 360px) {
+  .parallax-flat-recovery {
+    grid-template-columns: auto minmax(4.5rem, 1fr) auto;
+    gap: .3rem;
+  }
+
+  .parallax-flat-recovery label,
+  .parallax-flat-recovery output {
+    font-size: .46rem;
+  }
+
+  .parallax-flat-recovery output {
+    min-width: 3.85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax-flat-recovery input[type="range"] {
+    scroll-behavior: auto;
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "320": {
+    "parent": {
+      "initial": {"innerWidth":320,"scrollWidth":320,"overflow":false,"categories":6,"products":30,"uniqueProducts":30,"expanded":0,"openDetails":0,"resetDisabled":true,"screenFocused":"false","resetPosition":"static"},
+      "deep": {"expanded":1,"openDetails":1,"resetDisabled":false,"screenFocused":"false","resetPosition":"static"},
+      "restored": {"expanded":0,"openDetails":0,"resetDisabled":true,"screenFocused":"false","resetPosition":"static"},
+      "sourceTopBefore":703.859,"sourceTopAfter":181.859,"sourceTopDelta":-522.0,"resetVisibleAtDeepRead":false,"focusReturned":false
+    },
+    "child": {
+      "initial": {"innerWidth":320,"scrollWidth":320,"overflow":false,"categories":6,"products":30,"uniqueProducts":30,"expanded":0,"openDetails":0,"resetDisabled":true,"screenFocused":"false","resetPosition":"static"},
+      "deep": {"expanded":1,"openDetails":1,"resetDisabled":false,"screenFocused":"true","resetPosition":"sticky"},
+      "restored": {"expanded":0,"openDetails":0,"resetDisabled":true,"screenFocused":"false","resetPosition":"static"},
+      "sourceTopBefore":703.859,"sourceTopAfter":702.859,"sourceTopDelta":-1.0,"resetVisibleAtDeepRead":true,"focusReturned":true
+    }
+  },
+  "390": {
+    "parent": {
+      "initial": {"innerWidth":390,"scrollWidth":390,"overflow":false,"categories":6,"products":30,"uniqueProducts":30,"expanded":0,"openDetails":0,"resetDisabled":true,"screenFocused":"false","resetPosition":"static"},
+      "deep": {"expanded":1,"openDetails":1,"resetDisabled":false,"screenFocused":"false","resetPosition":"static"},
+      "restored": {"expanded":0,"openDetails":0,"resetDisabled":true,"screenFocused":"false","resetPosition":"static"},
+      "sourceTopBefore":703.859,"sourceTopAfter":181.859,"sourceTopDelta":-522.0,"resetVisibleAtDeepRead":false,"focusReturned":false
+    },
+    "child": {
+      "initial": {"innerWidth":390,"scrollWidth":390,"overflow":false,"categories":6,"products":30,"uniqueProducts":30,"expanded":0,"openDetails":0,"resetDisabled":true,"screenFocused":"false","resetPosition":"static"},
+      "deep": {"expanded":1,"openDetails":1,"resetDisabled":false,"screenFocused":"true","resetPosition":"sticky"},
+      "restored": {"expanded":0,"openDetails":0,"resetDisabled":true,"screenFocused":"false","resetPosition":"static"},
+      "sourceTopBefore":703.859,"sourceTopAfter":702.859,"sourceTopDelta":-1.0,"resetVisibleAtDeepRead":true,"focusReturned":true
+    }
+  },
+  "desktop": {
+    "parent": {
+      "initial": {"innerWidth":1280,"scrollWidth":1280,"overflow":false,"categories":6,"products":30,"uniqueProducts":30,"expanded":0,"openDetails":0,"resetDisabled":true,"screenFocused":"false","resetPosition":"static"},
+      "deep": {"expanded":1,"openDetails":1,"resetDisabled":false,"screenFocused":"false","resetPosition":"static"},
+      "restored": {"expanded":0,"openDetails":0,"resetDisabled":true,"screenFocused":"false","resetPosition":"static"},
+      "sourceTopBefore":703.859,"sourceTopAfter":181.859,"sourceTopDelta":-522.0,"resetVisibleAtDeepRead":false,"focusReturned":false
+    },
+    "child": {
+      "initial": {"innerWidth":1280,"scrollWidth":1280,"overflow":false,"categories":6,"products":30,"uniqueProducts":30,"expanded":0,"openDetails":0,"resetDisabled":true,"screenFocused":"false","resetPosition":"static"},
+      "deep": {"expanded":1,"openDetails":1,"resetDisabled":false,"screenFocused":"true","resetPosition":"sticky"},
+      "restored": {"expanded":0,"openDetails":0,"resetDisabled":true,"screenFocused":"false","resetPosition":"static"},
+      "sourceTopBefore":703.859,"sourceTopAfter":703.859,"sourceTopDelta":0.0,"resetVisibleAtDeepRead":true,"focusReturned":true
+    }
+  },
+  "keyboard": {"enterExpanded":true,"spaceOpened":true,"spaceReset":true,"focusReturned":true,"sourceTopDelta":0.0,"openDetails":0},
+  "reducedMotion": {"innerWidth":390,"scrollWidth":390,"overflow":false,"categories":6,"products":30,"uniqueProducts":30,"expanded":1,"openDetails":0,"resetDisabled":false,"screenFocused":"true","reduced":true,"htmlScroll":"auto","resetPosition":"sticky"}
+}

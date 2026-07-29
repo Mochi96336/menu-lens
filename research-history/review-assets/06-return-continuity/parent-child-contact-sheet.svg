@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="920" viewBox="0 0 1200 920">
+  <rect width="1200" height="920" fill="#eeeae2"/>
+  <style>
+    text{font-family:Arial,'Microsoft JhengHei',sans-serif;fill:#211f1b}.h{font-size:28px;font-weight:700}.sh{font-size:19px;font-weight:700}.b{font-size:16px}.m{font-size:14px;fill:#68635c}.ok{fill:#e6eee8;stroke:#52705a}.bad{fill:#f1e3df;stroke:#8b3f32}.card{fill:#fffdf8;stroke:#8f877c}.line{stroke:#c9c2b7}.accent{stroke:#8b3f32;stroke-width:3}
+  </style>
+  <text x="50" y="48" class="h">A-M3 Multi-scale Return Continuity — Chromium evidence</text>
+  <text x="50" y="78" class="m">Parent 06 versus continuity-only correction. Fixture: 6 categories / 30 unique Products. No horizontal overflow.</text>
+
+  <g transform="translate(50 120)">
+    <text x="0" y="0" class="sh">Deep reading state</text>
+    <rect x="0" y="25" width="520" height="285" rx="3" class="bad"/>
+    <text x="25" y="62" class="sh">Parent 06</text>
+    <text x="25" y="94" class="b">Reset topbar: static</text>
+    <text x="25" y="124" class="b">At last Product: reset not visible</text>
+    <text x="25" y="154" class="b">Open detail: 1 · Expanded category: 1</text>
+    <line x1="25" y1="178" x2="495" y2="178" class="line"/>
+    <text x="25" y="210" class="m">After programmatic reset</text>
+    <text x="25" y="242" class="b">Source position drift: −522px</text>
+    <text x="25" y="272" class="b">Focus returned: no</text>
+
+    <rect x="580" y="25" width="520" height="285" rx="3" class="ok"/>
+    <text x="605" y="62" class="sh">A-M3 child</text>
+    <text x="605" y="94" class="b">Reset topbar: compact sticky row</text>
+    <text x="605" y="124" class="b">At last Product: reset remains visible</text>
+    <text x="605" y="154" class="b">Open detail: 1 · Expanded category: 1</text>
+    <line x1="605" y1="178" x2="1075" y2="178" class="line"/>
+    <text x="605" y="210" class="m">After user reset</text>
+    <text x="605" y="242" class="b">Source position error: 0–1px</text>
+    <text x="605" y="272" class="b">Focus returned: same category button</text>
+  </g>
+
+  <g transform="translate(50 485)">
+    <text x="0" y="0" class="sh">Measured viewport results</text>
+    <rect x="0" y="25" width="1100" height="250" class="card"/>
+    <line x1="0" y1="85" x2="1100" y2="85" class="line"/>
+    <line x1="0" y1="145" x2="1100" y2="145" class="line"/>
+    <line x1="0" y1="205" x2="1100" y2="205" class="line"/>
+    <line x1="180" y1="25" x2="180" y2="275" class="line"/>
+    <line x1="480" y1="25" x2="480" y2="275" class="line"/>
+    <line x1="780" y1="25" x2="780" y2="275" class="line"/>
+    <text x="25" y="63" class="sh">Viewport</text><text x="210" y="63" class="sh">Parent drift</text><text x="510" y="63" class="sh">A-M3 error</text><text x="810" y="63" class="sh">Return contract</text>
+    <text x="25" y="123" class="b">320px</text><text x="210" y="123" class="b">−522px</text><text x="510" y="123" class="b">−1px</text><text x="810" y="123" class="b">detail 0 · expanded 0 · focus yes</text>
+    <text x="25" y="183" class="b">390px</text><text x="210" y="183" class="b">−522px</text><text x="510" y="183" class="b">−1px</text><text x="810" y="183" class="b">detail 0 · expanded 0 · focus yes</text>
+    <text x="25" y="243" class="b">Desktop</text><text x="210" y="243" class="b">−522px</text><text x="510" y="243" class="b">0px</text><text x="810" y="243" class="b">detail 0 · expanded 0 · focus yes</text>
+  </g>
+
+  <g transform="translate(50 805)">
+    <text x="0" y="0" class="sh">Additional checks</text>
+    <text x="0" y="35" class="b">Keyboard Enter/Space: pass · source error 0px · focus restored · detail cleared</text>
+    <text x="0" y="65" class="b">Reduced motion: matched · html scroll-behavior auto · reset remains sticky</text>
+    <text x="0" y="95" class="m">A-M4 retained-menu wording and 06A Product landmarks are intentionally absent.</text>
+  </g>
+</svg>

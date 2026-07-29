@@ -1,0 +1,33 @@
+.horizontal-price-viewport .vertical-category .paper-product {
+  position: relative;
+  padding-bottom: 2.05rem;
+}
+
+.horizontal-price-viewport .vertical-category .paper-product strong {
+  position: absolute;
+  left: 50%;
+  bottom: .42rem;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: .22rem .12rem 0;
+  border-top: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: center;
+  text-combine-upright: none;
+  text-orientation: mixed;
+  white-space: nowrap;
+  writing-mode: horizontal-tb;
+}
+
+.horizontal-price-viewport[data-scale="overview"] .vertical-category .paper-product strong {
+  letter-spacing: -.04em;
+}
+
+.horizontal-price-viewport[data-scale="reading"] .vertical-category .paper-product {
+  padding-bottom: 2.35rem;
+}
+
+.horizontal-price-viewport[data-scale="reading"] .vertical-category .paper-product strong {
+  bottom: .55rem;
+}

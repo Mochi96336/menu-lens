@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Menu Lens 24C Fixed-type Reading Scale：保留 24 的直排、欄寬與紙面放大，只取消閱讀尺度的字級放大。" />
+    <title>24C Fixed-type Reading Scale — Menu Lens research archive</title>
+    <link rel="stylesheet" href="../../history.css" />
+    <link rel="stylesheet" href="../../paper-menu-field.css" />
+    <link rel="stylesheet" href="../../landscape-paper.css" />
+    <link rel="stylesheet" href="../../vertical-landscape.css" />
+    <link rel="stylesheet" href="../../fixed-type-reading.css" />
+    <script src="../../menu-fixture.js"></script>
+    <script src="../../paper-menu-field-renderer.js"></script>
+    <script src="../../paper-landscape-core.js"></script>
+    <script src="../../spatial-drag.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prototype">跳到原型</a>
+    <main class="prototype-shell site-shell">
+      <header class="prototype-header">
+        <div>
+          <p class="eyebrow">24C · 24 minus reading type growth</p>
+          <h1>Fixed-type Reading Scale</h1>
+          <p class="lede">紙面仍由 46rem 放大到 64rem，三欄仍依料理總數配置為 14:10:6；料理與價格維持直排，但閱讀尺度不再額外放大文字。</p>
+        </div>
+        <a class="ghost-button" href="../../">回研究檔案館</a>
+      </header>
+
+      <p class="study-note">24 同時增加紙面尺寸與字級。24C 只移除菜名、價格與分類標題的 reading 字級成長，檢查增加可用幾何是否已足以改善直排閱讀。</p>
+
+      <section id="prototype" class="phone-frame" aria-label="Fixed-type Reading Scale 互動原型">
+        <div class="phone-screen paper-phone">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><span>5G · 100%</span></div>
+          <header class="paper-restaurant">
+            <h2 id="vertical-restaurant-name" class="restaurant-name"></h2>
+            <p id="vertical-restaurant-meta" class="restaurant-meta"></p>
+            <p id="vertical-restaurant-copy" class="restaurant-copy"></p>
+          </header>
+          <div class="paper-toolbar">
+            <button id="vertical-overview" type="button" aria-pressed="true">整張</button>
+            <button id="vertical-previous" type="button" aria-label="上一個紙欄">←</button>
+            <button id="vertical-next" type="button" aria-label="下一個紙欄">→</button>
+            <div class="paper-location" aria-live="polite">
+              <strong id="vertical-location-title">完整 3×2 紙面</strong>
+              <span id="vertical-location-meta">欄寬 14:10:6 · 固定字級</span>
+            </div>
+          </div>
+
+          <div class="landscape-stage vertical-stage">
+            <div id="vertical-viewport" class="landscape-viewport vertical-viewport fixed-type-reading" data-scale="overview" tabindex="0" aria-label="固定字級的直排料理紙面">
+              <div id="vertical-sheet" class="landscape-sheet vertical-sheet"></div>
+            </div>
+            <aside id="vertical-detail" class="paper-detail" data-open="false" aria-hidden="true" aria-live="polite" aria-label="料理細節">
+              <div class="paper-detail__inner">
+                <button id="vertical-detail-close" class="paper-detail__close" type="button" aria-label="關閉料理細節">×</button>
+                <h3 id="vertical-detail-title"></h3>
+                <p id="vertical-detail-meta" class="paper-detail__meta"></p>
+                <p id="vertical-detail-copy" class="paper-detail__copy"></p>
+              </div>
+            </aside>
+          </div>
+          <p class="paper-hint">點分類進入 64rem 閱讀尺度；紙面變寬，但菜名、價格與分類標題維持 overview 字級。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading"><p class="eyebrow">Mechanism notes</p><h2>只取消 reading 字級成長</h2></div>
+        <div class="timeline">
+          <article class="phase-card"><h3>幾何保留</h3><p>外欄仍為 14:10:6，欄內仍為 8:6、6:4、4:2；紙面仍由 46rem 切換至 64rem。</p></article>
+          <article class="phase-card"><h3>直排保留</h3><p>菜名維持 vertical-rl，價格維持 upright 並壓在各料理欄底端，右到左順序不變。</p></article>
+          <article class="phase-card"><h3>固定字級</h3><p>菜名維持 .72rem、價格 .58rem、分類標題 .82rem，不使用 24 的 .9rem／.7rem／1rem reading 放大。</p></article>
+          <article class="phase-card"><h3>判定風險</h3><p>若64rem只增加空白而沒有形成更清楚的字形，24 的閱讀改善主要來自字級；反之則可降低尺度切換時的密度變化。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const menu = window.menuLensResearchMenu;
+      const core = window.MenuLensLandscapeCore;
+      const viewport = document.querySelector("#vertical-viewport");
+      const sheet = document.querySelector("#vertical-sheet");
+      const overviewButton = document.querySelector("#vertical-overview");
+      const previousButton = document.querySelector("#vertical-previous");
+      const nextButton = document.querySelector("#vertical-next");
+      const locationTitle = document.querySelector("#vertical-location-title");
+      const locationMeta = document.querySelector("#vertical-location-meta");
+
+      core.hydrateRestaurant({
+        menu,
+        name: document.querySelector("#vertical-restaurant-name"),
+        meta: document.querySelector("#vertical-restaurant-meta"),
+        copy: document.querySelector("#vertical-restaurant-copy"),
+      });
+
+      const { categories, categoryCounts, columnCounts, columns, productButtons } = core.buildLandscape({
+        menu,
+        sheet,
+        columnClass: "landscape-column vertical-column",
+        categoryClass: "vertical-category",
+        columnWeight: ({ firstCount, secondCount }) => firstCount + secondCount,
+        decorateProduct: ({ button, product }) => {
+          button.dataset.availability = product.availability;
+        },
+      });
+      categories.forEach((category, categoryIndex) => {
+        category.style.setProperty("--product-count", String(categoryCounts[categoryIndex]));
+      });
+
+      const detail = core.createDishDetail({
+        menu,
+        detail: document.querySelector("#vertical-detail"),
+        closeButton: document.querySelector("#vertical-detail-close"),
+        title: document.querySelector("#vertical-detail-title"),
+        meta: document.querySelector("#vertical-detail-meta"),
+        copy: document.querySelector("#vertical-detail-copy"),
+        productButtons,
+      });
+
+      let scale = "overview";
+      let activeColumnIndex = 0;
+      let scrollFrame = null;
+
+      const scrollBehavior = () =>
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+      const updateLocation = () => {
+        overviewButton.setAttribute("aria-pressed", String(scale === "overview"));
+        previousButton.disabled = scale === "overview" || activeColumnIndex === 0;
+        nextButton.disabled = scale === "overview" || activeColumnIndex === columns.length - 1;
+        columns.forEach((column, index) => {
+          if (scale === "reading" && index === activeColumnIndex) column.dataset.active = "true";
+          else delete column.dataset.active;
+        });
+        categories.forEach((category) => {
+          const columnIndex = Number(category.closest(".landscape-column").dataset.columnIndex);
+          category.querySelector(".paper-category__header").setAttribute(
+            "aria-expanded",
+            String(scale === "reading" && columnIndex === activeColumnIndex),
+          );
+        });
+        if (scale === "overview") {
+          locationTitle.textContent = "完整 3×2 紙面";
+          locationMeta.textContent = `欄寬 ${columnCounts.join(":")} · 固定字級`;
+          return;
+        }
+        const firstCategoryIndex = activeColumnIndex * 2;
+        locationTitle.textContent = `${menu.categories[firstCategoryIndex].name}／${menu.categories[firstCategoryIndex + 1].name}`;
+        locationMeta.textContent = `紙欄 ${activeColumnIndex + 1} / ${columns.length} · 64rem／固定字級`;
+      };
+
+      const scrollColumnIntoView = (columnIndex, behavior = scrollBehavior()) => {
+        activeColumnIndex = Math.max(0, Math.min(columns.length - 1, columnIndex));
+        const column = columns[activeColumnIndex];
+        const targetLeft = column.offsetLeft + column.offsetWidth / 2 - viewport.clientWidth / 2;
+        viewport.scrollTo({ left: Math.max(0, targetLeft), behavior });
+        updateLocation();
+      };
+
+      const setScale = (nextScale, columnIndex = activeColumnIndex) => {
+        scale = nextScale;
+        viewport.dataset.scale = scale;
+        detail.close();
+        if (scale === "overview") {
+          viewport.scrollTo({ left: 0, behavior: scrollBehavior() });
+          updateLocation();
+          return;
+        }
+        requestAnimationFrame(() => scrollColumnIntoView(columnIndex));
+      };
+
+      const nearestColumnIndex = () => {
+        const viewportBounds = viewport.getBoundingClientRect();
+        const center = viewportBounds.left + viewportBounds.width / 2;
+        let nearestIndex = activeColumnIndex;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+        columns.forEach((column, index) => {
+          const bounds = column.getBoundingClientRect();
+          const distance = Math.abs(bounds.left + bounds.width / 2 - center);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+        return nearestIndex;
+      };
+
+      categories.forEach((category) => {
+        const columnIndex = Number(category.closest(".landscape-column").dataset.columnIndex);
+        category.querySelector(".paper-category__header").addEventListener("click", () => setScale("reading", columnIndex));
+      });
+      productButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const columnIndex = Number(button.closest(".landscape-column").dataset.columnIndex);
+          if (scale === "overview") {
+            setScale("reading", columnIndex);
+            return;
+          }
+          detail.open(button);
+        });
+      });
+
+      overviewButton.addEventListener("click", () => setScale("overview"));
+      previousButton.addEventListener("click", () => {
+        detail.close();
+        scrollColumnIntoView(activeColumnIndex - 1);
+      });
+      nextButton.addEventListener("click", () => {
+        detail.close();
+        scrollColumnIntoView(activeColumnIndex + 1);
+      });
+      viewport.addEventListener("scroll", () => {
+        if (scale !== "reading" || scrollFrame !== null) return;
+        scrollFrame = requestAnimationFrame(() => {
+          scrollFrame = null;
+          activeColumnIndex = nearestColumnIndex();
+          updateLocation();
+        });
+      }, { passive: true });
+      viewport.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        if (scale === "overview") setScale("reading", event.key === "ArrowLeft" ? 0 : columns.length - 1);
+        else scrollColumnIntoView(activeColumnIndex + (event.key === "ArrowLeft" ? -1 : 1));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (detail.isOpen()) detail.close(true);
+        else if (scale === "reading") setScale("overview");
+      });
+      window.addEventListener("resize", () => {
+        if (scale === "reading") requestAnimationFrame(() => scrollColumnIntoView(activeColumnIndex, "auto"));
+      });
+
+      window.enableMenuLensHorizontalDrag(viewport, {
+        enabled: () => !detail.isOpen(),
+        onSettle: () => scrollColumnIntoView(nearestColumnIndex()),
+      });
+
+      updateLocation();
+    </script>
+  </body>
+</html>
