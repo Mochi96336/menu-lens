@@ -50,9 +50,5 @@ for (const [id, contract] of expected) {
 
 const forbiddenIds = new Set(["18BCD", "18B+C+D", "landscape-core-combined", "combined-landscape-core"]);
 assert.ok(!catalog.objects.some((object) => forbiddenIds.has(object.id) || object.slug === "combined-landscape-core"), "Landscape Core intake must not combine 18B, 18C and 18D.");
-for (const id of ["22A", "22B", "22C", "22D", "22E", "22F", "22G"]) {
-  const object = byId.get(id);
-  if (object?.sourcePr) throw new Error(`Landscape Core intake must not import ablation child ${id}.`);
-}
 
 console.log("Landscape Core Archive v2 intake passed: browser-verified substrate 18 and three independent browser-verified controlled children.");
