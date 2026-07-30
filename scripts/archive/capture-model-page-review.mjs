@@ -158,6 +158,17 @@ const capture = async (client, filename) => {
   await writeFile(new URL(filename, outputDir), Buffer.from(result.data, "base64"));
 };
 
+const scrollToSelector = async (client, selector) => {
+  await evaluate(client, `(() => {
+    const target = document.querySelector(${JSON.stringify(selector)});
+    if (!target) return false;
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo(0, Math.round(target.getBoundingClientRect().top + window.scrollY));
+    return true;
+  })()`);
+  await delay(150);
+};
+
 await mkdir(outputDir, { recursive: true });
 await waitForHttp(`${baseUrl}/models/`);
 
@@ -192,6 +203,8 @@ try {
   });
   const client = new CdpClient(socket);
   const runtimeErrors = [];
+  const requestUrls = new Map();
+  const isFavicon = (url) => typeof url === "string" && new URL(url).pathname === "/favicon.ico";
   client.on("Runtime.exceptionThrown", ({ exceptionDetails }) => {
     runtimeErrors.push(exceptionDetails?.exception?.description ?? exceptionDetails?.text ?? "Runtime exception");
   });
@@ -200,10 +213,21 @@ try {
     runtimeErrors.push(args.map((arg) => arg.value ?? arg.description ?? "").join(" "));
   });
   client.on("Log.entryAdded", ({ entry }) => {
-    if (entry?.level === "error") runtimeErrors.push(entry.text ?? "Browser log error");
+    if (entry?.level !== "error" || isFavicon(entry.url)) return;
+    runtimeErrors.push(`${entry.text ?? "Browser log error"}${entry.url ? ` (${entry.url})` : ""}`);
   });
-  client.on("Network.loadingFailed", ({ errorText, blockedReason, type }) => {
-    runtimeErrors.push(`Resource load failed (${type ?? "unknown"}): ${blockedReason ?? errorText}`);
+  client.on("Network.requestWillBeSent", ({ requestId, request }) => {
+    if (requestId && request?.url) requestUrls.set(requestId, request.url);
+  });
+  client.on("Network.loadingFinished", ({ requestId }) => requestUrls.delete(requestId));
+  client.on("Network.loadingFailed", ({ requestId, errorText, blockedReason, type }) => {
+    const url = requestUrls.get(requestId);
+    requestUrls.delete(requestId);
+    if (type === "Document" && errorText === "net::ERR_ABORTED") return;
+    if (isFavicon(url)) return;
+    runtimeErrors.push(
+      `Resource load failed (${type ?? "unknown"}): ${blockedReason ?? errorText}${url ? ` (${url})` : ""}`,
+    );
   });
   await client.send("Page.enable");
   await client.send("Runtime.enable");
@@ -226,6 +250,7 @@ try {
       documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
       computedFrameWidth: frame ? getComputedStyle(frame).width : null,
       compareVisible: compare ? !compare.hidden : false,
+      parentRecordHidden: document.querySelector('#parent-record-link').hidden,
       paneSwitched,
       currentFramePreserved: document.querySelector('#current-preview iframe') === currentFrame,
       bodyWidth: document.documentElement.clientWidth,
@@ -236,8 +261,7 @@ try {
   await capture(client, "landscape-320-top.png");
 
   await navigate(client, landscapePath, 390, 900);
-  await evaluate(client, "document.querySelector('#workbench')?.scrollIntoView({ block: 'start' })");
-  await delay(150);
+  await scrollToSelector(client, "#workbench");
   cases.push({
     name: "landscape-390-workbench",
     width: 390,
@@ -253,8 +277,7 @@ try {
 
   for (const width of [1024, 1440]) {
     await navigate(client, landscapePath, width, 900);
-    await evaluate(client, "document.querySelector('#workbench')?.scrollIntoView({ block: 'start' })");
-    await delay(150);
+    await scrollToSelector(client, "#workbench");
     cases.push({
       name: `landscape-${width}-workbench`,
       width,
@@ -263,6 +286,7 @@ try {
         documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
         computedFrameWidth: getComputedStyle(document.querySelector('#current-preview iframe')).width,
         layoutColumns: getComputedStyle(document.querySelector('.model-layout')).gridTemplateColumns,
+        layoutColumnCount: getComputedStyle(document.querySelector('.model-layout')).gridTemplateColumns.split(/\s+/).length,
         compareColumns: getComputedStyle(document.querySelector('#preview-grid')).gridTemplateColumns,
       }))()`),
     });
@@ -277,8 +301,7 @@ try {
     titleDeduplicated: !document.querySelector('#current-object-title').textContent.match(/^(\\S+) · \\1\\b/),
     documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
   }))()`);
-  await evaluate(client, "document.querySelector('#workbench')?.scrollIntoView({ block: 'start' })");
-  await delay(150);
+  await scrollToSelector(client, "#workbench");
   await capture(client, "paper-field-390-study.png");
   const focusMetrics = await evaluate(client, `(() => {
     const sectionButton = [...document.querySelectorAll('#section-tabs button')]
@@ -298,11 +321,16 @@ try {
   if (mobileMetrics.title !== "18B · Semantic Zoom") failures.push(`Unexpected current title: ${mobileMetrics.title}`);
   if (mobileMetrics.documentOverflow) failures.push("320px page has document-level horizontal overflow.");
   if (mobileMetrics.computedFrameWidth !== "390px") failures.push(`Expected 390px frame, got ${mobileMetrics.computedFrameWidth}.`);
-  if (!mobileMetrics.compareVisible || !mobileMetrics.paneSwitched || !mobileMetrics.currentFramePreserved) {
+  if (!mobileMetrics.compareVisible || !mobileMetrics.parentRecordHidden
+    || !mobileMetrics.paneSwitched || !mobileMetrics.currentFramePreserved) {
     failures.push("Mobile Current/Parent comparison contract failed.");
   }
   for (const reviewCase of cases) {
     if (reviewCase.metrics.documentOverflow) failures.push(`${reviewCase.name} has document-level horizontal overflow.`);
+  }
+  const desktop1024 = cases.find((reviewCase) => reviewCase.name === "landscape-1024-workbench");
+  if (!desktop1024 || desktop1024.metrics.layoutColumnCount < 2) {
+    failures.push("1024px workbench must retain sidebar and stage columns.");
   }
   if (!studyMetrics.compareHiddenOnStudy || !studyMetrics.parentRecordVisibleOnStudy) {
     failures.push("Study comparison boundary failed.");
