@@ -240,9 +240,14 @@
 
 .model-page .model-all-preview-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  align-items: start;
+  gap: 1.25rem;
   padding-top: .65rem;
+}
+
+.model-page .model-all-preview-grid[data-viewport="desktop"] {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .model-page .model-all-preview-grid[hidden] {
@@ -250,7 +255,10 @@
 }
 
 .model-page .model-preview-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   min-width: 0;
+  align-items: center;
   border-top: 1px solid var(--line-strong);
   background: var(--surface);
 }
@@ -269,10 +277,9 @@
 .model-page .model-preview-card__select {
   display: grid;
   gap: .2rem;
-  width: 100%;
+  min-width: 0;
   padding: .7rem .75rem;
   border: 0;
-  border-bottom: 1px solid var(--line);
   background: transparent;
   color: var(--ink);
   text-align: left;
@@ -285,16 +292,32 @@
   font-size: .62rem;
 }
 
-.model-page .model-preview-card__image {
-  display: grid;
-  min-height: 13rem;
-  place-items: start center;
-  padding: .65rem;
-  background: var(--paper);
+.model-page .model-preview-card > .status {
+  margin-inline: .4rem;
 }
 
-.model-page .model-preview-card__image .model-preview-image {
-  max-height: 30rem;
+.model-page .model-preview-card__source {
+  margin-right: .7rem;
+  white-space: nowrap;
+  font-size: .7rem;
+}
+
+.model-page .model-preview-card__surface {
+  grid-column: 1 / -1;
+  display: grid;
+  min-width: 0;
+  min-height: 13rem;
+  place-items: start center;
+  overflow-x: auto;
+  padding: .65rem;
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.model-page .model-preview-card__surface .model-live-surface {
+  justify-self: start;
 }
 
 .model-page .model-inspector {
@@ -556,16 +579,16 @@
   }
 
   .model-page .model-all-preview-grid {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(16rem, 82vw);
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scroll-snap-type: x proximity;
-    scrollbar-gutter: stable;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .model-page .model-preview-card {
-    scroll-snap-align: start;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .model-page .model-preview-card__source {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 0 .75rem .65rem;
   }
 }

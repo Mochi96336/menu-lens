@@ -129,21 +129,21 @@ const waitForLive = (client, rootSelector) => waitFor(client, `(() => {
     && getComputedStyle(frame).pointerEvents !== 'none');
 })()`, `live surface ${rootSelector}`);
 
-const waitForBoard = (client) => waitFor(client, `(() => {
+const waitForLiveGroup = (client) => waitFor(client, `(() => {
   const board = document.querySelector('#all-preview-grid');
-  const images = [...board?.querySelectorAll('img') ?? []];
-  const currentCard = board?.querySelector('[data-current="true"]');
-  const boardRect = board?.getBoundingClientRect();
-  const cardRect = currentCard?.getBoundingClientRect();
-  const visibleWidth = boardRect && cardRect
-    ? Math.max(0, Math.min(cardRect.right, boardRect.right) - Math.max(cardRect.left, boardRect.left))
-    : 0;
-  return Boolean(board && getComputedStyle(board).display !== 'none'
-    && images.length
-    && images.every((image) => image.complete && image.naturalWidth > 0)
-    && cardRect
-    && visibleWidth >= Math.min(cardRect.width, boardRect.width) * 0.8);
-})()`, "static all-object board with active card visible");
+  const cards = [...board?.querySelectorAll('.model-preview-card') ?? []];
+  const roots = [...board?.querySelectorAll('.model-preview-card__surface') ?? []];
+  if (!board || getComputedStyle(board).display === 'none' || !cards.length || roots.length !== cards.length) return false;
+  return roots.every((root) => {
+    const frame = root.querySelector('iframe.model-live-frame');
+    if (!frame) return root.dataset.liveState === 'fallback';
+    if (root.dataset.liveState !== 'ready' || frame.hidden || getComputedStyle(frame).pointerEvents === 'none') return false;
+    const liveRoot = frame.contentDocument?.querySelector(root.dataset.liveRoot || '#prototype');
+    const frameHeight = Number.parseFloat(frame.style.height);
+    const rootHeight = liveRoot?.getBoundingClientRect().height ?? 0;
+    return Boolean(liveRoot && frameHeight > 0 && Math.abs(frameHeight - rootHeight) < 3);
+  });
+})()`, "simultaneously operable all-object group");
 
 const capture = async (client, filename) => {
   const screenshot = await client.send("Page.captureScreenshot", {
@@ -212,7 +212,8 @@ try {
   await client.send("Network.enable");
 
   const cases = [];
-  const basePath = "/models/?model=landscape-paper&section=reading-grammar&variant=18B&viewport=390";
+  const allPath = "/models/?model=landscape-paper&section=reading-grammar&variant=18B&viewport=390";
+  const basePath = `${allPath}&view=focus`;
 
   await navigate(client, basePath, 320);
   await waitForLive(client, "#current-preview");
@@ -229,7 +230,7 @@ try {
       && frame.contentWindow.__menuLensReviewMarker === 'focus-preserved';
   })()`, "viewport resize without live reload");
   await evaluate(client, `document.querySelector('#view-all').click()`);
-  await waitForBoard(client);
+  await waitForLiveGroup(client);
   await evaluate(client, `document.querySelector('#view-focus').click()`);
   await waitForLive(client, "#current-preview");
   await evaluate(client, `document.querySelector('[data-viewport="390"]').click()`);
@@ -257,44 +258,58 @@ try {
   cases.push({ name: "landscape-320-live-focus", width: 320, height: 900, metrics: mobileFocusMetrics });
   await capture(client, "landscape-320-live-focus.png");
 
-  await navigate(client, basePath, 390);
-  await waitForLive(client, "#current-preview");
-  await evaluate(client, `document.querySelector('#view-all').click()`);
-  await waitForBoard(client);
+  await navigate(client, allPath, 390);
+  await waitForLiveGroup(client);
+  await evaluate(client, `(() => {
+    for (const root of document.querySelectorAll('#all-preview-grid .model-preview-card__surface')) {
+      const frame = root.querySelector('iframe');
+      if (frame) frame.contentWindow.__menuLensAllMarker = root.dataset.objectId;
+    }
+    document.querySelector('[data-viewport="320"]').click();
+  })()`);
+  await waitForLiveGroup(client);
+  await evaluate(client, `document.querySelector('[data-viewport="390"]').click()`);
+  await waitForLiveGroup(client);
   const mobileAllMetrics = await evaluate(client, `(() => {
     const board = document.querySelector('#all-preview-grid');
-    const currentCard = board.querySelector('[data-current="true"]');
-    const boardRect = board.getBoundingClientRect();
-    const currentRect = currentCard.getBoundingClientRect();
-    const visibleWidth = Math.max(0, Math.min(currentRect.right, boardRect.right) - Math.max(currentRect.left, boardRect.left));
-    const hiddenLiveFrame = document.querySelector('#current-preview iframe');
+    const cards = [...board.querySelectorAll('.model-preview-card')];
+    const roots = [...board.querySelectorAll('.model-preview-card__surface')];
+    const frames = roots.map((root) => root.querySelector('iframe')).filter(Boolean);
+    const targets = frames.map((frame, index) =>
+      frame.contentDocument.querySelector(roots[index].dataset.liveRoot));
     return {
       documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-      boardVisible: getComputedStyle(board).display !== 'none',
-      cardCount: board.querySelectorAll('.model-preview-card').length,
-      horizontalBoard: board.scrollWidth > board.clientWidth,
-      loadedImages: [...board.querySelectorAll('img')].filter((image) => image.complete && image.naturalWidth > 0).length,
-      boardIframeCount: board.querySelectorAll('iframe').length,
-      hiddenLivePreserved: Boolean(hiddenLiveFrame),
-      currentCardVisible: visibleWidth >= Math.min(currentRect.width, boardRect.width) * 0.8,
-      urlHasAll: new URL(location.href).searchParams.get('view') === 'all',
+      defaultAll: !board.hidden && document.querySelector('#preview-grid').hidden,
+      cardCount: cards.length,
+      liveFrameCount: frames.length,
+      readyCount: roots.filter((root) => root.dataset.liveState === 'ready').length,
+      operableCount: frames.filter((frame) => getComputedStyle(frame).pointerEvents !== 'none').length,
+      allHeightsMatch: frames.every((frame, index) =>
+        Math.abs(Number.parseFloat(frame.style.height) - targets[index].getBoundingClientRect().height) < 3),
+      allWidthsMatch: frames.every((frame) => frame.style.width === '390px'),
+      statePreserved: frames.every((frame, index) =>
+        frame.contentWindow.__menuLensAllMarker === roots[index].dataset.objectId),
+      canonicalAllUrl: !new URL(location.href).searchParams.has('view')
+        && !new URL(location.href).searchParams.has('compare'),
     };
   })()`);
-  await evaluate(client, `(() => {
+  const selectedId = await evaluate(client, `(() => {
     const button = [...document.querySelectorAll('[data-all-object-id]')]
       .find((candidate) => candidate.dataset.allObjectId !== '18B');
+    const id = button.dataset.allObjectId;
     button.click();
+    return id;
   })()`);
-  await waitForLive(client, "#current-preview");
+  await waitForLiveGroup(client);
   const allSelectionMetrics = await evaluate(client, `(() => ({
-    returnedToFocus: document.querySelector('#all-preview-grid').hidden && !document.querySelector('#preview-grid').hidden,
-    selectedObject: document.querySelector('#current-preview').dataset.objectId,
-    liveSource: new URL(document.querySelector('#current-preview iframe').src).pathname,
+    remainedAll: !document.querySelector('#all-preview-grid').hidden
+      && document.querySelector('#preview-grid').hidden,
+    selectedObjectTitle: document.querySelector('#current-object-title').textContent,
+    currentCardCount: document.querySelectorAll('#all-preview-grid [data-current="true"]').length,
   }))()`);
-  cases.push({ name: "landscape-390-static-board", width: 390, height: 900, metrics: { ...mobileAllMetrics, ...allSelectionMetrics } });
-  await navigate(client, `${basePath}&view=all`, 390);
-  await waitForBoard(client);
-  await capture(client, "landscape-390-static-board.png");
+  allSelectionMetrics.selectedId = selectedId;
+  cases.push({ name: "landscape-390-live-all", width: 390, height: 900, metrics: { ...mobileAllMetrics, ...allSelectionMetrics } });
+  await capture(client, "landscape-390-live-all.png");
 
   for (const width of [1024, 1440]) {
     await navigate(client, basePath, width);
@@ -308,7 +323,7 @@ try {
       document.querySelector('#parent-preview iframe').contentWindow.__parentMarker = 'parent';
       document.querySelector('#view-all').click();
     })()`);
-    await waitForBoard(client);
+    await waitForLiveGroup(client);
     await evaluate(client, `document.querySelector('#compare-parent').click()`);
     await waitForLive(client, "#current-preview");
     await waitForLive(client, "#parent-preview");
@@ -347,7 +362,7 @@ try {
     await capture(client, `landscape-${width}-live-compare.png`);
   }
 
-  const studyPath = "/models/?model=paper-field&section=semantic-information&variant=12A-S1&viewport=390";
+  const studyPath = "/models/?model=paper-field&section=semantic-information&variant=12A-S1&viewport=390&view=focus";
   await navigate(client, studyPath, 390);
   await waitForLive(client, "#current-preview");
   const studyMetrics = await evaluate(client, `(() => {
@@ -379,11 +394,13 @@ try {
     || mobileFocusMetrics.mode !== "focus" || !mobileFocusMetrics.sourcePath.includes("18b-semantic-zoom")) {
     failures.push("320px operable focus surface contract failed.");
   }
-  if (mobileAllMetrics.documentOverflow || !mobileAllMetrics.boardVisible || mobileAllMetrics.cardCount !== 4
-    || !mobileAllMetrics.horizontalBoard || mobileAllMetrics.loadedImages < 3 || mobileAllMetrics.boardIframeCount !== 0
-    || !mobileAllMetrics.hiddenLivePreserved || !mobileAllMetrics.currentCardVisible || !mobileAllMetrics.urlHasAll
-    || !allSelectionMetrics.returnedToFocus || !allSelectionMetrics.selectedObject || !allSelectionMetrics.liveSource) {
-    failures.push("390px hybrid static-board selection contract failed.");
+  if (mobileAllMetrics.documentOverflow || !mobileAllMetrics.defaultAll || mobileAllMetrics.cardCount !== 4
+    || mobileAllMetrics.liveFrameCount !== 4 || mobileAllMetrics.readyCount !== 4
+    || mobileAllMetrics.operableCount !== 4 || !mobileAllMetrics.allHeightsMatch
+    || !mobileAllMetrics.allWidthsMatch || !mobileAllMetrics.statePreserved || !mobileAllMetrics.canonicalAllUrl
+    || !allSelectionMetrics.remainedAll || allSelectionMetrics.currentCardCount !== 1
+    || !allSelectionMetrics.selectedObjectTitle.startsWith(`${allSelectionMetrics.selectedId} ·`)) {
+    failures.push("390px simultaneous all-object operation contract failed.");
   }
   const desktop1024 = cases.find((reviewCase) => reviewCase.name === "landscape-1024-live-compare");
   if (!desktop1024 || desktop1024.metrics.layoutColumnCount !== 2
@@ -419,7 +436,7 @@ try {
   await writeFile(new URL("results.json", outputDir), `${JSON.stringify(report, null, 2)}\n`);
   if (failures.length) throw new Error(`Model-page browser review failed:\n- ${failures.join("\n- ")}`);
   socket.close();
-  console.log("Model-page browser review: operable live focus/compare surfaces, preserved state, static section board, and study boundaries verified.");
+  console.log("Model-page browser review: default simultaneous live group, operable focus/compare surfaces, preserved state, and study boundaries verified.");
 } catch (error) {
   if (browserStderr.trim()) console.error(browserStderr.trim());
   throw error;

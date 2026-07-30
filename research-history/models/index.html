@@ -91,9 +91,9 @@
             <div class="model-toolbar" aria-label="研究物件操作與比較設定">
               <div class="model-toolbar__group" aria-label="觀察模式">
                 <span>觀察模式</span>
-                <button id="view-focus" type="button" data-view-mode="focus" aria-pressed="true">操作</button>
+                <button id="view-all" type="button" data-view-mode="all" aria-pressed="true">本組全部</button>
+                <button id="view-focus" type="button" data-view-mode="focus" aria-pressed="false">單張操作</button>
                 <button id="compare-parent" class="model-compare-button" type="button" data-view-mode="compare" aria-pressed="false">並排操作</button>
-                <button id="view-all" type="button" data-view-mode="all" aria-pressed="false">本組全部</button>
               </div>
               <div class="model-toolbar__group" aria-label="Viewport 尺寸">
                 <span>畫面寬度</span>
@@ -109,7 +109,7 @@
 
             <p id="viewport-note" class="model-viewport-note"></p>
 
-            <div id="preview-grid" class="model-preview-grid" data-view-mode="focus">
+            <div id="preview-grid" class="model-preview-grid" data-view-mode="focus" hidden>
               <article class="model-preview-pane model-preview-pane--current" data-pane="current">
                 <header class="model-preview-pane__label">
                   <div><p class="phase-index">目前</p><h3 id="current-preview-title"></h3></div>
@@ -126,7 +126,7 @@
               </article>
             </div>
 
-            <div id="all-preview-grid" class="model-all-preview-grid" hidden aria-label="本組研究物件預覽"></div>
+            <div id="all-preview-grid" class="model-all-preview-grid" aria-label="本組研究物件可操作畫面"></div>
           </div>
 
           <aside class="model-inspector" aria-label="研究物件說明">

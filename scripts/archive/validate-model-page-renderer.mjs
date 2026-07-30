@@ -216,22 +216,22 @@ try {
 
   selectors.get("#view-all").dispatch("click");
   if (selectors.get("#all-preview-grid").hidden || !selectors.get("#preview-grid").hidden) {
-    throw new Error("All mode must replace the live stage with the static section board.");
+    throw new Error("All mode must replace the single live stage with the full operable group.");
   }
   if (selectors.get("#all-preview-grid").children.length !== 4) {
     throw new Error("All mode must render every object in the active sub-study.");
   }
-  if (selectors.get("#all-preview-grid").querySelectorAll("iframe.model-live-frame").length) {
-    throw new Error("All-object cards must remain static and must not create nested live frames.");
+  if (selectors.get("#all-preview-grid").querySelectorAll("iframe.model-live-frame").length !== 4) {
+    throw new Error("Every executable all-object card must create its own live frame.");
   }
   if (selectors.get("#current-preview").querySelector("iframe.model-live-frame") !== currentFrame) {
-    throw new Error("Opening the static section board must preserve the hidden live surface.");
+    throw new Error("Opening the live group must preserve the hidden focus surface.");
   }
 
   const secondCardButton = selectors.get("#all-preview-grid").children[1]?.children[0];
   secondCardButton?.dispatch("click");
-  if (!selectors.get("#all-preview-grid").hidden || selectors.get("#preview-grid").hidden) {
-    throw new Error("Selecting a static card must return to the operable focus view.");
+  if (selectors.get("#all-preview-grid").hidden || !selectors.get("#preview-grid").hidden) {
+    throw new Error("Selecting an all-object card must keep the full live group visible.");
   }
 
   const sectionTabs = selectors.get("#section-tabs").children;
@@ -250,6 +250,7 @@ try {
   modelSelect.value = "paper-field";
   modelSelect.dispatch("change");
   selectors.get("#variant-list").children[3].dispatch("click");
+  selectors.get("#view-focus").dispatch("click");
   if (selectors.get("#difference-eyebrow").textContent !== "研究工具") {
     throw new Error("Study objects must retain their study role.");
   }
@@ -280,7 +281,7 @@ try {
     ".model-live-fallback",
     'data-view-mode="compare"',
     ".model-all-preview-grid",
-    "grid-auto-flow: column",
+    ".model-preview-card__surface",
     "@media (min-width: 901px) and (max-width: 1050px)",
   ]) {
     if (!css.includes(contract)) throw new Error(`Model workbench CSS is missing hybrid-view contract: ${contract}`);
@@ -295,4 +296,4 @@ try {
   }
 }
 
-console.log("Design model viewer: operable live focus/compare surfaces, static section board, preserved state, roles, and responsive contracts verified.");
+console.log("Design model viewer: default simultaneous live group, operable focus/compare surfaces, preserved state, roles, and responsive contracts verified.");

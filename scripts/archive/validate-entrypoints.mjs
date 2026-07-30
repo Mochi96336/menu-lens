@@ -99,10 +99,10 @@ for (const contract of [
   "研究工具",
   "previewAssetPath",
   "renderAllPreviews",
+  "allLiveSurfaces",
   "activeViewMode",
   "createModelLiveSurface",
   "syncLivePreview",
-  "syncStaticPreview",
 ]) {
   if (!modelRenderer.includes(contract)) throw new Error(`Design model renderer is missing contract: ${contract}`);
 }
@@ -134,4 +134,4 @@ if (renderer.includes('review.href = `../')) {
   throw new Error("Archive review links must remain relative to the published research-history root.");
 }
 
-console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the hybrid live/static design model workbench.`);
+console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the simultaneous live design model workbench.`);
