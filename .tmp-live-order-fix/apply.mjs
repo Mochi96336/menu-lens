@@ -36,6 +36,17 @@ const adapterPath = "research-history/model-live-surface.mjs";
 let adapter = await readFile(adapterPath, "utf8");
 adapter = replaceOnce(
   adapter,
+  `  let loadVersion = 0;
+  let resizeObserver = null;
+  let activeTarget = null;`,
+  `  let loadVersion = 0;
+  let measurementVersion = 0;
+  let resizeObserver = null;
+  let activeTarget = null;`,
+  "track live-surface measurement versions",
+);
+adapter = replaceOnce(
+  adapter,
   `  const showFallback = (message, failed = false) => {
     frame.hidden = true;
     fallback.hidden = false;
@@ -72,6 +83,15 @@ adapter = replaceOnce(
 );
 adapter = replaceOnce(
   adapter,
+  `  const measure = async (expectedVersion = loadVersion) => {
+    if (expectedVersion !== loadVersion || !frame.contentWindow || !frame.contentDocument) return false;`,
+  `  const measure = async (expectedVersion = loadVersion) => {
+    const measurement = ++measurementVersion;
+    if (expectedVersion !== loadVersion || !frame.contentWindow || !frame.contentDocument) return false;`,
+  "version each asynchronous measurement",
+);
+adapter = replaceOnce(
+  adapter,
   `    activeTarget = match.target;
     activeSelector = match.selector;
     ensureDocumentStyle(frameDocument);`,
@@ -83,11 +103,41 @@ adapter = replaceOnce(
 );
 adapter = replaceOnce(
   adapter,
+  `    frameDocument.documentElement.classList.add("model-live-ready");
+    const rect = activeTarget.getBoundingClientRect();
+    const height = Math.max(1, Math.ceil(rect.height));`,
+  `    frameDocument.documentElement.classList.add("model-live-ready");
+    const rect = activeTarget.getBoundingClientRect();
+    if (measurement !== measurementVersion || expectedVersion !== loadVersion) return false;
+    const height = Math.max(1, Math.ceil(rect.height));`,
+  "discard stale live-surface measurements",
+);
+adapter = replaceOnce(
+  adapter,
   `      frame.removeAttribute("src");
       showFallback("此研究物件沒有獨立可操作畫面。", true);`,
-  `      frame.removeAttribute("src");
+  `      measurementVersion += 1;
+      frame.removeAttribute("src");
       showFallback("此研究物件沒有獨立可操作畫面。", true, false);`,
   "fully hide frame without executable source",
+);
+adapter = replaceOnce(
+  adapter,
+  `    if (sourceChanged) {
+      loadVersion += 1;`,
+  `    if (sourceChanged) {
+      loadVersion += 1;
+      measurementVersion += 1;`,
+  "invalidate measurements when source changes",
+);
+adapter = replaceOnce(
+  adapter,
+  `  const destroy = () => {
+    loadVersion += 1;`,
+  `  const destroy = () => {
+    loadVersion += 1;
+    measurementVersion += 1;`,
+  "invalidate measurements when surface is destroyed",
 );
 await writeFile(adapterPath, adapter);
 
@@ -110,5 +160,21 @@ css = replaceOnce(
 );
 await writeFile(cssPath, css);
 
+const reviewPath = "scripts/archive/capture-model-page-review.mjs";
+let review = await readFile(reviewPath, "utf8");
+review = replaceOnce(
+  review,
+  `  const liveRoot = frameDocument?.querySelector(root.dataset.liveRoot || '#prototype');
+  return Boolean(frameDocument && liveRoot && Number.parseFloat(frame.style.height) > 0);`,
+  `  const liveRoot = frameDocument?.querySelector(root.dataset.liveRoot || '#prototype');
+  const frameHeight = Number.parseFloat(frame.style.height);
+  const rootHeight = liveRoot?.getBoundingClientRect().height ?? 0;
+  return Boolean(frameDocument && liveRoot && frameHeight > 0
+    && Math.abs(frameHeight - rootHeight) < 3
+    && getComputedStyle(frame).pointerEvents !== 'none');`,
+  "wait for stable operable live surface",
+);
+await writeFile(reviewPath, review);
+
 await rm(".tmp-live-order-fix", { recursive: true, force: true });
-console.log("Live frames remain measurable and operable while the static fallback is visible.");
+console.log("Live-surface measurements are mounted, operable, and versioned.");
