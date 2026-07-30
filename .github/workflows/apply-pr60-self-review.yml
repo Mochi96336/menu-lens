@@ -25,9 +25,8 @@ jobs:
       - name: Apply self-review fixes
         run: |
           node .tmp-pr60-self-review/fix-apply-v2.mjs
-          node .tmp-pr60-self-review/fix-apply-v3.mjs
-          node .tmp-pr60-self-review/fix-apply-v4.mjs
           node .tmp-pr60-self-review/apply.mjs
+          node scripts/archive/post-pr60-self-review.mjs
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
