@@ -93,7 +93,32 @@ review = review.replace(oldStudyMetric, newStudyMetrics);
 const oldStudyAssertion = '    || studyMetrics.sourceActionText !== "開啟研究工具 ↗" || studyMetrics.iframeCount !== 1\n    || !studyMetrics.liveReady';
 const newStudyAssertion = '    || studyMetrics.sourceActionText !== "開啟研究工具 ↗" || studyMetrics.visibleIframeCount !== 1\n    || !studyMetrics.parentFrameIdle || !studyMetrics.liveReady';
 if (!review.includes(oldStudyAssertion)) throw new Error("Could not locate the study live-surface assertion.");
-await writeFile(reviewPath, review.replace(oldStudyAssertion, newStudyAssertion));
+review = review.replace(oldStudyAssertion, newStudyAssertion);
+const oldBoardWait = `const waitForBoard = (client) => waitFor(client, \`(() => {
+  const board = document.querySelector('#all-preview-grid');
+  const images = [...board?.querySelectorAll('img') ?? []];
+  return Boolean(board && getComputedStyle(board).display !== 'none'
+    && images.length
+    && images.every((image) => image.complete && image.naturalWidth > 0));
+})()\`, "static all-object board");`;
+const newBoardWait = `const waitForBoard = (client) => waitFor(client, \`(() => {
+  const board = document.querySelector('#all-preview-grid');
+  const images = [...board?.querySelectorAll('img') ?? []];
+  const currentCard = board?.querySelector('[data-current="true"]');
+  const boardRect = board?.getBoundingClientRect();
+  const cardRect = currentCard?.getBoundingClientRect();
+  const visibleWidth = boardRect && cardRect
+    ? Math.max(0, Math.min(cardRect.right, boardRect.right) - Math.max(cardRect.left, boardRect.left))
+    : 0;
+  return Boolean(board && getComputedStyle(board).display !== 'none'
+    && images.length
+    && images.every((image) => image.complete && image.naturalWidth > 0)
+    && cardRect
+    && visibleWidth >= Math.min(cardRect.width, boardRect.width) * 0.8);
+})()\`, "static all-object board with active card visible");`;
+if (!review.includes(oldBoardWait)) throw new Error("Could not locate the static board wait contract.");
+review = review.replace(oldBoardWait, newBoardWait);
+await writeFile(reviewPath, review);
 
 await rm(".tmp-hybrid2", { recursive: true, force: true });
 console.log(`Hybrid viewer payload applied: ${Object.keys(payload).length} files.`);
