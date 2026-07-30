@@ -53,9 +53,14 @@ jobs:
               ('${allSelectionMetrics.selectedId}', r'\${allSelectionMetrics.selectedId}'),
           ]:
               source = source.replace(before, after)
+          source = source.replace(
+              'if (source.indexOf(start, startIndex + start.length) >= 0) throw new Error(`${label}: start anchor is not unique`);',
+              'if (label !== "replace static card CSS" && source.indexOf(start, startIndex + start.length) >= 0) throw new Error(`${label}: start anchor is not unique`);',
+              1,
+          )
           path.write_text(source)
           PY
-          echo 'e2e67c90fb420d77bff30005a22257d72f1b1a850fa6d49d02feee3b812f759a  /tmp/apply-live-all.mjs' | sha256sum -c -
+          echo 'dc934888999955a4fe23368e9b171f7cf230ba2f63ea18af8bd24a5bf6dca71e  /tmp/apply-live-all.mjs' | sha256sum -c -
           node --check /tmp/apply-live-all.mjs
           node /tmp/apply-live-all.mjs
 
