@@ -1,4 +1,5 @@
 /* Follow-up model-page layout: concise headings, prototype-first workbench. */
+/* Hidden-state rules stay in this active layout layer so breakpoint rules cannot override them. */
 
 .model-toolbar-link[hidden],
 .model-compare-button[hidden],
