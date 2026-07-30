@@ -11,6 +11,7 @@ const requiredPaths = new Set([
   "prototype-registry.js",
   "model-page.css",
   "model-page-workbench.css",
+  "model-live-surface.mjs",
   "model-page.mjs",
   "models/index.html",
   "catalog/index.mjs",
@@ -32,12 +33,13 @@ for (const object of catalog.objects) {
 
 await Promise.all([...requiredPaths].map((path) => access(new URL(path, archiveRoot))));
 
-const [index, renderer, loader, modelPage, modelRenderer] = await Promise.all([
+const [index, renderer, loader, modelPage, modelRenderer, liveSurface] = await Promise.all([
   readFile(new URL("index.html", archiveRoot), "utf8"),
   readFile(new URL("catalog/render-index.mjs", archiveRoot), "utf8"),
   readFile(new URL("scripts/archive/load-catalog.mjs", root), "utf8"),
   readFile(new URL("models/index.html", archiveRoot), "utf8"),
   readFile(new URL("model-page.mjs", archiveRoot), "utf8"),
+  readFile(new URL("model-live-surface.mjs", archiveRoot), "utf8"),
 ]);
 
 for (const contract of [
@@ -98,8 +100,21 @@ for (const contract of [
   "previewAssetPath",
   "renderAllPreviews",
   "activeViewMode",
+  "createModelLiveSurface",
+  "syncLivePreview",
+  "syncStaticPreview",
 ]) {
   if (!modelRenderer.includes(contract)) throw new Error(`Design model renderer is missing contract: ${contract}`);
+}
+
+for (const contract of [
+  "defaultTargetSelectors",
+  "isolateTarget",
+  "model-live-ready",
+  "ResizeObserver",
+  "waitForImages",
+]) {
+  if (!liveSurface.includes(contract)) throw new Error(`Live-surface adapter is missing contract: ${contract}`);
 }
 
 for (const source of [renderer, loader, modelRenderer]) {
@@ -119,4 +134,4 @@ if (renderer.includes('review.href = `../')) {
   throw new Error("Archive review links must remain relative to the published research-history root.");
 }
 
-console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the preview-first design model workbench.`);
+console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the hybrid live/static design model workbench.`);

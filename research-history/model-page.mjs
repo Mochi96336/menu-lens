@@ -2,6 +2,7 @@ import { buildArchiveCatalog } from "./catalog/index.mjs";
 import { archiveExtensions } from "./catalog/all-extensions.mjs";
 import { archiveLegacyOverrides } from "./catalog/legacy-overrides.mjs";
 import { designModels, modelById, presentationNotes } from "./catalog/presentation-models.mjs";
+import { createModelLiveSurface } from "./model-live-surface.mjs";
 
 const requiredElement = (selector) => {
   const element = document.querySelector(selector);
@@ -201,6 +202,7 @@ const setStatus = (element, object) => {
 
 const archivePath = (path) => `../${path}`;
 const viewportLabel = () => activeViewport === "desktop" ? "1024px" : `${activeViewport}px`;
+const viewportPixelWidth = () => activeViewport === "desktop" ? 1024 : Number(activeViewport);
 
 const previewProfileForObject = (object) => {
   if (object.objectType === "study") return "study";
@@ -236,6 +238,20 @@ const sourcePresentation = (object) => {
   };
 };
 
+const liveSurfaces = Object.freeze({
+  current: createModelLiveSurface(elements.currentPreview),
+  parent: createModelLiveSurface(elements.parentPreview),
+});
+
+const syncLivePreview = (surface, object, role) => surface.sync({
+  key: object.id,
+  src: object.entrypoint ? archivePath(object.entrypoint) : null,
+  title: `${role}：${objectLabel(object)}，${viewportLabel()} 可操作畫面`,
+  viewportWidth: viewportPixelWidth(),
+  previewSrc: previewAssetPath(object),
+  previewAlt: `${role}：${objectLabel(object)}，${viewportLabel()} 靜態載入畫面`,
+});
+
 const makePreviewPlaceholder = (object, message) => {
   const placeholder = document.createElement("div");
   placeholder.className = "model-preview-placeholder";
@@ -258,7 +274,7 @@ const makePreviewPlaceholder = (object, message) => {
   return placeholder;
 };
 
-const syncPreview = (root, object, role, options = {}) => {
+const syncStaticPreview = (root, object, role, options = {}) => {
   root.dataset.viewport = activeViewport;
   root.dataset.previewProfile = previewProfileForObject(object);
   const currentImage = root.querySelector?.("img.model-preview-image") ?? root.children?.[0];
@@ -397,8 +413,9 @@ const renderViewportState = () => {
   for (const button of viewportButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.viewport === activeViewport));
   }
-  elements.viewportNote.textContent =
-    `${viewportLabel()} 靜態預覽只保留主要畫面；開啟原始頁面可實際操作。`;
+  elements.viewportNote.textContent = activeViewMode === "all"
+    ? `${viewportLabel()} 靜態快照用於同組掃視；選取任一物件即可進入操作。`
+    : `${viewportLabel()} 可操作畫面只保留主要 surface；互動狀態會在模式切換間保留。`;
 };
 
 const canCompareWithParent = (object, parent) =>
@@ -435,12 +452,13 @@ const renderAllPreviews = () => {
     );
     select.addEventListener("click", () => {
       activeObject = object;
-      render({ historyMode: "push", focusTarget: { kind: "all", id: object.id } });
+      activeViewMode = "focus";
+      render({ historyMode: "push", focusTarget: { kind: "object", id: object.id } });
     });
 
     const preview = document.createElement("div");
     preview.className = "model-preview-card__image";
-    syncPreview(preview, object, "本組物件", { eager: true });
+    syncStaticPreview(preview, object, "本組物件", { eager: true });
     card.append(select, preview);
     cards.push(card);
   }
@@ -451,29 +469,34 @@ const renderAllPreviews = () => {
     if (!currentCard) return;
     if (typeof elements.allPreviewGrid.scrollTo === "function"
       && elements.allPreviewGrid.scrollWidth > elements.allPreviewGrid.clientWidth) {
-      const left = Math.max(
-        0,
-        currentCard.offsetLeft - ((elements.allPreviewGrid.clientWidth - currentCard.offsetWidth) / 2),
-      );
+      const boardRect = elements.allPreviewGrid.getBoundingClientRect?.();
+      const cardRect = currentCard.getBoundingClientRect?.();
+      const cardOffset = boardRect && cardRect
+        ? elements.allPreviewGrid.scrollLeft + cardRect.left - boardRect.left
+        : currentCard.offsetLeft;
+      const cardWidth = cardRect?.width ?? currentCard.offsetWidth;
+      const left = Math.max(0, cardOffset - ((elements.allPreviewGrid.clientWidth - cardWidth) / 2));
       elements.allPreviewGrid.scrollTo({ left, behavior: "auto" });
       return;
     }
     currentCard.scrollIntoView?.({ block: "nearest", inline: "nearest" });
   };
-  if (typeof requestAnimationFrame === "function") requestAnimationFrame(revealCurrentCard);
-  else revealCurrentCard();
+  if (typeof requestAnimationFrame === "function") {
+    requestAnimationFrame(() => requestAnimationFrame(revealCurrentCard));
+  } else revealCurrentCard();
 };
 
 const renderStage = () => {
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
   const canCompare = canCompareWithParent(activeObject, parent);
   if (activeViewMode === "compare" && !canCompare) activeViewMode = "focus";
+  setViewModeState(canCompare);
 
   elements.currentObjectTitle.textContent = objectLabel(activeObject);
   elements.currentPreviewTitle.textContent = objectLabel(activeObject);
   setStatus(elements.currentObjectStatus, activeObject);
   setStatus(elements.currentPreviewStatus, activeObject);
-  syncPreview(elements.currentPreview, activeObject, "目前", { eager: true });
+  if (activeViewMode !== "all") syncLivePreview(liveSurfaces.current, activeObject, "目前");
 
   elements.currentExactLink.hidden = !activeObject.entrypoint;
   if (activeObject.entrypoint) {
@@ -483,7 +506,7 @@ const renderStage = () => {
 
   elements.compareParent.hidden = !canCompare;
   elements.compareParent.disabled = !canCompare;
-  elements.compareParent.textContent = "與 parent 並排";
+  elements.compareParent.textContent = "並排操作";
 
   const parentRecordPath = parent?.reviewDocument ?? parent?.entrypoint ?? null;
   elements.parentRecordLink.hidden = !parent || canCompare || !parentRecordPath;
@@ -496,12 +519,11 @@ const renderStage = () => {
   if (canCompare && activeViewMode === "compare") {
     elements.parentObjectTitle.textContent = objectLabel(parent);
     setStatus(elements.parentObjectStatus, parent);
-    syncPreview(elements.parentPreview, parent, "Parent", { eager: true });
+    syncLivePreview(liveSurfaces.parent, parent, "Parent");
   }
 
   if (activeViewMode === "all") renderAllPreviews();
   else elements.allPreviewGrid.replaceChildren();
-  setViewModeState(canCompare);
   renderViewportState();
 };
 

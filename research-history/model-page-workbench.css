@@ -128,18 +128,19 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
-  padding-top: .65rem;
-}
-
-.model-page .model-preview-grid[data-view-mode="compare"] {
-  grid-template-columns: repeat(2, minmax(19rem, 1fr));
-  align-items: start;
   overflow-x: auto;
+  padding-top: .65rem;
   overscroll-behavior-inline: contain;
   scrollbar-gutter: stable;
 }
 
+.model-page .model-preview-grid[data-view-mode="compare"] {
+  grid-template-columns: repeat(2, minmax(19rem, max-content));
+  align-items: start;
+}
+
 .model-page .model-preview-pane {
+  width: max(100%, var(--model-live-width, 0px));
   min-width: 0;
   border: 0;
   background: transparent;
@@ -167,6 +168,59 @@
   padding: .75rem;
   border: 0;
   background: var(--paper);
+}
+
+.model-page .model-live-surface {
+  display: grid;
+  width: max(100%, var(--model-live-width, 390px));
+  min-width: 0;
+  place-items: start center;
+}
+
+.model-page .model-live-frame,
+.model-page .model-live-fallback {
+  grid-area: 1 / 1;
+  width: var(--model-live-width, 390px);
+  max-width: none;
+}
+
+.model-page .model-live-frame {
+  display: block;
+  min-height: 8rem;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-strong);
+}
+
+.model-page .model-live-frame[hidden],
+.model-page .model-live-fallback[hidden] {
+  display: none !important;
+}
+
+.model-page .model-live-fallback {
+  position: relative;
+  display: grid;
+  min-height: 16rem;
+  place-items: start center;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-strong);
+}
+
+.model-page .model-live-fallback__status {
+  position: absolute;
+  top: .55rem;
+  left: .55rem;
+  z-index: 1;
+  margin: 0;
+  padding: .28rem .42rem;
+  border: 1px solid var(--line-strong);
+  background: color-mix(in srgb, var(--surface-strong) 92%, transparent);
+  color: var(--muted);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: .62rem;
+}
+
+.model-page .model-live-fallback[data-failed="true"] .model-live-fallback__status {
+  color: var(--accent);
 }
 
 .model-page .model-preview-image {
