@@ -136,6 +136,42 @@ const waitForPreviewTarget = async (client, expectedPath) => {
   throw new Error(`Timed out waiting for preview target ${expectedPath}: ${JSON.stringify(lastState)}`);
 };
 
+const preparePreviewTarget = (client, selector) => evaluate(client, `(async () => {
+  const element = document.querySelector(${JSON.stringify(selector)});
+  if (!element) return { missing: true, failedImages: [] };
+  let style = document.querySelector('#model-preview-capture-style');
+  if (!style) {
+    style = document.createElement('style');
+    style.id = 'model-preview-capture-style';
+    document.head.append(style);
+  }
+  style.textContent = [
+    '*, *::before, *::after {',
+    '  animation-delay: 0s !important;',
+    '  animation-duration: 0s !important;',
+    '  transition-delay: 0s !important;',
+    '  transition-duration: 0s !important;',
+    '  caret-color: transparent !important;',
+    '}',
+  ].join(String.fromCharCode(10));
+  window.scrollTo(0, 0);
+  element.scrollTop = 0;
+  const images = [...element.querySelectorAll('img')];
+  await Promise.all(images.map((image) => {
+    if (image.complete) return Promise.resolve();
+    return new Promise((resolve) => {
+      const done = () => resolve();
+      image.addEventListener('load', done, { once: true });
+      image.addEventListener('error', done, { once: true });
+      setTimeout(done, 5000);
+    });
+  }));
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  return {
+    missing: false,
+    failedImages: images.filter((image) => image.naturalWidth === 0).map((image) => image.currentSrc || image.src),
+  };
+})()`);
 const readClip = (client, selector) => evaluate(client, `(() => {
   const element = document.querySelector(${JSON.stringify(selector)});
   if (!element) return null;
@@ -211,6 +247,10 @@ try {
       const path = `/${object.entrypoint}`;
       await client.send("Page.navigate", { url: `${baseUrl}${path}` });
       const selector = await waitForPreviewTarget(client, path);
+      const previewState = await preparePreviewTarget(client, selector);
+      if (previewState.missing || previewState.failedImages.length) {
+        throw new Error(`${object.id} preview target has unavailable media: ${previewState.failedImages.join(", ")}`);
+      }
       const clip = await readClip(client, selector);
       if (!clip) throw new Error(`${object.id} has no capturable preview target.`);
       const screenshot = await client.send("Page.captureScreenshot", {

@@ -239,6 +239,12 @@ try {
   })()`);
   const mobileAllMetrics = await evaluate(client, `(() => {
     const board = document.querySelector('#all-preview-grid');
+    const currentCard = board.querySelector('[data-current="true"]');
+    const boardRect = board.getBoundingClientRect();
+    const currentRect = currentCard?.getBoundingClientRect();
+    const visibleWidth = currentRect
+      ? Math.max(0, Math.min(currentRect.right, boardRect.right) - Math.max(currentRect.left, boardRect.left))
+      : 0;
     return {
       documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
       boardVisible: getComputedStyle(board).display !== 'none',
@@ -247,6 +253,7 @@ try {
       loadedImages: [...board.querySelectorAll('img')].filter((image) => image.complete && image.naturalWidth > 0).length,
       iframeCount: document.querySelectorAll('#workbench iframe').length,
       urlHasAll: new URL(location.href).searchParams.get('view') === 'all',
+      currentCardVisible: Boolean(currentRect && visibleWidth >= Math.min(currentRect.width, boardRect.width) * 0.8),
     };
   })()`);
   cases.push({ name: "landscape-390-all", width: 390, height: 900, metrics: mobileAllMetrics });
@@ -296,6 +303,7 @@ try {
     parentRecordVisible: !document.querySelector('#parent-record-link').hidden,
     imageLoaded: document.querySelector('#current-preview img')?.naturalWidth > 0,
     iframeCount: document.querySelectorAll('#workbench iframe').length,
+    sourceActionText: document.querySelector('#current-exact-link').textContent,
     titleDeduplicated: !document.querySelector('#current-object-title').textContent.match(/^(\\S+) · \\1\\b/),
   }))()`);
   cases.push({ name: "paper-field-390-study", width: 390, height: 900, metrics: studyMetrics });
@@ -310,7 +318,8 @@ try {
   }
   if (mobileAllMetrics.documentOverflow || !mobileAllMetrics.boardVisible || mobileAllMetrics.cardCount !== 4
     || !mobileAllMetrics.horizontalBoard || mobileAllMetrics.loadedImages < 3
-    || mobileAllMetrics.iframeCount !== 0 || !mobileAllMetrics.urlHasAll) {
+    || mobileAllMetrics.iframeCount !== 0 || !mobileAllMetrics.urlHasAll
+    || !mobileAllMetrics.currentCardVisible) {
     failures.push("390px section comparison board contract failed.");
   }
   const desktop1024 = cases.find((reviewCase) => reviewCase.name === "landscape-1024-compare");
@@ -329,7 +338,8 @@ try {
     failures.push("1440px static side-by-side comparison contract failed.");
   }
   if (!studyMetrics.compareHidden || !studyMetrics.parentRecordVisible || !studyMetrics.imageLoaded
-    || studyMetrics.iframeCount !== 0 || !studyMetrics.titleDeduplicated) {
+    || studyMetrics.iframeCount !== 0 || !studyMetrics.titleDeduplicated
+    || studyMetrics.sourceActionText !== "開啟研究工具 ↗") {
     failures.push("Study preview boundary failed.");
   }
 

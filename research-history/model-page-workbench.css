@@ -203,7 +203,13 @@
 
 .model-page .model-preview-card[data-current="true"] {
   border-top-color: var(--accent);
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
   box-shadow: inset 0 2px 0 var(--accent);
+}
+
+.model-page .model-preview-card[data-current="true"] .model-preview-card__select {
+  background: var(--surface-strong);
 }
 
 .model-page .model-preview-card__select {
@@ -472,6 +478,16 @@
 @media (max-width: 700px) {
   .model-page .model-toolbar {
     align-items: flex-start;
+    gap: .55rem .75rem;
+  }
+
+  .model-page .model-toolbar__group,
+  .model-page .model-toolbar__actions {
+    gap: .35rem;
+  }
+
+  .model-page .model-toolbar__group > span {
+    display: none;
   }
 
   .model-page .model-preview-grid[data-view-mode="compare"] {

@@ -211,6 +211,31 @@ const previewProfileForObject = (object) => {
 const previewAssetPath = (object, viewport = activeViewport) =>
   archivePath(`previews/${encodeURIComponent(object.id)}/${viewport}.png`);
 
+const sourcePresentation = (object) => {
+  if (object.objectType === "study") {
+    return {
+      action: "開啟研究工具 ↗",
+      fallbackAction: "開啟研究工具",
+      recordLabel: "Study tool",
+      recordTitle: `開啟 ${object.id} 研究工具`,
+    };
+  }
+  if (object.objectType === "correction") {
+    return {
+      action: "開啟修正畫面 ↗",
+      fallbackAction: "開啟修正畫面",
+      recordLabel: "Correction",
+      recordTitle: `開啟 ${object.id} 修正畫面`,
+    };
+  }
+  return {
+    action: "開啟 prototype ↗",
+    fallbackAction: "開啟 exact prototype",
+    recordLabel: "Prototype",
+    recordTitle: `開啟 ${object.id} exact prototype`,
+  };
+};
+
 const makePreviewPlaceholder = (object, message) => {
   const placeholder = document.createElement("div");
   placeholder.className = "model-preview-placeholder";
@@ -220,7 +245,7 @@ const makePreviewPlaceholder = (object, message) => {
     makeText("p", "", message ?? object.summary),
   );
   if (object.entrypoint) {
-    const link = makeText("a", "", "開啟 exact prototype");
+    const link = makeText("a", "", sourcePresentation(object).fallbackAction);
     link.href = archivePath(object.entrypoint);
     link.target = "_blank";
     link.rel = "noreferrer";
@@ -373,7 +398,7 @@ const renderViewportState = () => {
     button.setAttribute("aria-pressed", String(button.dataset.viewport === activeViewport));
   }
   elements.viewportNote.textContent =
-    `${viewportLabel()} 靜態預覽只保留 prototype 畫面；開啟 prototype 可實際操作。`;
+    `${viewportLabel()} 靜態預覽只保留主要畫面；開啟原始頁面可實際操作。`;
 };
 
 const canCompareWithParent = (object, parent) =>
@@ -420,6 +445,23 @@ const renderAllPreviews = () => {
     cards.push(card);
   }
   elements.allPreviewGrid.replaceChildren(...cards);
+  const currentCard = [...elements.allPreviewGrid.querySelectorAll?.("[data-current]") ?? []]
+    .find((card) => card.dataset.current === "true");
+  const revealCurrentCard = () => {
+    if (!currentCard) return;
+    if (typeof elements.allPreviewGrid.scrollTo === "function"
+      && elements.allPreviewGrid.scrollWidth > elements.allPreviewGrid.clientWidth) {
+      const left = Math.max(
+        0,
+        currentCard.offsetLeft - ((elements.allPreviewGrid.clientWidth - currentCard.offsetWidth) / 2),
+      );
+      elements.allPreviewGrid.scrollTo({ left, behavior: "auto" });
+      return;
+    }
+    currentCard.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+  };
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(revealCurrentCard);
+  else revealCurrentCard();
 };
 
 const renderStage = () => {
@@ -434,11 +476,14 @@ const renderStage = () => {
   syncPreview(elements.currentPreview, activeObject, "目前", { eager: true });
 
   elements.currentExactLink.hidden = !activeObject.entrypoint;
-  if (activeObject.entrypoint) elements.currentExactLink.href = archivePath(activeObject.entrypoint);
+  if (activeObject.entrypoint) {
+    elements.currentExactLink.href = archivePath(activeObject.entrypoint);
+    elements.currentExactLink.textContent = sourcePresentation(activeObject).action;
+  }
 
   elements.compareParent.hidden = !canCompare;
   elements.compareParent.disabled = !canCompare;
-  elements.compareParent.textContent = parent ? `與 parent ${parent.id} 並排` : "與 parent 並排";
+  elements.compareParent.textContent = "與 parent 並排";
 
   const parentRecordPath = parent?.reviewDocument ?? parent?.entrypoint ?? null;
   elements.parentRecordLink.hidden = !parent || canCompare || !parentRecordPath;
@@ -739,9 +784,10 @@ const makeRecordLink = (label, title, href, kind = "research") => {
 const renderRecords = () => {
   const links = [];
   if (activeObject.entrypoint) {
+    const source = sourcePresentation(activeObject);
     links.push(makeRecordLink(
-      "Prototype",
-      `開啟 ${activeObject.id} exact prototype`,
+      source.recordLabel,
+      source.recordTitle,
       archivePath(activeObject.entrypoint),
       "primary",
     ));

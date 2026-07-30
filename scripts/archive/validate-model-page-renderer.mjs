@@ -147,7 +147,8 @@ try {
     throw new Error("Reader-facing model pages must not embed live prototype iframes.");
   }
   if (selectors.get("#current-exact-link").hidden
-    || selectors.get("#current-exact-link").href !== "../phases/18b-semantic-zoom/index.html") {
+    || selectors.get("#current-exact-link").href !== "../phases/18b-semantic-zoom/index.html"
+    || selectors.get("#current-exact-link").textContent !== "開啟 prototype ↗") {
     throw new Error("The stage must retain an exact prototype action outside the preview image.");
   }
   const parentImage = selectors.get("#parent-preview").children[0];
@@ -156,6 +157,9 @@ try {
   }
   if (selectors.get("#preview-grid").dataset.viewMode !== "compare") {
     throw new Error("Parent comparison must be represented as a side-by-side view mode.");
+  }
+  if (selectors.get("#compare-parent").textContent !== "與 parent 並排") {
+    throw new Error("Parent comparison action must remain concise.");
   }
   if (selectors.get("#difference-eyebrow").textContent !== "受控變因") {
     throw new Error("Controlled variants must use direct reader-facing role labels.");
@@ -207,6 +211,9 @@ try {
   }
   if (!selectors.get("#compare-parent").hidden || selectors.get("#parent-record-link").hidden) {
     throw new Error("Study objects must expose a parent record instead of a fake visual comparison.");
+  }
+  if (selectors.get("#current-exact-link").textContent !== "開啟研究工具 ↗") {
+    throw new Error("Study entrypoints must be presented as research tools, not prototypes.");
   }
 
   if (typeof popstateListener !== "function") {
