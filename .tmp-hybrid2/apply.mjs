@@ -34,5 +34,12 @@ for (const [path, content] of Object.entries(payload)) {
   if (slash > 0) await mkdir(path.slice(0, slash), { recursive: true });
   await writeFile(path, content);
 }
+
+const validatorPath = "scripts/archive/validate-model-page-renderer.mjs";
+const validator = await readFile(validatorPath, "utf8");
+const oldAssertion = 'currentFrame.style.getPropertyValue("width") !== "1024px"';
+if (!validator.includes(oldAssertion)) throw new Error("Could not locate the hybrid viewport assertion.");
+await writeFile(validatorPath, validator.replace(oldAssertion, 'currentFrame.style.width !== "1024px"'));
+
 await rm(".tmp-hybrid2", { recursive: true, force: true });
 console.log(`Hybrid viewer payload applied: ${Object.keys(payload).length} files.`);
