@@ -1,9 +1,8 @@
 name: Apply simultaneous live model group
 
 on:
-  push:
-    branches:
-      - agent/live-all-model-surfaces
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
@@ -13,7 +12,7 @@ env:
 
 jobs:
   validate-and-apply:
-    if: github.actor != 'github-actions[bot]'
+    if: github.head_ref == 'agent/live-all-model-surfaces' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
