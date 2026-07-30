@@ -1,0 +1,272 @@
+const freezeSection = (section) => Object.freeze({
+  ...section,
+  objectIds: Object.freeze([...section.objectIds]),
+});
+
+const freezeModel = (model) => Object.freeze({
+  ...model,
+  sections: Object.freeze(model.sections.map(freezeSection)),
+});
+
+export const designModels = Object.freeze([
+  freezeModel({
+    id: "complete-document",
+    title: "Complete Document",
+    eyebrow: "Linear document",
+    summary: "完整內容維持一份穩定文件，將變因收斂在列密度、分類節奏與窄螢幕重排。",
+    substrate: "同一份完整長頁、canonical order 與原地 inline detail。",
+    retains: "六分類、30 道料理、垂直文件與原地細節。",
+    varies: "Product row 密度、category rhythm 與窄欄位資訊排序。",
+    question: "線性距離能否在不增加新模式的前提下降低？",
+    featuredObjectId: "01",
+    sections: [
+      {
+        id: "baseline",
+        title: "完整文件基準",
+        summary: "先保留最少的互動，確認分類順序、位置與細節展開是否足以支撐閱讀。",
+        defaultObjectId: "01",
+        objectIds: ["01"],
+      },
+      {
+        id: "ledger-density",
+        title: "Ledger 密度與節奏",
+        summary: "同一份 Ledger 母體只改 collapsed row、category opener 或 340px 以下的欄位折疊。",
+        defaultObjectId: "05",
+        objectIds: ["05", "05A", "05B", "05C"],
+      },
+    ],
+  }),
+  freezeModel({
+    id: "horizontal-navigation",
+    title: "Horizontal Navigation",
+    eyebrow: "Horizontal sequence",
+    summary: "將分類、料理序列或閱讀鏡頭放到橫向座標，區分真正的空間定位與單純把長頁轉九十度。",
+    substrate: "完整 fixture 與固定分類順序。",
+    retains: "六分類、30 道料理與可回復的閱讀位置。",
+    varies: "橫向單位、長距離移動方式與局部焦點範圍。",
+    question: "橫向是否提供穩定位置，還是只改變捲動方向？",
+    featuredObjectId: "08",
+    sections: [
+      {
+        id: "market-baseline",
+        title: "市場基準",
+        summary: "記錄常見的橫向分類、分類內垂直列表，不把它誤認為研究結果。",
+        defaultObjectId: "07",
+        objectIds: ["07"],
+      },
+      {
+        id: "spread",
+        title: "分類 Spread",
+        summary: "分類欄在同一張 spread 上原地展寬；08A 只修正壓縮 siblings 的資訊真實性。",
+        defaultObjectId: "08",
+        objectIds: ["08", "08A"],
+      },
+      {
+        id: "ribbon",
+        title: "料理 Ribbon",
+        summary: "30 道料理共用一條長座標；09A 只讓既有 minimap 可直接 scrub。",
+        defaultObjectId: "09",
+        objectIds: ["09", "09A"],
+      },
+      {
+        id: "fisheye",
+        title: "Fisheye Focus",
+        summary: "完整 ribbon 留在一個 viewport；10A 將形變限制在焦點附近，避免遠端邊界漂移。",
+        defaultObjectId: "10",
+        objectIds: ["10", "10A"],
+      },
+    ],
+  }),
+  freezeModel({
+    id: "paper-field",
+    title: "Paper Field",
+    eyebrow: "Two-dimensional paper",
+    summary: "從固定矩陣走向非語意紙面，再分開檢查資訊層級、局部鏡頭與彈性幾何。",
+    substrate: "六分類同時在場，並保留可預測的二維位置。",
+    retains: "同一份 2D 紙面、完整 fixture 與分類地標。",
+    varies: "格線語意、overview 資訊、局部形變與直接操作邊界。",
+    question: "二維全貌能否在手機尺度保持可讀，而不變成 dashboard？",
+    featuredObjectId: "12A",
+    sections: [
+      {
+        id: "semantic-information",
+        title: "固定紙面與資訊層級",
+        summary: "11、12 建立固定紙面；12A 保持 geometry 不變，只讓不同尺度顯示不同資訊。",
+        defaultObjectId: "12A",
+        objectIds: ["11", "12", "12A", "12A-S1"],
+      },
+      {
+        id: "stopped-lenses",
+        title: "停止的局部鏡頭",
+        summary: "Static Loupe 與 Folded Menu 保留為負面證據，不再與 active prototypes 平鋪。",
+        defaultObjectId: "13",
+        objectIds: ["13", "14"],
+      },
+      {
+        id: "elastic-geometry",
+        title: "Elastic Geometry",
+        summary: "把局部閱讀空間的分配逐步拆成 pair-local、content weighting、stable drag 與 minimum target。",
+        defaultObjectId: "15",
+        objectIds: ["15", "15A", "16", "16A", "17", "17A"],
+      },
+    ],
+  }),
+  freezeModel({
+    id: "landscape-paper",
+    title: "Landscape Paper",
+    eyebrow: "Three-column paper",
+    summary: "三個橫向紙欄各保留上下兩個分類；同一母體內分別測試閱讀文法、focus geometry、reading surface 與直排。",
+    substrate: "三個紙欄、上下兩分類位置與 30 道完整內容。",
+    retains: "18 的 3 × 2 紙面、分類地標與完整 fixture。",
+    varies: "欄寬、列高、camera、資訊層級、activation、detail placement、type、padding、collapse 與 writing mode。",
+    question: "哪些變化能增加可讀性，同時不破壞 18 的矩陣感？",
+    featuredObjectId: "18",
+    sections: [
+      {
+        id: "core",
+        title: "共同母體",
+        summary: "比較等寬三欄與 14:10:6 內容比例欄，不混入其他閱讀機制。",
+        defaultObjectId: "18",
+        objectIds: ["18", "18A"],
+      },
+      {
+        id: "reading-grammar",
+        title: "閱讀文法",
+        summary: "在 parent 18 上分別只改 overview 資訊、進入閱讀方式與 detail placement。",
+        defaultObjectId: "18",
+        objectIds: ["18", "18B", "18C", "18D"],
+      },
+      {
+        id: "focus-geometry",
+        title: "Focus Geometry",
+        summary: "把 row、column、camera 與 row＋column 組合拆開，直接保留 camera-only 的負面結果。",
+        defaultObjectId: "22A",
+        objectIds: ["18", "22A", "22B", "22C", "22D"],
+      },
+      {
+        id: "reading-surface",
+        title: "Reading Surface",
+        summary: "比較 coupled implementations 與 typography、padding、paired-category collapse 的單一變因。",
+        defaultObjectId: "22E",
+        objectIds: ["18", "22", "22E", "22F", "22G", "23"],
+      },
+      {
+        id: "vertical-writing",
+        title: "Vertical Writing",
+        summary: "以 24 為 parent，分開檢查外欄比例、價格 writing mode 與 reading scale type growth。",
+        defaultObjectId: "24",
+        objectIds: ["24", "24A", "24B", "24C"],
+      },
+      {
+        id: "stopped-routes",
+        title: "停止路線",
+        summary: "Rigid locator、3D fold 與 two-column window 都可執行，但沒有足夠理由繼續。",
+        defaultObjectId: "19",
+        objectIds: ["19", "20", "21"],
+      },
+    ],
+  }),
+  freezeModel({
+    id: "multiscale-focus",
+    title: "Multi-scale Focus",
+    eyebrow: "Overview to category",
+    summary: "一次展開一個分類，其餘分類保留為壓縮地標；回程與『完整菜單仍在』被視為前置條件。",
+    substrate: "完整菜單與分類尺度投影，不建立另一份篩選結果。",
+    retains: "06 的分類地標、完整 fixture 與同一頁尺度轉換。",
+    varies: "回程 continuity、status truth 與陌生讀者對 focus 的理解。",
+    question: "局部放大能否在不被誤認為篩選的前提下保留全局信任？",
+    featuredObjectId: "06",
+    sections: [
+      {
+        id: "model",
+        title: "尺度模型",
+        summary: "先檢視 06 本身如何讓一個分類展開、其他分類維持壓縮地標。",
+        defaultObjectId: "06",
+        objectIds: ["06"],
+      },
+      {
+        id: "necessary-corrections",
+        title: "必要修正",
+        summary: "A-M3 與 A-M4 不是新產品方向，而是回程 continuity 與 retained-menu truth 的 prerequisite corrections。",
+        defaultObjectId: "A-M3",
+        objectIds: ["06", "A-M3", "A-M4"],
+      },
+    ],
+  }),
+  freezeModel({
+    id: "depth-projection",
+    title: "Depth and Projection",
+    eyebrow: "Third dimension",
+    summary: "把沒有語意的共同 Z 切片、可辯護的資料投影與把 depth 當排版材料的 Parallax Volume 分開閱讀。",
+    substrate: "完整 fixture、固定料理身份與可逆操作。",
+    retains: "30 道料理身份、可回復位置與明確的平面端點。",
+    varies: "資料軸投影、排版厚度、轉場 landmarks 與 flat recovery。",
+    question: "第三維何時提供可辯護的判斷力，而不是轉場、遮擋或裝飾？",
+    featuredObjectId: "25P",
+    sections: [
+      {
+        id: "dimension-reset",
+        title: "Dimension Reset",
+        summary: "25 保存維度模型重置；25B 保留『共同深度切片沒有語意』的失敗證據。",
+        defaultObjectId: "25",
+        objectIds: ["25", "25B"],
+      },
+      {
+        id: "projection-lens",
+        title: "Projection Lens",
+        summary: "25P 用價格、份量與準備時間建立 secondary lens；L1 與 S1 是可讀性修正與陌生讀者研究。",
+        defaultObjectId: "25P",
+        objectIds: ["25P", "25P-L1", "25P-S1"],
+      },
+      {
+        id: "parallax-volume",
+        title: "Parallax Volume",
+        summary: "26 承認 depth 是排版材料；26A 加中間 landmarks，26C 加連續 flat recovery。",
+        defaultObjectId: "26",
+        objectIds: ["26", "26A", "26C"],
+      },
+    ],
+  }),
+]);
+
+export const presentationNotes = Object.freeze({
+  "05A": Object.freeze({ shortLabel: "Minimal row", variable: "Collapsed Product row 密度", before: "05 的完整 collapsed row 欄位。", after: "只保留名稱、單一 cue、價格、必要狀態與 disclosure。", unchanged: "完整資訊仍留在原位 inline detail；文件順序與欄位語意不變。" }),
+  "05B": Object.freeze({ shortLabel: "Category rhythm", variable: "Category opener 與分類間距", before: "05 的分類節奏與間距。", after: "只加強 category opener 與 section spacing。", unchanged: "Product row、內容欄位與 inline detail geometry 不變。" }),
+  "05C": Object.freeze({ shortLabel: "Narrow collapse", variable: "340px 以下的欄位排序", before: "Identity、cue 與 price 共用原 row 結構。", after: "名稱取得完整首列，cue 與價格移到下方 meta row。", unchanged: "390px 與 desktop 完全不變。" }),
+  "08A": Object.freeze({ shortLabel: "Truth cue", variable: "壓縮 siblings 的資訊表示", before: "壓縮分類容易暗示內容只是縮小，而非不可讀。", after: "保留一菜一筆密度與價格分布 marks。", unchanged: "08 geometry、camera 與 interaction controller 不變。" }),
+  "09A": Object.freeze({ shortLabel: "Direct scrub", variable: "長距離定位輸入", before: "Minimap 只顯示 viewport window。", after: "既有 window 可拖曳並以鍵盤直接 scrub。", unchanged: "Ribbon geometry、料理順序與 locator 數量不變。" }),
+  "10A": Object.freeze({ shortLabel: "Local lens", variable: "Fisheye 形變範圍", before: "10 以全域 normalize 分配寬度。", after: "形變限制在焦點 ±2 neighbourhood。", unchanged: "完整 ribbon 與遠方 Product identity 不變。" }),
+  "12A": Object.freeze({ shortLabel: "Semantic levels", variable: "不同 scale 的資訊層級", before: "12 在 overview 仍呈現不可讀的 Product micro-copy。", after: "Whole-sheet、near-category 與 reading scale 顯示不同語意資訊。", unchanged: "固定 2 × 3 geometry、Product anchors 與 translate＋scale camera 不變。" }),
+  "15A": Object.freeze({ shortLabel: "Pair-local", variable: "Elasticity 作用範圍", before: "15 的局部焦點可影響整張紙面格線。", after: "形變只留在 selected category 的左右 pair。", unchanged: "其他兩列維持 1:1，whole-sheet dimensions 不寫入。" }),
+  "16A": Object.freeze({ shortLabel: "Stable drag", variable: "Pointer mapping", before: "Pointer mapping 跟著已變形 regions 移動。", after: "使用固定、未變形的 base-weighted regions。", unchanged: "16 的 content weighting 與 1.8× focused geometry 不變。" }),
+  "17A": Object.freeze({ shortLabel: "Minimum target", variable: "最小直接點擊寬度", before: "分類寬度完全依 content weighting 與 focus multiplier。", after: "每個分類加入 2.5rem minimum direct-target width。", unchanged: "8:6:6:4:4:2 weighting 與 4× focus multiplier 不變。" }),
+  "18A": Object.freeze({ shortLabel: "14:10:6 columns", variable: "外部三欄基礎比例", before: "18 使用三個等寬紙欄。", after: "依各欄料理總數改為 14:10:6。", unchanged: "3 × 2 結構、內容、interaction 與 reading scale 不變。" }),
+  "18B": Object.freeze({ shortLabel: "Overview info", variable: "Overview information representation", before: "縮小 Product name 與 price，外觀存在但不可讀。", after: "Category summary、count、price range 與 density traces。", unchanged: "Geometry、camera、activation 與 detail placement 不變。" }),
+  "18C": Object.freeze({ shortLabel: "Entry grammar", variable: "Overview 進入閱讀的方式", before: "Product actions 留在 overview pointer、tab 與 accessibility path。", after: "六個 category headers 成為唯一的 overview reading entry。", unchanged: "內容表示、geometry、camera 與 detail placement 不變。" }),
+  "18D": Object.freeze({ shortLabel: "Inline detail", variable: "Product detail placement", before: "Detail 以跨紙面的 overlay 顯示。", after: "Detail 放回 selected Product row 後方的同一 category flow。", unchanged: "Overview、activation、geometry 與 camera 不變。" }),
+  "22A": Object.freeze({ shortLabel: "Row only", variable: "Selected category row height", before: "Parent 18 的上下兩列維持 1:1。", after: "Selected category row weight 提高到 1.8。", unchanged: "外欄、camera、typography、padding 與 paired content 不變。" }),
+  "22B": Object.freeze({ shortLabel: "Column only", variable: "Selected paper-column width", before: "Parent 18 的三個外欄等寬。", after: "Selected paper-column width weight 提高到 1.65。", unchanged: "Row ratios、typography、padding 與 focus-driven camera 不變。" }),
+  "22C": Object.freeze({ shortLabel: "Camera only", variable: "Camera positioning", before: "Camera 不主動移到 selected paper column。", after: "Category focus 時只移動 camera。", unchanged: "Geometry、typography、content density 與閱讀面積不變。" }),
+  "22D": Object.freeze({ shortLabel: "Row + column", variable: "Geometry-only combination", before: "Parent 18 沒有 focus geometry。", after: "組合 22A row 1.8 與 22B column 1.65。", unchanged: "不加入 camera、typography、padding、collapse 或 sheet growth。" }),
+  "22E": Object.freeze({ shortLabel: "Typography only", variable: "Focused Product type size", before: "Product name／price 為 .64／.58rem。", after: "Focused state 提高為 .68／.62rem。", unchanged: "Geometry、camera、padding 與 line-height 不變。" }),
+  "22F": Object.freeze({ shortLabel: "Padding only", variable: "Focused Product horizontal padding", before: "Horizontal padding 為 .5rem。", after: "Focused state 提高為 .55rem。", unchanged: "Typography、geometry、camera 與 line-height 不變。" }),
+  "22G": Object.freeze({ shortLabel: "Collapse only", variable: "Paired category content visibility", before: "同欄兩個分類的 Product list 同時存在。", after: "Paired category 收成 persistent 2.2rem clickable header。", unchanged: "不繼承 23 的 column expansion、camera tracking 或 focused typography。" }),
+  "24A": Object.freeze({ shortLabel: "Equal columns", variable: "Vertical Landscape 外欄比例", before: "24 使用 14:10:6 外欄。", after: "三個外部紙欄改為 1:1:1。", unchanged: "直排 Product、upright price、46rem／64rem 紙面與 interaction 不變。" }),
+  "24B": Object.freeze({ shortLabel: "Horizontal price", variable: "Price writing mode", before: "24 的價格以 upright 節點壓在直向料理欄底部。", after: "改成同一 Product lane 底部的水平標籤。", unchanged: "14:10:6 外欄、直排 Product name 與 interaction 不變。" }),
+  "24C": Object.freeze({ shortLabel: "Fixed reading type", variable: "Reading scale typography growth", before: "24 在 46rem → 64rem 時同步放大五個文字 token。", after: "Reading scale 維持 overview 的字級。", unchanged: "Geometry 放大、14:10:6 外欄與直排 flow 不變。" }),
+  "A-M3": Object.freeze({ shortLabel: "Return continuity", variable: "Focus 結束後的回程", before: "Reset 不保證原 viewport position 與 keyboard focus。", after: "記錄位置與按鈕，layout settle 後恢復 viewport 與 focus。", unchanged: "06 的尺度模型與分類內容不變。" }),
+  "A-M4": Object.freeze({ shortLabel: "Retained-menu truth", variable: "Focused state 的狀態敘述", before: "局部 focus 容易被理解為其餘料理已被篩除。", after: "明示其餘料理仍在，overview 顯示完整菜單數量。", unchanged: "沿用 A-M3 return continuity 與 06 geometry。" }),
+  "25P-L1": Object.freeze({ shortLabel: "Readable bands", variable: "Projection semantic labels", before: "25P 的 band 邊界與任務提示不足以支撐陌生讀者。", after: "加入可讀分帶、固定任務與受控 focus-card 邊界。", unchanged: "價格、份量與準備時間三軸投影模型不變。" }),
+  "26A": Object.freeze({ shortLabel: "Landmarks", variable: "中間 orientation 的方向提示", before: "26 在端點之間只呈現連續排版變化。", after: "最多顯示兩個不可操作的 origin／target category landmarks。", unchanged: "Camera、六個 anchors、30 個 Product positions 與 spread 不變。" }),
+  "26C": Object.freeze({ shortLabel: "Flat recovery", variable: "Depth spread recovery", before: "26A 沒有可直接操作的連續 flat recovery。", after: "Native range 直接控制既有 spread .02–1 continuum。", unchanged: "Orientation、endpoint、Product geometry 與 landmark grammar 不變。" }),
+});
+
+export const modelById = new Map(designModels.map((model) => [model.id, model]));
+
+export const modelHref = (modelId, state = {}) => {
+  const params = new URLSearchParams({ model: modelId });
+  for (const [key, value] of Object.entries(state)) {
+    if (value !== null && value !== undefined && value !== "") params.set(key, String(value));
+  }
+  return `./models/?${params.toString()}`;
+};
