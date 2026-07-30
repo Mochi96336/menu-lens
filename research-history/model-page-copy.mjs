@@ -1,6 +1,6 @@
-const workbench = document.querySelector("#workbench");
+const modelPageMain = document.querySelector("#main");
 
-if (workbench) {
+if (modelPageMain) {
   const elements = {
     role: document.querySelector("#difference-eyebrow"),
     stageRole: document.querySelector("#stage-context-role"),
@@ -56,6 +56,12 @@ if (workbench) {
     ["研究邊界", "研究邊界"],
   ]);
 
+  const lineageCopy = new Map([
+    ["Research parent", ["Parent", "Catalog 記錄的直接 parent。"]],
+    ["Same sub-study", ["同組物件", "同一子研究中的其他研究物件。"]],
+    ["Recorded relations", ["明確關係", "Catalog 記錄的 children、dependsOn、mechanismsFrom 與 evidenceFor。"]],
+  ]);
+
   let observer;
   let scheduled = false;
 
@@ -83,9 +89,7 @@ if (workbench) {
       const after = elements.after?.textContent.trim() ?? "";
       const unchanged = elements.unchanged?.textContent.trim() ?? "";
       const role = elements.role?.textContent.trim() ?? "";
-      if (role === "受控變因") {
-        elements.stageCopy.textContent = [after, unchanged].filter(Boolean).join(" ");
-      } else if (role === "停止結果") {
+      if (role === "受控變因" || role === "停止結果") {
         elements.stageCopy.textContent = [after, unchanged].filter(Boolean).join(" ");
       } else {
         const before = elements.before?.textContent.trim() ?? "";
@@ -93,7 +97,16 @@ if (workbench) {
       }
     }
 
-    observer?.observe(workbench, { childList: true, characterData: true, subtree: true });
+    for (const group of document.querySelectorAll("#lineage .model-lineage-group")) {
+      const heading = group.querySelector("h3");
+      const description = group.querySelector("p");
+      const replacement = lineageCopy.get(heading?.textContent.trim());
+      if (!replacement) continue;
+      heading.textContent = replacement[0];
+      if (description) description.textContent = replacement[1];
+    }
+
+    observer?.observe(modelPageMain, { childList: true, characterData: true, subtree: true });
   };
 
   const scheduleSync = () => {
