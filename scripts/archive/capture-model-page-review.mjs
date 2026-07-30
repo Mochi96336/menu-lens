@@ -241,17 +241,24 @@ try {
   const mobileMetrics = await evaluate(client, `(() => {
     const frame = document.querySelector('#current-preview iframe');
     const compare = document.querySelector('#compare-parent');
+    const switcher = document.querySelector('#compare-view-switch');
     const parentSwitch = document.querySelector('[data-preview-pane="parent"]');
     const currentFrame = frame;
     parentSwitch.click();
-    const paneSwitched = document.querySelector('#preview-grid').dataset.mobilePane === 'parent';
+    const currentPane = document.querySelector('.model-preview-pane--current');
+    const parentPane = document.querySelector('.model-preview-pane--parent');
     return {
       title: document.querySelector('#current-object-title')?.textContent,
+      workbenchTitle: document.querySelector('#workbench-title')?.textContent,
+      oldSloganPresent: document.body.textContent.includes('在共同母體內比較，不把每個 ablation 當成獨立方案。'),
       documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
       computedFrameWidth: frame ? getComputedStyle(frame).width : null,
       compareVisible: compare ? !compare.hidden : false,
+      compareSwitchVisible: switcher ? getComputedStyle(switcher).display !== 'none' : false,
       parentRecordHidden: document.querySelector('#parent-record-link').hidden,
-      paneSwitched,
+      paneSwitched: document.querySelector('#preview-grid').dataset.mobilePane === 'parent',
+      currentPaneHidden: getComputedStyle(currentPane).display === 'none',
+      parentPaneVisible: getComputedStyle(parentPane).display !== 'none',
       currentFramePreserved: document.querySelector('#current-preview iframe') === currentFrame,
       bodyWidth: document.documentElement.clientWidth,
       scrollWidth: document.documentElement.scrollWidth,
@@ -266,12 +273,17 @@ try {
     name: "landscape-390-workbench",
     width: 390,
     height: 900,
-    metrics: await evaluate(client, `(() => ({
-      documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-      computedFrameWidth: getComputedStyle(document.querySelector('#current-preview iframe')).width,
-      sectionRailOverflow: document.querySelector('#section-tabs').scrollWidth > document.querySelector('#section-tabs').clientWidth,
-      variantRailOverflow: document.querySelector('#variant-list').scrollWidth > document.querySelector('#variant-list').clientWidth,
-    }))()`),
+    metrics: await evaluate(client, `(() => {
+      const previewColumns = getComputedStyle(document.querySelector('#preview-grid')).gridTemplateColumns;
+      return {
+        documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        computedFrameWidth: getComputedStyle(document.querySelector('#current-preview iframe')).width,
+        sectionRailOverflow: document.querySelector('#section-tabs').scrollWidth > document.querySelector('#section-tabs').clientWidth,
+        variantRailOverflow: document.querySelector('#variant-list').scrollWidth > document.querySelector('#variant-list').clientWidth,
+        previewColumnCount: previewColumns.trim().split(' ').filter(Boolean).length,
+        compareSwitchVisible: getComputedStyle(document.querySelector('#compare-view-switch')).display !== 'none',
+      };
+    })()`),
   });
   await capture(client, "landscape-390-workbench.png");
 
@@ -282,13 +294,25 @@ try {
       name: `landscape-${width}-workbench`,
       width,
       height: 900,
-      metrics: await evaluate(client, `(() => ({
-        documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-        computedFrameWidth: getComputedStyle(document.querySelector('#current-preview iframe')).width,
-        layoutColumns: getComputedStyle(document.querySelector('.model-layout')).gridTemplateColumns,
-        layoutColumnCount: getComputedStyle(document.querySelector('.model-layout')).gridTemplateColumns.trim().split(" ").filter(Boolean).length,
-        compareColumns: getComputedStyle(document.querySelector('#preview-grid')).gridTemplateColumns,
-      }))()`),
+      metrics: await evaluate(client, `(() => {
+        const layout = document.querySelector('.model-layout');
+        const preview = document.querySelector('#preview-grid');
+        const stage = document.querySelector('.model-stage-column');
+        const inspector = document.querySelector('.model-inspector');
+        const layoutColumns = getComputedStyle(layout).gridTemplateColumns;
+        const previewColumns = getComputedStyle(preview).gridTemplateColumns;
+        return {
+          documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+          computedFrameWidth: getComputedStyle(document.querySelector('#current-preview iframe')).width,
+          layoutColumns,
+          layoutColumnCount: layoutColumns.trim().split(' ').filter(Boolean).length,
+          previewColumns,
+          previewColumnCount: previewColumns.trim().split(' ').filter(Boolean).length,
+          compareSwitchVisible: getComputedStyle(document.querySelector('#compare-view-switch')).display !== 'none',
+          inspectorBesideStage: Math.abs(inspector.getBoundingClientRect().top - stage.getBoundingClientRect().top) < 4,
+          inspectorBelowStage: inspector.getBoundingClientRect().top > stage.getBoundingClientRect().bottom - 4,
+        };
+      })()`),
     });
     await capture(client, `landscape-${width}-workbench.png`);
   }
@@ -319,18 +343,34 @@ try {
   const failures = [];
   if (runtimeErrors.length) failures.push(`Runtime errors: ${runtimeErrors.join(" | ")}`);
   if (mobileMetrics.title !== "18B · Semantic Zoom") failures.push(`Unexpected current title: ${mobileMetrics.title}`);
+  if (mobileMetrics.workbenchTitle !== "研究物件" || mobileMetrics.oldSloganPresent) {
+    failures.push("Compact workbench copy contract failed.");
+  }
   if (mobileMetrics.documentOverflow) failures.push("320px page has document-level horizontal overflow.");
   if (mobileMetrics.computedFrameWidth !== "390px") failures.push(`Expected 390px frame, got ${mobileMetrics.computedFrameWidth}.`);
-  if (!mobileMetrics.compareVisible || !mobileMetrics.parentRecordHidden
-    || !mobileMetrics.paneSwitched || !mobileMetrics.currentFramePreserved) {
-    failures.push("Mobile Current/Parent comparison contract failed.");
+  if (!mobileMetrics.compareVisible || !mobileMetrics.compareSwitchVisible || !mobileMetrics.parentRecordHidden
+    || !mobileMetrics.paneSwitched || !mobileMetrics.currentPaneHidden || !mobileMetrics.parentPaneVisible
+    || !mobileMetrics.currentFramePreserved) {
+    failures.push("Current/Parent single-pane comparison contract failed.");
   }
   for (const reviewCase of cases) {
     if (reviewCase.metrics.documentOverflow) failures.push(`${reviewCase.name} has document-level horizontal overflow.`);
   }
+  const mobile390 = cases.find((reviewCase) => reviewCase.name === "landscape-390-workbench");
+  if (!mobile390 || mobile390.metrics.previewColumnCount !== 1 || !mobile390.metrics.compareSwitchVisible) {
+    failures.push("390px comparison must use one preview pane with an explicit switcher.");
+  }
   const desktop1024 = cases.find((reviewCase) => reviewCase.name === "landscape-1024-workbench");
-  if (!desktop1024 || desktop1024.metrics.layoutColumnCount < 2) {
-    failures.push("1024px workbench must retain sidebar and stage columns.");
+  if (!desktop1024 || desktop1024.metrics.layoutColumnCount !== 2
+    || desktop1024.metrics.previewColumnCount !== 1 || !desktop1024.metrics.compareSwitchVisible
+    || !desktop1024.metrics.inspectorBelowStage) {
+    failures.push("1024px workbench must use sidebar + stage with the inspector below and one comparison pane.");
+  }
+  const desktop1440 = cases.find((reviewCase) => reviewCase.name === "landscape-1440-workbench");
+  if (!desktop1440 || desktop1440.metrics.layoutColumnCount !== 3
+    || desktop1440.metrics.previewColumnCount !== 1 || !desktop1440.metrics.compareSwitchVisible
+    || !desktop1440.metrics.inspectorBesideStage) {
+    failures.push("1440px workbench must use navigation, prototype, and inspector columns with one comparison pane.");
   }
   if (!studyMetrics.compareHiddenOnStudy || !studyMetrics.parentRecordVisibleOnStudy) {
     failures.push("Study comparison boundary failed.");

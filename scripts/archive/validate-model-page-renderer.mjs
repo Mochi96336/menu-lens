@@ -179,8 +179,14 @@ try {
   if (parentFrame.title !== "Parent — 18 Landscape Paper — 390px") {
     throw new Error("Parent iframe title must identify role, object, and controlled viewport.");
   }
-  if (selectors.get("#difference-eyebrow").textContent !== "Isolated difference") {
-    throw new Error("Controlled variants must render as isolated differences.");
+  if (selectors.get("#difference-eyebrow").textContent !== "受控變因"
+    || selectors.get("#difference-before-label").textContent !== "調整前"
+    || selectors.get("#difference-after-label").textContent !== "調整後"
+    || selectors.get("#difference-unchanged-label").textContent !== "保留條件") {
+    throw new Error("Controlled variants must render direct reader-facing labels from the primary renderer.");
+  }
+  if (selectors.get("#compare-parent").textContent !== "結束比較") {
+    throw new Error("An active parent comparison must expose a clear exit action.");
   }
   if (!lastUrl?.includes("model=landscape-paper") || !lastUrl.includes("compare=parent")) {
     throw new Error("Model viewer did not publish its initial deep-link state.");
@@ -228,11 +234,11 @@ try {
   if (globalThis.document.activeElement !== renderedFocusVariants[3]) {
     throw new Error("Selecting a research object must retain focus on its newly rendered active control.");
   }
-  if (selectors.get("#difference-eyebrow").textContent !== "Stopped result") {
+  if (selectors.get("#difference-eyebrow").textContent !== "停止結果") {
     throw new Error("Negative evidence must render as a stopped result before presentation-note logic.");
   }
-  if (selectors.get("#outcome-title").textContent !== "停止判斷不是另一個可選方案。") {
-    throw new Error("Stopped objects must use explicit outcome language.");
+  if (selectors.get("#outcome-title").textContent !== "停止原因") {
+    throw new Error("Stopped objects must use a direct outcome label rather than a slogan.");
   }
 
   const modelSelect = selectors.get("#model-select");
@@ -252,8 +258,8 @@ try {
   modelSelect.dispatch("change");
   const semanticVariants = selectors.get("#variant-list").children;
   semanticVariants[3].dispatch("click");
-  if (selectors.get("#difference-eyebrow").textContent !== "Study role") {
-    throw new Error("Study objects must not be described as isolated design differences.");
+  if (selectors.get("#difference-eyebrow").textContent !== "研究工具") {
+    throw new Error("Study objects must use a direct reader-facing role label.");
   }
   if (!selectors.get("#compare-parent").hidden) {
     throw new Error("Study runners must never expose prototype parent comparison.");
@@ -270,8 +276,8 @@ try {
   }
   multiscaleTabs[1].dispatch("click");
   selectors.get("#variant-list").children[1].dispatch("click");
-  if (selectors.get("#difference-eyebrow").textContent !== "Prerequisite correction") {
-    throw new Error("Correction objects must render their prerequisite role.");
+  if (selectors.get("#difference-eyebrow").textContent !== "必要修正") {
+    throw new Error("Correction objects must render their prerequisite role directly.");
   }
   if (!selectors.get("#compare-parent").hidden) {
     throw new Error("Objects without an eligible prototype pair must not expose a fake compare action.");
@@ -290,22 +296,24 @@ try {
   }
 
   const css = await readFile(new URL("research-history/model-page.css", root), "utf8");
-  const polishCss = await readFile(new URL("research-history/model-page-polish.css", root), "utf8");
+  const workbenchCss = await readFile(new URL("research-history/model-page-workbench.css", root), "utf8");
   for (const contract of [
     "--preview-width: 320px",
     "--preview-width: 390px",
     "--preview-width: 1024px",
     "min-width: var(--preview-width)",
     "data-mobile-pane=\"current\"",
-    ".model-compare-view-switch:not([hidden])",
   ]) {
     if (!css.includes(contract)) throw new Error(`Model preview CSS is missing responsive contract: ${contract}`);
   }
   for (const contract of [
     ".model-toolbar-link[hidden]",
+    ".model-compare-view-switch:not([hidden])",
+    "grid-template-columns: minmax(11.5rem, 13rem) minmax(25rem, 1fr) minmax(17rem, 19rem)",
+    "@media (max-width: 1179px)",
     "@media (min-width: 901px) and (max-width: 1050px)",
   ]) {
-    if (!polishCss.includes(contract)) throw new Error(`Model polish CSS is missing visible-state contract: ${contract}`);
+    if (!workbenchCss.includes(contract)) throw new Error(`Model workbench CSS is missing contract: ${contract}`);
   }
   if (css.includes(".model-preview-frame, .model-preview-placeholder { max-width: 100%")) {
     throw new Error("Responsive CSS must not shrink controlled preview widths.");

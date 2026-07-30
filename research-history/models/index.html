@@ -4,15 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#eeeae2" />
-    <meta
-      name="description"
-      content="Menu Lens 設計模型頁：把共同母體、受控變因、研究結果與 exact prototypes 放在同一個可比較的閱讀介面。"
-    />
+    <meta name="description" content="Menu Lens 設計模型頁：比較共同母體、研究變因、現有證據與 exact prototypes。" />
     <title>Menu Lens — Design Model</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="../history.css" />
     <link rel="stylesheet" href="../model-page.css" />
-    <link rel="stylesheet" href="../model-page-polish.css" />
+    <link rel="stylesheet" href="../model-page-workbench.css" />
     <script src="../prototype-registry.js"></script>
   </head>
   <body class="model-page">
@@ -26,8 +23,8 @@
           <select id="model-select" aria-label="切換設計模型"></select>
         </label>
         <div class="model-nav__links">
-          <a href="#workbench">比較研究物件</a>
-          <a href="#records">Exact records</a>
+          <a href="#workbench">研究物件</a>
+          <a href="#records">原始記錄</a>
           <a href="../#catalog">完整目錄</a>
         </div>
       </nav>
@@ -44,27 +41,15 @@
           <summary>
             <span>
               <span class="eyebrow">Model definition</span>
-              <strong>共同母體與研究邊界</strong>
+              <strong>模型定義</strong>
             </span>
             <span class="model-definition-disclosure__hint">展開</span>
           </summary>
           <dl class="model-definition" aria-label="設計模型定義">
-            <div>
-              <dt>共同母體</dt>
-              <dd id="model-substrate"></dd>
-            </div>
-            <div>
-              <dt>保持不變</dt>
-              <dd id="model-retains"></dd>
-            </div>
-            <div>
-              <dt>主要變因</dt>
-              <dd id="model-varies"></dd>
-            </div>
-            <div>
-              <dt>研究問題</dt>
-              <dd id="model-question"></dd>
-            </div>
+            <div><dt>共同母體</dt><dd id="model-substrate"></dd></div>
+            <div><dt>保持不變</dt><dd id="model-retains"></dd></div>
+            <div><dt>主要變因</dt><dd id="model-varies"></dd></div>
+            <div><dt>研究問題</dt><dd id="model-question"></dd></div>
           </dl>
         </details>
       </div>
@@ -73,8 +58,8 @@
     <main id="main">
       <section id="workbench" class="model-workbench site-shell" aria-labelledby="workbench-title">
         <div class="model-workbench__heading">
-          <p class="eyebrow">Model workbench</p>
-          <h2 id="workbench-title">在共同母體內比較，不把每個 ablation 當成獨立方案。</h2>
+          <p class="eyebrow">Research objects</p>
+          <h2 id="workbench-title">研究物件</h2>
           <p id="section-summary"></p>
         </div>
 
@@ -82,127 +67,92 @@
           <aside class="model-sidebar" aria-label="子研究與研究物件">
             <div class="model-sidebar__group model-sidebar__group--sections">
               <p class="model-sidebar__label">子研究</p>
-              <div
-                id="section-tabs"
-                class="model-section-tabs"
-                role="tablist"
-                aria-label="切換子研究"
-              ></div>
+              <div id="section-tabs" class="model-section-tabs" role="tablist" aria-label="切換子研究"></div>
             </div>
             <div class="model-sidebar__group model-sidebar__group--objects">
               <p class="model-sidebar__label">研究物件</p>
-              <div
-                id="variant-list"
-                class="model-variant-list"
-                role="tabpanel"
-                tabindex="0"
-                aria-label="切換研究物件"
-              ></div>
+              <div id="variant-list" class="model-variant-list" role="tabpanel" tabindex="0" aria-label="切換研究物件"></div>
             </div>
           </aside>
 
           <div class="model-stage-column">
-            <div class="model-stage-context" aria-live="polite">
-              <p id="stage-context-role" class="phase-index">Object role</p>
-              <p id="stage-context-copy"></p>
-            </div>
+            <header class="model-object-header">
+              <div>
+                <p class="phase-index">Prototype</p>
+                <h3 id="current-object-title" aria-live="polite"></h3>
+              </div>
+              <div class="model-object-header__meta">
+                <span id="current-object-status" class="status"></span>
+                <span id="stage-context-role" class="phase-index">研究角色</span>
+              </div>
+              <p id="stage-context-copy" class="model-object-summary" aria-live="polite"></p>
+            </header>
 
             <div class="model-toolbar" aria-label="Prototype 顯示設定">
               <div class="model-toolbar__group" aria-label="Viewport 尺寸">
-                <span>Viewport</span>
+                <span>預覽寬度</span>
                 <button type="button" data-viewport="320" aria-pressed="false">320</button>
                 <button type="button" data-viewport="390" aria-pressed="false">390</button>
-                <button type="button" data-viewport="desktop" aria-pressed="false">Desktop · 1024</button>
+                <button type="button" data-viewport="desktop" aria-pressed="false">1024</button>
               </div>
               <div class="model-toolbar__actions">
                 <a id="parent-record-link" class="model-toolbar-link" href="#records" hidden>查看 parent record</a>
-                <button id="compare-parent" class="model-compare-button" type="button" aria-pressed="false">
-                  與 parent 比較
-                </button>
+                <button id="compare-parent" class="model-compare-button" type="button" aria-pressed="false">與 parent 比較</button>
+                <a id="current-exact-link" class="model-toolbar-link" href="#records" hidden>開啟 prototype ↗</a>
               </div>
             </div>
 
             <p id="viewport-note" class="model-viewport-note"></p>
-
             <div id="compare-view-switch" class="model-compare-view-switch" hidden aria-label="切換比較畫面">
-              <button type="button" data-preview-pane="current" aria-pressed="true">Current</button>
+              <button type="button" data-preview-pane="current" aria-pressed="true">目前</button>
               <button type="button" data-preview-pane="parent" aria-pressed="false">Parent</button>
             </div>
 
             <div id="preview-grid" class="model-preview-grid" data-compare="false" data-mobile-pane="current">
               <article class="model-preview-pane model-preview-pane--current" data-pane="current">
-                <header>
-                  <div>
-                    <p class="phase-index">Current object</p>
-                    <h3 id="current-object-title" aria-live="polite"></h3>
-                  </div>
-                  <div class="model-preview-pane__actions">
-                    <span id="current-object-status" class="status"></span>
-                    <a id="current-exact-link" href="#records" hidden>開啟完整 prototype ↗</a>
-                  </div>
-                </header>
                 <div id="current-preview" class="model-preview-viewport" data-viewport="390"></div>
               </article>
-
               <article id="parent-pane" class="model-preview-pane model-preview-pane--parent" data-pane="parent" hidden>
                 <header>
-                  <div>
-                    <p class="phase-index">Research parent</p>
-                    <h3 id="parent-object-title"></h3>
-                  </div>
+                  <div><p class="phase-index">Parent</p><h3 id="parent-object-title"></h3></div>
                   <span id="parent-object-status" class="status"></span>
                 </header>
                 <div id="parent-preview" class="model-preview-viewport" data-viewport="390"></div>
               </article>
             </div>
           </div>
+
+          <aside class="model-inspector" aria-label="研究物件說明">
+            <section class="model-inspector-section model-inspector-section--difference">
+              <p id="difference-eyebrow" class="eyebrow">研究角色</p>
+              <h2>變因</h2>
+              <h3 id="difference-variable">研究物件角色</h3>
+              <dl class="model-difference-list">
+                <div><dt id="difference-before-label">來源脈絡</dt><dd id="difference-before"></dd></div>
+                <div><dt id="difference-after-label">目前物件</dt><dd id="difference-after"></dd></div>
+                <div><dt id="difference-unchanged-label">保留條件</dt><dd id="difference-unchanged"></dd></div>
+              </dl>
+            </section>
+
+            <section class="model-inspector-section model-inspector-section--outcome">
+              <p class="eyebrow">Status</p>
+              <h2>研究狀態</h2>
+              <p id="outcome-title" hidden></p>
+              <dl class="model-outcome-list">
+                <div><dt>狀態</dt><dd id="outcome-disposition"></dd></div>
+                <div><dt>證據</dt><dd id="outcome-evidence"></dd></div>
+                <div id="outcome-next-row"><dt id="outcome-next-label">下一步</dt><dd id="outcome-next-gate"></dd></div>
+              </dl>
+            </section>
+          </aside>
         </div>
-      </section>
-
-      <section class="model-analysis site-shell" aria-label="研究物件分析">
-        <article class="model-analysis-card model-analysis-card--difference">
-          <p id="difference-eyebrow" class="eyebrow">Object role</p>
-          <h2 id="difference-variable">研究物件角色</h2>
-          <dl class="model-difference-list">
-            <div>
-              <dt id="difference-before-label">來源脈絡</dt>
-              <dd id="difference-before"></dd>
-            </div>
-            <div>
-              <dt id="difference-after-label">目前物件</dt>
-              <dd id="difference-after"></dd>
-            </div>
-            <div>
-              <dt id="difference-unchanged-label">保留邊界</dt>
-              <dd id="difference-unchanged"></dd>
-            </div>
-          </dl>
-        </article>
-
-        <article class="model-analysis-card">
-          <p class="eyebrow">Outcome</p>
-          <h2 id="outcome-title">實作狀態不等於研究結論。</h2>
-          <dl class="model-outcome-list">
-            <div>
-              <dt>Disposition</dt>
-              <dd id="outcome-disposition"></dd>
-            </div>
-            <div>
-              <dt>Evidence</dt>
-              <dd id="outcome-evidence"></dd>
-            </div>
-            <div id="outcome-next-row">
-              <dt id="outcome-next-label">Next gate</dt>
-              <dd id="outcome-next-gate"></dd>
-            </div>
-          </dl>
-        </article>
       </section>
 
       <section class="model-lineage-section site-shell" aria-labelledby="lineage-title">
         <div class="model-section-heading">
           <p class="eyebrow">Lineage</p>
-          <h2 id="lineage-title">看見 parent、同組物件與明確關係，不靠記憶往返頁面。</h2>
+          <h2 id="lineage-title">關聯物件</h2>
+          <p>顯示直接 parent、同一子研究中的物件，以及 catalog 明確記錄的關係。</p>
         </div>
         <div id="lineage" class="model-lineage"></div>
       </section>
@@ -210,7 +160,8 @@
       <section id="records" class="model-records-section site-shell" aria-labelledby="records-title">
         <div class="model-section-heading">
           <p class="eyebrow">Exact records</p>
-          <h2 id="records-title">模型頁負責理解，原始物件仍保持可追溯。</h2>
+          <h2 id="records-title">原始記錄</h2>
+          <p>Prototype、review、evidence 與來源紀錄仍連回原始研究物件。</p>
         </div>
         <div id="record-links" class="model-record-links"></div>
       </section>

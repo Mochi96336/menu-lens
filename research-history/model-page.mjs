@@ -347,7 +347,7 @@ const renderViewportState = () => {
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
   if (parent) updateFrameTitle(elements.parentPreview, parent, "Parent");
   elements.viewportNote.textContent =
-    `固定 ${viewportLabel()} 寬；外層不足時水平捲動，不縮放 prototype。`;
+    `固定 ${viewportLabel()}；預覽區不足時可水平捲動。`;
 };
 
 const setPreviewPaneState = () => {
@@ -376,13 +376,15 @@ const renderStage = () => {
   elements.compareParent.hidden = !canCompare;
   elements.compareParent.disabled = !canCompare;
   elements.compareParent.setAttribute("aria-pressed", String(Boolean(canCompare && compareParent)));
-  elements.compareParent.textContent = parent ? `與 parent ${parent.id} 比較` : "與 parent 比較";
+  elements.compareParent.textContent = compareParent
+    ? "結束比較"
+    : (parent ? `與 parent ${parent.id} 比較` : "與 parent 比較");
 
   const parentRecordPath = parent?.reviewDocument ?? parent?.entrypoint ?? null;
   elements.parentRecordLink.hidden = !parent || canCompare || !parentRecordPath;
   if (parentRecordPath) {
     elements.parentRecordLink.href = archivePath(parentRecordPath);
-    elements.parentRecordLink.textContent = `查看 parent ${parent.id} record`;
+    elements.parentRecordLink.textContent = `查看 parent ${parent.id} 記錄`;
   }
 
   elements.previewGrid.dataset.compare = String(Boolean(canCompare && compareParent));
@@ -410,96 +412,109 @@ const differenceCopy = () => {
   const note = presentationNotes[activeObject.id];
 
   if (activeObject.objectType === "study") {
+    const after = activeObject.summary;
     return {
-      eyebrow: "Study role",
-      variable: "研究工具，不是設計變體",
-      beforeLabel: "Tests",
-      before: describeReferences(activeObject.evidenceFor) || parent?.summary || "尚未記錄 evidence target。",
-      afterLabel: "Study instrument",
-      after: activeObject.summary,
-      unchangedLabel: "Does not establish",
-      unchanged: "Study readiness 與執行結果都不會自動授權 prototype 採用或建立 combined direction。",
+      eyebrow: "研究工具",
+      variable: "研究工具與證據範圍",
+      beforeLabel: "研究對象",
+      before: describeReferences(activeObject.evidenceFor) || parent?.summary || "尚未記錄研究對象。",
+      afterLabel: "研究工具",
+      after,
+      unchangedLabel: "證據邊界",
+      unchanged: "研究就緒與執行結果不直接代表 prototype 已獲採用。",
+      stage: after,
     };
   }
 
   if (activeObject.objectType === "correction") {
     const targets = describeReferences(activeObject.evidenceFor);
+    const after = note?.after ?? activeObject.summary;
     return {
-      eyebrow: "Prerequisite correction",
+      eyebrow: "必要修正",
       variable: note?.variable ?? "可信閱讀的必要修正",
-      beforeLabel: "Problem",
+      beforeLabel: "問題",
       before: note?.before ?? (targets || parent?.summary || "沒有獨立 prototype parent。"),
-      afterLabel: "Correction",
-      after: note?.after ?? activeObject.summary,
-      unchangedLabel: "Research boundary",
+      afterLabel: "修正",
+      after,
+      unchangedLabel: "研究邊界",
       unchanged: note?.unchanged ?? (parent
-        ? `${parent.id} 的核心模型、內容身份與主要 interaction grammar 不因此成為新產品方向。`
+        ? `${parent.id} 的核心模型、內容身份與主要 interaction grammar 維持不變。`
         : activeModel.retains),
+      stage: after,
     };
   }
 
   if (stoppedDispositions.has(activeObject.disposition)) {
+    const after = activeObject.summary;
     return {
-      eyebrow: "Stopped result",
-      variable: "停止結果，不是替代方案",
-      beforeLabel: "Attempt",
+      eyebrow: "停止結果",
+      variable: note?.variable ?? "停止原因",
+      beforeLabel: "嘗試",
       before: note ? `${note.variable}：${note.after}` : activeObject.summary,
-      afterLabel: "Observed limit",
-      after: activeObject.summary,
-      unchangedLabel: "Consequence",
+      afterLabel: "觀察限制",
+      after,
+      unchangedLabel: "處理方式",
       unchanged: activeObject.nextGate ?? "保留為負面證據，不再沿此路線延伸。",
+      stage: after,
     };
   }
 
   if (note) {
     return {
-      eyebrow: "Isolated difference",
+      eyebrow: "受控變因",
       variable: note.variable,
-      beforeLabel: "Parent／Before",
+      beforeLabel: "調整前",
       before: note.before,
-      afterLabel: "Current／After",
+      afterLabel: "調整後",
       after: note.after,
-      unchangedLabel: "未改變",
+      unchangedLabel: "保留條件",
       unchanged: note.unchanged,
+      stage: note.after,
     };
   }
 
   if (combinedObjectIds.has(activeObject.id)) {
+    const after = activeObject.summary;
     return {
-      eyebrow: "Combined mechanisms",
-      variable: "多個既有機制的 coupled implementation",
-      beforeLabel: "Inherited",
+      eyebrow: "組合機制",
+      variable: "既有機制的組合實作",
+      beforeLabel: "沿用條件",
       before: parent?.summary ?? activeModel.substrate,
-      afterLabel: "Combined",
-      after: activeObject.summary,
-      unchangedLabel: "Still excluded",
-      unchanged: "此物件不因此成為新的 best-of product direction；各機制仍需分開判讀。",
+      afterLabel: "組合內容",
+      after,
+      unchangedLabel: "研究邊界",
+      unchanged: "各機制仍需分開判讀；此物件不建立新的綜合產品方向。",
+      stage: after,
     };
   }
 
   const isSectionBaseline = activeObject.id === activeSection.defaultObjectId;
   if (!parent || isSectionBaseline) {
+    const after = activeObject.summary;
     return {
-      eyebrow: "Sub-study baseline",
+      eyebrow: "比較基準",
       variable: activeSection.title,
-      beforeLabel: parent ? "較早脈絡" : "研究起點",
-      before: parent?.summary ?? "此物件是目前 sub-study 的 root。",
-      afterLabel: "目前角色",
-      after: activeObject.summary,
-      unchangedLabel: "比較邊界",
+      beforeLabel: "來源脈絡",
+      before: parent?.summary ?? "此物件是目前子研究的起點。",
+      afterLabel: "目前物件",
+      after,
+      unchangedLabel: "保留條件",
       unchanged: activeModel.retains,
+      stage: after,
     };
   }
 
+  const after = activeObject.summary;
   return {
-    eyebrow: "Model transition",
+    eyebrow: "模型轉換",
     variable: activeSection.title,
-    beforeLabel: "Previous model",
+    beforeLabel: "前一模型",
     before: parent.summary,
-    afterLabel: "New assumption",
-    after: activeObject.summary,
-    unchangedLabel: "Open boundary",
+    afterLabel: "新增假設",
+    after,
+    unchangedLabel: "保留條件",
     unchanged: activeModel.retains,
+    stage: after,
   };
 };
 
@@ -514,13 +529,7 @@ const renderDifference = () => {
   elements.differenceUnchangedLabel.textContent = copy.unchangedLabel;
   elements.differenceUnchanged.textContent = copy.unchanged;
   elements.stageContextRole.textContent = copy.eyebrow;
-  if (copy.eyebrow === "Isolated difference") {
-    elements.stageContextCopy.textContent = `只改 ${copy.variable}；${copy.unchanged}`;
-  } else if (copy.eyebrow === "Stopped result") {
-    elements.stageContextCopy.textContent = `${copy.after} ${copy.unchanged}`;
-  } else {
-    elements.stageContextCopy.textContent = `${copy.variable}。${copy.after}`;
-  }
+  elements.stageContextCopy.textContent = copy.stage ?? copy.after;
 };
 
 const renderOutcomeValue = (root, canonicalValue, explanation) => {
@@ -544,17 +553,17 @@ const renderOutcome = () => {
   );
 
   if (stoppedDispositions.has(activeObject.disposition)) {
-    elements.outcomeTitle.textContent = "停止判斷不是另一個可選方案。";
+    elements.outcomeTitle.textContent = "停止原因";
     elements.outcomeNextLabel.textContent = "後續限制";
   } else if (activeObject.objectType === "study") {
-    elements.outcomeTitle.textContent = "研究工具就緒不等於設計成立。";
-    elements.outcomeNextLabel.textContent = "Study gate";
+    elements.outcomeTitle.textContent = "研究狀態";
+    elements.outcomeNextLabel.textContent = "研究條件";
   } else if (activeObject.objectType === "correction") {
-    elements.outcomeTitle.textContent = "前置修正不建立新產品方向。";
+    elements.outcomeTitle.textContent = "研究狀態";
     elements.outcomeNextLabel.textContent = "研究邊界";
   } else {
-    elements.outcomeTitle.textContent = "實作狀態不等於研究結論。";
-    elements.outcomeNextLabel.textContent = "Next gate";
+    elements.outcomeTitle.textContent = "研究狀態";
+    elements.outcomeNextLabel.textContent = "下一步";
   }
 
   elements.outcomeNextRow.hidden = !activeObject.nextGate;
@@ -639,18 +648,18 @@ const renderLineage = () => {
 
   elements.lineage.replaceChildren(
     makeLineageGroup(
-      "Research parent",
-      "唯一的 lineage parent；不代表較成熟或一定優於 current object。",
+      "Parent",
+      "Catalog 記錄的直接 parent。",
       parent ? [parent] : [],
     ),
     makeLineageGroup(
-      "Same sub-study",
-      "共享同一個研究問題，適合在同一頁直接切換。",
+      "同組物件",
+      "同一子研究中的其他研究物件。",
       sameStudy,
     ),
     makeLineageGroup(
-      "Recorded relations",
-      "只列直接 children、dependsOn、mechanismsFrom 與 evidenceFor。",
+      "明確關係",
+      "Catalog 記錄的 children、dependsOn、mechanismsFrom 與 evidenceFor。",
       related,
     ),
   );
