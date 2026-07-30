@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#eeeae2" />
+    <meta
+      name="description"
+      content="Menu Lens 設計模型頁：把共同母體、單一變因、研究結果與 exact prototypes 放在同一個可比較的閱讀介面。"
+    />
+    <title>Menu Lens — Design Model</title>
+    <link rel="stylesheet" href="../history.css" />
+    <link rel="stylesheet" href="../model-page.css" />
+    <script src="../prototype-registry.js"></script>
+  </head>
+  <body class="model-page">
+    <a class="skip-link" href="#main">跳到主要內容</a>
+
+    <header class="model-masthead">
+      <nav class="model-nav site-shell" aria-label="設計模型導覽">
+        <a class="model-wordmark" href="../">Menu Lens</a>
+        <label class="model-switcher">
+          <span>設計模型</span>
+          <select id="model-select" aria-label="切換設計模型"></select>
+        </label>
+        <div class="model-nav__links">
+          <a href="#workbench">比較變體</a>
+          <a href="#records">Exact records</a>
+          <a href="../#catalog">完整目錄</a>
+        </div>
+      </nav>
+
+      <div class="model-hero site-shell">
+        <div>
+          <p id="model-eyebrow" class="eyebrow">Design model</p>
+          <h1 id="model-title">載入設計模型</h1>
+          <p id="model-summary" class="lede"></p>
+        </div>
+        <dl class="model-definition" aria-label="設計模型定義">
+          <div>
+            <dt>共同母體</dt>
+            <dd id="model-substrate"></dd>
+          </div>
+          <div>
+            <dt>保持不變</dt>
+            <dd id="model-retains"></dd>
+          </div>
+          <div>
+            <dt>主要變因</dt>
+            <dd id="model-varies"></dd>
+          </div>
+          <div>
+            <dt>研究問題</dt>
+            <dd id="model-question"></dd>
+          </div>
+        </dl>
+      </div>
+    </header>
+
+    <main id="main">
+      <section id="workbench" class="model-workbench site-shell" aria-labelledby="workbench-title">
+        <div class="model-workbench__heading">
+          <p class="eyebrow">Model workbench</p>
+          <h2 id="workbench-title">同一模型內比較，不再把每個 ablation 當成獨立方向。</h2>
+          <p id="section-summary"></p>
+        </div>
+
+        <div class="model-layout">
+          <aside class="model-sidebar" aria-label="子研究與變體">
+            <div>
+              <p class="model-sidebar__label">子研究</p>
+              <div id="section-tabs" class="model-section-tabs" role="tablist" aria-label="切換子研究"></div>
+            </div>
+            <div>
+              <p class="model-sidebar__label">研究物件</p>
+              <div id="variant-list" class="model-variant-list" aria-label="切換研究物件"></div>
+            </div>
+          </aside>
+
+          <div class="model-stage-column">
+            <div class="model-toolbar" aria-label="Prototype 顯示設定">
+              <div class="model-toolbar__group" aria-label="Viewport 尺寸">
+                <span>Viewport</span>
+                <button type="button" data-viewport="320">320</button>
+                <button type="button" data-viewport="390">390</button>
+                <button type="button" data-viewport="desktop">Desktop</button>
+              </div>
+              <button id="compare-parent" class="model-compare-button" type="button" aria-pressed="false">
+                與 parent 比較
+              </button>
+            </div>
+
+            <div id="preview-grid" class="model-preview-grid" data-compare="false">
+              <article class="model-preview-pane">
+                <header>
+                  <div>
+                    <p class="phase-index">Current object</p>
+                    <h3 id="current-object-title" aria-live="polite"></h3>
+                  </div>
+                  <span id="current-object-status" class="status"></span>
+                </header>
+                <div id="current-preview" class="model-preview-viewport" data-viewport="390"></div>
+              </article>
+
+              <article id="parent-pane" class="model-preview-pane" hidden>
+                <header>
+                  <div>
+                    <p class="phase-index">Research parent</p>
+                    <h3 id="parent-object-title"></h3>
+                  </div>
+                  <span id="parent-object-status" class="status"></span>
+                </header>
+                <div id="parent-preview" class="model-preview-viewport" data-viewport="390"></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="model-analysis site-shell" aria-label="變體分析">
+        <article class="model-analysis-card model-analysis-card--difference">
+          <p class="eyebrow">Isolated difference</p>
+          <h2 id="difference-variable">唯一變因</h2>
+          <dl class="model-difference-list">
+            <div>
+              <dt>Parent／Before</dt>
+              <dd id="difference-before"></dd>
+            </div>
+            <div>
+              <dt>Current／After</dt>
+              <dd id="difference-after"></dd>
+            </div>
+            <div>
+              <dt>未改變</dt>
+              <dd id="difference-unchanged"></dd>
+            </div>
+          </dl>
+        </article>
+
+        <article class="model-analysis-card">
+          <p class="eyebrow">Outcome</p>
+          <h2>實作狀態不等於研究結論。</h2>
+          <dl class="model-outcome-list">
+            <div>
+              <dt>Disposition</dt>
+              <dd id="outcome-disposition"></dd>
+            </div>
+            <div>
+              <dt>Evidence</dt>
+              <dd id="outcome-evidence"></dd>
+            </div>
+            <div>
+              <dt>Next gate</dt>
+              <dd id="outcome-next-gate"></dd>
+            </div>
+          </dl>
+        </article>
+      </section>
+
+      <section class="model-lineage-section site-shell" aria-labelledby="lineage-title">
+        <div class="model-section-heading">
+          <p class="eyebrow">Lineage</p>
+          <h2 id="lineage-title">看見 parent、siblings 與後續，不靠記憶往返頁面。</h2>
+        </div>
+        <div id="lineage" class="model-lineage"></div>
+      </section>
+
+      <section id="records" class="model-records-section site-shell" aria-labelledby="records-title">
+        <div class="model-section-heading">
+          <p class="eyebrow">Exact records</p>
+          <h2 id="records-title">模型頁負責理解，原始物件仍保持可追溯。</h2>
+        </div>
+        <div id="record-links" class="model-record-links"></div>
+      </section>
+    </main>
+
+    <footer class="model-footer site-shell">
+      <p>Menu Lens design model viewer</p>
+      <p>Presentation grouping only · canonical catalog remains unchanged</p>
+    </footer>
+
+    <script type="module" src="../model-page.mjs"></script>
+  </body>
+</html>
