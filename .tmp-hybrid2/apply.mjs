@@ -2,22 +2,26 @@ import { gunzipSync } from "node:zlib";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 
-const expectedChunks = [
-  "74bea89322cc277970319c1aba459f363a08130645827c04724994eb2b779935",
-  "da1d4c01432307da0022d53707bca655955123e8a463720a9d2a4e2150e72fe8",
-  "68cb5800b32f770a9f8ec013a102e63d20c638f28d00e685ce18ae84ed51bb5d",
-  "d190afcaad6ace1264e16ce7a8a9be45e04ec9c9e579b27508b1b7050787f8d5",
-  "d4d92a68903c0ffe609418d7a865cd6b039dfd4519246d8fd3d583859f3df475",
+const sources = [
+  ["part-1.txt", "b63111cbab9ba62b8d1769ec7f21bb93bca8851bc9d892eac3f8215aa8469ed8"],
+  ["part-2.txt", "4a54c3c02a0385975eb5e5fbe2149aabfdfebc06554fc2888217b1b2eb35903b"],
+  ["part-3.txt", "d21e61ebe52fa1003fd9861ed13547cc809ba801504b22e64e5c6b6887e7d709"],
+  ["part-4.txt", "03ef1014a37c8f324f05d9f1895e8fa5f177480cb4bd05969917d34a84019e1c"],
+  ["part-5.txt", "70be5a284a5494b5d5929b0767300d04777b5bacc1248d50563491fafe94d932"],
+  ["part-6.txt", "e4d84ab3a9c939a54eabd41975796d03199dfc88258618c48ab2dbadc1ab6db3"],
+  ["payload-4.txt", "d190afcaad6ace1264e16ce7a8a9be45e04ec9c9e579b27508b1b7050787f8d5"],
+  ["payload-5.txt", "d4d92a68903c0ffe609418d7a865cd6b039dfd4519246d8fd3d583859f3df475"],
 ];
+
 const chunks = [];
 const mismatches = [];
-for (let index = 1; index <= expectedChunks.length; index += 1) {
-  const chunk = await readFile(`.tmp-hybrid2/payload-${index}.txt`, "utf8");
+for (const [filename, expectedDigest] of sources) {
+  const chunk = await readFile(`.tmp-hybrid2/${filename}`, "utf8");
   const digest = createHash("sha256").update(chunk).digest("hex");
-  if (digest !== expectedChunks[index - 1]) mismatches.push(`${index}:${chunk.length}:${digest}`);
+  if (digest !== expectedDigest) mismatches.push(`${filename}:${chunk.length}:${digest}`);
   chunks.push(chunk);
 }
-if (mismatches.length) throw new Error(`Hybrid payload chunk mismatch: ${mismatches.join(" | ")}`);
+if (mismatches.length) throw new Error(`Hybrid payload part mismatch: ${mismatches.join(" | ")}`);
 
 const encoded = chunks.join("");
 const digest = createHash("sha256").update(encoded).digest("hex");
