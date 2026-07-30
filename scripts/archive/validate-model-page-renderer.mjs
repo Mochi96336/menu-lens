@@ -16,6 +16,7 @@ class FakeElement {
     this.hidden = false;
     this.disabled = false;
     this.tabIndex = 0;
+    this.title = "";
   }
 
   append(...nodes) {
@@ -49,6 +50,7 @@ const requiredSelectors = [
   "#model-eyebrow",
   "#model-title",
   "#model-summary",
+  "#model-stats",
   "#model-substrate",
   "#model-retains",
   "#model-varies",
@@ -56,10 +58,16 @@ const requiredSelectors = [
   "#section-summary",
   "#section-tabs",
   "#variant-list",
+  "#stage-context-role",
+  "#stage-context-copy",
   "#compare-parent",
+  "#parent-record-link",
+  "#viewport-note",
+  "#compare-view-switch",
   "#preview-grid",
   "#current-object-title",
   "#current-object-status",
+  "#current-exact-link",
   "#current-preview",
   "#parent-pane",
   "#parent-object-title",
@@ -73,8 +81,11 @@ const requiredSelectors = [
   "#difference-after",
   "#difference-unchanged-label",
   "#difference-unchanged",
+  "#outcome-title",
   "#outcome-disposition",
   "#outcome-evidence",
+  "#outcome-next-row",
+  "#outcome-next-label",
   "#outcome-next-gate",
   "#lineage",
   "#record-links",
@@ -84,6 +95,11 @@ const selectors = new Map(requiredSelectors.map((selector) => [selector, new Fak
 const viewportButtons = ["320", "390", "desktop"].map((viewport) => {
   const button = new FakeElement("button");
   button.dataset.viewport = viewport;
+  return button;
+});
+const previewPaneButtons = ["current", "parent"].map((pane) => {
+  const button = new FakeElement("button");
+  button.dataset.previewPane = pane;
   return button;
 });
 const body = new FakeElement("body");
@@ -103,13 +119,19 @@ const hadGlobals = {
 };
 
 let lastUrl = null;
+let pushedUrl = null;
+let popstateListener = null;
 try {
   globalThis.document = {
     title: "",
     body,
     activeElement: null,
     querySelector: (selector) => selectors.get(selector) ?? null,
-    querySelectorAll: (selector) => selector === "[data-viewport]" ? viewportButtons : [],
+    querySelectorAll: (selector) => {
+      if (selector === "[data-viewport]") return viewportButtons;
+      if (selector === "[data-preview-pane]") return previewPaneButtons;
+      return [];
+    },
     createElement: (tagName) => new FakeElement(tagName),
   };
   globalThis.window = {
@@ -119,9 +141,13 @@ try {
       hash: "",
       href: "",
     },
+    addEventListener: (type, listener) => {
+      if (type === "popstate") popstateListener = listener;
+    },
   };
   globalThis.history = {
     replaceState: (_state, _title, url) => { lastUrl = url; },
+    pushState: (_state, _title, url) => { pushedUrl = url; },
   };
 
   const rendererUrl = new URL("research-history/model-page.mjs", root);
@@ -130,6 +156,9 @@ try {
   if (selectors.get("#model-title").textContent !== "Landscape Paper") {
     throw new Error("Model viewer did not resolve the requested design model.");
   }
+  if (!selectors.get("#model-stats").textContent.includes("6 組子研究")) {
+    throw new Error("Model viewer did not publish compact model statistics.");
+  }
   if (selectors.get("#current-object-title").textContent !== "18B · 18B Semantic Zoom") {
     throw new Error("Model viewer did not resolve the requested current object.");
   }
@@ -137,15 +166,32 @@ try {
   if (currentFrame?.tagName !== "IFRAME" || currentFrame.src !== "../phases/18b-semantic-zoom/index.html") {
     throw new Error("Model viewer did not render the exact current prototype entrypoint.");
   }
+  if (currentFrame.title !== "Current — 18B 18B Semantic Zoom — 390px") {
+    throw new Error("Current iframe title must identify role, object, and controlled viewport.");
+  }
+  if (selectors.get("#current-exact-link").hidden || selectors.get("#current-exact-link").href !== currentFrame.src) {
+    throw new Error("The stage must expose a near-preview exact prototype link.");
+  }
   const parentFrame = selectors.get("#parent-preview").children[0];
   if (selectors.get("#parent-pane").hidden || parentFrame?.src !== "../phases/18-landscape-paper/index.html") {
     throw new Error("Model viewer did not render the requested canonical parent comparison.");
+  }
+  if (parentFrame.title !== "Parent — 18 Landscape Paper — 390px") {
+    throw new Error("Parent iframe title must identify role, object, and controlled viewport.");
   }
   if (selectors.get("#difference-eyebrow").textContent !== "Isolated difference") {
     throw new Error("Controlled variants must render as isolated differences.");
   }
   if (!lastUrl?.includes("model=landscape-paper") || !lastUrl.includes("compare=parent")) {
-    throw new Error("Model viewer did not publish its current deep-link state.");
+    throw new Error("Model viewer did not publish its initial deep-link state.");
+  }
+
+  previewPaneButtons[1].dispatch("click");
+  if (selectors.get("#preview-grid").dataset.mobilePane !== "parent") {
+    throw new Error("Mobile comparison must switch between current and parent panes.");
+  }
+  if (selectors.get("#current-preview").children[0] !== currentFrame || selectors.get("#parent-preview").children[0] !== parentFrame) {
+    throw new Error("Switching mobile comparison panes must preserve both iframe instances.");
   }
 
   selectors.get("#compare-parent").dispatch("click");
@@ -158,6 +204,23 @@ try {
   }
   if (selectors.get("#current-preview").dataset.viewport !== "desktop") {
     throw new Error("Desktop viewport state was not applied to the preview.");
+  }
+  if (!currentFrame.title.endsWith("1024px")) {
+    throw new Error("Changing viewport must update the iframe accessibility title.");
+  }
+  if (!pushedUrl?.includes("viewport=desktop")) {
+    throw new Error("Interactive state changes must create navigable history entries.");
+  }
+
+  const sectionTabs = selectors.get("#section-tabs").children;
+  sectionTabs[2].dispatch("click");
+  const focusVariants = selectors.get("#variant-list").children;
+  focusVariants[3].dispatch("click");
+  if (selectors.get("#difference-eyebrow").textContent !== "Stopped result") {
+    throw new Error("Negative evidence must render as a stopped result before presentation-note logic.");
+  }
+  if (selectors.get("#outcome-title").textContent !== "停止判斷不是另一個可選方案。") {
+    throw new Error("Stopped objects must use explicit outcome language.");
   }
 
   const modelSelect = selectors.get("#model-select");
@@ -183,24 +246,41 @@ try {
 
   modelSelect.value = "multiscale-focus";
   modelSelect.dispatch("change");
-  const sectionTabs = selectors.get("#section-tabs").children;
-  if (sectionTabs[0].tabIndex !== 0 || sectionTabs[1].tabIndex !== -1) {
+  const multiscaleTabs = selectors.get("#section-tabs").children;
+  if (multiscaleTabs[0].tabIndex !== 0 || multiscaleTabs[1].tabIndex !== -1) {
     throw new Error("Section tabs must expose one keyboard tab stop.");
   }
-  sectionTabs[1].dispatch("click");
+  multiscaleTabs[1].dispatch("click");
   selectors.get("#variant-list").children[1].dispatch("click");
   if (selectors.get("#difference-eyebrow").textContent !== "Prerequisite correction") {
     throw new Error("Correction objects must render their prerequisite role.");
   }
+  if (!selectors.get("#compare-parent").hidden) {
+    throw new Error("Objects without an executable current/parent pair must not expose a fake compare action.");
+  }
+  if (selectors.get("#parent-record-link").hidden) {
+    throw new Error("A correction with a recorded parent must expose the parent record instead of an empty compare pane.");
+  }
+
+  if (typeof popstateListener !== "function") {
+    throw new Error("Model viewer must subscribe to browser history navigation.");
+  }
+  globalThis.window.location.search = "?model=complete-document&section=baseline&variant=01&viewport=320";
+  popstateListener();
+  if (selectors.get("#current-object-title").textContent !== "01 · Complete menu") {
+    throw new Error("Browser history navigation must restore model-page state.");
+  }
 
   const css = await readFile(new URL("research-history/model-page.css", root), "utf8");
   for (const contract of [
-    '--preview-width: 320px',
-    '--preview-width: 390px',
-    '--preview-width: 1024px',
-    'min-width: var(--preview-width)',
+    "--preview-width: 320px",
+    "--preview-width: 390px",
+    "--preview-width: 1024px",
+    "min-width: var(--preview-width)",
+    "data-mobile-pane=\"current\"",
+    ".model-compare-view-switch:not([hidden])",
   ]) {
-    if (!css.includes(contract)) throw new Error(`Model preview CSS is missing exact-width contract: ${contract}`);
+    if (!css.includes(contract)) throw new Error(`Model preview CSS is missing responsive contract: ${contract}`);
   }
   if (css.includes(".model-preview-frame, .model-preview-placeholder { max-width: 100%")) {
     throw new Error("Responsive CSS must not shrink controlled preview widths.");
@@ -212,4 +292,4 @@ try {
   }
 }
 
-console.log("Design model viewer: deep links, featured landings, exact prototypes, role-aware analysis, stable iframes, tabs, and controlled widths verified.");
+console.log("Design model viewer: compact hierarchy, deep links, featured landings, exact prototypes, role-aware outcomes, stable comparisons, history, tabs, and controlled widths verified.");
