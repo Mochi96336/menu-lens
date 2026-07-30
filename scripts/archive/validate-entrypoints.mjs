@@ -10,6 +10,7 @@ const requiredPaths = new Set([
   "history.css",
   "prototype-registry.js",
   "model-page.css",
+  "model-page-polish.css",
   "model-page.mjs",
   "models/index.html",
   "catalog/index.mjs",
@@ -57,6 +58,8 @@ for (const contract of [
 }
 
 for (const contract of [
+  '<link rel="stylesheet" href="../model-page.css" />',
+  '<link rel="stylesheet" href="../model-page-polish.css" />',
   '<script src="../prototype-registry.js"></script>',
   '<script type="module" src="../model-page.mjs"></script>',
   'id="model-select"',
