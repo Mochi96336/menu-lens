@@ -23,7 +23,9 @@ jobs:
           fetch-depth: 0
 
       - name: Apply self-review fixes
-        run: node .tmp-pr60-self-review/apply.mjs
+        run: |
+          node .tmp-pr60-self-review/fix-apply.mjs
+          node .tmp-pr60-self-review/apply.mjs
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
