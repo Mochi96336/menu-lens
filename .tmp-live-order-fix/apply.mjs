@@ -78,10 +78,8 @@ adapter = replaceOnce(
   `    activeTarget = match.target;
     activeSelector = match.selector;
     frame.hidden = false;
-    frame.style.visibility = "hidden";
-    frame.style.pointerEvents = "none";
     ensureDocumentStyle(frameDocument);`,
-  "mount iframe before measuring live root",
+  "mount iframe before measuring live root without disabling interaction",
 );
 adapter = replaceOnce(
   adapter,
@@ -113,4 +111,4 @@ css = replaceOnce(
 await writeFile(cssPath, css);
 
 await rm(".tmp-live-order-fix", { recursive: true, force: true });
-console.log("Live frames remain measurable while the static fallback is visible.");
+console.log("Live frames remain measurable and operable while the static fallback is visible.");
