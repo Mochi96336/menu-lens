@@ -1,0 +1,18 @@
+.model-toolbar-link[hidden],
+.model-compare-button[hidden],
+.model-compare-view-switch[hidden],
+.model-preview-pane[hidden],
+.model-preview-pane__actions a[hidden] {
+  display: none !important;
+}
+
+@media (min-width: 901px) and (max-width: 1050px) {
+  .model-layout {
+    grid-template-columns: minmax(14rem, 16rem) minmax(0, 1fr);
+  }
+
+  .model-sidebar {
+    position: sticky;
+    grid-template-columns: 1fr;
+  }
+}
