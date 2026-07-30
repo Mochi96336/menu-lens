@@ -179,6 +179,7 @@
 
 .model-page .model-live-frame,
 .model-page .model-live-fallback {
+  grid-area: 1 / 1;
   width: var(--model-live-width, 390px);
   max-width: none;
 }

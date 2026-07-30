@@ -100,6 +100,7 @@ export const createModelLiveSurface = (root, options = {}) => {
   let objectKey = null;
   let source = null;
   let loadVersion = 0;
+  let measurementVersion = 0;
   let resizeObserver = null;
   let activeTarget = null;
   let activeSelector = null;
@@ -109,8 +110,10 @@ export const createModelLiveSurface = (root, options = {}) => {
     shell.dataset.liveState = state;
   };
 
-  const showFallback = (message, failed = false) => {
-    frame.hidden = true;
+  const showFallback = (message, failed = false, keepFrameMounted = Boolean(source)) => {
+    frame.hidden = !keepFrameMounted;
+    frame.style.visibility = keepFrameMounted ? "hidden" : "";
+    frame.style.pointerEvents = keepFrameMounted ? "none" : "";
     fallback.hidden = false;
     status.textContent = message;
     fallback.dataset.failed = String(failed);
@@ -120,11 +123,14 @@ export const createModelLiveSurface = (root, options = {}) => {
   const showFrame = () => {
     fallback.hidden = true;
     frame.hidden = false;
+    frame.style.visibility = "visible";
+    frame.style.pointerEvents = "auto";
     delete fallback.dataset.failed;
     setState("ready");
   };
 
   const measure = async (expectedVersion = loadVersion) => {
+    const measurement = ++measurementVersion;
     if (expectedVersion !== loadVersion || !frame.contentWindow || !frame.contentDocument) return false;
     const frameDocument = frame.contentDocument;
     const frameView = frame.contentWindow;
@@ -135,6 +141,7 @@ export const createModelLiveSurface = (root, options = {}) => {
 
     activeTarget = match.target;
     activeSelector = match.selector;
+    frame.hidden = false;
     ensureDocumentStyle(frameDocument);
     isolateTarget(activeTarget);
     await frameDocument.fonts?.ready;
@@ -151,6 +158,7 @@ export const createModelLiveSurface = (root, options = {}) => {
     await nextPaint(frameView);
     frameDocument.documentElement.classList.add("model-live-ready");
     const rect = activeTarget.getBoundingClientRect();
+    if (measurement !== measurementVersion || expectedVersion !== loadVersion) return false;
     const height = Math.max(1, Math.ceil(rect.height));
     frame.style.height = `${height}px`;
     root.dataset.liveRoot = activeSelector;
@@ -199,12 +207,14 @@ export const createModelLiveSurface = (root, options = {}) => {
       loadVersion += 1;
       resizeObserver?.disconnect();
       resizeObserver = null;
+      measurementVersion += 1;
       frame.removeAttribute("src");
-      showFallback("此研究物件沒有獨立可操作畫面。", true);
+      showFallback("此研究物件沒有獨立可操作畫面。", true, false);
       return frame;
     }
     if (sourceChanged) {
       loadVersion += 1;
+      measurementVersion += 1;
       resizeObserver?.disconnect();
       resizeObserver = null;
       activeTarget = null;
@@ -225,6 +235,7 @@ export const createModelLiveSurface = (root, options = {}) => {
 
   const destroy = () => {
     loadVersion += 1;
+    measurementVersion += 1;
     resizeObserver?.disconnect();
     frame.src = "about:blank";
     root.replaceChildren();

@@ -122,7 +122,11 @@ const waitForLive = (client, rootSelector) => waitFor(client, `(() => {
   if (!root || !frame || root.dataset.liveState !== 'ready' || frame.hidden) return false;
   const frameDocument = frame.contentDocument;
   const liveRoot = frameDocument?.querySelector(root.dataset.liveRoot || '#prototype');
-  return Boolean(frameDocument && liveRoot && Number.parseFloat(frame.style.height) > 0);
+  const frameHeight = Number.parseFloat(frame.style.height);
+  const rootHeight = liveRoot?.getBoundingClientRect().height ?? 0;
+  return Boolean(frameDocument && liveRoot && frameHeight > 0
+    && Math.abs(frameHeight - rootHeight) < 3
+    && getComputedStyle(frame).pointerEvents !== 'none');
 })()`, `live surface ${rootSelector}`);
 
 const waitForBoard = (client) => waitFor(client, `(() => {

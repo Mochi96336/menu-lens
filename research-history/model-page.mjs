@@ -490,6 +490,7 @@ const renderStage = () => {
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
   const canCompare = canCompareWithParent(activeObject, parent);
   if (activeViewMode === "compare" && !canCompare) activeViewMode = "focus";
+  setViewModeState(canCompare);
 
   elements.currentObjectTitle.textContent = objectLabel(activeObject);
   elements.currentPreviewTitle.textContent = objectLabel(activeObject);
@@ -523,7 +524,6 @@ const renderStage = () => {
 
   if (activeViewMode === "all") renderAllPreviews();
   else elements.allPreviewGrid.replaceChildren();
-  setViewModeState(canCompare);
   renderViewportState();
 };
 
