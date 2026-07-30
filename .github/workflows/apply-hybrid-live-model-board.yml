@@ -1,0 +1,89 @@
+name: Apply hybrid live model board
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  validate-and-apply:
+    if: github.head_ref == 'agent/hybrid-live-model-board' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out clean branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/hybrid-live-model-board
+          fetch-depth: 0
+
+      - name: Read and apply staged hybrid payload
+        run: |
+          git fetch origin agent/preview-first-model-board
+          mkdir -p .tmp-hybrid
+          for file in payload-1.txt payload-2.txt payload-3.txt payload-4.txt payload-5.txt payload-6.txt apply.mjs; do
+            git show "origin/agent/preview-first-model-board:.tmp-hybrid/$file" > ".tmp-hybrid/$file"
+          done
+          node .tmp-hybrid/apply.mjs
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Install preview fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
+      - name: Generate previews and capture hybrid browser review
+        run: |
+          node scripts/serve.mjs > /tmp/menu-lens-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          BROWSER_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$BROWSER_BIN"
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/generate-model-previews.mjs
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/capture-model-page-review.mjs
+
+      - name: Upload hybrid browser review
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: menu-lens-hybrid-model-board-review
+          path: browser-review/
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Commit verified hybrid viewer
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research-history/model-page.mjs \
+            research-history/model-live-surface.mjs \
+            research-history/model-page-workbench.css \
+            research-history/models/index.html \
+            scripts/archive/capture-model-page-review.mjs \
+            scripts/archive/validate-model-page-renderer.mjs \
+            scripts/archive/validate-entrypoints.mjs
+          git commit -m "Refine model board with operable live surfaces"
+          git push origin HEAD:agent/hybrid-live-model-board
