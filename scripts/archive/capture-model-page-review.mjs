@@ -90,24 +90,47 @@ const evaluate = async (client, expression) => {
 };
 
 const waitForDocument = async (client, expectedUrl) => {
-  const serializedUrl = JSON.stringify(expectedUrl);
+  const expected = new URL(expectedUrl);
+  const expectedState = {
+    pathname: expected.pathname,
+    model: expected.searchParams.get("model"),
+    section: expected.searchParams.get("section"),
+    variant: expected.searchParams.get("variant"),
+    viewport: expected.searchParams.get("viewport"),
+  };
+  const serializedState = JSON.stringify(expectedState);
+  let lastSnapshot = null;
   for (let attempt = 0; attempt < 120; attempt += 1) {
     try {
-      const ready = await evaluate(client, `(() => (
-        location.href === ${serializedUrl}
-        && document.readyState === "complete"
-        && Boolean(document.querySelector("#current-object-title")?.textContent.trim())
-      ))()`);
-      if (ready) {
+      lastSnapshot = await evaluate(client, `(() => {
+        const expected = ${serializedState};
+        const params = new URLSearchParams(location.search);
+        const title = document.querySelector("#current-object-title")?.textContent.trim() ?? "";
+        const matches = location.pathname === expected.pathname
+          && params.get("model") === expected.model
+          && params.get("section") === expected.section
+          && params.get("variant") === expected.variant
+          && params.get("viewport") === expected.viewport;
+        return {
+          ready: matches && document.readyState === "complete" && Boolean(title),
+          href: location.href,
+          readyState: document.readyState,
+          title,
+          archiveError: document.querySelector(".archive-error")?.textContent ?? "",
+        };
+      })()`);
+      if (lastSnapshot?.ready) {
         await delay(350);
         return;
       }
-    } catch {
-      // Navigation may temporarily invalidate the execution context.
+    } catch (error) {
+      lastSnapshot = { evaluationError: error.message };
     }
     await delay(100);
   }
-  throw new Error(`Timed out waiting for rendered model page ${expectedUrl}`);
+  throw new Error(
+    `Timed out waiting for rendered model page ${expectedUrl}; last state: ${JSON.stringify(lastSnapshot)}`,
+  );
 };
 
 const setViewport = (client, width, height) => client.send("Emulation.setDeviceMetricsOverride", {
@@ -176,8 +199,16 @@ try {
     if (!["error", "assert"].includes(type)) return;
     runtimeErrors.push(args.map((arg) => arg.value ?? arg.description ?? "").join(" "));
   });
+  client.on("Log.entryAdded", ({ entry }) => {
+    if (entry?.level === "error") runtimeErrors.push(entry.text ?? "Browser log error");
+  });
+  client.on("Network.loadingFailed", ({ errorText, blockedReason, type }) => {
+    runtimeErrors.push(`Resource load failed (${type ?? "unknown"}): ${blockedReason ?? errorText}`);
+  });
   await client.send("Page.enable");
   await client.send("Runtime.enable");
+  await client.send("Log.enable");
+  await client.send("Network.enable");
 
   const cases = [];
   const landscapePath = "/models/?model=landscape-paper&section=reading-grammar&variant=18B&viewport=390&compare=parent";
