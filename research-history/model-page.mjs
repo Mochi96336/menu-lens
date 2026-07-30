@@ -27,12 +27,31 @@ const dispositionLabels = Object.freeze({
   rejected: "rejected",
 });
 
+const dispositionExplanations = Object.freeze({
+  substrate: "共同母體已建立；不代表產品方向已選定。",
+  reference: "作為比較基準保存，不表示較成熟或較推薦。",
+  "keep-controlled": "機制值得保留，但不等於產品採用。",
+  provisional: "仍待直接檢視或後續證據分類。",
+  "negative-evidence": "做得出來，但結果支持停止延伸。",
+  "study-only": "只作為研究工具，不是設計候選。",
+  superseded: "已由較清楚的研究物件取代，仍保留來源脈絡。",
+  rejected: "研究邊界已否決此方向。",
+});
+
 const evidenceLabels = Object.freeze({
   "implementation-only": "implementation evidence only",
   "browser-verified": "browser verified",
   "direct-review-pending": "direct review pending",
   "participant-study-ready": "participant study ready",
   "participant-evidence-complete": "participant evidence complete",
+});
+
+const evidenceExplanations = Object.freeze({
+  "implementation-only": "目前只證明物件已實作，尚未完成指定瀏覽器檢視。",
+  "browser-verified": "指定環境下可執行；尚不能推論陌生讀者理解或產品採用。",
+  "direct-review-pending": "仍需在指定 viewport 完成直接檢視與 disposition。",
+  "participant-study-ready": "研究工具已就緒，但尚未產生參與者證據。",
+  "participant-evidence-complete": "參與者證據已完成，仍須依研究問題解讀。",
 });
 
 const toneForDisposition = (disposition) => {
@@ -48,6 +67,7 @@ const catalog = buildArchiveCatalog(
 );
 const objectById = new Map(catalog.objects.map((object) => [object.id, object]));
 const viewportValues = new Set(["320", "390", "desktop"]);
+const combinedObjectIds = new Set(["22", "23"]);
 
 const objectOwner = new Map();
 for (const model of designModels) {
@@ -63,6 +83,7 @@ const elements = Object.freeze({
   modelEyebrow: requiredElement("#model-eyebrow"),
   modelTitle: requiredElement("#model-title"),
   modelSummary: requiredElement("#model-summary"),
+  modelStats: requiredElement("#model-stats"),
   modelSubstrate: requiredElement("#model-substrate"),
   modelRetains: requiredElement("#model-retains"),
   modelVaries: requiredElement("#model-varies"),
@@ -70,10 +91,16 @@ const elements = Object.freeze({
   sectionSummary: requiredElement("#section-summary"),
   sectionTabs: requiredElement("#section-tabs"),
   variantList: requiredElement("#variant-list"),
+  stageContextRole: requiredElement("#stage-context-role"),
+  stageContextCopy: requiredElement("#stage-context-copy"),
   compareParent: requiredElement("#compare-parent"),
+  parentRecordLink: requiredElement("#parent-record-link"),
+  viewportNote: requiredElement("#viewport-note"),
+  compareViewSwitch: requiredElement("#compare-view-switch"),
   previewGrid: requiredElement("#preview-grid"),
   currentObjectTitle: requiredElement("#current-object-title"),
   currentObjectStatus: requiredElement("#current-object-status"),
+  currentExactLink: requiredElement("#current-exact-link"),
   currentPreview: requiredElement("#current-preview"),
   parentPane: requiredElement("#parent-pane"),
   parentObjectTitle: requiredElement("#parent-object-title"),
@@ -87,30 +114,51 @@ const elements = Object.freeze({
   differenceAfter: requiredElement("#difference-after"),
   differenceUnchangedLabel: requiredElement("#difference-unchanged-label"),
   differenceUnchanged: requiredElement("#difference-unchanged"),
+  outcomeTitle: requiredElement("#outcome-title"),
   outcomeDisposition: requiredElement("#outcome-disposition"),
   outcomeEvidence: requiredElement("#outcome-evidence"),
+  outcomeNextRow: requiredElement("#outcome-next-row"),
+  outcomeNextLabel: requiredElement("#outcome-next-label"),
   outcomeNextGate: requiredElement("#outcome-next-gate"),
   lineage: requiredElement("#lineage"),
   recordLinks: requiredElement("#record-links"),
 });
 
+const viewportButtons = [...document.querySelectorAll("[data-viewport]")];
+const previewPaneButtons = [...document.querySelectorAll("[data-preview-pane]")];
+
 const sectionForObject = (model, objectId) => model.sections.find((section) => section.objectIds.includes(objectId));
 const featuredSectionForModel = (model) => sectionForObject(model, model.featuredObjectId) ?? model.sections[0];
 
-const params = new URLSearchParams(window.location.search);
-const fallbackModel = modelById.get("landscape-paper") ?? designModels[0];
-let activeModel = modelById.get(params.get("model")) ?? fallbackModel;
-const requestedSection = activeModel.sections.find((section) => section.id === params.get("section"));
-let activeSection = requestedSection ?? featuredSectionForModel(activeModel);
-let activeObject = objectById.get(params.get("variant"));
-if (!activeObject || !activeSection.objectIds.includes(activeObject.id)) {
-  const preferredObjectId = requestedSection ? activeSection.defaultObjectId : activeModel.featuredObjectId;
-  activeObject = objectById.get(preferredObjectId) ?? objectById.get(activeSection.defaultObjectId);
-}
-let activeViewport = viewportValues.has(params.get("viewport")) ? params.get("viewport") : "390";
-let compareParent = params.get("compare") === "parent";
+const resolveLocationState = () => {
+  const params = new URLSearchParams(window.location.search);
+  const fallbackModel = modelById.get("landscape-paper") ?? designModels[0];
+  const model = modelById.get(params.get("model")) ?? fallbackModel;
+  const requestedSection = model.sections.find((section) => section.id === params.get("section"));
+  const section = requestedSection ?? featuredSectionForModel(model);
+  let object = objectById.get(params.get("variant"));
+  if (!object || !section.objectIds.includes(object.id)) {
+    const preferredObjectId = requestedSection ? section.defaultObjectId : model.featuredObjectId;
+    object = objectById.get(preferredObjectId) ?? objectById.get(section.defaultObjectId);
+  }
+  return {
+    model,
+    section,
+    object,
+    viewport: viewportValues.has(params.get("viewport")) ? params.get("viewport") : "390",
+    compare: params.get("compare") === "parent",
+  };
+};
 
-const updateUrl = () => {
+const initialState = resolveLocationState();
+let activeModel = initialState.model;
+let activeSection = initialState.section;
+let activeObject = initialState.object;
+let activeViewport = initialState.viewport;
+let compareParent = initialState.compare;
+let activePreviewPane = "current";
+
+const updateUrl = (mode = "replace") => {
   const next = new URLSearchParams({
     model: activeModel.id,
     section: activeSection.id,
@@ -119,7 +167,9 @@ const updateUrl = () => {
   });
   if (compareParent && activeObject.researchParentId) next.set("compare", "parent");
   const hash = window.location.hash ?? "";
-  history.replaceState(null, "", `?${next.toString()}${hash}`);
+  const url = `?${next.toString()}${hash}`;
+  if (mode === "push" && typeof history.pushState === "function") history.pushState(null, "", url);
+  else if (mode) history.replaceState(null, "", url);
 };
 
 const setStatus = (element, object) => {
@@ -128,10 +178,28 @@ const setStatus = (element, object) => {
 };
 
 const archivePath = (path) => `../${path}`;
+const viewportLabel = () => activeViewport === "desktop" ? "1024px" : `${activeViewport}px`;
 
-const syncPreview = (root, object) => {
+const previewProfileForObject = (object) => {
+  if (object.objectType === "study") return "study";
+  if (activeModel.id === "complete-document") return "document";
+  return "spatial";
+};
+
+const updateFrameTitle = (root, object, role) => {
+  const frame = root.children?.[0];
+  if (frame?.tagName === "IFRAME") {
+    frame.title = `${role} — ${object.id} ${object.title} — ${viewportLabel()}`;
+  }
+};
+
+const syncPreview = (root, object, role) => {
   root.dataset.viewport = activeViewport;
-  if (root.dataset.objectId === object.id) return;
+  root.dataset.previewProfile = previewProfileForObject(object);
+  if (root.dataset.objectId === object.id) {
+    updateFrameTitle(root, object, role);
+    return;
+  }
 
   root.replaceChildren();
   root.dataset.objectId = object.id;
@@ -140,7 +208,7 @@ const syncPreview = (root, object) => {
     const frame = document.createElement("iframe");
     frame.className = "model-preview-frame";
     frame.src = archivePath(object.entrypoint);
-    frame.title = `${object.id} ${object.title} exact prototype`;
+    frame.title = `${role} — ${object.id} ${object.title} — ${viewportLabel()}`;
     frame.loading = "eager";
     root.append(frame);
     return;
@@ -174,6 +242,8 @@ const renderModelDefinition = () => {
   elements.modelRetains.textContent = activeModel.retains;
   elements.modelVaries.textContent = activeModel.varies;
   elements.modelQuestion.textContent = activeModel.question;
+  const objectCount = new Set(activeModel.sections.flatMap((section) => section.objectIds)).size;
+  elements.modelStats.textContent = `${activeModel.sections.length} 組子研究 · ${objectCount} 個研究物件`;
 };
 
 const focusAdjacentTab = (event, currentIndex) => {
@@ -207,11 +277,19 @@ const renderSectionTabs = () => {
       activeSection = section;
       activeObject = objectById.get(section.defaultObjectId);
       compareParent = false;
-      render();
+      activePreviewPane = "current";
+      render({ historyMode: "push" });
     });
     elements.sectionTabs.append(button);
   }
   elements.variantList.setAttribute("aria-labelledby", `section-tab-${activeSection.id}`);
+};
+
+const variantStateLabel = (object) => {
+  if (["negative-evidence", "rejected", "superseded"].includes(object.disposition)) return "stopped";
+  if (object.objectType === "study") return "study";
+  if (object.objectType === "correction") return "correction";
+  return dispositionLabels[object.disposition] ?? object.disposition;
 };
 
 const renderVariantList = () => {
@@ -228,13 +306,14 @@ const renderVariantList = () => {
     const copy = document.createElement("span");
     copy.append(
       makeText("strong", "", `${object.id} · ${note?.shortLabel ?? object.title}`),
-      makeText("small", "", `${object.objectType} · ${dispositionLabels[object.disposition]} · ${evidenceLabels[object.evidenceState]}`),
+      makeText("small", "", `${object.objectType} · ${variantStateLabel(object)}`),
     );
     button.append(copy);
     button.addEventListener("click", () => {
       activeObject = object;
       compareParent = false;
-      render();
+      activePreviewPane = "current";
+      render({ historyMode: "push" });
     });
     elements.variantList.append(button);
   }
@@ -243,31 +322,58 @@ const renderVariantList = () => {
 const renderViewportState = () => {
   elements.currentPreview.dataset.viewport = activeViewport;
   elements.parentPreview.dataset.viewport = activeViewport;
-  for (const button of document.querySelectorAll("[data-viewport]")) {
+  for (const button of viewportButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.viewport === activeViewport));
+  }
+  updateFrameTitle(elements.currentPreview, activeObject, "Current");
+  const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
+  if (parent) updateFrameTitle(elements.parentPreview, parent, "Parent");
+  elements.viewportNote.textContent = `固定 ${viewportLabel()} 寬；外層不足時水平捲動，不縮放 prototype。`;
+};
+
+const setPreviewPaneState = () => {
+  elements.previewGrid.dataset.mobilePane = activePreviewPane;
+  for (const button of previewPaneButtons) {
+    button.setAttribute("aria-pressed", String(button.dataset.previewPane === activePreviewPane));
   }
 };
 
 const renderStage = () => {
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
-  if (!parent) compareParent = false;
+  const canCompare = Boolean(activeObject.entrypoint && parent?.entrypoint);
+  if (!canCompare) compareParent = false;
+  if (!compareParent) activePreviewPane = "current";
 
   elements.currentObjectTitle.textContent = `${activeObject.id} · ${activeObject.title}`;
   setStatus(elements.currentObjectStatus, activeObject);
-  syncPreview(elements.currentPreview, activeObject);
+  syncPreview(elements.currentPreview, activeObject, "Current");
 
-  elements.compareParent.disabled = !parent;
-  elements.compareParent.setAttribute("aria-pressed", String(Boolean(parent && compareParent)));
-  elements.compareParent.textContent = parent ? `與 parent ${parent.id} 比較` : "沒有 research parent";
-  elements.previewGrid.dataset.compare = String(Boolean(parent && compareParent));
-  elements.parentPane.hidden = !(parent && compareParent);
+  elements.currentExactLink.hidden = !activeObject.entrypoint;
+  if (activeObject.entrypoint) elements.currentExactLink.href = archivePath(activeObject.entrypoint);
 
-  if (parent && compareParent) {
-    elements.parentObjectTitle.textContent = `${parent.id} · ${parent.title}`;
-    setStatus(elements.parentObjectStatus, parent);
-    syncPreview(elements.parentPreview, parent);
+  elements.compareParent.hidden = !canCompare;
+  elements.compareParent.disabled = !canCompare;
+  elements.compareParent.setAttribute("aria-pressed", String(Boolean(canCompare && compareParent)));
+  elements.compareParent.textContent = parent ? `與 parent ${parent.id} 比較` : "與 parent 比較";
+
+  const parentRecordPath = parent?.reviewDocument ?? parent?.entrypoint ?? null;
+  elements.parentRecordLink.hidden = !parent || canCompare || !parentRecordPath;
+  if (parentRecordPath) {
+    elements.parentRecordLink.href = archivePath(parentRecordPath);
+    elements.parentRecordLink.textContent = `查看 parent ${parent.id} record`;
   }
 
+  elements.previewGrid.dataset.compare = String(Boolean(canCompare && compareParent));
+  elements.parentPane.hidden = !(canCompare && compareParent);
+  elements.compareViewSwitch.hidden = !(canCompare && compareParent);
+
+  if (canCompare && compareParent) {
+    elements.parentObjectTitle.textContent = `${parent.id} · ${parent.title}`;
+    setStatus(elements.parentObjectStatus, parent);
+    syncPreview(elements.parentPreview, parent, "Parent");
+  }
+
+  setPreviewPaneState();
   renderViewportState();
 };
 
@@ -286,11 +392,11 @@ const differenceCopy = () => {
     return {
       eyebrow: "Study role",
       variable: "研究工具，不是設計變體",
-      beforeLabel: "Evidence target",
+      beforeLabel: "Tests",
       before: targets || parent?.summary || "尚未記錄 evidence target。",
       afterLabel: "Study instrument",
       after: activeObject.summary,
-      unchangedLabel: "不授權",
+      unchangedLabel: "Does not establish",
       unchanged: "Study readiness 與執行結果都不會自動授權 prototype 採用或建立 combined direction。",
     };
   }
@@ -300,14 +406,27 @@ const differenceCopy = () => {
     return {
       eyebrow: "Prerequisite correction",
       variable: note?.variable ?? "可信閱讀的必要修正",
-      beforeLabel: "修正前",
+      beforeLabel: "Problem",
       before: note?.before ?? (targets || parent?.summary || "沒有獨立 prototype parent。"),
-      afterLabel: "修正內容",
+      afterLabel: "Correction",
       after: note?.after ?? activeObject.summary,
-      unchangedLabel: "模型未改",
+      unchangedLabel: "Research boundary",
       unchanged: note?.unchanged ?? (parent
         ? `${parent.id} 的核心模型、內容身份與主要 interaction grammar 不因此成為新產品方向。`
         : activeModel.retains),
+    };
+  }
+
+  if (["negative-evidence", "rejected", "superseded"].includes(activeObject.disposition)) {
+    return {
+      eyebrow: "Stopped result",
+      variable: "停止結果，不是替代方案",
+      beforeLabel: "Attempt",
+      before: note ? `${note.variable}：${note.after}` : activeObject.summary,
+      afterLabel: "Observed limit",
+      after: activeObject.summary,
+      unchangedLabel: "Consequence",
+      unchanged: activeObject.nextGate ?? "保留為負面證據，不再沿此路線延伸。",
     };
   }
 
@@ -321,6 +440,19 @@ const differenceCopy = () => {
       after: note.after,
       unchangedLabel: "未改變",
       unchanged: note.unchanged,
+    };
+  }
+
+  if (combinedObjectIds.has(activeObject.id)) {
+    return {
+      eyebrow: "Combined mechanisms",
+      variable: "多個既有機制的 coupled implementation",
+      beforeLabel: "Inherited",
+      before: parent?.summary ?? activeModel.substrate,
+      afterLabel: "Combined",
+      after: activeObject.summary,
+      unchangedLabel: "Still excluded",
+      unchanged: "此物件不因此成為新的 best-of product direction；各機制仍需分開判讀。",
     };
   }
 
@@ -341,11 +473,11 @@ const differenceCopy = () => {
   return {
     eyebrow: "Model transition",
     variable: activeSection.title,
-    beforeLabel: "Earlier model",
+    beforeLabel: "Previous model",
     before: parent.summary,
-    afterLabel: "Current model",
+    afterLabel: "New assumption",
     after: activeObject.summary,
-    unchangedLabel: "保留邊界",
+    unchangedLabel: "Open boundary",
     unchanged: activeModel.retains,
   };
 };
@@ -360,12 +492,52 @@ const renderDifference = () => {
   elements.differenceAfter.textContent = copy.after;
   elements.differenceUnchangedLabel.textContent = copy.unchangedLabel;
   elements.differenceUnchanged.textContent = copy.unchanged;
+  elements.stageContextRole.textContent = copy.eyebrow;
+  if (copy.eyebrow === "Isolated difference") {
+    elements.stageContextCopy.textContent = `只改 ${copy.variable}；${copy.unchanged}`;
+  } else if (copy.eyebrow === "Stopped result") {
+    elements.stageContextCopy.textContent = `${copy.after} ${copy.unchanged}`;
+  } else {
+    elements.stageContextCopy.textContent = `${copy.variable}。${copy.after}`;
+  }
+};
+
+const renderOutcomeValue = (root, canonicalValue, explanation) => {
+  root.replaceChildren(
+    makeText("strong", "", canonicalValue),
+    makeText("small", "", explanation),
+  );
+  root.className = "model-outcome-value";
 };
 
 const renderOutcome = () => {
-  elements.outcomeDisposition.textContent = dispositionLabels[activeObject.disposition] ?? activeObject.disposition;
-  elements.outcomeEvidence.textContent = evidenceLabels[activeObject.evidenceState] ?? activeObject.evidenceState;
-  elements.outcomeNextGate.textContent = activeObject.nextGate ?? "Canonical catalog 尚未記錄下一個 evidence gate。";
+  renderOutcomeValue(
+    elements.outcomeDisposition,
+    dispositionLabels[activeObject.disposition] ?? activeObject.disposition,
+    dispositionExplanations[activeObject.disposition] ?? "Canonical catalog disposition。",
+  );
+  renderOutcomeValue(
+    elements.outcomeEvidence,
+    evidenceLabels[activeObject.evidenceState] ?? activeObject.evidenceState,
+    evidenceExplanations[activeObject.evidenceState] ?? "Canonical catalog evidence state。",
+  );
+
+  if (["negative-evidence", "rejected", "superseded"].includes(activeObject.disposition)) {
+    elements.outcomeTitle.textContent = "停止判斷不是另一個可選方案。";
+    elements.outcomeNextLabel.textContent = "後續限制";
+  } else if (activeObject.objectType === "study") {
+    elements.outcomeTitle.textContent = "研究工具就緒不等於設計成立。";
+    elements.outcomeNextLabel.textContent = "Study gate";
+  } else if (activeObject.objectType === "correction") {
+    elements.outcomeTitle.textContent = "前置修正不建立新產品方向。";
+    elements.outcomeNextLabel.textContent = "研究邊界";
+  } else {
+    elements.outcomeTitle.textContent = "實作狀態不等於研究結論。";
+    elements.outcomeNextLabel.textContent = "Next gate";
+  }
+
+  elements.outcomeNextRow.hidden = !activeObject.nextGate;
+  elements.outcomeNextGate.textContent = activeObject.nextGate ?? "";
 };
 
 const navigateToObject = (objectId) => {
@@ -395,7 +567,8 @@ const navigateToObject = (objectId) => {
   activeSection = section;
   activeObject = objectById.get(objectId);
   compareParent = false;
-  render();
+  activePreviewPane = "current";
+  render({ historyMode: "push" });
 };
 
 const makeObjectButton = (object) => {
@@ -429,6 +602,7 @@ const renderLineage = () => {
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
   const sameStudy = [...new Set(activeSection.objectIds)]
     .filter((id) => id !== activeObject.id && id !== parent?.id)
+    .slice(0, 6)
     .map((id) => objectById.get(id))
     .filter(Boolean);
 
@@ -454,16 +628,17 @@ const renderLineage = () => {
       sameStudy,
     ),
     makeLineageGroup(
-      "Descendants and relations",
-      "包含 children、dependsOn、mechanismsFrom 與 evidenceFor。",
+      "Recorded relations",
+      "只列直接 children、dependsOn、mechanismsFrom 與 evidenceFor。",
       related,
     ),
   );
 };
 
-const makeRecordLink = (label, title, href) => {
+const makeRecordLink = (label, title, href, kind = "research") => {
   const link = document.createElement("a");
   link.className = "model-record-link";
+  link.dataset.recordKind = kind;
   link.href = href;
   if (href.startsWith("https://")) {
     link.target = "_blank";
@@ -476,19 +651,20 @@ const makeRecordLink = (label, title, href) => {
 const renderRecords = () => {
   const links = [];
   if (activeObject.entrypoint) {
-    links.push(makeRecordLink("Executable", `開啟 ${activeObject.id} exact prototype`, archivePath(activeObject.entrypoint)));
+    links.push(makeRecordLink("Prototype", `開啟 ${activeObject.id} exact prototype`, archivePath(activeObject.entrypoint), "primary"));
   }
   if (activeObject.reviewDocument) {
-    links.push(makeRecordLink("Review", "查看研究紀錄", archivePath(activeObject.reviewDocument)));
+    links.push(makeRecordLink("Research record", "查看 review record", archivePath(activeObject.reviewDocument)));
   }
   if (activeObject.evidencePath) {
-    links.push(makeRecordLink("Evidence", "開啟 evidence asset", archivePath(activeObject.evidencePath)));
+    links.push(makeRecordLink("Evidence", "開啟 evidence artifact", archivePath(activeObject.evidencePath)));
   }
   if (activeObject.sourcePr) {
     links.push(makeRecordLink(
       "Source PR",
       `PR #${activeObject.sourcePr}`,
       `https://github.com/a20030824/menu-lens/pull/${activeObject.sourcePr}`,
+      "provenance",
     ));
   }
   if (activeObject.sourceCommit) {
@@ -496,9 +672,10 @@ const renderRecords = () => {
       "Source commit",
       activeObject.sourceCommit.slice(0, 12),
       `https://github.com/a20030824/menu-lens/commit/${activeObject.sourceCommit}`,
+      "provenance",
     ));
   }
-  links.push(makeRecordLink("Catalog", "返回完整研究物件目錄", "../#catalog"));
+  links.push(makeRecordLink("Catalog", "返回完整研究物件目錄", "../#catalog", "provenance"));
 
   if (!activeObject.entrypoint) {
     const note = document.createElement("div");
@@ -513,17 +690,17 @@ const renderRecords = () => {
   elements.recordLinks.replaceChildren(...links);
 };
 
-const render = () => {
+const render = ({ historyMode = "replace" } = {}) => {
   elements.sectionSummary.textContent = activeSection.summary;
   renderModelDefinition();
   renderSectionTabs();
   renderVariantList();
-  renderStage();
   renderDifference();
+  renderStage();
   renderOutcome();
   renderLineage();
   renderRecords();
-  updateUrl();
+  updateUrl(historyMode);
 };
 
 for (const model of designModels) {
@@ -540,23 +717,45 @@ elements.modelSelect.addEventListener("change", () => {
   activeSection = featuredSectionForModel(model);
   activeObject = objectById.get(model.featuredObjectId) ?? objectById.get(activeSection.defaultObjectId);
   compareParent = false;
-  render();
+  activePreviewPane = "current";
+  render({ historyMode: "push" });
 });
 
 elements.compareParent.addEventListener("click", () => {
-  if (!activeObject.researchParentId) return;
+  const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
+  if (!activeObject.entrypoint || !parent?.entrypoint) return;
   compareParent = !compareParent;
+  activePreviewPane = "current";
   renderStage();
-  updateUrl();
+  updateUrl("push");
 });
 
-for (const button of document.querySelectorAll("[data-viewport]")) {
+for (const button of viewportButtons) {
   button.addEventListener("click", () => {
     activeViewport = button.dataset.viewport;
     renderViewportState();
-    updateUrl();
+    updateUrl("push");
   });
 }
+
+for (const button of previewPaneButtons) {
+  button.addEventListener("click", () => {
+    if (!compareParent) return;
+    activePreviewPane = button.dataset.previewPane;
+    setPreviewPaneState();
+  });
+}
+
+window.addEventListener?.("popstate", () => {
+  const state = resolveLocationState();
+  activeModel = state.model;
+  activeSection = state.section;
+  activeObject = state.object;
+  activeViewport = state.viewport;
+  compareParent = state.compare;
+  activePreviewPane = "current";
+  render({ historyMode: null });
+});
 
 try {
   render();
