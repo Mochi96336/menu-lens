@@ -7,12 +7,18 @@ const archiveRoot = new URL("research-history/", root);
 const requiredPaths = new Set([
   "index.html",
   "archive-index.css",
+  "history.css",
   "prototype-registry.js",
+  "model-page.css",
+  "model-page-polish.css",
+  "model-page.mjs",
+  "models/index.html",
   "catalog/index.mjs",
   "catalog/extensions.mjs",
   "catalog/landscape-ablations.mjs",
   "catalog/closure-intakes.mjs",
   "catalog/all-extensions.mjs",
+  "catalog/presentation-models.mjs",
   "catalog/render-index.mjs",
   "originals/manifest.json",
 ]);
@@ -26,10 +32,12 @@ for (const object of catalog.objects) {
 
 await Promise.all([...requiredPaths].map((path) => access(new URL(path, archiveRoot))));
 
-const [index, renderer, loader] = await Promise.all([
+const [index, renderer, loader, modelPage, modelRenderer] = await Promise.all([
   readFile(new URL("index.html", archiveRoot), "utf8"),
   readFile(new URL("catalog/render-index.mjs", archiveRoot), "utf8"),
   readFile(new URL("scripts/archive/load-catalog.mjs", root), "utf8"),
+  readFile(new URL("models/index.html", archiveRoot), "utf8"),
+  readFile(new URL("model-page.mjs", archiveRoot), "utf8"),
 ]);
 
 for (const contract of [
@@ -44,13 +52,40 @@ for (const contract of [
   'id="type-filter"',
   'id="disposition-filter"',
   'id="catalog-empty"',
+  'href="./models/?model=landscape-paper"',
 ]) {
   if (!index.includes(contract)) throw new Error(`Archive index is missing v2 contract: ${contract}`);
 }
 
-for (const source of [renderer, loader]) {
+for (const contract of [
+  '<link rel="stylesheet" href="../model-page.css" />',
+  '<link rel="stylesheet" href="../model-page-polish.css" />',
+  '<script src="../prototype-registry.js"></script>',
+  '<script type="module" src="../model-page.mjs"></script>',
+  'id="model-select"',
+  'id="section-tabs"',
+  'id="variant-list"',
+  'id="preview-grid"',
+  'id="compare-parent"',
+  'id="lineage"',
+  'id="record-links"',
+]) {
+  if (!modelPage.includes(contract)) throw new Error(`Design model page is missing contract: ${contract}`);
+}
+
+for (const contract of [
+  'buildArchiveCatalog',
+  'designModels',
+  'presentationNotes',
+  'researchParentId',
+  'data-viewport',
+]) {
+  if (!modelRenderer.includes(contract)) throw new Error(`Design model renderer is missing contract: ${contract}`);
+}
+
+for (const source of [renderer, loader, modelRenderer]) {
   if (!source.includes("archiveExtensions") || !source.includes("all-extensions.mjs")) {
-    throw new Error("Browser renderer and Node loader must both consume catalog/all-extensions.mjs.");
+    throw new Error("Browser renderers and Node loader must consume catalog/all-extensions.mjs.");
   }
 }
 
@@ -65,4 +100,4 @@ if (renderer.includes('review.href = `../')) {
   throw new Error("Archive review links must remain relative to the published research-history root.");
 }
 
-console.log(`Archive entrypoints: ${requiredPaths.size} paths verified without hand-written object links.`);
+console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the design model viewer.`);
