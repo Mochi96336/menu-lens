@@ -41,6 +41,21 @@ jobs:
           echo 'bb8c2305d3238409cf5b02c0d41169d629f4601d313b0d279e4d3fae53bb316b  /tmp/live-all.b64' | sha256sum -c -
           base64 --decode /tmp/live-all.b64 > /tmp/apply-live-all.mjs
           echo '707dbc6e41b04085190512134b2823b04d647a77a5c0ec63b8710cea8f428ba7  /tmp/apply-live-all.mjs' | sha256sum -c -
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('/tmp/apply-live-all.mjs')
+          source = path.read_text()
+          for before, after in [
+              ('${viewportLabel()}', r'\${viewportLabel()}'),
+              ('${object.objectType}', r'\${object.objectType}'),
+              ('${variantStateLabel(object)}', r'\${variantStateLabel(object)}'),
+              ('${allPath}', r'\${allPath}'),
+              ('${allSelectionMetrics.selectedId}', r'\${allSelectionMetrics.selectedId}'),
+          ]:
+              source = source.replace(before, after)
+          path.write_text(source)
+          PY
+          echo 'e2e67c90fb420d77bff30005a22257d72f1b1a850fa6d49d02feee3b812f759a  /tmp/apply-live-all.mjs' | sha256sum -c -
           node --check /tmp/apply-live-all.mjs
           node /tmp/apply-live-all.mjs
 
