@@ -22,7 +22,7 @@ jobs:
           ref: agent/hybrid-live-model-board
           fetch-depth: 0
 
-      - name: Apply visibility order fix
+      - name: Apply mounted live-frame fix
         run: node .tmp-live-order-fix/apply.mjs
 
       - name: Set up Node.js
@@ -72,7 +72,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add research-history/model-page.mjs
+          git add research-history/model-page.mjs \
+            research-history/model-live-surface.mjs \
+            research-history/model-page-workbench.css
           git add -A .tmp-live-order-fix
-          git commit -m "Measure live model surfaces after revealing stage"
+          git commit -m "Keep live model frames measurable behind fallbacks"
           git push origin HEAD:agent/hybrid-live-model-board
