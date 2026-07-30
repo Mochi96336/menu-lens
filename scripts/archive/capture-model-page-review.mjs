@@ -286,7 +286,7 @@ try {
         documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
         computedFrameWidth: getComputedStyle(document.querySelector('#current-preview iframe')).width,
         layoutColumns: getComputedStyle(document.querySelector('.model-layout')).gridTemplateColumns,
-        layoutColumnCount: getComputedStyle(document.querySelector('.model-layout')).gridTemplateColumns.split(/\s+/).length,
+        layoutColumnCount: getComputedStyle(document.querySelector('.model-layout')).gridTemplateColumns.trim().split(" ").filter(Boolean).length,
         compareColumns: getComputedStyle(document.querySelector('#preview-grid')).gridTemplateColumns,
       }))()`),
     });
