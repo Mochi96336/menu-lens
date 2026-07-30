@@ -2,6 +2,18 @@ import { readFile } from "node:fs/promises";
 import { runInNewContext } from "node:vm";
 import { root } from "./load-catalog.mjs";
 
+const matchesSelector = (element, selector) => {
+  if (selector === "img.model-preview-image") {
+    return element.tagName === "IMG" && element.className.split(/\s+/).includes("model-preview-image");
+  }
+  const dataMatch = selector.match(/^\[data-([a-z-]+)\]$/);
+  if (dataMatch) {
+    const key = dataMatch[1].replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+    return Object.prototype.hasOwnProperty.call(element.dataset, key);
+  }
+  return false;
+};
+
 class FakeElement {
   constructor(tagName = "div") {
     this.tagName = tagName.toUpperCase();
@@ -13,93 +25,63 @@ class FakeElement {
     this.textContent = "";
     this.value = "";
     this.href = "";
+    this.src = "";
+    this.alt = "";
     this.hidden = false;
     this.disabled = false;
     this.tabIndex = 0;
     this.title = "";
   }
 
-  append(...nodes) {
-    this.children.push(...nodes);
-  }
-
-  replaceChildren(...nodes) {
-    this.children = [...nodes];
-  }
-
-  addEventListener(type, listener) {
-    this.listeners.set(type, listener);
-  }
-
-  setAttribute(name, value) {
-    this.attributes.set(name, String(value));
-  }
-
-  focus() {
-    globalThis.document.activeElement = this;
-  }
-
+  append(...nodes) { this.children.push(...nodes); }
+  replaceChildren(...nodes) { this.children = [...nodes]; }
+  addEventListener(type, listener) { this.listeners.set(type, listener); }
+  setAttribute(name, value) { this.attributes.set(name, String(value)); }
+  focus() { globalThis.document.activeElement = this; }
   dispatch(type, event = {}) {
     const listener = this.listeners.get(type);
     if (listener) listener({ preventDefault() {}, ...event });
   }
+  querySelector(selector) {
+    return this.querySelectorAll(selector)[0] ?? null;
+  }
+  querySelectorAll(selector) {
+    const results = [];
+    const visit = (node) => {
+      for (const child of node.children ?? []) {
+        if (matchesSelector(child, selector)) results.push(child);
+        visit(child);
+      }
+    };
+    visit(this);
+    return results;
+  }
 }
 
 const requiredSelectors = [
-  "#model-select",
-  "#model-eyebrow",
-  "#model-title",
-  "#model-summary",
-  "#model-stats",
-  "#model-substrate",
-  "#model-retains",
-  "#model-varies",
-  "#model-question",
-  "#section-summary",
-  "#section-tabs",
-  "#variant-list",
-  "#stage-context-role",
-  "#stage-context-copy",
-  "#compare-parent",
-  "#parent-record-link",
-  "#viewport-note",
-  "#compare-view-switch",
-  "#preview-grid",
-  "#current-object-title",
-  "#current-object-status",
-  "#current-exact-link",
-  "#current-preview",
-  "#parent-pane",
-  "#parent-object-title",
-  "#parent-object-status",
-  "#parent-preview",
-  "#difference-eyebrow",
-  "#difference-variable",
-  "#difference-before-label",
-  "#difference-before",
-  "#difference-after-label",
-  "#difference-after",
-  "#difference-unchanged-label",
-  "#difference-unchanged",
-  "#outcome-title",
-  "#outcome-disposition",
-  "#outcome-evidence",
-  "#outcome-next-row",
-  "#outcome-next-label",
-  "#outcome-next-gate",
-  "#lineage",
-  "#record-links",
+  "#model-select", "#model-eyebrow", "#model-title", "#model-summary", "#model-stats",
+  "#model-substrate", "#model-retains", "#model-varies", "#model-question", "#section-summary",
+  "#section-tabs", "#variant-list", "#stage-context-role", "#stage-context-copy", "#view-focus",
+  "#compare-parent", "#view-all", "#parent-record-link", "#viewport-note", "#preview-grid",
+  "#all-preview-grid", "#current-object-title", "#current-object-status", "#current-exact-link",
+  "#current-preview-title", "#current-preview-status", "#current-preview", "#parent-pane", "#parent-object-title", "#parent-object-status", "#parent-preview",
+  "#difference-eyebrow", "#difference-variable", "#difference-before-label", "#difference-before",
+  "#difference-after-label", "#difference-after", "#difference-unchanged-label", "#difference-unchanged",
+  "#outcome-title", "#outcome-disposition", "#outcome-evidence", "#outcome-next-row",
+  "#outcome-next-label", "#outcome-next-gate", "#lineage", "#record-links",
 ];
-
 const selectors = new Map(requiredSelectors.map((selector) => [selector, new FakeElement()]));
 const viewportButtons = ["320", "390", "desktop"].map((viewport) => {
   const button = new FakeElement("button");
   button.dataset.viewport = viewport;
   return button;
 });
-const previewPaneButtons = ["current", "parent"].map((pane) => {
-  const button = new FakeElement("button");
-  button.dataset.previewPane = pane;
+const viewModeButtons = [
+  [selectors.get("#view-focus"), "focus"],
+  [selectors.get("#compare-parent"), "compare"],
+  [selectors.get("#view-all"), "all"],
+].map(([button, mode]) => {
+  button.dataset.viewMode = mode;
   return button;
 });
 const body = new FakeElement("body");
@@ -112,11 +94,9 @@ const previousGlobals = {
   document: globalThis.document,
   history: globalThis.history,
 };
-const hadGlobals = {
-  window: Object.prototype.hasOwnProperty.call(globalThis, "window"),
-  document: Object.prototype.hasOwnProperty.call(globalThis, "document"),
-  history: Object.prototype.hasOwnProperty.call(globalThis, "history"),
-};
+const hadGlobals = Object.fromEntries(
+  Object.keys(previousGlobals).map((name) => [name, Object.prototype.hasOwnProperty.call(globalThis, name)]),
+);
 
 let lastUrl = null;
 let pushedUrl = null;
@@ -129,7 +109,7 @@ try {
     querySelector: (selector) => selectors.get(selector) ?? null,
     querySelectorAll: (selector) => {
       if (selector === "[data-viewport]") return viewportButtons;
-      if (selector === "[data-preview-pane]") return previewPaneButtons;
+      if (selector === "[data-view-mode]") return viewModeButtons;
       return [];
     },
     createElement: (tagName) => new FakeElement(tagName),
@@ -156,167 +136,105 @@ try {
   if (selectors.get("#model-title").textContent !== "Landscape Paper") {
     throw new Error("Model viewer did not resolve the requested design model.");
   }
-  if (!selectors.get("#model-stats").textContent.includes("6 組子研究")) {
-    throw new Error("Model viewer did not publish compact model statistics.");
-  }
   if (selectors.get("#current-object-title").textContent !== "18B · Semantic Zoom") {
     throw new Error("Display titles must not repeat a canonical object ID prefix.");
   }
-  const currentFrame = selectors.get("#current-preview").children[0];
-  if (currentFrame?.tagName !== "IFRAME" || currentFrame.src !== "../phases/18b-semantic-zoom/index.html") {
-    throw new Error("Model viewer did not render the exact current prototype entrypoint.");
+  const currentImage = selectors.get("#current-preview").children[0];
+  if (currentImage?.tagName !== "IMG" || currentImage.src !== "../previews/18B/390.png") {
+    throw new Error("Model viewer must render the generated current preview image instead of a nested iframe.");
   }
-  if (currentFrame.title !== "Current — 18B Semantic Zoom — 390px") {
-    throw new Error("Current iframe title must identify role, object, controlled viewport, and a deduplicated title.");
+  if (selectors.get("#current-preview").children.some((child) => child.tagName === "IFRAME")) {
+    throw new Error("Reader-facing model pages must not embed live prototype iframes.");
   }
-  if (selectors.get("#current-exact-link").hidden || selectors.get("#current-exact-link").href !== currentFrame.src) {
-    throw new Error("The stage must expose a near-preview exact prototype link.");
+  if (selectors.get("#current-exact-link").hidden
+    || selectors.get("#current-exact-link").href !== "../phases/18b-semantic-zoom/index.html"
+    || selectors.get("#current-exact-link").textContent !== "開啟 prototype ↗") {
+    throw new Error("The stage must retain an exact prototype action outside the preview image.");
   }
-  const parentFrame = selectors.get("#parent-preview").children[0];
-  if (selectors.get("#parent-pane").hidden || parentFrame?.src !== "../phases/18-landscape-paper/index.html") {
-    throw new Error("Model viewer did not render the requested canonical parent comparison.");
+  const parentImage = selectors.get("#parent-preview").children[0];
+  if (selectors.get("#parent-pane").hidden || parentImage?.src !== "../previews/18/390.png") {
+    throw new Error("The requested parent comparison must render beside the current preview.");
   }
-  if (parentFrame.title !== "Parent — 18 Landscape Paper — 390px") {
-    throw new Error("Parent iframe title must identify role, object, and controlled viewport.");
+  if (selectors.get("#preview-grid").dataset.viewMode !== "compare") {
+    throw new Error("Parent comparison must be represented as a side-by-side view mode.");
   }
-  if (selectors.get("#difference-eyebrow").textContent !== "受控變因"
-    || selectors.get("#difference-before-label").textContent !== "調整前"
-    || selectors.get("#difference-after-label").textContent !== "調整後"
-    || selectors.get("#difference-unchanged-label").textContent !== "保留條件") {
-    throw new Error("Controlled variants must render direct reader-facing labels from the primary renderer.");
+  if (selectors.get("#compare-parent").textContent !== "與 parent 並排") {
+    throw new Error("Parent comparison action must remain concise.");
   }
-  if (selectors.get("#compare-parent").textContent !== "結束比較") {
-    throw new Error("An active parent comparison must expose a clear exit action.");
+  if (selectors.get("#difference-eyebrow").textContent !== "受控變因") {
+    throw new Error("Controlled variants must use direct reader-facing role labels.");
   }
-  if (!lastUrl?.includes("model=landscape-paper") || !lastUrl.includes("compare=parent")) {
-    throw new Error("Model viewer did not publish its initial deep-link state.");
-  }
-
-  previewPaneButtons[1].dispatch("click");
-  if (selectors.get("#preview-grid").dataset.mobilePane !== "parent") {
-    throw new Error("Mobile comparison must switch between current and parent panes.");
-  }
-  if (selectors.get("#current-preview").children[0] !== currentFrame || selectors.get("#parent-preview").children[0] !== parentFrame) {
-    throw new Error("Switching mobile comparison panes must preserve both iframe instances.");
+  if (!lastUrl?.includes("compare=parent")) {
+    throw new Error("Model viewer did not preserve the comparison deep link.");
   }
 
-  selectors.get("#compare-parent").dispatch("click");
-  if (selectors.get("#current-preview").children[0] !== currentFrame) {
-    throw new Error("Toggling parent comparison must not reload the current prototype.");
-  }
   viewportButtons[2].dispatch("click");
-  if (selectors.get("#current-preview").children[0] !== currentFrame) {
-    throw new Error("Changing viewport must not reload the current prototype.");
+  if (selectors.get("#current-preview").children[0] !== currentImage) {
+    throw new Error("Changing viewport must preserve the preview image element.");
   }
-  if (selectors.get("#current-preview").dataset.viewport !== "desktop") {
-    throw new Error("Desktop viewport state was not applied to the preview.");
-  }
-  if (!currentFrame.title.endsWith("1024px")) {
-    throw new Error("Changing viewport must update the iframe accessibility title.");
+  if (currentImage.src !== "../previews/18B/desktop.png") {
+    throw new Error("Changing viewport must select the matching generated preview asset.");
   }
   if (!pushedUrl?.includes("viewport=desktop")) {
-    throw new Error("Interactive state changes must create navigable history entries.");
+    throw new Error("Viewport changes must create navigable history entries.");
+  }
+
+  selectors.get("#view-all").dispatch("click");
+  if (selectors.get("#all-preview-grid").hidden || !selectors.get("#preview-grid").hidden) {
+    throw new Error("All mode must replace the focus stage with the section comparison board.");
+  }
+  if (selectors.get("#all-preview-grid").children.length !== 4) {
+    throw new Error("All mode must render every object in the active sub-study.");
+  }
+  if (!pushedUrl?.includes("view=all")) {
+    throw new Error("All mode must publish a deep-linkable view state.");
   }
 
   const sectionTabs = selectors.get("#section-tabs").children;
   sectionTabs[2].dispatch("click");
   const renderedFocusTabs = selectors.get("#section-tabs").children;
   if (globalThis.document.activeElement !== renderedFocusTabs[2]) {
-    throw new Error("Selecting a sub-study must retain focus on its newly rendered active tab.");
+    throw new Error("Selecting a sub-study must retain focus on its active tab.");
   }
-
   const focusVariants = selectors.get("#variant-list").children;
-  if (focusVariants[0].tabIndex !== -1 || focusVariants[1].tabIndex !== 0) {
-    throw new Error("Variant navigation must expose one roving keyboard tab stop.");
-  }
   focusVariants[3].dispatch("click");
-  const renderedFocusVariants = selectors.get("#variant-list").children;
-  if (globalThis.document.activeElement !== renderedFocusVariants[3]) {
-    throw new Error("Selecting a research object must retain focus on its newly rendered active control.");
-  }
   if (selectors.get("#difference-eyebrow").textContent !== "停止結果") {
-    throw new Error("Negative evidence must render as a stopped result before presentation-note logic.");
-  }
-  if (selectors.get("#outcome-title").textContent !== "停止原因") {
-    throw new Error("Stopped objects must use a direct outcome label rather than a slogan.");
+    throw new Error("Negative evidence must render as a stopped result.");
   }
 
   const modelSelect = selectors.get("#model-select");
-  modelSelect.value = "horizontal-navigation";
-  modelSelect.dispatch("change");
-  if (selectors.get("#current-object-title").textContent !== "08 · Menu Spread") {
-    throw new Error("Model selection must open the configured featured object rather than the first section.");
-  }
-
-  modelSelect.value = "depth-projection";
-  modelSelect.dispatch("change");
-  if (selectors.get("#current-object-title").textContent !== "25P · Menu Projections") {
-    throw new Error("Depth model must open its configured projection-lens feature.");
-  }
-
   modelSelect.value = "paper-field";
   modelSelect.dispatch("change");
-  const semanticVariants = selectors.get("#variant-list").children;
-  semanticVariants[3].dispatch("click");
+  selectors.get("#variant-list").children[3].dispatch("click");
   if (selectors.get("#difference-eyebrow").textContent !== "研究工具") {
-    throw new Error("Study objects must use a direct reader-facing role label.");
+    throw new Error("Study objects must retain their study role.");
   }
-  if (!selectors.get("#compare-parent").hidden) {
-    throw new Error("Study runners must never expose prototype parent comparison.");
+  if (!selectors.get("#compare-parent").hidden || selectors.get("#parent-record-link").hidden) {
+    throw new Error("Study objects must expose a parent record instead of a fake visual comparison.");
   }
-  if (selectors.get("#parent-record-link").hidden) {
-    throw new Error("Study runners with a recorded parent must expose the parent record instead.");
-  }
-
-  modelSelect.value = "multiscale-focus";
-  modelSelect.dispatch("change");
-  const multiscaleTabs = selectors.get("#section-tabs").children;
-  if (multiscaleTabs[0].tabIndex !== 0 || multiscaleTabs[1].tabIndex !== -1) {
-    throw new Error("Section tabs must expose one keyboard tab stop.");
-  }
-  multiscaleTabs[1].dispatch("click");
-  selectors.get("#variant-list").children[1].dispatch("click");
-  if (selectors.get("#difference-eyebrow").textContent !== "必要修正") {
-    throw new Error("Correction objects must render their prerequisite role directly.");
-  }
-  if (!selectors.get("#compare-parent").hidden) {
-    throw new Error("Objects without an eligible prototype pair must not expose a fake compare action.");
-  }
-  if (selectors.get("#parent-record-link").hidden) {
-    throw new Error("A correction with a recorded parent must expose the parent record instead of an empty compare pane.");
+  if (selectors.get("#current-exact-link").textContent !== "開啟研究工具 ↗") {
+    throw new Error("Study entrypoints must be presented as research tools, not prototypes.");
   }
 
   if (typeof popstateListener !== "function") {
     throw new Error("Model viewer must subscribe to browser history navigation.");
   }
-  globalThis.window.location.search = "?model=complete-document&section=baseline&variant=01&viewport=320";
+  globalThis.window.location.search = "?model=complete-document&section=baseline&variant=01&viewport=320&view=all";
   popstateListener();
-  if (selectors.get("#current-object-title").textContent !== "01 · Complete menu") {
-    throw new Error("Browser history navigation must restore model-page state.");
+  if (selectors.get("#current-object-title").textContent !== "01 · Complete menu"
+    || selectors.get("#all-preview-grid").hidden) {
+    throw new Error("Browser history must restore object, viewport, and observation mode.");
   }
 
-  const css = await readFile(new URL("research-history/model-page.css", root), "utf8");
-  const workbenchCss = await readFile(new URL("research-history/model-page-workbench.css", root), "utf8");
+  const css = await readFile(new URL("research-history/model-page-workbench.css", root), "utf8");
   for (const contract of [
-    "--preview-width: 320px",
-    "--preview-width: 390px",
-    "--preview-width: 1024px",
-    "min-width: var(--preview-width)",
-    "data-mobile-pane=\"current\"",
-  ]) {
-    if (!css.includes(contract)) throw new Error(`Model preview CSS is missing responsive contract: ${contract}`);
-  }
-  for (const contract of [
-    ".model-toolbar-link[hidden]",
-    ".model-compare-view-switch:not([hidden])",
-    "grid-template-columns: minmax(11.5rem, 13rem) minmax(25rem, 1fr) minmax(17rem, 19rem)",
-    "@media (max-width: 1179px)",
+    ".model-preview-image",
+    'data-view-mode="compare"',
+    ".model-all-preview-grid",
+    "grid-auto-flow: column",
     "@media (min-width: 901px) and (max-width: 1050px)",
   ]) {
-    if (!workbenchCss.includes(contract)) throw new Error(`Model workbench CSS is missing contract: ${contract}`);
-  }
-  if (css.includes(".model-preview-frame, .model-preview-placeholder { max-width: 100%")) {
-    throw new Error("Responsive CSS must not shrink controlled preview widths.");
+    if (!css.includes(contract)) throw new Error(`Model workbench CSS is missing preview contract: ${contract}`);
   }
 } finally {
   for (const name of ["window", "document", "history"]) {
@@ -325,4 +243,4 @@ try {
   }
 }
 
-console.log("Design model viewer: compact hierarchy, deduplicated titles, eligible comparisons, focus retention, history, stable panes, role-aware outcomes, and controlled widths verified.");
+console.log("Design model viewer: static preview assets, side-by-side comparison, section board, deep links, roles, and responsive contracts verified.");

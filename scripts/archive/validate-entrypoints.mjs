@@ -65,8 +65,11 @@ for (const contract of [
   'id="model-select"',
   'id="section-tabs"',
   'id="variant-list"',
-  'id="preview-grid"',
+  'id="view-focus"',
   'id="compare-parent"',
+  'id="view-all"',
+  'id="preview-grid"',
+  'id="all-preview-grid"',
   'class="model-inspector"',
   'id="lineage"',
   'id="record-links"',
@@ -92,7 +95,9 @@ for (const contract of [
   "停止結果",
   "保留條件",
   "研究工具",
-  "結束比較",
+  "previewAssetPath",
+  "renderAllPreviews",
+  "activeViewMode",
 ]) {
   if (!modelRenderer.includes(contract)) throw new Error(`Design model renderer is missing contract: ${contract}`);
 }
@@ -114,4 +119,4 @@ if (renderer.includes('review.href = `../')) {
   throw new Error("Archive review links must remain relative to the published research-history root.");
 }
 
-console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the compact design model workbench.`);
+console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the preview-first design model workbench.`);

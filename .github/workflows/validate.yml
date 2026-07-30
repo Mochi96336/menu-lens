@@ -36,6 +36,22 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Install preview fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
+      - name: Generate model previews and capture browser review
+        run: |
+          node scripts/serve.mjs > /tmp/menu-lens-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          BROWSER_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$BROWSER_BIN"
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/generate-model-previews.mjs
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/capture-model-page-review.mjs
+
       - name: Upload static build
         uses: actions/upload-artifact@v6
         with:
@@ -43,21 +59,6 @@ jobs:
           path: dist/
           if-no-files-found: error
           retention-days: 1
-
-      - name: Install browser review fonts
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
-          fc-cache -f
-
-      - name: Capture model-page browser review
-        run: |
-          node scripts/serve.mjs > /tmp/menu-lens-server.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
-          BROWSER_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
-          test -n "$BROWSER_BIN"
-          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/capture-model-page-review.mjs
 
       - name: Upload model-page browser review
         if: always()

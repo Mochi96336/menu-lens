@@ -97,14 +97,18 @@ const elements = Object.freeze({
   variantList: requiredElement("#variant-list"),
   stageContextRole: requiredElement("#stage-context-role"),
   stageContextCopy: requiredElement("#stage-context-copy"),
+  focusView: requiredElement("#view-focus"),
   compareParent: requiredElement("#compare-parent"),
+  allView: requiredElement("#view-all"),
   parentRecordLink: requiredElement("#parent-record-link"),
   viewportNote: requiredElement("#viewport-note"),
-  compareViewSwitch: requiredElement("#compare-view-switch"),
   previewGrid: requiredElement("#preview-grid"),
+  allPreviewGrid: requiredElement("#all-preview-grid"),
   currentObjectTitle: requiredElement("#current-object-title"),
   currentObjectStatus: requiredElement("#current-object-status"),
   currentExactLink: requiredElement("#current-exact-link"),
+  currentPreviewTitle: requiredElement("#current-preview-title"),
+  currentPreviewStatus: requiredElement("#current-preview-status"),
   currentPreview: requiredElement("#current-preview"),
   parentPane: requiredElement("#parent-pane"),
   parentObjectTitle: requiredElement("#parent-object-title"),
@@ -129,7 +133,8 @@ const elements = Object.freeze({
 });
 
 const viewportButtons = [...document.querySelectorAll("[data-viewport]")];
-const previewPaneButtons = [...document.querySelectorAll("[data-preview-pane]")];
+const viewModeButtons = [...document.querySelectorAll("[data-view-mode]")];
+const viewModes = new Set(["focus", "compare", "all"]);
 
 const displayTitle = (object) => {
   const title = String(object?.title ?? "");
@@ -159,7 +164,9 @@ const resolveLocationState = () => {
     section,
     object,
     viewport: viewportValues.has(params.get("viewport")) ? params.get("viewport") : "390",
-    compare: params.get("compare") === "parent",
+    viewMode: params.get("view") === "all"
+      ? "all"
+      : (params.get("compare") === "parent" ? "compare" : "focus"),
   };
 };
 
@@ -168,8 +175,7 @@ let activeModel = initialState.model;
 let activeSection = initialState.section;
 let activeObject = initialState.object;
 let activeViewport = initialState.viewport;
-let compareParent = initialState.compare;
-let activePreviewPane = "current";
+let activeViewMode = viewModes.has(initialState.viewMode) ? initialState.viewMode : "focus";
 
 const updateUrl = (mode = "replace") => {
   const next = new URLSearchParams({
@@ -178,7 +184,8 @@ const updateUrl = (mode = "replace") => {
     variant: activeObject.id,
     viewport: activeViewport,
   });
-  if (compareParent && activeObject.researchParentId) next.set("compare", "parent");
+  if (activeViewMode === "compare" && activeObject.researchParentId) next.set("compare", "parent");
+  if (activeViewMode === "all") next.set("view", "all");
   const url = `?${next.toString()}${window.location.hash ?? ""}`;
   if (mode === "push" && typeof history.pushState === "function") {
     history.pushState(null, "", url);
@@ -201,49 +208,98 @@ const previewProfileForObject = (object) => {
   return "spatial";
 };
 
-const updateFrameTitle = (root, object, role) => {
-  const frame = root.children?.[0];
-  if (frame?.tagName === "IFRAME") {
-    frame.title = `${role} — ${object.id} ${displayTitle(object)} — ${viewportLabel()}`;
+const previewAssetPath = (object, viewport = activeViewport) =>
+  archivePath(`previews/${encodeURIComponent(object.id)}/${viewport}.png`);
+
+const sourcePresentation = (object) => {
+  if (object.objectType === "study") {
+    return {
+      action: "開啟研究工具 ↗",
+      fallbackAction: "開啟研究工具",
+      recordLabel: "Study tool",
+      recordTitle: `開啟 ${object.id} 研究工具`,
+    };
   }
+  if (object.objectType === "correction") {
+    return {
+      action: "開啟修正畫面 ↗",
+      fallbackAction: "開啟修正畫面",
+      recordLabel: "Correction",
+      recordTitle: `開啟 ${object.id} 修正畫面`,
+    };
+  }
+  return {
+    action: "開啟 prototype ↗",
+    fallbackAction: "開啟 exact prototype",
+    recordLabel: "Prototype",
+    recordTitle: `開啟 ${object.id} exact prototype`,
+  };
 };
 
-const syncPreview = (root, object, role) => {
-  root.dataset.viewport = activeViewport;
-  root.dataset.previewProfile = previewProfileForObject(object);
-  if (root.dataset.objectId === object.id) {
-    updateFrameTitle(root, object, role);
-    return;
-  }
-
-  root.replaceChildren();
-  root.dataset.objectId = object.id;
-
-  if (object.entrypoint) {
-    const frame = document.createElement("iframe");
-    frame.className = "model-preview-frame";
-    frame.src = archivePath(object.entrypoint);
-    frame.title = `${role} — ${object.id} ${displayTitle(object)} — ${viewportLabel()}`;
-    frame.loading = "eager";
-    root.append(frame);
-    return;
-  }
-
+const makePreviewPlaceholder = (object, message) => {
   const placeholder = document.createElement("div");
   placeholder.className = "model-preview-placeholder";
   placeholder.append(
     makeText("p", "phase-index", `${object.id} / ${object.objectType}`),
     makeText("h3", "", displayTitle(object)),
-    makeText("p", "", object.summary),
+    makeText("p", "", message ?? object.summary),
   );
-  if (object.reviewDocument) {
+  if (object.entrypoint) {
+    const link = makeText("a", "", sourcePresentation(object).fallbackAction);
+    link.href = archivePath(object.entrypoint);
+    link.target = "_blank";
+    link.rel = "noreferrer";
+    placeholder.append(link);
+  } else if (object.reviewDocument) {
     const link = makeText("a", "", "開啟研究紀錄");
     link.href = archivePath(object.reviewDocument);
     placeholder.append(link);
-  } else {
-    placeholder.append(makeText("p", "", "此物件沒有獨立 executable；它保留為研究紀錄或分類基準。"));
   }
-  root.append(placeholder);
+  return placeholder;
+};
+
+const syncPreview = (root, object, role, options = {}) => {
+  root.dataset.viewport = activeViewport;
+  root.dataset.previewProfile = previewProfileForObject(object);
+  const currentImage = root.querySelector?.("img.model-preview-image") ?? root.children?.[0];
+  const sameObject = root.dataset.objectId === object.id;
+
+  if (sameObject && currentImage?.tagName === "IMG") {
+    currentImage.src = previewAssetPath(object);
+    currentImage.alt = `${role}：${objectLabel(object)}，${viewportLabel()} 靜態預覽`;
+    return currentImage;
+  }
+
+  root.replaceChildren();
+  root.dataset.objectId = object.id;
+
+  if (!object.entrypoint) {
+    root.append(makePreviewPlaceholder(object, "此研究物件沒有獨立可執行畫面。"));
+    return null;
+  }
+
+  const image = document.createElement("img");
+  image.className = "model-preview-image";
+  image.src = previewAssetPath(object);
+  image.alt = `${role}：${objectLabel(object)}，${viewportLabel()} 靜態預覽`;
+  image.loading = options.eager ? "eager" : "lazy";
+  image.decoding = "async";
+
+  const unavailable = makePreviewPlaceholder(object, "靜態預覽尚未產生；仍可開啟 exact prototype。");
+  unavailable.className += " model-preview-placeholder--unavailable";
+  unavailable.hidden = true;
+  image.addEventListener("error", () => {
+    image.hidden = true;
+    unavailable.hidden = false;
+    root.dataset.previewUnavailable = "true";
+  });
+  image.addEventListener("load", () => {
+    image.hidden = false;
+    unavailable.hidden = true;
+    delete root.dataset.previewUnavailable;
+  });
+  root.append(image, unavailable);
+  return image;
 };
 
 const renderModelDefinition = () => {
@@ -289,8 +345,7 @@ const renderSectionTabs = () => {
     button.addEventListener("click", () => {
       activeSection = section;
       activeObject = objectById.get(section.defaultObjectId);
-      compareParent = false;
-      activePreviewPane = "current";
+      if (activeViewMode === "compare") activeViewMode = "focus";
       render({ historyMode: "push", focusTarget: { kind: "section", id: section.id } });
     });
     elements.sectionTabs.append(button);
@@ -329,8 +384,7 @@ const renderVariantList = () => {
       focusAdjacent(event, [...elements.variantList.children], index));
     button.addEventListener("click", () => {
       activeObject = object;
-      compareParent = false;
-      activePreviewPane = "current";
+      activeViewMode = "focus";
       render({ historyMode: "push", focusTarget: { kind: "object", id: object.id } });
     });
     elements.variantList.append(button);
@@ -343,42 +397,93 @@ const renderViewportState = () => {
   for (const button of viewportButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.viewport === activeViewport));
   }
-  updateFrameTitle(elements.currentPreview, activeObject, "Current");
-  const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
-  if (parent) updateFrameTitle(elements.parentPreview, parent, "Parent");
   elements.viewportNote.textContent =
-    `固定 ${viewportLabel()}；預覽區不足時可水平捲動。`;
-};
-
-const setPreviewPaneState = () => {
-  elements.previewGrid.dataset.mobilePane = activePreviewPane;
-  for (const button of previewPaneButtons) {
-    button.setAttribute("aria-pressed", String(button.dataset.previewPane === activePreviewPane));
-  }
+    `${viewportLabel()} 靜態預覽只保留主要畫面；開啟原始頁面可實際操作。`;
 };
 
 const canCompareWithParent = (object, parent) =>
   object.objectType === "prototype" && Boolean(object.entrypoint && parent?.entrypoint);
 
+const setViewModeState = (canCompare) => {
+  if (activeViewMode === "compare" && !canCompare) activeViewMode = "focus";
+  elements.previewGrid.dataset.viewMode = activeViewMode;
+  elements.previewGrid.hidden = activeViewMode === "all";
+  elements.allPreviewGrid.hidden = activeViewMode !== "all";
+  for (const button of viewModeButtons) {
+    button.setAttribute("aria-pressed", String(button.dataset.viewMode === activeViewMode));
+  }
+};
+
+const renderAllPreviews = () => {
+  const cards = [];
+  for (const objectId of activeSection.objectIds) {
+    const object = objectById.get(objectId);
+    if (!object) continue;
+    const card = document.createElement("article");
+    card.className = "model-preview-card";
+    card.dataset.objectId = object.id;
+    card.dataset.current = String(object.id === activeObject.id);
+
+    const select = document.createElement("button");
+    select.type = "button";
+    select.className = "model-preview-card__select";
+    select.dataset.allObjectId = object.id;
+    select.setAttribute("aria-current", String(object.id === activeObject.id));
+    select.append(
+      makeText("strong", "", objectLabel(object)),
+      makeText("small", "", `${object.objectType} · ${variantStateLabel(object)}`),
+    );
+    select.addEventListener("click", () => {
+      activeObject = object;
+      render({ historyMode: "push", focusTarget: { kind: "all", id: object.id } });
+    });
+
+    const preview = document.createElement("div");
+    preview.className = "model-preview-card__image";
+    syncPreview(preview, object, "本組物件", { eager: true });
+    card.append(select, preview);
+    cards.push(card);
+  }
+  elements.allPreviewGrid.replaceChildren(...cards);
+  const currentCard = [...elements.allPreviewGrid.querySelectorAll?.("[data-current]") ?? []]
+    .find((card) => card.dataset.current === "true");
+  const revealCurrentCard = () => {
+    if (!currentCard) return;
+    if (typeof elements.allPreviewGrid.scrollTo === "function"
+      && elements.allPreviewGrid.scrollWidth > elements.allPreviewGrid.clientWidth) {
+      const left = Math.max(
+        0,
+        currentCard.offsetLeft - ((elements.allPreviewGrid.clientWidth - currentCard.offsetWidth) / 2),
+      );
+      elements.allPreviewGrid.scrollTo({ left, behavior: "auto" });
+      return;
+    }
+    currentCard.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+  };
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(revealCurrentCard);
+  else revealCurrentCard();
+};
+
 const renderStage = () => {
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
   const canCompare = canCompareWithParent(activeObject, parent);
-  if (!canCompare) compareParent = false;
-  if (!compareParent) activePreviewPane = "current";
+  if (activeViewMode === "compare" && !canCompare) activeViewMode = "focus";
 
   elements.currentObjectTitle.textContent = objectLabel(activeObject);
+  elements.currentPreviewTitle.textContent = objectLabel(activeObject);
   setStatus(elements.currentObjectStatus, activeObject);
-  syncPreview(elements.currentPreview, activeObject, "Current");
+  setStatus(elements.currentPreviewStatus, activeObject);
+  syncPreview(elements.currentPreview, activeObject, "目前", { eager: true });
 
   elements.currentExactLink.hidden = !activeObject.entrypoint;
-  if (activeObject.entrypoint) elements.currentExactLink.href = archivePath(activeObject.entrypoint);
+  if (activeObject.entrypoint) {
+    elements.currentExactLink.href = archivePath(activeObject.entrypoint);
+    elements.currentExactLink.textContent = sourcePresentation(activeObject).action;
+  }
 
   elements.compareParent.hidden = !canCompare;
   elements.compareParent.disabled = !canCompare;
-  elements.compareParent.setAttribute("aria-pressed", String(Boolean(canCompare && compareParent)));
-  elements.compareParent.textContent = compareParent
-    ? "結束比較"
-    : (parent ? `與 parent ${parent.id} 比較` : "與 parent 比較");
+  elements.compareParent.textContent = "與 parent 並排";
 
   const parentRecordPath = parent?.reviewDocument ?? parent?.entrypoint ?? null;
   elements.parentRecordLink.hidden = !parent || canCompare || !parentRecordPath;
@@ -387,17 +492,16 @@ const renderStage = () => {
     elements.parentRecordLink.textContent = `查看 parent ${parent.id} 記錄`;
   }
 
-  elements.previewGrid.dataset.compare = String(Boolean(canCompare && compareParent));
-  elements.parentPane.hidden = !(canCompare && compareParent);
-  elements.compareViewSwitch.hidden = !(canCompare && compareParent);
-
-  if (canCompare && compareParent) {
+  elements.parentPane.hidden = activeViewMode !== "compare";
+  if (canCompare && activeViewMode === "compare") {
     elements.parentObjectTitle.textContent = objectLabel(parent);
     setStatus(elements.parentObjectStatus, parent);
-    syncPreview(elements.parentPreview, parent, "Parent");
+    syncPreview(elements.parentPreview, parent, "Parent", { eager: true });
   }
 
-  setPreviewPaneState();
+  if (activeViewMode === "all") renderAllPreviews();
+  else elements.allPreviewGrid.replaceChildren();
+  setViewModeState(canCompare);
   renderViewportState();
 };
 
@@ -596,8 +700,7 @@ const navigateToObject = (objectId) => {
 
   activeSection = section;
   activeObject = objectById.get(objectId);
-  compareParent = false;
-  activePreviewPane = "current";
+  activeViewMode = "focus";
   render({ historyMode: "push", focusTarget: { kind: "object", id: objectId } });
 };
 
@@ -681,9 +784,10 @@ const makeRecordLink = (label, title, href, kind = "research") => {
 const renderRecords = () => {
   const links = [];
   if (activeObject.entrypoint) {
+    const source = sourcePresentation(activeObject);
     links.push(makeRecordLink(
-      "Prototype",
-      `開啟 ${activeObject.id} exact prototype`,
+      source.recordLabel,
+      source.recordTitle,
       archivePath(activeObject.entrypoint),
       "primary",
     ));
@@ -735,6 +839,11 @@ const renderRecords = () => {
 
 const restoreFocus = (target) => {
   if (!target) return;
+  if (target.kind === "all") {
+    [...elements.allPreviewGrid.querySelectorAll?.("[data-all-object-id]") ?? []]
+      .find((button) => button.dataset.allObjectId === target.id)?.focus();
+    return;
+  }
   const collection = target.kind === "section"
     ? [...elements.sectionTabs.children]
     : [...elements.variantList.children];
@@ -769,16 +878,26 @@ elements.modelSelect.addEventListener("change", () => {
   activeModel = model;
   activeSection = featuredSectionForModel(model);
   activeObject = objectById.get(model.featuredObjectId) ?? objectById.get(activeSection.defaultObjectId);
-  compareParent = false;
-  activePreviewPane = "current";
+  activeViewMode = "focus";
   render({ historyMode: "push" });
+});
+
+elements.focusView.addEventListener("click", () => {
+  activeViewMode = "focus";
+  renderStage();
+  updateUrl("push");
 });
 
 elements.compareParent.addEventListener("click", () => {
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
   if (!canCompareWithParent(activeObject, parent)) return;
-  compareParent = !compareParent;
-  activePreviewPane = "current";
+  activeViewMode = "compare";
+  renderStage();
+  updateUrl("push");
+});
+
+elements.allView.addEventListener("click", () => {
+  activeViewMode = "all";
   renderStage();
   updateUrl("push");
 });
@@ -786,16 +905,8 @@ elements.compareParent.addEventListener("click", () => {
 for (const button of viewportButtons) {
   button.addEventListener("click", () => {
     activeViewport = button.dataset.viewport;
-    renderViewportState();
+    renderStage();
     updateUrl("push");
-  });
-}
-
-for (const button of previewPaneButtons) {
-  button.addEventListener("click", () => {
-    if (!compareParent) return;
-    activePreviewPane = button.dataset.previewPane;
-    setPreviewPaneState();
   });
 }
 
@@ -805,8 +916,7 @@ window.addEventListener?.("popstate", () => {
   activeSection = state.section;
   activeObject = state.object;
   activeViewport = state.viewport;
-  compareParent = state.compare;
-  activePreviewPane = "current";
+  activeViewMode = state.viewMode;
   render({ historyMode: null });
 });
 
