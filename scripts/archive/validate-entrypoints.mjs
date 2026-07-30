@@ -1,6 +1,7 @@
 import { access, readFile } from "node:fs/promises";
 import { loadArchiveCatalog, root } from "./load-catalog.mjs";
 
+// Full-group live surfaces are part of the published model-page entrypoint contract.
 const catalog = await loadArchiveCatalog();
 const archiveRoot = new URL("research-history/", root);
 
