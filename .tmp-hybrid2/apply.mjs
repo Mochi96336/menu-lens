@@ -41,5 +41,19 @@ const oldAssertion = 'currentFrame.style.getPropertyValue("width") !== "1024px"'
 if (!validator.includes(oldAssertion)) throw new Error("Could not locate the hybrid viewport assertion.");
 await writeFile(validatorPath, validator.replace(oldAssertion, 'currentFrame.style.width !== "1024px"'));
 
+const reviewPath = "scripts/archive/capture-model-page-review.mjs";
+let review = await readFile(reviewPath, "utf8");
+const oldStudyMetric = "      iframeCount: document.querySelectorAll('#preview-grid iframe').length,";
+const newStudyMetrics = [
+  "      visibleIframeCount: [...document.querySelectorAll('#preview-grid .model-preview-pane:not([hidden]) iframe')].filter((item) => !item.hidden).length,",
+  "      parentFrameIdle: !document.querySelector('#parent-preview iframe')?.getAttribute('src'),",
+].join("\n");
+if (!review.includes(oldStudyMetric)) throw new Error("Could not locate the study iframe metric.");
+review = review.replace(oldStudyMetric, newStudyMetrics);
+const oldStudyAssertion = '    || studyMetrics.sourceActionText !== "開啟研究工具 ↗" || studyMetrics.iframeCount !== 1\n    || !studyMetrics.liveReady';
+const newStudyAssertion = '    || studyMetrics.sourceActionText !== "開啟研究工具 ↗" || studyMetrics.visibleIframeCount !== 1\n    || !studyMetrics.parentFrameIdle || !studyMetrics.liveReady';
+if (!review.includes(oldStudyAssertion)) throw new Error("Could not locate the study live-surface assertion.");
+await writeFile(reviewPath, review.replace(oldStudyAssertion, newStudyAssertion));
+
 await rm(".tmp-hybrid2", { recursive: true, force: true });
 console.log(`Hybrid viewer payload applied: ${Object.keys(payload).length} files.`);
