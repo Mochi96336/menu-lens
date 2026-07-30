@@ -159,15 +159,15 @@ try {
   if (!selectors.get("#model-stats").textContent.includes("6 組子研究")) {
     throw new Error("Model viewer did not publish compact model statistics.");
   }
-  if (selectors.get("#current-object-title").textContent !== "18B · 18B Semantic Zoom") {
-    throw new Error("Model viewer did not resolve the requested current object.");
+  if (selectors.get("#current-object-title").textContent !== "18B · Semantic Zoom") {
+    throw new Error("Display titles must not repeat a canonical object ID prefix.");
   }
   const currentFrame = selectors.get("#current-preview").children[0];
   if (currentFrame?.tagName !== "IFRAME" || currentFrame.src !== "../phases/18b-semantic-zoom/index.html") {
     throw new Error("Model viewer did not render the exact current prototype entrypoint.");
   }
-  if (currentFrame.title !== "Current — 18B 18B Semantic Zoom — 390px") {
-    throw new Error("Current iframe title must identify role, object, and controlled viewport.");
+  if (currentFrame.title !== "Current — 18B Semantic Zoom — 390px") {
+    throw new Error("Current iframe title must identify role, object, controlled viewport, and a deduplicated title.");
   }
   if (selectors.get("#current-exact-link").hidden || selectors.get("#current-exact-link").href !== currentFrame.src) {
     throw new Error("The stage must expose a near-preview exact prototype link.");
@@ -214,8 +214,20 @@ try {
 
   const sectionTabs = selectors.get("#section-tabs").children;
   sectionTabs[2].dispatch("click");
+  const renderedFocusTabs = selectors.get("#section-tabs").children;
+  if (globalThis.document.activeElement !== renderedFocusTabs[2]) {
+    throw new Error("Selecting a sub-study must retain focus on its newly rendered active tab.");
+  }
+
   const focusVariants = selectors.get("#variant-list").children;
+  if (focusVariants[0].tabIndex !== -1 || focusVariants[2].tabIndex !== 0) {
+    throw new Error("Variant navigation must expose one roving keyboard tab stop.");
+  }
   focusVariants[3].dispatch("click");
+  const renderedFocusVariants = selectors.get("#variant-list").children;
+  if (globalThis.document.activeElement !== renderedFocusVariants[3]) {
+    throw new Error("Selecting a research object must retain focus on its newly rendered active control.");
+  }
   if (selectors.get("#difference-eyebrow").textContent !== "Stopped result") {
     throw new Error("Negative evidence must render as a stopped result before presentation-note logic.");
   }
@@ -243,6 +255,12 @@ try {
   if (selectors.get("#difference-eyebrow").textContent !== "Study role") {
     throw new Error("Study objects must not be described as isolated design differences.");
   }
+  if (!selectors.get("#compare-parent").hidden) {
+    throw new Error("Study runners must never expose prototype parent comparison.");
+  }
+  if (selectors.get("#parent-record-link").hidden) {
+    throw new Error("Study runners with a recorded parent must expose the parent record instead.");
+  }
 
   modelSelect.value = "multiscale-focus";
   modelSelect.dispatch("change");
@@ -256,7 +274,7 @@ try {
     throw new Error("Correction objects must render their prerequisite role.");
   }
   if (!selectors.get("#compare-parent").hidden) {
-    throw new Error("Objects without an executable current/parent pair must not expose a fake compare action.");
+    throw new Error("Objects without an eligible prototype pair must not expose a fake compare action.");
   }
   if (selectors.get("#parent-record-link").hidden) {
     throw new Error("A correction with a recorded parent must expose the parent record instead of an empty compare pane.");
@@ -292,4 +310,4 @@ try {
   }
 }
 
-console.log("Design model viewer: compact hierarchy, deep links, featured landings, exact prototypes, role-aware outcomes, stable comparisons, history, tabs, and controlled widths verified.");
+console.log("Design model viewer: compact hierarchy, deduplicated titles, eligible comparisons, focus retention, history, stable panes, role-aware outcomes, and controlled widths verified.");
