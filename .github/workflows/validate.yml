@@ -35,3 +35,11 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Upload static build
+        uses: actions/upload-artifact@v6
+        with:
+          name: menu-lens-pr-build
+          path: dist/
+          if-no-files-found: error
+          retention-days: 1
