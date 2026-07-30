@@ -4,7 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#eeeae2" />
-    <meta name="description" content="Menu Lens 手機菜單閱讀研究檔案：原始實作、可執行原型、修正、負面證據與研究工具。" />
+    <meta
+      name="description"
+      content="Menu Lens 手機菜單閱讀研究檔案：從完整長頁、紙面、橫向鏡頭到深度投影，保留可執行原型、修正、停止理由與待驗證問題。"
+    />
     <title>Menu Lens — Research History</title>
     <link rel="stylesheet" href="./history.css" />
     <link rel="stylesheet" href="./archive-index.css" />
@@ -13,162 +16,289 @@
   <body class="archive-index-page">
     <a class="skip-link" href="#main">跳到主要內容</a>
 
-    <header class="masthead archive-hero">
+    <header class="archive-hero">
       <nav class="archive-nav site-shell" aria-label="研究檔案導覽">
         <a class="archive-wordmark" href="./">Menu Lens</a>
         <div class="archive-nav__links">
-          <a href="#status">現況</a>
-          <a href="#families">家族</a>
-          <a href="#catalog">物件</a>
-          <a href="#originals">原件</a>
+          <a href="#notes">研究筆記</a>
+          <a href="#start">從這裡開始</a>
+          <a href="#stopped">停止路線</a>
+          <a href="#catalog">完整目錄</a>
         </div>
       </nav>
 
       <div class="archive-hero__body site-shell">
         <div class="archive-hero__copy">
-          <p class="eyebrow">Research archive v2 / intake complete</p>
-          <h1>手機菜單閱讀研究檔案</h1>
+          <p class="eyebrow">Mobile menu reading / research archive</p>
+          <h1>把一份菜單<br />留在眼前</h1>
           <p class="lede">
-            保存真正做過的版本，也分開標示產品原型、前置修正、負面證據與研究工具。這裡不是進步階梯，也不把「值得保存」寫成「產品方向已成功」。
+            手機菜單不一定要先變成卡片、篩選器與購物車。這份檔案追問的是：當 30 道料理被壓進一個螢幕，哪些東西還能保留——全貌、位置、價格關係，還是只剩縮小的字？
           </p>
-          <div class="meta-row" aria-label="研究檔案資訊">
-            <span id="object-count" class="pill">研究物件</span>
-            <span id="executable-count" class="pill">可執行入口</span>
-            <span id="study-count" class="pill">研究工具</span>
-            <span class="pill">原件與後續實驗分開</span>
-          </div>
         </div>
 
-        <aside class="archive-status-panel" aria-labelledby="current-phase-title">
-          <div class="archive-status-panel__topline">
-            <p class="phase-index">Current phase</p>
-            <span class="status active">Evidence closure</span>
-          </div>
-          <h2 id="current-phase-title">Archive v2 已完成</h2>
-          <p>目前不再擴張原型。下一階段只收直接檢視、受試研究與產品方向整理，產品程式仍暫停。</p>
-          <a class="ghost-button" href="#status">查看目前工作</a>
+        <aside class="archive-state" aria-label="研究檔案狀態">
+          <p class="phase-index">Archive state</p>
+          <dl>
+            <div>
+              <dt>Archive v2</dt>
+              <dd>入庫完成</dd>
+            </div>
+            <div>
+              <dt>Evidence</dt>
+              <dd>仍在收尾</dd>
+            </div>
+            <div>
+              <dt>Product direction</dt>
+              <dd>尚未選定</dd>
+            </div>
+          </dl>
         </aside>
+      </div>
+
+      <div class="archive-hero__meta site-shell" aria-label="研究檔案資訊">
+        <span id="object-count">研究物件</span>
+        <span id="executable-count">可執行入口</span>
+        <span id="study-count">研究工具</span>
+        <span>同一份 6 分類、30 道料理 fixture</span>
       </div>
     </header>
 
     <main id="main" class="archive-index-main">
-      <section id="status" class="section site-shell archive-current" aria-labelledby="status-title">
-        <div class="section-heading archive-current__heading">
-          <p class="eyebrow">Current status</p>
-          <h2 id="status-title">入庫完成，證據尚未完成</h2>
-          <p>
-            Archive v2 已把研究物件、來源與證據邊界收進同一套 catalog。現在只處理既有 gate，不新增 family、不組合 best-of，也不提前回到交易流程。
-          </p>
+      <section class="section site-shell archive-thesis" aria-labelledby="thesis-title">
+        <p class="eyebrow">Archive premise</p>
+        <div class="archive-thesis__layout">
+          <h2 id="thesis-title">這裡保存的不是答案。</h2>
+          <div>
+            <p class="archive-thesis__statement">
+              保存的是每次只改一個變因後，閱讀發生了什麼；也保存那些做得出來、卻不值得繼續的版本。
+            </p>
+            <p>
+              Prototype、correction、negative evidence 與 study 分開記錄。Browser verified 只代表機制在指定條件下成立，不代表陌生讀者理解，也不等於產品採用。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="notes" class="section site-shell" aria-labelledby="notes-title">
+        <div class="section-heading archive-section-intro">
+          <p class="eyebrow">What the archive can say</p>
+          <h2 id="notes-title">目前能留下的四個判斷</h2>
+          <p>以下不是 participant study 結論，而是直接檢視、機制拆解與負面證據已足以支持的研究邊界。</p>
         </div>
 
-        <div class="archive-status-grid">
-          <article class="archive-status-card" data-state="active">
-            <div class="archive-status-card__topline">
-              <p class="phase-index">01 / Direct review</p>
-              <span>進行中</span>
-            </div>
-            <h3>收掉七個待檢視物件</h3>
-            <p><code>22D–22G</code> 與 <code>24A–24C</code> 只做一致尺度的直接檢視，最後留下明確 disposition。</p>
+        <ol class="archive-notes">
+          <li>
+            <p class="phase-index">01 / Overview</p>
+            <h3>全貌不等於可讀性</h3>
+            <p>
+              12 與 18 都能把完整菜單留在同一張紙面，但縮小的 Product name 不會因此變得可讀。12A 與 18B 因而改測：overview 是否應顯示分類、數量、價格範圍與密度，而不是假裝微型文字仍能閱讀。
+            </p>
+            <a href="#catalog" data-archive-object-link="12A">看 12A Semantic Paper Field</a>
+          </li>
+          <li>
+            <p class="phase-index">02 / Focus</p>
+            <h3>鏡頭不能代替閱讀空間</h3>
+            <p>
+              22C 能準確把 camera 移到指定紙欄，卻沒有增加閱讀面積或可讀性。這條 negative evidence 把後續問題收窄：真正值得測的是 geometry、type、padding 或 collapse，而不是更聰明的置中。
+            </p>
+            <a href="#catalog" data-archive-object-link="22C">看 22C Camera-only Focus</a>
+          </li>
+          <li>
+            <p class="phase-index">03 / Return</p>
+            <h3>局部閱讀必須有清楚的回程</h3>
+            <p>
+              A-M3 保留進入 focus 前的位置與 keyboard focus；A-M4 明示其他料理沒有被篩除。它們被保存為 prerequisite correction，因為局部放大若無法恢復位置、也無法說清楚完整菜單仍在，機制本身就不可信。
+            </p>
+            <a href="#catalog" data-archive-object-link="A-M3" data-archive-link-target="review">看 Multi-scale return correction</a>
+          </li>
+          <li>
+            <p class="phase-index">04 / Depth</p>
+            <h3>第三維要先說明自己為何存在</h3>
+            <p>
+              25B 把不同分類的第 N 道料理塞進同一深度切片，沒有可辯護的跨分類意義。Depth 線因此分成兩種更誠實的問題：25P 使用真實的價格、份量與準備時間；26 則承認 depth 只是排版材料。
+            </p>
+            <a href="#catalog" data-archive-object-link="25P">看 25P Menu Projections</a>
+          </li>
+        </ol>
+      </section>
+
+      <section id="start" class="section site-shell" aria-labelledby="start-title">
+        <div class="section-heading archive-section-intro">
+          <p class="eyebrow">Start with four records</p>
+          <h2 id="start-title">不用從 01 一路點到 26</h2>
+          <p>這四個入口分別代表基準、資訊層級、紙面 substrate 與 secondary lens；不是排名，也不是產品候選名單。</p>
+        </div>
+
+        <div class="archive-routes">
+          <article class="archive-route archive-route--wide">
+            <p class="phase-index">01 / Baseline</p>
+            <h3>Complete menu</h3>
+            <p>沒有鏡頭、形變或投影。先看一份完整長頁如何維持分類順序、原地細節與閱讀位置。</p>
+            <a href="#catalog" data-archive-object-link="01">開啟 01</a>
           </article>
 
-          <article class="archive-status-card" data-state="queued">
-            <div class="archive-status-card__topline">
-              <p class="phase-index">02 / Participant evidence</p>
-              <span>排隊中</span>
-            </div>
-            <h3>先跑 12A-S1</h3>
-            <p>先驗證 semantic paper field 的陌生讀者理解；只有 25P 仍值得作為 secondary lens，才執行 25P-S1。</p>
+          <article class="archive-route">
+            <p class="phase-index">12A / Information level</p>
+            <h3>Semantic Paper Field</h3>
+            <p>固定 2 × 3 紙面不變，只讓 overview、near-category 與 reading scale 顯示不同資訊層級。</p>
+            <a href="#catalog" data-archive-object-link="12A">開啟 12A</a>
           </article>
 
-          <article class="archive-status-card" data-state="paused">
-            <div class="archive-status-card__topline">
-              <p class="phase-index">03 / Product work</p>
-              <span>暫停</span>
-            </div>
-            <h3>產品方向仍未選定</h3>
-            <p>完成 evidence closure 與 product-direction synthesis 後，才從最新 <code>main</code> 乾淨重建 <code>src/</code>。</p>
+          <article class="archive-route">
+            <p class="phase-index">18 / Spatial substrate</p>
+            <h3>Landscape Paper</h3>
+            <p>三個橫向紙欄各保留上下兩個分類；閱讀移動對應紙欄，而不是 30 道料理的長距離捲動。</p>
+            <a href="#catalog" data-archive-object-link="18">開啟 18</a>
+          </article>
+
+          <article class="archive-route archive-route--wide">
+            <p class="phase-index">25P / Secondary lens</p>
+            <h3>Menu Projections</h3>
+            <p>同一批料理以價格、份量與準備時間旋轉成三個可讀投影。它只被保留為決策 lens，不取代完整菜單。</p>
+            <a href="#catalog" data-archive-object-link="25P">開啟 25P</a>
           </article>
         </div>
       </section>
 
-      <section id="families" class="section site-shell" aria-labelledby="read-title">
-        <div class="section-heading">
-          <p class="eyebrow">How to read</p>
-          <h2 id="read-title">先看物件性質，再看研究家族</h2>
-          <p class="archive-note">
-            同一個家族內可能同時存在 substrate、controlled keep、provisional、negative evidence 與 study。物件狀態描述它在研究中的處置，不等於正式使用者研究結論。
-          </p>
+      <section id="stopped" class="section archive-stopped" aria-labelledby="stopped-title">
+        <div class="site-shell">
+          <div class="section-heading archive-section-intro">
+            <p class="eyebrow">Negative evidence</p>
+            <h2 id="stopped-title">做得出來，但到這裡為止</h2>
+            <p>停止不是刪除。這些版本保留可執行入口，讓後續不必再次付出同一輪探索成本。</p>
+          </div>
+
+          <div class="archive-stop-list">
+            <article>
+              <p class="phase-index">19</p>
+              <h3>第二個 locator 沒有增加理解</h3>
+              <p>Minimap 與水平位置標題重複了矩陣本身已提供的位置資訊。</p>
+              <a href="#catalog" data-archive-object-link="19">Rigid Horizontal Sheet</a>
+            </article>
+            <article>
+              <p class="phase-index">20</p>
+              <h3>折頁效果沒有形成可信的紙面關係</h3>
+              <p>空間回收有潛力，但 3D fold 的詮釋不值得繼續；後續只保留 collapse 問題。</p>
+              <a href="#catalog" data-archive-object-link="20">Tri-fold Matrix</a>
+            </article>
+            <article>
+              <p class="phase-index">21</p>
+              <h3>兩欄窗口沒有實質優於 18</h3>
+              <p>A+B／B+C 的 shared column 是清楚的 landmark，但直接檢視未發現足夠閱讀增益。</p>
+              <a href="#catalog" data-archive-object-link="21">Two-column Reading Window</a>
+            </article>
+            <article>
+              <p class="phase-index">22C</p>
+              <h3>Camera-only focus 不足以改善閱讀</h3>
+              <p>定位機械上成功，閱讀面積、文字大小與內容密度卻完全沒變。</p>
+              <a href="#catalog" data-archive-object-link="22C" data-archive-link-target="review">查看負面紀錄</a>
+            </article>
+            <article>
+              <p class="phase-index">25B</p>
+              <h3>共同深度切片沒有語意</h3>
+              <p>不同分類的第 N 道料理被迫共享 Z 層，只證明「把平面擠出厚度」不是一個維度模型。</p>
+              <a href="#catalog" data-archive-object-link="25B">Menu Volume</a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section site-shell archive-next" aria-labelledby="next-title">
+        <div class="archive-next__lead">
+          <p class="eyebrow">Open evidence gates</p>
+          <h2 id="next-title">下一步不是再畫一個版本</h2>
+        </div>
+        <div class="archive-next__queue">
+          <div>
+            <p class="phase-index">Direct review</p>
+            <p><code>22D–22G</code> 與 <code>24A–24C</code> 在 320px、390px 與 desktop 給出明確 disposition。</p>
+          </div>
+          <div>
+            <p class="phase-index">Participant study</p>
+            <p>先執行 <code>12A-S1</code>；只有 25P 仍值得作為 secondary lens，才執行 <code>25P-S1</code>。</p>
+          </div>
+          <div>
+            <p class="phase-index">Product boundary</p>
+            <p>完成 product-direction synthesis 後，才從最新 <code>main</code> 乾淨重建 <code>src/</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="families" class="section site-shell" aria-labelledby="families-title">
+        <div class="section-heading archive-section-intro">
+          <p class="eyebrow">Research families</p>
+          <h2 id="families-title">同一問題，六種空間假設</h2>
+          <p>家族描述研究問題，不代表成熟度。每個家族內都可能同時存在 substrate、controlled mechanism、provisional object 與 negative evidence。</p>
         </div>
         <div id="archive-families" class="timeline archive-family-grid" aria-label="研究家族"></div>
       </section>
 
-      <section id="catalog" class="section site-shell" aria-labelledby="catalog-title">
-        <div class="section-heading">
-          <p class="eyebrow">Object catalog</p>
-          <h2 id="catalog-title">一個 ID，就是一個可追溯研究物件</h2>
-          <p>
-            Catalog v2 將物件類型、研究處置與證據狀態拆開。既有 prototype registry 只作為 migration source，首頁不再維護第二份手寫物件清單。
-          </p>
-        </div>
+      <section class="section site-shell archive-catalog-section" aria-labelledby="catalog-title">
+        <details id="catalog" class="archive-catalog-disclosure">
+          <summary>
+            <span>
+              <span class="eyebrow">Object catalog</span>
+              <strong id="catalog-title">展開完整研究物件目錄</strong>
+            </span>
+            <span class="archive-catalog-disclosure__hint">依類型與 disposition 篩選</span>
+          </summary>
 
-        <noscript>
-          <p class="archive-error">研究物件目錄需要 JavaScript 才能從 canonical catalog 產生；各個既有原型入口仍保持原網址。</p>
-        </noscript>
+          <div class="archive-catalog-body">
+            <p class="archive-note">
+              Catalog v2 將物件類型、研究處置與證據狀態拆開。這裡是資料庫層，不負責替研究物件排出進步順序。
+            </p>
 
-        <div class="archive-controls" aria-label="篩選研究物件">
-          <label class="archive-control">
-            <span>物件類型</span>
-            <select id="type-filter">
-              <option value="all">全部</option>
-              <option value="historical">歷史節點</option>
-              <option value="prototype">原型</option>
-              <option value="correction">前置修正</option>
-              <option value="study">研究工具</option>
-              <option value="synthesis">家族整理</option>
-            </select>
-          </label>
-          <label class="archive-control">
-            <span>研究處置</span>
-            <select id="disposition-filter">
-              <option value="all">全部</option>
-              <option value="substrate">Substrate</option>
-              <option value="reference">Reference</option>
-              <option value="keep-controlled">Controlled keep</option>
-              <option value="provisional">Provisional</option>
-              <option value="negative-evidence">Negative evidence</option>
-              <option value="study-only">Study only</option>
-              <option value="superseded">Superseded</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </label>
-        </div>
+            <noscript>
+              <p class="archive-error">研究物件目錄需要 JavaScript 才能從 canonical catalog 產生；各個既有原型入口仍保持原網址。</p>
+            </noscript>
 
-        <div id="archive-objects" class="prototype-object-grid archive-object-grid"></div>
-        <p id="catalog-empty" class="archive-empty" role="status" hidden>目前沒有符合篩選條件的研究物件。</p>
+            <div class="archive-controls" aria-label="篩選研究物件">
+              <label class="archive-control">
+                <span>物件類型</span>
+                <select id="type-filter">
+                  <option value="all">全部</option>
+                  <option value="historical">歷史節點</option>
+                  <option value="prototype">原型</option>
+                  <option value="correction">前置修正</option>
+                  <option value="study">研究工具</option>
+                  <option value="synthesis">家族整理</option>
+                </select>
+              </label>
+              <label class="archive-control">
+                <span>研究處置</span>
+                <select id="disposition-filter">
+                  <option value="all">全部</option>
+                  <option value="substrate">Substrate</option>
+                  <option value="reference">Reference</option>
+                  <option value="keep-controlled">Controlled keep</option>
+                  <option value="provisional">Provisional</option>
+                  <option value="negative-evidence">Negative evidence</option>
+                  <option value="study-only">Study only</option>
+                  <option value="superseded">Superseded</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </label>
+            </div>
+
+            <div id="archive-objects" class="prototype-object-grid archive-object-grid"></div>
+            <p id="catalog-empty" class="archive-empty" role="status" hidden>目前沒有符合篩選條件的研究物件。</p>
+          </div>
+        </details>
       </section>
 
       <section id="originals" class="section site-shell" aria-labelledby="original-title">
-        <div class="section-heading">
+        <div class="section-heading archive-section-intro">
           <p class="eyebrow">Original implementations</p>
-          <h2 id="original-title">固定 commit 的歷史原件</h2>
-          <p>原始輸出由 manifest 產生，不與後續 reconstruction 或 prototype 混在同一種來源標籤裡。</p>
+          <h2 id="original-title">固定 commit 的原始輸出</h2>
+          <p>原件由 manifest 產生，與後續 reconstruction、correction 與 study 分開，避免把後來的整理誤認成當時的輸出。</p>
         </div>
         <div id="archive-originals" class="timeline archive-original-grid"></div>
-      </section>
-
-      <section class="section site-shell archive-boundary" aria-labelledby="boundary-title">
-        <div class="section-heading">
-          <p class="eyebrow">Archive boundary</p>
-          <h2 id="boundary-title">整理完成，不代表方向已選定</h2>
-          <p class="archive-note">
-            Prototype UI、研究資料、入口 URL 與歷史快照都保持可追溯。接下來只更新證據與 disposition；沒有新的直接觀察或 participant evidence，就不把物件提升為產品方向。
-          </p>
-        </div>
       </section>
     </main>
 
     <footer class="research-footer site-shell">
-      <p>Menu Lens research record · Archive v2 complete · Evidence closure active · Product direction unselected.</p>
+      <p>Menu Lens research record</p>
+      <p>Archive v2 complete · Evidence closure active · Product direction unselected</p>
     </footer>
 
     <script type="module" src="./catalog/render-index.mjs"></script>
