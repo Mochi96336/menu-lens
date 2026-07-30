@@ -279,19 +279,6 @@ const differenceCopy = () => {
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
   const note = presentationNotes[activeObject.id];
 
-  if (note) {
-    return {
-      eyebrow: "Isolated difference",
-      variable: note.variable,
-      beforeLabel: "Parent／Before",
-      before: note.before,
-      afterLabel: "Current／After",
-      after: note.after,
-      unchangedLabel: "未改變",
-      unchanged: note.unchanged,
-    };
-  }
-
   if (activeObject.objectType === "study") {
     const targets = describeReferences(activeObject.evidenceFor);
     return {
@@ -310,15 +297,28 @@ const differenceCopy = () => {
     const targets = describeReferences(activeObject.evidenceFor);
     return {
       eyebrow: "Prerequisite correction",
-      variable: "可信閱讀的必要修正",
-      beforeLabel: "修正對象",
-      before: targets || parent?.summary || "沒有獨立 prototype parent。",
+      variable: note?.variable ?? "可信閱讀的必要修正",
+      beforeLabel: "修正前",
+      before: note?.before ?? (targets || parent?.summary || "沒有獨立 prototype parent。"),
       afterLabel: "修正內容",
-      after: activeObject.summary,
+      after: note?.after ?? activeObject.summary,
       unchangedLabel: "模型未改",
-      unchanged: parent
+      unchanged: note?.unchanged ?? (parent
         ? `${parent.id} 的核心模型、內容身份與主要 interaction grammar 不因此成為新產品方向。`
-        : activeModel.retains,
+        : activeModel.retains),
+    };
+  }
+
+  if (note) {
+    return {
+      eyebrow: "Isolated difference",
+      variable: note.variable,
+      beforeLabel: "Parent／Before",
+      before: note.before,
+      afterLabel: "Current／After",
+      after: note.after,
+      unchangedLabel: "未改變",
+      unchanged: note.unchanged,
     };
   }
 
