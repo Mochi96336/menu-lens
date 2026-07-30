@@ -130,12 +130,12 @@ for (const [objectId, note] of Object.entries(presentationNotes)) {
     requireString(note[field], `Presentation note ${objectId}.${field}`);
   }
   const object = objectById.get(objectId);
-  if (object.objectType !== "prototype") {
-    throw new Error(`Presentation note ${objectId} describes an isolated design change but the object type is ${object.objectType}.`);
+  if (!["prototype", "correction"].includes(object.objectType)) {
+    throw new Error(`Presentation note ${objectId} describes a presentation change but the object type is ${object.objectType}.`);
   }
 }
 
 console.log(
   `Design models: ${designModels.length} models, ${primaryOwners.size} grouped objects, `
-  + `${ungrouped.length} intentional archive-only objects, ${Object.keys(presentationNotes).length} isolated notes.`,
+  + `${ungrouped.length} intentional archive-only objects, ${Object.keys(presentationNotes).length} presentation notes.`,
 );
