@@ -284,6 +284,13 @@
   }
 }
 
+@media (min-width: 901px) and (max-width: 1050px) {
+  .model-page .model-sidebar {
+    position: sticky;
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .model-page .model-layout,
   .model-page .model-workbench__heading {
