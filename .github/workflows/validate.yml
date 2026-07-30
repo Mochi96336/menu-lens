@@ -44,6 +44,12 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      - name: Install browser review fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
       - name: Capture model-page browser review
         run: |
           node scripts/serve.mjs > /tmp/menu-lens-server.log 2>&1 &
