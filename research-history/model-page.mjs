@@ -79,9 +79,13 @@ const elements = Object.freeze({
   parentObjectTitle: requiredElement("#parent-object-title"),
   parentObjectStatus: requiredElement("#parent-object-status"),
   parentPreview: requiredElement("#parent-preview"),
+  differenceEyebrow: requiredElement("#difference-eyebrow"),
   differenceVariable: requiredElement("#difference-variable"),
+  differenceBeforeLabel: requiredElement("#difference-before-label"),
   differenceBefore: requiredElement("#difference-before"),
+  differenceAfterLabel: requiredElement("#difference-after-label"),
   differenceAfter: requiredElement("#difference-after"),
+  differenceUnchangedLabel: requiredElement("#difference-unchanged-label"),
   differenceUnchanged: requiredElement("#difference-unchanged"),
   outcomeDisposition: requiredElement("#outcome-disposition"),
   outcomeEvidence: requiredElement("#outcome-evidence"),
@@ -112,7 +116,8 @@ const updateUrl = () => {
     viewport: activeViewport,
   });
   if (compareParent && activeObject.researchParentId) next.set("compare", "parent");
-  history.replaceState(null, "", `?${next.toString()}`);
+  const hash = window.location.hash ?? "";
+  history.replaceState(null, "", `?${next.toString()}${hash}`);
 };
 
 const setStatus = (element, object) => {
@@ -122,16 +127,19 @@ const setStatus = (element, object) => {
 
 const archivePath = (path) => `../${path}`;
 
-const renderPreview = (root, object) => {
-  root.replaceChildren();
+const syncPreview = (root, object) => {
   root.dataset.viewport = activeViewport;
+  if (root.dataset.objectId === object.id) return;
+
+  root.replaceChildren();
+  root.dataset.objectId = object.id;
 
   if (object.entrypoint) {
     const frame = document.createElement("iframe");
     frame.className = "model-preview-frame";
     frame.src = archivePath(object.entrypoint);
     frame.title = `${object.id} ${object.title} exact prototype`;
-    frame.loading = "lazy";
+    frame.loading = "eager";
     root.append(frame);
     return;
   }
@@ -166,13 +174,33 @@ const renderModelDefinition = () => {
   elements.modelQuestion.textContent = activeModel.question;
 };
 
+const focusAdjacentTab = (event, currentIndex) => {
+  const keys = ["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft", "Home", "End"];
+  if (!keys.includes(event.key)) return;
+  event.preventDefault();
+  const buttons = [...elements.sectionTabs.children];
+  if (!buttons.length) return;
+
+  let nextIndex = currentIndex;
+  if (["ArrowDown", "ArrowRight"].includes(event.key)) nextIndex = (currentIndex + 1) % buttons.length;
+  if (["ArrowUp", "ArrowLeft"].includes(event.key)) nextIndex = (currentIndex - 1 + buttons.length) % buttons.length;
+  if (event.key === "Home") nextIndex = 0;
+  if (event.key === "End") nextIndex = buttons.length - 1;
+  buttons[nextIndex].focus();
+};
+
 const renderSectionTabs = () => {
   elements.sectionTabs.replaceChildren();
-  for (const section of activeModel.sections) {
+  for (const [index, section] of activeModel.sections.entries()) {
+    const selected = section.id === activeSection.id;
     const button = makeText("button", "", section.title);
+    button.id = `section-tab-${section.id}`;
     button.type = "button";
     button.role = "tab";
-    button.setAttribute("aria-selected", String(section.id === activeSection.id));
+    button.tabIndex = selected ? 0 : -1;
+    button.setAttribute("aria-controls", "variant-list");
+    button.setAttribute("aria-selected", String(selected));
+    button.addEventListener("keydown", (event) => focusAdjacentTab(event, index));
     button.addEventListener("click", () => {
       activeSection = section;
       activeObject = objectById.get(section.defaultObjectId);
@@ -181,6 +209,7 @@ const renderSectionTabs = () => {
     });
     elements.sectionTabs.append(button);
   }
+  elements.variantList.setAttribute("aria-labelledby", `section-tab-${activeSection.id}`);
 };
 
 const renderVariantList = () => {
@@ -191,12 +220,13 @@ const renderVariantList = () => {
     const note = presentationNotes[object.id];
     const button = document.createElement("button");
     button.type = "button";
+    button.dataset.objectType = object.objectType;
     button.setAttribute("aria-current", String(object.id === activeObject.id));
 
     const copy = document.createElement("span");
     copy.append(
       makeText("strong", "", `${object.id} · ${note?.shortLabel ?? object.title}`),
-      makeText("small", "", `${dispositionLabels[object.disposition]} · ${evidenceLabels[object.evidenceState]}`),
+      makeText("small", "", `${object.objectType} · ${dispositionLabels[object.disposition]} · ${evidenceLabels[object.evidenceState]}`),
     );
     button.append(copy);
     button.addEventListener("click", () => {
@@ -208,13 +238,21 @@ const renderVariantList = () => {
   }
 };
 
+const renderViewportState = () => {
+  elements.currentPreview.dataset.viewport = activeViewport;
+  elements.parentPreview.dataset.viewport = activeViewport;
+  for (const button of document.querySelectorAll("[data-viewport]")) {
+    button.setAttribute("aria-pressed", String(button.dataset.viewport === activeViewport));
+  }
+};
+
 const renderStage = () => {
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
   if (!parent) compareParent = false;
 
   elements.currentObjectTitle.textContent = `${activeObject.id} · ${activeObject.title}`;
   setStatus(elements.currentObjectStatus, activeObject);
-  renderPreview(elements.currentPreview, activeObject);
+  syncPreview(elements.currentPreview, activeObject);
 
   elements.compareParent.disabled = !parent;
   elements.compareParent.setAttribute("aria-pressed", String(Boolean(parent && compareParent)));
@@ -225,26 +263,101 @@ const renderStage = () => {
   if (parent && compareParent) {
     elements.parentObjectTitle.textContent = `${parent.id} · ${parent.title}`;
     setStatus(elements.parentObjectStatus, parent);
-    renderPreview(elements.parentPreview, parent);
-  } else {
-    elements.parentPreview.replaceChildren();
+    syncPreview(elements.parentPreview, parent);
   }
 
-  for (const button of document.querySelectorAll("[data-viewport]")) {
-    button.setAttribute("aria-pressed", String(button.dataset.viewport === activeViewport));
+  renderViewportState();
+};
+
+const describeReferences = (ids) => ids
+  .map((id) => objectById.get(id))
+  .filter(Boolean)
+  .map((object) => `${object.id} · ${object.title}`)
+  .join("、");
+
+const differenceCopy = () => {
+  const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
+  const note = presentationNotes[activeObject.id];
+
+  if (note) {
+    return {
+      eyebrow: "Isolated difference",
+      variable: note.variable,
+      beforeLabel: "Parent／Before",
+      before: note.before,
+      afterLabel: "Current／After",
+      after: note.after,
+      unchangedLabel: "未改變",
+      unchanged: note.unchanged,
+    };
   }
+
+  if (activeObject.objectType === "study") {
+    const targets = describeReferences(activeObject.evidenceFor);
+    return {
+      eyebrow: "Study role",
+      variable: "研究工具，不是設計變體",
+      beforeLabel: "Evidence target",
+      before: targets || parent?.summary || "尚未記錄 evidence target。",
+      afterLabel: "Study instrument",
+      after: activeObject.summary,
+      unchangedLabel: "不授權",
+      unchanged: "Study readiness 與執行結果都不會自動授權 prototype 採用或建立 combined direction。",
+    };
+  }
+
+  if (activeObject.objectType === "correction") {
+    const targets = describeReferences(activeObject.evidenceFor);
+    return {
+      eyebrow: "Prerequisite correction",
+      variable: "可信閱讀的必要修正",
+      beforeLabel: "修正對象",
+      before: targets || parent?.summary || "沒有獨立 prototype parent。",
+      afterLabel: "修正內容",
+      after: activeObject.summary,
+      unchangedLabel: "模型未改",
+      unchanged: parent
+        ? `${parent.id} 的核心模型、內容身份與主要 interaction grammar 不因此成為新產品方向。`
+        : activeModel.retains,
+    };
+  }
+
+  const isSectionBaseline = activeObject.id === activeSection.defaultObjectId;
+  if (!parent || isSectionBaseline) {
+    return {
+      eyebrow: "Sub-study baseline",
+      variable: activeSection.title,
+      beforeLabel: parent ? "較早脈絡" : "研究起點",
+      before: parent?.summary ?? "此物件是目前 sub-study 的 root。",
+      afterLabel: "目前角色",
+      after: activeObject.summary,
+      unchangedLabel: "比較邊界",
+      unchanged: activeModel.retains,
+    };
+  }
+
+  return {
+    eyebrow: "Model transition",
+    variable: activeSection.title,
+    beforeLabel: "Earlier model",
+    before: parent.summary,
+    afterLabel: "Current model",
+    after: activeObject.summary,
+    unchangedLabel: "保留邊界",
+    unchanged: activeModel.retains,
+  };
 };
 
 const renderDifference = () => {
-  const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
-  const note = presentationNotes[activeObject.id];
-  elements.differenceVariable.textContent = note?.variable
-    ?? (parent ? activeSection.title : "模型共同母體");
-  elements.differenceBefore.textContent = note?.before
-    ?? parent?.summary
-    ?? "此物件是這組比較的 root，沒有較早的 research parent。";
-  elements.differenceAfter.textContent = note?.after ?? activeObject.summary;
-  elements.differenceUnchanged.textContent = note?.unchanged ?? activeModel.retains;
+  const copy = differenceCopy();
+  elements.differenceEyebrow.textContent = copy.eyebrow;
+  elements.differenceVariable.textContent = copy.variable;
+  elements.differenceBeforeLabel.textContent = copy.beforeLabel;
+  elements.differenceBefore.textContent = copy.before;
+  elements.differenceAfterLabel.textContent = copy.afterLabel;
+  elements.differenceAfter.textContent = copy.after;
+  elements.differenceUnchangedLabel.textContent = copy.unchangedLabel;
+  elements.differenceUnchanged.textContent = copy.unchanged;
 };
 
 const renderOutcome = () => {
@@ -256,7 +369,11 @@ const renderOutcome = () => {
 const navigateToObject = (objectId) => {
   const modelId = objectOwner.get(objectId);
   const model = modelId ? modelById.get(modelId) : null;
-  const section = model ? sectionForObject(model, objectId) : null;
+  const section = model
+    ? (model.id === activeModel.id && activeSection.objectIds.includes(objectId)
+      ? activeSection
+      : sectionForObject(model, objectId))
+    : null;
   if (!model || !section) {
     window.location.href = "../#catalog";
     return;
@@ -346,6 +463,10 @@ const makeRecordLink = (label, title, href) => {
   const link = document.createElement("a");
   link.className = "model-record-link";
   link.href = href;
+  if (href.startsWith("https://")) {
+    link.target = "_blank";
+    link.rel = "noreferrer";
+  }
   link.append(makeText("small", "", label), makeText("strong", "", title));
   return link;
 };
@@ -430,7 +551,7 @@ elements.compareParent.addEventListener("click", () => {
 for (const button of document.querySelectorAll("[data-viewport]")) {
   button.addEventListener("click", () => {
     activeViewport = button.dataset.viewport;
-    renderStage();
+    renderViewportState();
     updateUrl();
   });
 }
