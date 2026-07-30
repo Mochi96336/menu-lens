@@ -41,6 +41,46 @@ const oldAssertion = 'currentFrame.style.getPropertyValue("width") !== "1024px"'
 if (!validator.includes(oldAssertion)) throw new Error("Could not locate the hybrid viewport assertion.");
 await writeFile(validatorPath, validator.replace(oldAssertion, 'currentFrame.style.width !== "1024px"'));
 
+const rendererPath = "research-history/model-page.mjs";
+let renderer = await readFile(rendererPath, "utf8");
+const oldReveal = `  const revealCurrentCard = () => {
+    if (!currentCard) return;
+    if (typeof elements.allPreviewGrid.scrollTo === "function"
+      && elements.allPreviewGrid.scrollWidth > elements.allPreviewGrid.clientWidth) {
+      const left = Math.max(
+        0,
+        currentCard.offsetLeft - ((elements.allPreviewGrid.clientWidth - currentCard.offsetWidth) / 2),
+      );
+      elements.allPreviewGrid.scrollTo({ left, behavior: "auto" });
+      return;
+    }
+    currentCard.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+  };
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(revealCurrentCard);
+  else revealCurrentCard();`;
+const newReveal = `  const revealCurrentCard = () => {
+    if (!currentCard) return;
+    if (typeof elements.allPreviewGrid.scrollTo === "function"
+      && elements.allPreviewGrid.scrollWidth > elements.allPreviewGrid.clientWidth) {
+      const boardRect = elements.allPreviewGrid.getBoundingClientRect?.();
+      const cardRect = currentCard.getBoundingClientRect?.();
+      const cardOffset = boardRect && cardRect
+        ? elements.allPreviewGrid.scrollLeft + cardRect.left - boardRect.left
+        : currentCard.offsetLeft;
+      const cardWidth = cardRect?.width ?? currentCard.offsetWidth;
+      const left = Math.max(0, cardOffset - ((elements.allPreviewGrid.clientWidth - cardWidth) / 2));
+      elements.allPreviewGrid.scrollTo({ left, behavior: "auto" });
+      return;
+    }
+    currentCard.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+  };
+  if (typeof requestAnimationFrame === "function") {
+    requestAnimationFrame(() => requestAnimationFrame(revealCurrentCard));
+  } else revealCurrentCard();`;
+if (!renderer.includes(oldReveal)) throw new Error("Could not locate the comparison-board reveal logic.");
+renderer = renderer.replace(oldReveal, newReveal);
+await writeFile(rendererPath, renderer);
+
 const reviewPath = "scripts/archive/capture-model-page-review.mjs";
 let review = await readFile(reviewPath, "utf8");
 const oldStudyMetric = "      iframeCount: document.querySelectorAll('#preview-grid iframe').length,";
