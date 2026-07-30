@@ -26,6 +26,7 @@ jobs:
         run: |
           node .tmp-pr60-self-review/fix-apply-v2.mjs
           node .tmp-pr60-self-review/fix-apply-v3.mjs
+          node .tmp-pr60-self-review/fix-apply-v4.mjs
           node .tmp-pr60-self-review/apply.mjs
 
       - name: Set up Node.js
