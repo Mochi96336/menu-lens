@@ -220,7 +220,7 @@ try {
   }
 
   const focusVariants = selectors.get("#variant-list").children;
-  if (focusVariants[0].tabIndex !== -1 || focusVariants[2].tabIndex !== 0) {
+  if (focusVariants[0].tabIndex !== -1 || focusVariants[1].tabIndex !== 0) {
     throw new Error("Variant navigation must expose one roving keyboard tab stop.");
   }
   focusVariants[3].dispatch("click");
