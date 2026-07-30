@@ -24,7 +24,7 @@
           <select id="model-select" aria-label="切換設計模型"></select>
         </label>
         <div class="model-nav__links">
-          <a href="#workbench">比較變體</a>
+          <a href="#workbench">比較研究物件</a>
           <a href="#records">Exact records</a>
           <a href="../#catalog">完整目錄</a>
         </div>
@@ -66,14 +66,26 @@
         </div>
 
         <div class="model-layout">
-          <aside class="model-sidebar" aria-label="子研究與變體">
+          <aside class="model-sidebar" aria-label="子研究與研究物件">
             <div>
               <p class="model-sidebar__label">子研究</p>
-              <div id="section-tabs" class="model-section-tabs" role="tablist" aria-label="切換子研究"></div>
+              <div
+                id="section-tabs"
+                class="model-section-tabs"
+                role="tablist"
+                aria-label="切換子研究"
+                aria-orientation="vertical"
+              ></div>
             </div>
             <div>
               <p class="model-sidebar__label">研究物件</p>
-              <div id="variant-list" class="model-variant-list" aria-label="切換研究物件"></div>
+              <div
+                id="variant-list"
+                class="model-variant-list"
+                role="tabpanel"
+                tabindex="0"
+                aria-label="切換研究物件"
+              ></div>
             </div>
           </aside>
 
@@ -81,9 +93,9 @@
             <div class="model-toolbar" aria-label="Prototype 顯示設定">
               <div class="model-toolbar__group" aria-label="Viewport 尺寸">
                 <span>Viewport</span>
-                <button type="button" data-viewport="320">320</button>
-                <button type="button" data-viewport="390">390</button>
-                <button type="button" data-viewport="desktop">Desktop</button>
+                <button type="button" data-viewport="320" aria-pressed="false">320</button>
+                <button type="button" data-viewport="390" aria-pressed="false">390</button>
+                <button type="button" data-viewport="desktop" aria-pressed="false">Desktop · 1024</button>
               </div>
               <button id="compare-parent" class="model-compare-button" type="button" aria-pressed="false">
                 與 parent 比較
@@ -117,21 +129,21 @@
         </div>
       </section>
 
-      <section class="model-analysis site-shell" aria-label="變體分析">
+      <section class="model-analysis site-shell" aria-label="研究物件分析">
         <article class="model-analysis-card model-analysis-card--difference">
-          <p class="eyebrow">Isolated difference</p>
-          <h2 id="difference-variable">唯一變因</h2>
+          <p id="difference-eyebrow" class="eyebrow">Object role</p>
+          <h2 id="difference-variable">研究物件角色</h2>
           <dl class="model-difference-list">
             <div>
-              <dt>Parent／Before</dt>
+              <dt id="difference-before-label">來源脈絡</dt>
               <dd id="difference-before"></dd>
             </div>
             <div>
-              <dt>Current／After</dt>
+              <dt id="difference-after-label">目前物件</dt>
               <dd id="difference-after"></dd>
             </div>
             <div>
-              <dt>未改變</dt>
+              <dt id="difference-unchanged-label">保留邊界</dt>
               <dd id="difference-unchanged"></dd>
             </div>
           </dl>
