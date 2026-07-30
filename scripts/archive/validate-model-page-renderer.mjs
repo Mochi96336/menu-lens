@@ -311,6 +311,7 @@ try {
     ".model-compare-view-switch:not([hidden])",
     "grid-template-columns: minmax(11.5rem, 13rem) minmax(25rem, 1fr) minmax(17rem, 19rem)",
     "@media (max-width: 1179px)",
+    "@media (min-width: 901px) and (max-width: 1050px)",
   ]) {
     if (!workbenchCss.includes(contract)) throw new Error(`Model workbench CSS is missing contract: ${contract}`);
   }
