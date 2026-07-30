@@ -82,16 +82,24 @@ const evaluate = async (client, expression) => {
     userGesture: true,
   });
   if (result.exceptionDetails) {
-    throw new Error(result.exceptionDetails.text ?? "Runtime evaluation failed.");
+    const details = result.exceptionDetails;
+    const description = details.exception?.description ?? details.text ?? "Runtime evaluation failed.";
+    throw new Error(description);
   }
   return result.result?.value;
 };
 
-const waitForDocument = async (client) => {
-  for (let attempt = 0; attempt < 100; attempt += 1) {
+const waitForDocument = async (client, expectedUrl) => {
+  const serializedUrl = JSON.stringify(expectedUrl);
+  for (let attempt = 0; attempt < 120; attempt += 1) {
     try {
-      if (await evaluate(client, "document.readyState === 'complete'")) {
-        await delay(250);
+      const ready = await evaluate(client, `(() => (
+        location.href === ${serializedUrl}
+        && document.readyState === "complete"
+        && Boolean(document.querySelector("#current-object-title")?.textContent.trim())
+      ))()`);
+      if (ready) {
+        await delay(350);
         return;
       }
     } catch {
@@ -99,7 +107,7 @@ const waitForDocument = async (client) => {
     }
     await delay(100);
   }
-  throw new Error("Timed out waiting for the browser document to finish loading.");
+  throw new Error(`Timed out waiting for rendered model page ${expectedUrl}`);
 };
 
 const setViewport = (client, width, height) => client.send("Emulation.setDeviceMetricsOverride", {
@@ -112,9 +120,10 @@ const setViewport = (client, width, height) => client.send("Emulation.setDeviceM
 });
 
 const navigate = async (client, path, width, height) => {
+  const expectedUrl = `${baseUrl}${path}`;
   await setViewport(client, width, height);
-  await client.send("Page.navigate", { url: `${baseUrl}${path}` });
-  await waitForDocument(client);
+  await client.send("Page.navigate", { url: expectedUrl });
+  await waitForDocument(client, expectedUrl);
 };
 
 const capture = async (client, filename) => {
