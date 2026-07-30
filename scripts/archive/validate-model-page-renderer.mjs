@@ -161,6 +161,18 @@ try {
   }
 
   const modelSelect = selectors.get("#model-select");
+  modelSelect.value = "horizontal-navigation";
+  modelSelect.dispatch("change");
+  if (selectors.get("#current-object-title").textContent !== "08 · Menu Spread") {
+    throw new Error("Model selection must open the configured featured object rather than the first section.");
+  }
+
+  modelSelect.value = "depth-projection";
+  modelSelect.dispatch("change");
+  if (selectors.get("#current-object-title").textContent !== "25P · Menu Projections") {
+    throw new Error("Depth model must open its configured projection-lens feature.");
+  }
+
   modelSelect.value = "paper-field";
   modelSelect.dispatch("change");
   const semanticVariants = selectors.get("#variant-list").children;
@@ -200,4 +212,4 @@ try {
   }
 }
 
-console.log("Design model viewer: deep links, exact prototypes, role-aware analysis, stable iframes, tabs, and controlled widths verified.");
+console.log("Design model viewer: deep links, featured landings, exact prototypes, role-aware analysis, stable iframes, tabs, and controlled widths verified.");
