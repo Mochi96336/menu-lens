@@ -36,6 +36,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Record source tree
+        run: |
+          mkdir -p browser-review
+          git rev-parse HEAD^{tree} > browser-review/source-tree.txt
+
       - name: Upload static build
         uses: actions/upload-artifact@v6
         with:
