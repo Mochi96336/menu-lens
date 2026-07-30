@@ -22,14 +22,8 @@ jobs:
           ref: agent/hybrid-live-model-board
           fetch-depth: 0
 
-      - name: Read and apply staged hybrid payload
-        run: |
-          git fetch origin agent/preview-first-model-board
-          mkdir -p .tmp-hybrid
-          for file in payload-1.txt payload-2.txt payload-3.txt payload-4.txt payload-5.txt payload-6.txt apply.mjs; do
-            git show "origin/agent/preview-first-model-board:.tmp-hybrid/$file" > ".tmp-hybrid/$file"
-          done
-          node .tmp-hybrid/apply.mjs
+      - name: Verify and apply hybrid payload
+        run: node .tmp-hybrid2/apply.mjs
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -85,5 +79,6 @@ jobs:
             scripts/archive/capture-model-page-review.mjs \
             scripts/archive/validate-model-page-renderer.mjs \
             scripts/archive/validate-entrypoints.mjs
+          git add -A .tmp-hybrid2
           git commit -m "Refine model board with operable live surfaces"
           git push origin HEAD:agent/hybrid-live-model-board
