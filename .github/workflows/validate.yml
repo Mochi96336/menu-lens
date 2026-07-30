@@ -1,4 +1,4 @@
-name: Apply model-page self-review
+name: Validate pull request
 
 on:
   pull_request:
@@ -6,25 +6,17 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  validate-and-apply:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
-        with:
-          ref: agent/refine-model-workbench
-
-      - name: Apply staged self-review payload
-        run: |
-          cat .self-review-payload/* | base64 --decode > /tmp/model-page-self-review.tar.gz
-          tar -xzf /tmp/model-page-self-review.tar.gz
-          bash APPLY.sh
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -44,6 +36,14 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Upload static build
+        uses: actions/upload-artifact@v6
+        with:
+          name: menu-lens-pr-build
+          path: dist/
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Install browser review fonts
         run: |
           sudo apt-get update -qq
@@ -59,20 +59,11 @@ jobs:
           test -n "$BROWSER_BIN"
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/capture-model-page-review.mjs
 
-      - name: Upload validated screenshots
+      - name: Upload model-page browser review
+        if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: menu-lens-model-page-self-review
+          name: menu-lens-model-page-review
           path: browser-review/
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 1
-
-      - name: Commit validated self-review fixes
-        run: |
-          rm -rf browser-review
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --cached --check
-          git commit -m "Harden model workbench presentation"
-          git push origin HEAD:agent/refine-model-workbench

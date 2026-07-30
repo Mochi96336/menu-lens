@@ -1,5 +1,13 @@
 /* Follow-up model-page layout: concise headings, prototype-first workbench. */
 
+.model-toolbar-link[hidden],
+.model-compare-button[hidden],
+.model-compare-view-switch[hidden],
+.model-preview-pane[hidden],
+.model-preview-pane__actions a[hidden] {
+  display: none !important;
+}
+
 .model-page .model-hero {
   gap: clamp(1.5rem, 5vw, 4rem);
   padding-block: clamp(2rem, 4vw, 3.2rem) clamp(1.7rem, 3.5vw, 2.6rem);
@@ -338,6 +346,25 @@
 
   .model-page .model-object-header {
     grid-template-columns: 1fr;
+    padding-block: .65rem;
+  }
+
+  .model-page .model-object-summary {
+    margin-top: .1rem;
+    line-height: 1.48;
+  }
+
+  .model-page .model-viewport-note {
+    margin-top: .35rem;
+  }
+
+  .model-page .model-compare-view-switch:not([hidden]) {
+    padding-top: .45rem;
+  }
+
+  .model-page .model-preview-grid,
+  .model-page .model-preview-grid[data-compare="true"] {
+    padding-top: .5rem;
   }
 
   .model-page .model-object-header__meta {

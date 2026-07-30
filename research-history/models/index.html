@@ -9,7 +9,6 @@
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="../history.css" />
     <link rel="stylesheet" href="../model-page.css" />
-    <link rel="stylesheet" href="../model-page-polish.css" />
     <link rel="stylesheet" href="../model-page-workbench.css" />
     <script src="../prototype-registry.js"></script>
   </head>
@@ -84,14 +83,14 @@
               </div>
               <div class="model-object-header__meta">
                 <span id="current-object-status" class="status"></span>
-                <span id="stage-context-role" class="phase-index">Object role</span>
+                <span id="stage-context-role" class="phase-index">研究角色</span>
               </div>
               <p id="stage-context-copy" class="model-object-summary" aria-live="polite"></p>
             </header>
 
             <div class="model-toolbar" aria-label="Prototype 顯示設定">
               <div class="model-toolbar__group" aria-label="Viewport 尺寸">
-                <span>Viewport</span>
+                <span>預覽寬度</span>
                 <button type="button" data-viewport="320" aria-pressed="false">320</button>
                 <button type="button" data-viewport="390" aria-pressed="false">390</button>
                 <button type="button" data-viewport="desktop" aria-pressed="false">1024</button>
@@ -105,7 +104,7 @@
 
             <p id="viewport-note" class="model-viewport-note"></p>
             <div id="compare-view-switch" class="model-compare-view-switch" hidden aria-label="切換比較畫面">
-              <button type="button" data-preview-pane="current" aria-pressed="true">Current</button>
+              <button type="button" data-preview-pane="current" aria-pressed="true">目前</button>
               <button type="button" data-preview-pane="parent" aria-pressed="false">Parent</button>
             </div>
 
@@ -125,7 +124,7 @@
 
           <aside class="model-inspector" aria-label="研究物件說明">
             <section class="model-inspector-section model-inspector-section--difference">
-              <p id="difference-eyebrow" class="eyebrow">Object role</p>
+              <p id="difference-eyebrow" class="eyebrow">研究角色</p>
               <h2>變因</h2>
               <h3 id="difference-variable">研究物件角色</h3>
               <dl class="model-difference-list">
@@ -140,8 +139,8 @@
               <h2>研究狀態</h2>
               <p id="outcome-title" hidden></p>
               <dl class="model-outcome-list">
-                <div><dt>Disposition</dt><dd id="outcome-disposition"></dd></div>
-                <div><dt>Evidence</dt><dd id="outcome-evidence"></dd></div>
+                <div><dt>狀態</dt><dd id="outcome-disposition"></dd></div>
+                <div><dt>證據</dt><dd id="outcome-evidence"></dd></div>
                 <div id="outcome-next-row"><dt id="outcome-next-label">下一步</dt><dd id="outcome-next-gate"></dd></div>
               </dl>
             </section>
@@ -174,6 +173,5 @@
     </footer>
 
     <script type="module" src="../model-page.mjs"></script>
-    <script type="module" src="../model-page-copy.mjs"></script>
   </body>
 </html>

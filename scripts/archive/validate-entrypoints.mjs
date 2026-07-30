@@ -10,10 +10,8 @@ const requiredPaths = new Set([
   "history.css",
   "prototype-registry.js",
   "model-page.css",
-  "model-page-polish.css",
   "model-page-workbench.css",
   "model-page.mjs",
-  "model-page-copy.mjs",
   "models/index.html",
   "catalog/index.mjs",
   "catalog/extensions.mjs",
@@ -34,13 +32,12 @@ for (const object of catalog.objects) {
 
 await Promise.all([...requiredPaths].map((path) => access(new URL(path, archiveRoot))));
 
-const [index, renderer, loader, modelPage, modelRenderer, copyModule] = await Promise.all([
+const [index, renderer, loader, modelPage, modelRenderer] = await Promise.all([
   readFile(new URL("index.html", archiveRoot), "utf8"),
   readFile(new URL("catalog/render-index.mjs", archiveRoot), "utf8"),
   readFile(new URL("scripts/archive/load-catalog.mjs", root), "utf8"),
   readFile(new URL("models/index.html", archiveRoot), "utf8"),
   readFile(new URL("model-page.mjs", archiveRoot), "utf8"),
-  readFile(new URL("model-page-copy.mjs", archiveRoot), "utf8"),
 ]);
 
 for (const contract of [
@@ -62,11 +59,9 @@ for (const contract of [
 
 for (const contract of [
   '<link rel="stylesheet" href="../model-page.css" />',
-  '<link rel="stylesheet" href="../model-page-polish.css" />',
   '<link rel="stylesheet" href="../model-page-workbench.css" />',
   '<script src="../prototype-registry.js"></script>',
   '<script type="module" src="../model-page.mjs"></script>',
-  '<script type="module" src="../model-page-copy.mjs"></script>',
   'id="model-select"',
   'id="section-tabs"',
   'id="variant-list"',
@@ -88,20 +83,16 @@ for (const oldSlogan of [
 }
 
 for (const contract of [
-  "受控變因",
-  "停止結果",
-  "保留條件",
-  "MutationObserver",
-]) {
-  if (!copyModule.includes(contract)) throw new Error(`Design model copy module is missing contract: ${contract}`);
-}
-
-for (const contract of [
   "buildArchiveCatalog",
   "designModels",
   "presentationNotes",
   "researchParentId",
   "data-viewport",
+  "受控變因",
+  "停止結果",
+  "保留條件",
+  "研究工具",
+  "結束比較",
 ]) {
   if (!modelRenderer.includes(contract)) throw new Error(`Design model renderer is missing contract: ${contract}`);
 }
