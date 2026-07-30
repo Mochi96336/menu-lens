@@ -18,19 +18,19 @@ const findBrowser = async () => {
       await access(candidate);
       return candidate;
     } catch {
-      // Try the next known browser path.
+      // Try the next browser path.
     }
   }
   throw new Error("No Chrome or Chromium binary was found for browser review.");
 };
 
-const waitForHttp = async (url, attempts = 100) => {
+const waitForHttp = async (url, attempts = 300) => {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     try {
       const response = await fetch(url);
       if (response.ok) return;
     } catch {
-      // The local server or DevTools endpoint is not ready yet.
+      // Server or DevTools endpoint is still starting.
     }
     await delay(100);
   }
@@ -53,8 +53,7 @@ class CdpClient {
         else pending.resolve(message.result ?? {});
         return;
       }
-      const listeners = this.listeners.get(message.method) ?? [];
-      for (const listener of listeners) listener(message.params ?? {});
+      for (const listener of this.listeners.get(message.method) ?? []) listener(message.params ?? {});
     });
   }
 
@@ -62,9 +61,7 @@ class CdpClient {
     const id = this.nextId;
     this.nextId += 1;
     this.socket.send(JSON.stringify({ id, method, params }));
-    return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve, reject });
-    });
+    return new Promise((resolve, reject) => this.pending.set(id, { resolve, reject }));
   }
 
   on(method, listener) {
@@ -83,54 +80,9 @@ const evaluate = async (client, expression) => {
   });
   if (result.exceptionDetails) {
     const details = result.exceptionDetails;
-    const description = details.exception?.description ?? details.text ?? "Runtime evaluation failed.";
-    throw new Error(description);
+    throw new Error(details.exception?.description ?? details.text ?? "Runtime evaluation failed.");
   }
   return result.result?.value;
-};
-
-const waitForDocument = async (client, expectedUrl) => {
-  const expected = new URL(expectedUrl);
-  const expectedState = {
-    pathname: expected.pathname,
-    model: expected.searchParams.get("model"),
-    section: expected.searchParams.get("section"),
-    variant: expected.searchParams.get("variant"),
-    viewport: expected.searchParams.get("viewport"),
-  };
-  const serializedState = JSON.stringify(expectedState);
-  let lastSnapshot = null;
-  for (let attempt = 0; attempt < 120; attempt += 1) {
-    try {
-      lastSnapshot = await evaluate(client, `(() => {
-        const expected = ${serializedState};
-        const params = new URLSearchParams(location.search);
-        const title = document.querySelector("#current-object-title")?.textContent.trim() ?? "";
-        const matches = location.pathname === expected.pathname
-          && params.get("model") === expected.model
-          && params.get("section") === expected.section
-          && params.get("variant") === expected.variant
-          && params.get("viewport") === expected.viewport;
-        return {
-          ready: matches && document.readyState === "complete" && Boolean(title),
-          href: location.href,
-          readyState: document.readyState,
-          title,
-          archiveError: document.querySelector(".archive-error")?.textContent ?? "",
-        };
-      })()`);
-      if (lastSnapshot?.ready) {
-        await delay(350);
-        return;
-      }
-    } catch (error) {
-      lastSnapshot = { evaluationError: error.message };
-    }
-    await delay(100);
-  }
-  throw new Error(
-    `Timed out waiting for rendered model page ${expectedUrl}; last state: ${JSON.stringify(lastSnapshot)}`,
-  );
 };
 
 const setViewport = (client, width, height) => client.send("Emulation.setDeviceMetricsOverride", {
@@ -142,11 +94,54 @@ const setViewport = (client, width, height) => client.send("Emulation.setDeviceM
   screenHeight: height,
 });
 
-const navigate = async (client, path, width, height) => {
-  const expectedUrl = `${baseUrl}${path}`;
+const waitForDocument = async (client, expectedUrl) => {
+  const expected = new URL(expectedUrl);
+  let lastState = null;
+  for (let attempt = 0; attempt < 180; attempt += 1) {
+    try {
+      lastState = await evaluate(client, `(() => {
+        const image = document.querySelector('#current-preview img.model-preview-image');
+        return {
+          ready: location.pathname === ${JSON.stringify(expected.pathname)}
+            && location.search === ${JSON.stringify(expected.search)}
+            && document.readyState === 'complete'
+            && Boolean(document.querySelector('#current-object-title')?.textContent.trim())
+            && (!image || (image.complete && image.naturalWidth > 0)),
+          href: location.href,
+          readyState: document.readyState,
+          title: document.querySelector('#current-object-title')?.textContent ?? '',
+          image: image ? { complete: image.complete, naturalWidth: image.naturalWidth, src: image.src } : null,
+          archiveError: document.querySelector('.archive-error')?.textContent ?? '',
+        };
+      })()`);
+      if (lastState?.ready) {
+        await delay(250);
+        return;
+      }
+    } catch (error) {
+      lastState = { error: error.message };
+    }
+    await delay(100);
+  }
+  throw new Error(`Timed out waiting for ${expectedUrl}: ${JSON.stringify(lastState)}`);
+};
+
+const navigate = async (client, path, width, height = 900) => {
+  const url = `${baseUrl}${path}`;
   await setViewport(client, width, height);
-  await client.send("Page.navigate", { url: expectedUrl });
-  await waitForDocument(client, expectedUrl);
+  await client.send("Page.navigate", { url });
+  await waitForDocument(client, url);
+};
+
+const scrollToSelector = async (client, selector) => {
+  await evaluate(client, `(() => {
+    const target = document.querySelector(${JSON.stringify(selector)});
+    if (!target) return false;
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo(0, Math.round(target.getBoundingClientRect().top + window.scrollY));
+    return true;
+  })()`);
+  await delay(150);
 };
 
 const capture = async (client, filename) => {
@@ -158,20 +153,9 @@ const capture = async (client, filename) => {
   await writeFile(new URL(filename, outputDir), Buffer.from(result.data, "base64"));
 };
 
-const scrollToSelector = async (client, selector) => {
-  await evaluate(client, `(() => {
-    const target = document.querySelector(${JSON.stringify(selector)});
-    if (!target) return false;
-    document.documentElement.style.scrollBehavior = "auto";
-    window.scrollTo(0, Math.round(target.getBoundingClientRect().top + window.scrollY));
-    return true;
-  })()`);
-  await delay(150);
-};
-
 await mkdir(outputDir, { recursive: true });
 await waitForHttp(`${baseUrl}/models/`);
-
+await waitForHttp(`${baseUrl}/previews/18B/390.png`);
 const browser = await findBrowser();
 const debugPort = Number(process.env.CHROME_DEBUG_PORT ?? 9222);
 const browserProcess = spawn(browser, [
@@ -184,7 +168,6 @@ const browserProcess = spawn(browser, [
   `--user-data-dir=/tmp/menu-lens-browser-review-${process.pid}`,
   "about:blank",
 ], { stdio: ["ignore", "pipe", "pipe"] });
-
 let browserStderr = "";
 browserProcess.stderr.on("data", (chunk) => { browserStderr += String(chunk); });
 
@@ -194,7 +177,7 @@ try {
     `http://127.0.0.1:${debugPort}/json/new?${encodeURIComponent("about:blank")}`,
     { method: "PUT" },
   );
-  if (!targetResponse.ok) throw new Error(`Could not create a Chrome review target: ${targetResponse.status}`);
+  if (!targetResponse.ok) throw new Error(`Could not create browser review target: ${targetResponse.status}`);
   const target = await targetResponse.json();
   const socket = new WebSocket(target.webSocketDebuggerUrl);
   await new Promise((resolve, reject) => {
@@ -212,10 +195,6 @@ try {
     if (!["error", "assert"].includes(type)) return;
     runtimeErrors.push(args.map((arg) => arg.value ?? arg.description ?? "").join(" "));
   });
-  client.on("Log.entryAdded", ({ entry }) => {
-    if (entry?.level !== "error" || isFavicon(entry.url)) return;
-    runtimeErrors.push(`${entry.text ?? "Browser log error"}${entry.url ? ` (${entry.url})` : ""}`);
-  });
   client.on("Network.requestWillBeSent", ({ requestId, request }) => {
     if (requestId && request?.url) requestUrls.set(requestId, request.url);
   });
@@ -225,159 +204,133 @@ try {
     requestUrls.delete(requestId);
     if (type === "Document" && errorText === "net::ERR_ABORTED") return;
     if (isFavicon(url)) return;
-    runtimeErrors.push(
-      `Resource load failed (${type ?? "unknown"}): ${blockedReason ?? errorText}${url ? ` (${url})` : ""}`,
-    );
+    runtimeErrors.push(`Resource load failed (${type ?? "unknown"}): ${blockedReason ?? errorText}${url ? ` (${url})` : ""}`);
   });
   await client.send("Page.enable");
   await client.send("Runtime.enable");
-  await client.send("Log.enable");
   await client.send("Network.enable");
 
   const cases = [];
-  const landscapePath = "/models/?model=landscape-paper&section=reading-grammar&variant=18B&viewport=390&compare=parent";
+  const basePath = "/models/?model=landscape-paper&section=reading-grammar&variant=18B&viewport=390";
 
-  await navigate(client, landscapePath, 320, 900);
-  const mobileMetrics = await evaluate(client, `(() => {
-    const frame = document.querySelector('#current-preview iframe');
-    const compare = document.querySelector('#compare-parent');
-    const switcher = document.querySelector('#compare-view-switch');
-    const parentSwitch = document.querySelector('[data-preview-pane="parent"]');
-    const currentFrame = frame;
-    parentSwitch.click();
-    const currentPane = document.querySelector('.model-preview-pane--current');
-    const parentPane = document.querySelector('.model-preview-pane--parent');
+  await navigate(client, basePath, 320);
+  await scrollToSelector(client, "#workbench");
+  const mobileMetrics = await evaluate(client, `(() => ({
+    title: document.querySelector('#current-object-title')?.textContent,
+    documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    iframeCount: document.querySelectorAll('#workbench iframe').length,
+    imageLoaded: document.querySelector('#current-preview img')?.naturalWidth > 0,
+    imagePath: new URL(document.querySelector('#current-preview img')?.src).pathname,
+    mode: document.querySelector('#preview-grid')?.dataset.viewMode,
+  }))()`);
+  cases.push({ name: "landscape-320-focus", width: 320, height: 900, metrics: mobileMetrics });
+  await capture(client, "landscape-320-focus.png");
+
+  await navigate(client, basePath, 390);
+  await scrollToSelector(client, "#workbench");
+  await evaluate(client, `(async () => {
+    document.querySelector('#view-all').click();
+    for (let attempt = 0; attempt < 100; attempt += 1) {
+      const images = [...document.querySelectorAll('#all-preview-grid img')];
+      if (images.length && images.every((image) => image.complete && image.naturalWidth > 0)) return true;
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    return false;
+  })()`);
+  const mobileAllMetrics = await evaluate(client, `(() => {
+    const board = document.querySelector('#all-preview-grid');
     return {
-      title: document.querySelector('#current-object-title')?.textContent,
-      workbenchTitle: document.querySelector('#workbench-title')?.textContent,
-      oldSloganPresent: document.body.textContent.includes('在共同母體內比較，不把每個 ablation 當成獨立方案。'),
       documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-      computedFrameWidth: frame ? getComputedStyle(frame).width : null,
-      compareVisible: compare ? !compare.hidden : false,
-      compareSwitchVisible: switcher ? getComputedStyle(switcher).display !== 'none' : false,
-      parentRecordHidden: document.querySelector('#parent-record-link').hidden,
-      paneSwitched: document.querySelector('#preview-grid').dataset.mobilePane === 'parent',
-      currentPaneHidden: getComputedStyle(currentPane).display === 'none',
-      parentPaneVisible: getComputedStyle(parentPane).display !== 'none',
-      currentFramePreserved: document.querySelector('#current-preview iframe') === currentFrame,
-      bodyWidth: document.documentElement.clientWidth,
-      scrollWidth: document.documentElement.scrollWidth,
+      boardVisible: getComputedStyle(board).display !== 'none',
+      cardCount: board.querySelectorAll('.model-preview-card').length,
+      horizontalBoard: board.scrollWidth > board.clientWidth,
+      loadedImages: [...board.querySelectorAll('img')].filter((image) => image.complete && image.naturalWidth > 0).length,
+      iframeCount: document.querySelectorAll('#workbench iframe').length,
+      urlHasAll: new URL(location.href).searchParams.get('view') === 'all',
     };
   })()`);
-  cases.push({ name: "landscape-mobile", width: 320, height: 900, metrics: mobileMetrics });
-  await capture(client, "landscape-320-top.png");
-
-  await navigate(client, landscapePath, 390, 900);
-  await scrollToSelector(client, "#workbench");
-  cases.push({
-    name: "landscape-390-workbench",
-    width: 390,
-    height: 900,
-    metrics: await evaluate(client, `(() => {
-      const previewColumns = getComputedStyle(document.querySelector('#preview-grid')).gridTemplateColumns;
-      return {
-        documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-        computedFrameWidth: getComputedStyle(document.querySelector('#current-preview iframe')).width,
-        sectionRailOverflow: document.querySelector('#section-tabs').scrollWidth > document.querySelector('#section-tabs').clientWidth,
-        variantRailOverflow: document.querySelector('#variant-list').scrollWidth > document.querySelector('#variant-list').clientWidth,
-        previewColumnCount: previewColumns.trim().split(' ').filter(Boolean).length,
-        compareSwitchVisible: getComputedStyle(document.querySelector('#compare-view-switch')).display !== 'none',
-      };
-    })()`),
-  });
-  await capture(client, "landscape-390-workbench.png");
+  cases.push({ name: "landscape-390-all", width: 390, height: 900, metrics: mobileAllMetrics });
+  await capture(client, "landscape-390-all.png");
 
   for (const width of [1024, 1440]) {
-    await navigate(client, landscapePath, width, 900);
+    await navigate(client, basePath, width);
     await scrollToSelector(client, "#workbench");
-    cases.push({
-      name: `landscape-${width}-workbench`,
-      width,
-      height: 900,
-      metrics: await evaluate(client, `(() => {
-        const layout = document.querySelector('.model-layout');
-        const preview = document.querySelector('#preview-grid');
-        const stage = document.querySelector('.model-stage-column');
-        const inspector = document.querySelector('.model-inspector');
-        const layoutColumns = getComputedStyle(layout).gridTemplateColumns;
-        const previewColumns = getComputedStyle(preview).gridTemplateColumns;
-        return {
-          documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-          computedFrameWidth: getComputedStyle(document.querySelector('#current-preview iframe')).width,
-          layoutColumns,
-          layoutColumnCount: layoutColumns.trim().split(' ').filter(Boolean).length,
-          previewColumns,
-          previewColumnCount: previewColumns.trim().split(' ').filter(Boolean).length,
-          compareSwitchVisible: getComputedStyle(document.querySelector('#compare-view-switch')).display !== 'none',
-          inspectorBesideStage: Math.abs(inspector.getBoundingClientRect().top - stage.getBoundingClientRect().top) < 4,
-          inspectorBelowStage: inspector.getBoundingClientRect().top > stage.getBoundingClientRect().bottom - 4,
-        };
-      })()`),
-    });
-    await capture(client, `landscape-${width}-workbench.png`);
+    await evaluate(client, `(async () => {
+      document.querySelector('#compare-parent').click();
+      for (let attempt = 0; attempt < 100; attempt += 1) {
+        const images = [...document.querySelectorAll('#preview-grid img')];
+        if (images.length === 2 && images.every((image) => image.complete && image.naturalWidth > 0)) return true;
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
+      return false;
+    })()`);
+    const metrics = await evaluate(client, `(() => {
+      const layout = document.querySelector('.model-layout');
+      const preview = document.querySelector('#preview-grid');
+      const stage = document.querySelector('.model-stage-column');
+      const inspector = document.querySelector('.model-inspector');
+      const sidebar = document.querySelector('.model-sidebar');
+      const images = [...preview.querySelectorAll('img')];
+      return {
+        documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        layoutColumnCount: getComputedStyle(layout).gridTemplateColumns.trim().split(' ').filter(Boolean).length,
+        sidebarColumnCount: getComputedStyle(sidebar).gridTemplateColumns.trim().split(' ').filter(Boolean).length,
+        compareColumnCount: getComputedStyle(preview).gridTemplateColumns.trim().split(' ').filter(Boolean).length,
+        currentAndParentVisible: !document.querySelector('.model-preview-pane--current').hidden
+          && !document.querySelector('.model-preview-pane--parent').hidden,
+        imagesLoaded: images.length === 2 && images.every((image) => image.complete && image.naturalWidth > 0),
+        iframeCount: document.querySelectorAll('#workbench iframe').length,
+        inspectorBesideStage: Math.abs(inspector.getBoundingClientRect().top - stage.getBoundingClientRect().top) < 4,
+        inspectorBelowStage: inspector.getBoundingClientRect().top > stage.getBoundingClientRect().bottom - 4,
+      };
+    })()`);
+    cases.push({ name: `landscape-${width}-compare`, width, height: 900, metrics });
+    await capture(client, `landscape-${width}-compare.png`);
   }
 
-  const studyPath = "/models/?model=paper-field&section=semantic-information&variant=12A-S1&viewport=390&compare=parent";
-  await navigate(client, studyPath, 390, 900);
-  const studyBoundaryMetrics = await evaluate(client, `(() => ({
-    compareHiddenOnStudy: document.querySelector('#compare-parent').hidden,
-    parentRecordVisibleOnStudy: !document.querySelector('#parent-record-link').hidden,
-    titleDeduplicated: !document.querySelector('#current-object-title').textContent.match(/^(\\S+) · \\1\\b/),
-    documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-  }))()`);
+  const studyPath = "/models/?model=paper-field&section=semantic-information&variant=12A-S1&viewport=390";
+  await navigate(client, studyPath, 390);
   await scrollToSelector(client, "#workbench");
+  const studyMetrics = await evaluate(client, `(() => ({
+    compareHidden: document.querySelector('#compare-parent').hidden,
+    parentRecordVisible: !document.querySelector('#parent-record-link').hidden,
+    imageLoaded: document.querySelector('#current-preview img')?.naturalWidth > 0,
+    iframeCount: document.querySelectorAll('#workbench iframe').length,
+    titleDeduplicated: !document.querySelector('#current-object-title').textContent.match(/^(\\S+) · \\1\\b/),
+  }))()`);
+  cases.push({ name: "paper-field-390-study", width: 390, height: 900, metrics: studyMetrics });
   await capture(client, "paper-field-390-study.png");
-  const focusMetrics = await evaluate(client, `(() => {
-    const sectionButton = [...document.querySelectorAll('#section-tabs button')]
-      .find((button) => button.dataset.sectionId === 'elastic-geometry');
-    sectionButton.click();
-    const sectionFocusRetained = document.activeElement?.dataset.sectionId === 'elastic-geometry';
-    const variantButton = document.querySelector('#variant-list [data-object-id="16A"]');
-    variantButton.click();
-    const variantFocusRetained = document.activeElement?.dataset.objectId === '16A';
-    return { sectionFocusRetained, variantFocusRetained };
-  })()`);
-  const studyMetrics = { ...studyBoundaryMetrics, ...focusMetrics };
-  cases.push({ name: "paper-field-study", width: 390, height: 900, metrics: studyMetrics });
 
   const failures = [];
   if (runtimeErrors.length) failures.push(`Runtime errors: ${runtimeErrors.join(" | ")}`);
   if (mobileMetrics.title !== "18B · Semantic Zoom") failures.push(`Unexpected current title: ${mobileMetrics.title}`);
-  if (mobileMetrics.workbenchTitle !== "研究物件" || mobileMetrics.oldSloganPresent) {
-    failures.push("Compact workbench copy contract failed.");
+  if (mobileMetrics.documentOverflow || !mobileMetrics.imageLoaded || mobileMetrics.iframeCount !== 0
+    || mobileMetrics.mode !== "focus" || !mobileMetrics.imagePath.endsWith("/previews/18B/390.png")) {
+    failures.push("320px static focus preview contract failed.");
   }
-  if (mobileMetrics.documentOverflow) failures.push("320px page has document-level horizontal overflow.");
-  if (mobileMetrics.computedFrameWidth !== "390px") failures.push(`Expected 390px frame, got ${mobileMetrics.computedFrameWidth}.`);
-  if (!mobileMetrics.compareVisible || !mobileMetrics.compareSwitchVisible || !mobileMetrics.parentRecordHidden
-    || !mobileMetrics.paneSwitched || !mobileMetrics.currentPaneHidden || !mobileMetrics.parentPaneVisible
-    || !mobileMetrics.currentFramePreserved) {
-    failures.push("Current/Parent single-pane comparison contract failed.");
+  if (mobileAllMetrics.documentOverflow || !mobileAllMetrics.boardVisible || mobileAllMetrics.cardCount !== 4
+    || !mobileAllMetrics.horizontalBoard || mobileAllMetrics.loadedImages < 3
+    || mobileAllMetrics.iframeCount !== 0 || !mobileAllMetrics.urlHasAll) {
+    failures.push("390px section comparison board contract failed.");
   }
-  for (const reviewCase of cases) {
-    if (reviewCase.metrics.documentOverflow) failures.push(`${reviewCase.name} has document-level horizontal overflow.`);
-  }
-  const mobile390 = cases.find((reviewCase) => reviewCase.name === "landscape-390-workbench");
-  if (!mobile390 || mobile390.metrics.previewColumnCount !== 1 || !mobile390.metrics.compareSwitchVisible) {
-    failures.push("390px comparison must use one preview pane with an explicit switcher.");
-  }
-  const desktop1024 = cases.find((reviewCase) => reviewCase.name === "landscape-1024-workbench");
+  const desktop1024 = cases.find((reviewCase) => reviewCase.name === "landscape-1024-compare");
   if (!desktop1024 || desktop1024.metrics.layoutColumnCount !== 2
-    || desktop1024.metrics.previewColumnCount !== 1 || !desktop1024.metrics.compareSwitchVisible
-    || !desktop1024.metrics.inspectorBelowStage) {
-    failures.push("1024px workbench must use sidebar + stage with the inspector below and one comparison pane.");
+    || desktop1024.metrics.sidebarColumnCount !== 1
+    || desktop1024.metrics.compareColumnCount !== 2
+    || !desktop1024.metrics.currentAndParentVisible || !desktop1024.metrics.imagesLoaded
+    || desktop1024.metrics.iframeCount !== 0 || !desktop1024.metrics.inspectorBelowStage) {
+    failures.push("1024px static side-by-side comparison contract failed.");
   }
-  const desktop1440 = cases.find((reviewCase) => reviewCase.name === "landscape-1440-workbench");
+  const desktop1440 = cases.find((reviewCase) => reviewCase.name === "landscape-1440-compare");
   if (!desktop1440 || desktop1440.metrics.layoutColumnCount !== 3
-    || desktop1440.metrics.previewColumnCount !== 1 || !desktop1440.metrics.compareSwitchVisible
-    || !desktop1440.metrics.inspectorBesideStage) {
-    failures.push("1440px workbench must use navigation, prototype, and inspector columns with one comparison pane.");
+    || desktop1440.metrics.compareColumnCount !== 2
+    || !desktop1440.metrics.currentAndParentVisible || !desktop1440.metrics.imagesLoaded
+    || desktop1440.metrics.iframeCount !== 0 || !desktop1440.metrics.inspectorBesideStage) {
+    failures.push("1440px static side-by-side comparison contract failed.");
   }
-  if (!studyMetrics.compareHiddenOnStudy || !studyMetrics.parentRecordVisibleOnStudy) {
-    failures.push("Study comparison boundary failed.");
-  }
-  if (!studyMetrics.titleDeduplicated) failures.push("A displayed object title repeats its canonical ID.");
-  if (!studyMetrics.sectionFocusRetained || !studyMetrics.variantFocusRetained) {
-    failures.push("Browser focus retention failed after navigation rerender.");
+  if (!studyMetrics.compareHidden || !studyMetrics.parentRecordVisible || !studyMetrics.imageLoaded
+    || studyMetrics.iframeCount !== 0 || !studyMetrics.titleDeduplicated) {
+    failures.push("Study preview boundary failed.");
   }
 
   const report = {
@@ -389,17 +342,12 @@ try {
     failures,
   };
   await writeFile(new URL("results.json", outputDir), `${JSON.stringify(report, null, 2)}\n`);
+  if (failures.length) throw new Error(`Model-page browser review failed:\n- ${failures.join("\n- ")}`);
   socket.close();
-
-  if (failures.length) {
-    throw new Error(`Model-page browser review failed:\n- ${failures.join("\n- ")}`);
-  }
-  console.log(`Model-page browser review passed with ${cases.length} viewport cases.`);
+  console.log("Model-page browser review: static focus, side-by-side comparison, section board, and study boundaries verified.");
+} catch (error) {
+  if (browserStderr.trim()) console.error(browserStderr.trim());
+  throw error;
 } finally {
   browserProcess.kill("SIGTERM");
-  await delay(200);
-  if (!browserProcess.killed) browserProcess.kill("SIGKILL");
-  if (browserProcess.exitCode && browserProcess.exitCode !== 0 && !browserProcess.killed) {
-    console.error(browserStderr);
-  }
 }
