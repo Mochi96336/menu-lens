@@ -28,12 +28,14 @@ jobs:
           set -euo pipefail
           echo 'bac7b1a266eb5218acf06070b830a564ff8d9a93a9f2800156563802310e4292  .tmp-live-all/part-00.txt' | sha256sum -c -
           echo '2c193dca662ff37af61aaf2400546d47d300bae8b0e525fdb5bb115981d8f2b5  .tmp-live-all/part-01.txt' | sha256sum -c -
-          echo '2af19fd1242f57565fad3a79abd1ef480f5abd88e265aa71cb58caca37e1a41b  .tmp-live-all/part-02.txt' | sha256sum -c -
+          echo '5827a95d12989553e57e11dbf293bb28b31eb261b4a50984752edd7439a3d55b  .tmp-live-all/part-02a.txt' | sha256sum -c -
+          echo 'a994ff472c49cd38e9063fa52664d287eeab730cd157774da5e4d6962d588e5b  .tmp-live-all/part-02b.txt' | sha256sum -c -
           echo 'd9afcce1face44164669d694d08664b1fe6c9ab76ca4be733e56bd4a608fe0ff  .tmp-live-all/part-03.txt' | sha256sum -c -
           echo '3d55af0a43760d0d5f104f548dffbf7a16cd6014f4d36d584ea153ce687d1ced  .tmp-live-all/part-04.txt' | sha256sum -c -
           cat .tmp-live-all/part-00.txt \
             .tmp-live-all/part-01.txt \
-            .tmp-live-all/part-02.txt \
+            .tmp-live-all/part-02a.txt \
+            .tmp-live-all/part-02b.txt \
             .tmp-live-all/part-03.txt \
             .tmp-live-all/part-04.txt > /tmp/live-all.b64
           echo 'bb8c2305d3238409cf5b02c0d41169d629f4601d313b0d279e4d3fae53bb316b  /tmp/live-all.b64' | sha256sum -c -
