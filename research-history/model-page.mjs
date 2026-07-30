@@ -94,19 +94,21 @@ const elements = Object.freeze({
   recordLinks: requiredElement("#record-links"),
 });
 
+const sectionForObject = (model, objectId) => model.sections.find((section) => section.objectIds.includes(objectId));
+const featuredSectionForModel = (model) => sectionForObject(model, model.featuredObjectId) ?? model.sections[0];
+
 const params = new URLSearchParams(window.location.search);
 const fallbackModel = modelById.get("landscape-paper") ?? designModels[0];
 let activeModel = modelById.get(params.get("model")) ?? fallbackModel;
-let activeSection = activeModel.sections.find((section) => section.id === params.get("section"))
-  ?? activeModel.sections[0];
+const requestedSection = activeModel.sections.find((section) => section.id === params.get("section"));
+let activeSection = requestedSection ?? featuredSectionForModel(activeModel);
 let activeObject = objectById.get(params.get("variant"));
 if (!activeObject || !activeSection.objectIds.includes(activeObject.id)) {
-  activeObject = objectById.get(activeSection.defaultObjectId);
+  const preferredObjectId = requestedSection ? activeSection.defaultObjectId : activeModel.featuredObjectId;
+  activeObject = objectById.get(preferredObjectId) ?? objectById.get(activeSection.defaultObjectId);
 }
 let activeViewport = viewportValues.has(params.get("viewport")) ? params.get("viewport") : "390";
 let compareParent = params.get("compare") === "parent";
-
-const sectionForObject = (model, objectId) => model.sections.find((section) => section.objectIds.includes(objectId));
 
 const updateUrl = () => {
   const next = new URLSearchParams({
@@ -535,8 +537,8 @@ elements.modelSelect.addEventListener("change", () => {
   const model = modelById.get(elements.modelSelect.value);
   if (!model) return;
   activeModel = model;
-  activeSection = model.sections[0];
-  activeObject = objectById.get(activeSection.defaultObjectId);
+  activeSection = featuredSectionForModel(model);
+  activeObject = objectById.get(model.featuredObjectId) ?? objectById.get(activeSection.defaultObjectId);
   compareParent = false;
   render();
 });
