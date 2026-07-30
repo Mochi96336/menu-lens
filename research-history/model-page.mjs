@@ -165,9 +165,9 @@ const resolveLocationState = () => {
     section,
     object,
     viewport: viewportValues.has(params.get("viewport")) ? params.get("viewport") : "390",
-    viewMode: params.get("view") === "all"
-      ? "all"
-      : (params.get("compare") === "parent" ? "compare" : "focus"),
+    viewMode: params.get("view") === "focus"
+      ? "focus"
+      : (params.get("compare") === "parent" ? "compare" : "all"),
   };
 };
 
@@ -176,7 +176,7 @@ let activeModel = initialState.model;
 let activeSection = initialState.section;
 let activeObject = initialState.object;
 let activeViewport = initialState.viewport;
-let activeViewMode = viewModes.has(initialState.viewMode) ? initialState.viewMode : "focus";
+let activeViewMode = viewModes.has(initialState.viewMode) ? initialState.viewMode : "all";
 
 const updateUrl = (mode = "replace") => {
   const next = new URLSearchParams({
@@ -186,7 +186,7 @@ const updateUrl = (mode = "replace") => {
     viewport: activeViewport,
   });
   if (activeViewMode === "compare" && activeObject.researchParentId) next.set("compare", "parent");
-  if (activeViewMode === "all") next.set("view", "all");
+  if (activeViewMode === "focus") next.set("view", "focus");
   const url = `?${next.toString()}${window.location.hash ?? ""}`;
   if (mode === "push" && typeof history.pushState === "function") {
     history.pushState(null, "", url);
@@ -203,12 +203,6 @@ const setStatus = (element, object) => {
 const archivePath = (path) => `../${path}`;
 const viewportLabel = () => activeViewport === "desktop" ? "1024px" : `${activeViewport}px`;
 const viewportPixelWidth = () => activeViewport === "desktop" ? 1024 : Number(activeViewport);
-
-const previewProfileForObject = (object) => {
-  if (object.objectType === "study") return "study";
-  if (activeModel.id === "complete-document") return "document";
-  return "spatial";
-};
 
 const previewAssetPath = (object, viewport = activeViewport) =>
   archivePath(`previews/${encodeURIComponent(object.id)}/${viewport}.png`);
@@ -242,6 +236,7 @@ const liveSurfaces = Object.freeze({
   current: createModelLiveSurface(elements.currentPreview),
   parent: createModelLiveSurface(elements.parentPreview),
 });
+const allLiveSurfaces = new Map();
 
 const syncLivePreview = (surface, object, role) => surface.sync({
   key: object.id,
@@ -251,72 +246,6 @@ const syncLivePreview = (surface, object, role) => surface.sync({
   previewSrc: previewAssetPath(object),
   previewAlt: `${role}：${objectLabel(object)}，${viewportLabel()} 靜態載入畫面`,
 });
-
-const makePreviewPlaceholder = (object, message) => {
-  const placeholder = document.createElement("div");
-  placeholder.className = "model-preview-placeholder";
-  placeholder.append(
-    makeText("p", "phase-index", `${object.id} / ${object.objectType}`),
-    makeText("h3", "", displayTitle(object)),
-    makeText("p", "", message ?? object.summary),
-  );
-  if (object.entrypoint) {
-    const link = makeText("a", "", sourcePresentation(object).fallbackAction);
-    link.href = archivePath(object.entrypoint);
-    link.target = "_blank";
-    link.rel = "noreferrer";
-    placeholder.append(link);
-  } else if (object.reviewDocument) {
-    const link = makeText("a", "", "開啟研究紀錄");
-    link.href = archivePath(object.reviewDocument);
-    placeholder.append(link);
-  }
-  return placeholder;
-};
-
-const syncStaticPreview = (root, object, role, options = {}) => {
-  root.dataset.viewport = activeViewport;
-  root.dataset.previewProfile = previewProfileForObject(object);
-  const currentImage = root.querySelector?.("img.model-preview-image") ?? root.children?.[0];
-  const sameObject = root.dataset.objectId === object.id;
-
-  if (sameObject && currentImage?.tagName === "IMG") {
-    currentImage.src = previewAssetPath(object);
-    currentImage.alt = `${role}：${objectLabel(object)}，${viewportLabel()} 靜態預覽`;
-    return currentImage;
-  }
-
-  root.replaceChildren();
-  root.dataset.objectId = object.id;
-
-  if (!object.entrypoint) {
-    root.append(makePreviewPlaceholder(object, "此研究物件沒有獨立可執行畫面。"));
-    return null;
-  }
-
-  const image = document.createElement("img");
-  image.className = "model-preview-image";
-  image.src = previewAssetPath(object);
-  image.alt = `${role}：${objectLabel(object)}，${viewportLabel()} 靜態預覽`;
-  image.loading = options.eager ? "eager" : "lazy";
-  image.decoding = "async";
-
-  const unavailable = makePreviewPlaceholder(object, "靜態預覽尚未產生；仍可開啟 exact prototype。");
-  unavailable.className += " model-preview-placeholder--unavailable";
-  unavailable.hidden = true;
-  image.addEventListener("error", () => {
-    image.hidden = true;
-    unavailable.hidden = false;
-    root.dataset.previewUnavailable = "true";
-  });
-  image.addEventListener("load", () => {
-    image.hidden = false;
-    unavailable.hidden = true;
-    delete root.dataset.previewUnavailable;
-  });
-  root.append(image, unavailable);
-  return image;
-};
 
 const renderModelDefinition = () => {
   document.title = `Menu Lens — ${activeModel.title}`;
@@ -361,7 +290,7 @@ const renderSectionTabs = () => {
     button.addEventListener("click", () => {
       activeSection = section;
       activeObject = objectById.get(section.defaultObjectId);
-      if (activeViewMode === "compare") activeViewMode = "focus";
+      activeViewMode = "all";
       render({ historyMode: "push", focusTarget: { kind: "section", id: section.id } });
     });
     elements.sectionTabs.append(button);
@@ -400,8 +329,10 @@ const renderVariantList = () => {
       focusAdjacent(event, [...elements.variantList.children], index));
     button.addEventListener("click", () => {
       activeObject = object;
-      activeViewMode = "focus";
-      render({ historyMode: "push", focusTarget: { kind: "object", id: object.id } });
+      render({
+        historyMode: "push",
+        focusTarget: { kind: activeViewMode === "all" ? "all" : "object", id: object.id },
+      });
     });
     elements.variantList.append(button);
   }
@@ -410,11 +341,12 @@ const renderVariantList = () => {
 const renderViewportState = () => {
   elements.currentPreview.dataset.viewport = activeViewport;
   elements.parentPreview.dataset.viewport = activeViewport;
+  elements.allPreviewGrid.dataset.viewport = activeViewport;
   for (const button of viewportButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.viewport === activeViewport));
   }
   elements.viewportNote.textContent = activeViewMode === "all"
-    ? `${viewportLabel()} 靜態快照用於同組掃視；選取任一物件即可進入操作。`
+    ? `${viewportLabel()} 套用到本組每個可操作 surface；各物件可同時操作且保留自己的狀態。`
     : `${viewportLabel()} 可操作畫面只保留主要 surface；互動狀態會在模式切換間保留。`;
 };
 
@@ -431,55 +363,96 @@ const setViewModeState = (canCompare) => {
   }
 };
 
+const pruneAllLiveSurfaces = (activeObjectIds) => {
+  for (const [objectId, entry] of allLiveSurfaces) {
+    if (activeObjectIds.has(objectId)) continue;
+    entry.surface.destroy();
+    allLiveSurfaces.delete(objectId);
+  }
+};
+
+const makeAllLiveCard = (object) => {
+  const card = document.createElement("article");
+  card.className = "model-preview-card";
+  card.dataset.objectId = object.id;
+
+  const select = document.createElement("button");
+  select.type = "button";
+  select.className = "model-preview-card__select";
+  select.dataset.allObjectId = object.id;
+  const title = makeText("strong", "", objectLabel(object));
+  const meta = makeText("small", "", `${object.objectType} · ${variantStateLabel(object)}`);
+  select.append(title, meta);
+  select.addEventListener("click", () => {
+    activeObject = object;
+    render({ historyMode: "push", focusTarget: { kind: "all", id: object.id } });
+  });
+
+  const status = document.createElement("span");
+  status.className = "status";
+
+  const source = makeText("a", "model-preview-card__source", "");
+  const sourcePath = object.entrypoint ?? object.reviewDocument ?? null;
+  source.hidden = !sourcePath;
+  if (sourcePath) {
+    source.href = archivePath(sourcePath);
+    source.textContent = object.entrypoint
+      ? sourcePresentation(object).action
+      : "查看研究紀錄";
+    if (object.entrypoint) {
+      source.target = "_blank";
+      source.rel = "noreferrer";
+    }
+  }
+
+  const preview = document.createElement("div");
+  preview.className = "model-preview-card__surface model-preview-viewport";
+  preview.dataset.viewport = activeViewport;
+  const surface = createModelLiveSurface(preview);
+
+  card.append(select, status, source, preview);
+  const entry = { card, select, title, meta, status, preview, surface };
+  allLiveSurfaces.set(object.id, entry);
+  return entry;
+};
+
 const renderAllPreviews = () => {
+  const activeObjectIds = new Set(activeSection.objectIds);
+  pruneAllLiveSurfaces(activeObjectIds);
+
   const cards = [];
   for (const objectId of activeSection.objectIds) {
     const object = objectById.get(objectId);
     if (!object) continue;
-    const card = document.createElement("article");
-    card.className = "model-preview-card";
-    card.dataset.objectId = object.id;
-    card.dataset.current = String(object.id === activeObject.id);
-
-    const select = document.createElement("button");
-    select.type = "button";
-    select.className = "model-preview-card__select";
-    select.dataset.allObjectId = object.id;
-    select.setAttribute("aria-current", String(object.id === activeObject.id));
-    select.append(
-      makeText("strong", "", objectLabel(object)),
-      makeText("small", "", `${object.objectType} · ${variantStateLabel(object)}`),
-    );
-    select.addEventListener("click", () => {
-      activeObject = object;
-      activeViewMode = "focus";
-      render({ historyMode: "push", focusTarget: { kind: "object", id: object.id } });
-    });
-
-    const preview = document.createElement("div");
-    preview.className = "model-preview-card__image";
-    syncStaticPreview(preview, object, "本組物件", { eager: true });
-    card.append(select, preview);
-    cards.push(card);
+    const entry = allLiveSurfaces.get(object.id) ?? makeAllLiveCard(object);
+    entry.card.dataset.current = String(object.id === activeObject.id);
+    entry.select.setAttribute("aria-current", String(object.id === activeObject.id));
+    entry.title.textContent = objectLabel(object);
+    entry.meta.textContent = `${object.objectType} · ${variantStateLabel(object)}`;
+    entry.preview.dataset.viewport = activeViewport;
+    setStatus(entry.status, object);
+    syncLivePreview(entry.surface, object, "本組");
+    cards.push(entry.card);
   }
-  elements.allPreviewGrid.replaceChildren(...cards);
+
+  const currentChildren = [...elements.allPreviewGrid.children];
+  const orderChanged = currentChildren.length !== cards.length
+    || cards.some((card, index) => currentChildren[index] !== card);
+  if (orderChanged) elements.allPreviewGrid.replaceChildren(...cards);
+
   const currentCard = [...elements.allPreviewGrid.querySelectorAll?.("[data-current]") ?? []]
     .find((card) => card.dataset.current === "true");
   const revealCurrentCard = () => {
-    if (!currentCard) return;
-    if (typeof elements.allPreviewGrid.scrollTo === "function"
-      && elements.allPreviewGrid.scrollWidth > elements.allPreviewGrid.clientWidth) {
-      const boardRect = elements.allPreviewGrid.getBoundingClientRect?.();
-      const cardRect = currentCard.getBoundingClientRect?.();
-      const cardOffset = boardRect && cardRect
-        ? elements.allPreviewGrid.scrollLeft + cardRect.left - boardRect.left
-        : currentCard.offsetLeft;
-      const cardWidth = cardRect?.width ?? currentCard.offsetWidth;
-      const left = Math.max(0, cardOffset - ((elements.allPreviewGrid.clientWidth - cardWidth) / 2));
-      elements.allPreviewGrid.scrollTo({ left, behavior: "auto" });
-      return;
-    }
-    currentCard.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+    if (!currentCard || typeof elements.allPreviewGrid.scrollTo !== "function"
+      || elements.allPreviewGrid.scrollWidth <= elements.allPreviewGrid.clientWidth) return;
+    const boardRect = elements.allPreviewGrid.getBoundingClientRect?.();
+    const cardRect = currentCard.getBoundingClientRect?.();
+    const cardOffset = boardRect && cardRect
+      ? elements.allPreviewGrid.scrollLeft + cardRect.left - boardRect.left
+      : currentCard.offsetLeft;
+    const cardWidth = cardRect?.width ?? currentCard.offsetWidth;
+    const left = Math.max(0, cardOffset - ((elements.allPreviewGrid.clientWidth - cardWidth) / 2));
+    elements.allPreviewGrid.scrollTo({ left, behavior: "auto" });
   };
   if (typeof requestAnimationFrame === "function") {
     requestAnimationFrame(() => requestAnimationFrame(revealCurrentCard));
@@ -490,6 +463,7 @@ const renderStage = () => {
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
   const canCompare = canCompareWithParent(activeObject, parent);
   if (activeViewMode === "compare" && !canCompare) activeViewMode = "focus";
+  pruneAllLiveSurfaces(new Set(activeSection.objectIds));
   setViewModeState(canCompare);
 
   elements.currentObjectTitle.textContent = objectLabel(activeObject);
@@ -523,7 +497,6 @@ const renderStage = () => {
   }
 
   if (activeViewMode === "all") renderAllPreviews();
-  else elements.allPreviewGrid.replaceChildren();
   renderViewportState();
 };
 
@@ -900,7 +873,7 @@ elements.modelSelect.addEventListener("change", () => {
   activeModel = model;
   activeSection = featuredSectionForModel(model);
   activeObject = objectById.get(model.featuredObjectId) ?? objectById.get(activeSection.defaultObjectId);
-  activeViewMode = "focus";
+  activeViewMode = "all";
   render({ historyMode: "push" });
 });
 
