@@ -40,6 +40,25 @@ const toneForDisposition = (disposition) => {
   return "partial";
 };
 
+const resolveCuratedLinks = (catalog) => {
+  const objectById = new Map(catalog.objects.map((object) => [object.id, object]));
+  const links = document.querySelectorAll?.("[data-archive-object-link]") ?? [];
+
+  for (const link of links) {
+    const object = objectById.get(link.dataset.archiveObjectLink);
+    const useReview = link.dataset.archiveLinkTarget === "review";
+    const target = useReview ? object?.reviewDocument : object?.entrypoint;
+
+    if (!target) {
+      link.removeAttribute?.("href");
+      link.setAttribute?.("aria-disabled", "true");
+      continue;
+    }
+
+    link.href = useReview ? `./${target}` : `./${target.replace(/index\.html$/, "")}`;
+  }
+};
+
 async function renderArchiveIndex() {
   const objectRoot = requiredElement("#archive-objects");
   const familyRoot = requiredElement("#archive-families");
@@ -57,6 +76,7 @@ async function renderArchiveIndex() {
 
     const catalog = buildArchiveCatalog(legacyRegistry, archiveExtensions, archiveLegacyOverrides);
     window.menuLensArchiveCatalog = catalog;
+    resolveCuratedLinks(catalog);
 
     const familyById = new Map(catalog.families.map((family) => [family.id, family]));
     const cards = [];
