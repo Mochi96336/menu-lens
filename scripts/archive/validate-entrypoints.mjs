@@ -11,6 +11,7 @@ const requiredPaths = new Set([
   "prototype-registry.js",
   "model-page.css",
   "model-page-polish.css",
+  "model-page-workbench.css",
   "model-page.mjs",
   "models/index.html",
   "catalog/index.mjs",
@@ -60,6 +61,7 @@ for (const contract of [
 for (const contract of [
   '<link rel="stylesheet" href="../model-page.css" />',
   '<link rel="stylesheet" href="../model-page-polish.css" />',
+  '<link rel="stylesheet" href="../model-page-workbench.css" />',
   '<script src="../prototype-registry.js"></script>',
   '<script type="module" src="../model-page.mjs"></script>',
   'id="model-select"',
@@ -67,18 +69,27 @@ for (const contract of [
   'id="variant-list"',
   'id="preview-grid"',
   'id="compare-parent"',
+  'class="model-inspector"',
   'id="lineage"',
   'id="record-links"',
 ]) {
   if (!modelPage.includes(contract)) throw new Error(`Design model page is missing contract: ${contract}`);
 }
 
+for (const oldSlogan of [
+  "在共同母體內比較，不把每個 ablation 當成獨立方案。",
+  "看見 parent、同組物件與明確關係，不靠記憶往返頁面。",
+  "模型頁負責理解，原始物件仍保持可追溯。",
+]) {
+  if (modelPage.includes(oldSlogan)) throw new Error(`Design model page retains slogan copy: ${oldSlogan}`);
+}
+
 for (const contract of [
-  'buildArchiveCatalog',
-  'designModels',
-  'presentationNotes',
-  'researchParentId',
-  'data-viewport',
+  "buildArchiveCatalog",
+  "designModels",
+  "presentationNotes",
+  "researchParentId",
+  "data-viewport",
 ]) {
   if (!modelRenderer.includes(contract)) throw new Error(`Design model renderer is missing contract: ${contract}`);
 }
@@ -100,4 +111,4 @@ if (renderer.includes('review.href = `../')) {
   throw new Error("Archive review links must remain relative to the published research-history root.");
 }
 
-console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the design model viewer.`);
+console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the compact design model workbench.`);
