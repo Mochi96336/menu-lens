@@ -16,6 +16,8 @@ const makeText = (tag, className, text) => {
   return element;
 };
 
+const asArray = (value) => Array.isArray(value) ? value : [];
+
 const dispositionLabels = Object.freeze({
   substrate: "substrate",
   reference: "reference",
@@ -54,8 +56,12 @@ const evidenceExplanations = Object.freeze({
   "participant-evidence-complete": "參與者證據已完成，仍須依研究問題解讀。",
 });
 
+const stoppedDispositions = new Set(["negative-evidence", "rejected", "superseded"]);
+const combinedObjectIds = new Set(["22", "23"]);
+const viewportValues = new Set(["320", "390", "desktop"]);
+
 const toneForDisposition = (disposition) => {
-  if (["rejected", "negative-evidence", "superseded"].includes(disposition)) return "rejected";
+  if (stoppedDispositions.has(disposition)) return "rejected";
   if (["substrate", "keep-controlled"].includes(disposition)) return "active";
   return "partial";
 };
@@ -66,8 +72,6 @@ const catalog = buildArchiveCatalog(
   archiveLegacyOverrides,
 );
 const objectById = new Map(catalog.objects.map((object) => [object.id, object]));
-const viewportValues = new Set(["320", "390", "desktop"]);
-const combinedObjectIds = new Set(["22", "23"]);
 
 const objectOwner = new Map();
 for (const model of designModels) {
@@ -127,8 +131,17 @@ const elements = Object.freeze({
 const viewportButtons = [...document.querySelectorAll("[data-viewport]")];
 const previewPaneButtons = [...document.querySelectorAll("[data-preview-pane]")];
 
-const sectionForObject = (model, objectId) => model.sections.find((section) => section.objectIds.includes(objectId));
-const featuredSectionForModel = (model) => sectionForObject(model, model.featuredObjectId) ?? model.sections[0];
+const displayTitle = (object) => {
+  const title = String(object?.title ?? "");
+  const prefix = `${object?.id ?? ""} `;
+  return prefix.trim() && title.startsWith(prefix) ? title.slice(prefix.length).trim() : title;
+};
+const objectLabel = (object) => `${object.id} · ${displayTitle(object)}`;
+
+const sectionForObject = (model, objectId) =>
+  model.sections.find((section) => section.objectIds.includes(objectId));
+const featuredSectionForModel = (model) =>
+  sectionForObject(model, model.featuredObjectId) ?? model.sections[0];
 
 const resolveLocationState = () => {
   const params = new URLSearchParams(window.location.search);
@@ -166,10 +179,12 @@ const updateUrl = (mode = "replace") => {
     viewport: activeViewport,
   });
   if (compareParent && activeObject.researchParentId) next.set("compare", "parent");
-  const hash = window.location.hash ?? "";
-  const url = `?${next.toString()}${hash}`;
-  if (mode === "push" && typeof history.pushState === "function") history.pushState(null, "", url);
-  else if (mode) history.replaceState(null, "", url);
+  const url = `?${next.toString()}${window.location.hash ?? ""}`;
+  if (mode === "push" && typeof history.pushState === "function") {
+    history.pushState(null, "", url);
+  } else if (mode) {
+    history.replaceState(null, "", url);
+  }
 };
 
 const setStatus = (element, object) => {
@@ -189,7 +204,7 @@ const previewProfileForObject = (object) => {
 const updateFrameTitle = (root, object, role) => {
   const frame = root.children?.[0];
   if (frame?.tagName === "IFRAME") {
-    frame.title = `${role} — ${object.id} ${object.title} — ${viewportLabel()}`;
+    frame.title = `${role} — ${object.id} ${displayTitle(object)} — ${viewportLabel()}`;
   }
 };
 
@@ -208,7 +223,7 @@ const syncPreview = (root, object, role) => {
     const frame = document.createElement("iframe");
     frame.className = "model-preview-frame";
     frame.src = archivePath(object.entrypoint);
-    frame.title = `${role} — ${object.id} ${object.title} — ${viewportLabel()}`;
+    frame.title = `${role} — ${object.id} ${displayTitle(object)} — ${viewportLabel()}`;
     frame.loading = "eager";
     root.append(frame);
     return;
@@ -218,10 +233,9 @@ const syncPreview = (root, object, role) => {
   placeholder.className = "model-preview-placeholder";
   placeholder.append(
     makeText("p", "phase-index", `${object.id} / ${object.objectType}`),
-    makeText("h3", "", object.title),
+    makeText("h3", "", displayTitle(object)),
     makeText("p", "", object.summary),
   );
-
   if (object.reviewDocument) {
     const link = makeText("a", "", "開啟研究紀錄");
     link.href = archivePath(object.reviewDocument);
@@ -246,13 +260,10 @@ const renderModelDefinition = () => {
   elements.modelStats.textContent = `${activeModel.sections.length} 組子研究 · ${objectCount} 個研究物件`;
 };
 
-const focusAdjacentTab = (event, currentIndex) => {
+const focusAdjacent = (event, buttons, currentIndex) => {
   const keys = ["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft", "Home", "End"];
-  if (!keys.includes(event.key)) return;
+  if (!keys.includes(event.key) || !buttons.length) return;
   event.preventDefault();
-  const buttons = [...elements.sectionTabs.children];
-  if (!buttons.length) return;
-
   let nextIndex = currentIndex;
   if (["ArrowDown", "ArrowRight"].includes(event.key)) nextIndex = (currentIndex + 1) % buttons.length;
   if (["ArrowUp", "ArrowLeft"].includes(event.key)) nextIndex = (currentIndex - 1 + buttons.length) % buttons.length;
@@ -269,16 +280,18 @@ const renderSectionTabs = () => {
     button.id = `section-tab-${section.id}`;
     button.type = "button";
     button.role = "tab";
+    button.dataset.sectionId = section.id;
     button.tabIndex = selected ? 0 : -1;
     button.setAttribute("aria-controls", "variant-list");
     button.setAttribute("aria-selected", String(selected));
-    button.addEventListener("keydown", (event) => focusAdjacentTab(event, index));
+    button.addEventListener("keydown", (event) =>
+      focusAdjacent(event, [...elements.sectionTabs.children], index));
     button.addEventListener("click", () => {
       activeSection = section;
       activeObject = objectById.get(section.defaultObjectId);
       compareParent = false;
       activePreviewPane = "current";
-      render({ historyMode: "push" });
+      render({ historyMode: "push", focusTarget: { kind: "section", id: section.id } });
     });
     elements.sectionTabs.append(button);
   }
@@ -286,7 +299,7 @@ const renderSectionTabs = () => {
 };
 
 const variantStateLabel = (object) => {
-  if (["negative-evidence", "rejected", "superseded"].includes(object.disposition)) return "stopped";
+  if (stoppedDispositions.has(object.disposition)) return "stopped";
   if (object.objectType === "study") return "study";
   if (object.objectType === "correction") return "correction";
   return dispositionLabels[object.disposition] ?? object.disposition;
@@ -294,26 +307,31 @@ const variantStateLabel = (object) => {
 
 const renderVariantList = () => {
   elements.variantList.replaceChildren();
-  for (const objectId of activeSection.objectIds) {
+  for (const [index, objectId] of activeSection.objectIds.entries()) {
     const object = objectById.get(objectId);
     if (!object) continue;
     const note = presentationNotes[object.id];
+    const selected = object.id === activeObject.id;
     const button = document.createElement("button");
     button.type = "button";
+    button.dataset.objectId = object.id;
     button.dataset.objectType = object.objectType;
-    button.setAttribute("aria-current", String(object.id === activeObject.id));
+    button.tabIndex = selected ? 0 : -1;
+    button.setAttribute("aria-current", String(selected));
 
     const copy = document.createElement("span");
     copy.append(
-      makeText("strong", "", `${object.id} · ${note?.shortLabel ?? object.title}`),
+      makeText("strong", "", `${object.id} · ${note?.shortLabel ?? displayTitle(object)}`),
       makeText("small", "", `${object.objectType} · ${variantStateLabel(object)}`),
     );
     button.append(copy);
+    button.addEventListener("keydown", (event) =>
+      focusAdjacent(event, [...elements.variantList.children], index));
     button.addEventListener("click", () => {
       activeObject = object;
       compareParent = false;
       activePreviewPane = "current";
-      render({ historyMode: "push" });
+      render({ historyMode: "push", focusTarget: { kind: "object", id: object.id } });
     });
     elements.variantList.append(button);
   }
@@ -328,7 +346,8 @@ const renderViewportState = () => {
   updateFrameTitle(elements.currentPreview, activeObject, "Current");
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
   if (parent) updateFrameTitle(elements.parentPreview, parent, "Parent");
-  elements.viewportNote.textContent = `固定 ${viewportLabel()} 寬；外層不足時水平捲動，不縮放 prototype。`;
+  elements.viewportNote.textContent =
+    `固定 ${viewportLabel()} 寬；外層不足時水平捲動，不縮放 prototype。`;
 };
 
 const setPreviewPaneState = () => {
@@ -338,13 +357,16 @@ const setPreviewPaneState = () => {
   }
 };
 
+const canCompareWithParent = (object, parent) =>
+  object.objectType === "prototype" && Boolean(object.entrypoint && parent?.entrypoint);
+
 const renderStage = () => {
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
-  const canCompare = Boolean(activeObject.entrypoint && parent?.entrypoint);
+  const canCompare = canCompareWithParent(activeObject, parent);
   if (!canCompare) compareParent = false;
   if (!compareParent) activePreviewPane = "current";
 
-  elements.currentObjectTitle.textContent = `${activeObject.id} · ${activeObject.title}`;
+  elements.currentObjectTitle.textContent = objectLabel(activeObject);
   setStatus(elements.currentObjectStatus, activeObject);
   syncPreview(elements.currentPreview, activeObject, "Current");
 
@@ -368,7 +390,7 @@ const renderStage = () => {
   elements.compareViewSwitch.hidden = !(canCompare && compareParent);
 
   if (canCompare && compareParent) {
-    elements.parentObjectTitle.textContent = `${parent.id} · ${parent.title}`;
+    elements.parentObjectTitle.textContent = objectLabel(parent);
     setStatus(elements.parentObjectStatus, parent);
     syncPreview(elements.parentPreview, parent, "Parent");
   }
@@ -377,10 +399,10 @@ const renderStage = () => {
   renderViewportState();
 };
 
-const describeReferences = (ids) => ids
+const describeReferences = (ids) => asArray(ids)
   .map((id) => objectById.get(id))
   .filter(Boolean)
-  .map((object) => `${object.id} · ${object.title}`)
+  .map(objectLabel)
   .join("、");
 
 const differenceCopy = () => {
@@ -388,12 +410,11 @@ const differenceCopy = () => {
   const note = presentationNotes[activeObject.id];
 
   if (activeObject.objectType === "study") {
-    const targets = describeReferences(activeObject.evidenceFor);
     return {
       eyebrow: "Study role",
       variable: "研究工具，不是設計變體",
       beforeLabel: "Tests",
-      before: targets || parent?.summary || "尚未記錄 evidence target。",
+      before: describeReferences(activeObject.evidenceFor) || parent?.summary || "尚未記錄 evidence target。",
       afterLabel: "Study instrument",
       after: activeObject.summary,
       unchangedLabel: "Does not establish",
@@ -417,7 +438,7 @@ const differenceCopy = () => {
     };
   }
 
-  if (["negative-evidence", "rejected", "superseded"].includes(activeObject.disposition)) {
+  if (stoppedDispositions.has(activeObject.disposition)) {
     return {
       eyebrow: "Stopped result",
       variable: "停止結果，不是替代方案",
@@ -522,7 +543,7 @@ const renderOutcome = () => {
     evidenceExplanations[activeObject.evidenceState] ?? "Canonical catalog evidence state。",
   );
 
-  if (["negative-evidence", "rejected", "superseded"].includes(activeObject.disposition)) {
+  if (stoppedDispositions.has(activeObject.disposition)) {
     elements.outcomeTitle.textContent = "停止判斷不是另一個可選方案。";
     elements.outcomeNextLabel.textContent = "後續限制";
   } else if (activeObject.objectType === "study") {
@@ -568,11 +589,11 @@ const navigateToObject = (objectId) => {
   activeObject = objectById.get(objectId);
   compareParent = false;
   activePreviewPane = "current";
-  render({ historyMode: "push" });
+  render({ historyMode: "push", focusTarget: { kind: "object", id: objectId } });
 };
 
 const makeObjectButton = (object) => {
-  const button = makeText("button", "", `${object.id} · ${object.title}`);
+  const button = makeText("button", "", objectLabel(object));
   button.type = "button";
   button.addEventListener("click", () => navigateToObject(object.id));
   return button;
@@ -582,12 +603,10 @@ const makeLineageGroup = (title, description, objects) => {
   const group = document.createElement("section");
   group.className = "model-lineage-group";
   group.append(makeText("h3", "", title), makeText("p", "", description));
-
   if (!objects.length) {
     group.append(makeText("p", "model-lineage-empty", "沒有記錄。"));
     return group;
   }
-
   const list = document.createElement("ul");
   for (const object of objects) {
     const item = document.createElement("li");
@@ -607,10 +626,12 @@ const renderLineage = () => {
     .filter(Boolean);
 
   const relatedIds = new Set([
-    ...activeObject.dependsOn,
-    ...activeObject.mechanismsFrom,
-    ...activeObject.evidenceFor,
-    ...catalog.objects.filter((object) => object.researchParentId === activeObject.id).map((object) => object.id),
+    ...asArray(activeObject.dependsOn),
+    ...asArray(activeObject.mechanismsFrom),
+    ...asArray(activeObject.evidenceFor),
+    ...catalog.objects
+      .filter((object) => object.researchParentId === activeObject.id)
+      .map((object) => object.id),
   ]);
   relatedIds.delete(activeObject.id);
   if (parent) relatedIds.delete(parent.id);
@@ -651,13 +672,26 @@ const makeRecordLink = (label, title, href, kind = "research") => {
 const renderRecords = () => {
   const links = [];
   if (activeObject.entrypoint) {
-    links.push(makeRecordLink("Prototype", `開啟 ${activeObject.id} exact prototype`, archivePath(activeObject.entrypoint), "primary"));
+    links.push(makeRecordLink(
+      "Prototype",
+      `開啟 ${activeObject.id} exact prototype`,
+      archivePath(activeObject.entrypoint),
+      "primary",
+    ));
   }
   if (activeObject.reviewDocument) {
-    links.push(makeRecordLink("Research record", "查看 review record", archivePath(activeObject.reviewDocument)));
+    links.push(makeRecordLink(
+      "Research record",
+      "查看 review record",
+      archivePath(activeObject.reviewDocument),
+    ));
   }
   if (activeObject.evidencePath) {
-    links.push(makeRecordLink("Evidence", "開啟 evidence artifact", archivePath(activeObject.evidencePath)));
+    links.push(makeRecordLink(
+      "Evidence",
+      "開啟 evidence artifact",
+      archivePath(activeObject.evidencePath),
+    ));
   }
   if (activeObject.sourcePr) {
     links.push(makeRecordLink(
@@ -690,7 +724,16 @@ const renderRecords = () => {
   elements.recordLinks.replaceChildren(...links);
 };
 
-const render = ({ historyMode = "replace" } = {}) => {
+const restoreFocus = (target) => {
+  if (!target) return;
+  const collection = target.kind === "section"
+    ? [...elements.sectionTabs.children]
+    : [...elements.variantList.children];
+  const key = target.kind === "section" ? "sectionId" : "objectId";
+  collection.find((button) => button.dataset[key] === target.id)?.focus();
+};
+
+const render = ({ historyMode = "replace", focusTarget = null } = {}) => {
   elements.sectionSummary.textContent = activeSection.summary;
   renderModelDefinition();
   renderSectionTabs();
@@ -701,6 +744,7 @@ const render = ({ historyMode = "replace" } = {}) => {
   renderLineage();
   renderRecords();
   updateUrl(historyMode);
+  restoreFocus(focusTarget);
 };
 
 for (const model of designModels) {
@@ -723,7 +767,7 @@ elements.modelSelect.addEventListener("change", () => {
 
 elements.compareParent.addEventListener("click", () => {
   const parent = activeObject.researchParentId ? objectById.get(activeObject.researchParentId) : null;
-  if (!activeObject.entrypoint || !parent?.entrypoint) return;
+  if (!canCompareWithParent(activeObject, parent)) return;
   compareParent = !compareParent;
   activePreviewPane = "current";
   renderStage();
@@ -760,6 +804,8 @@ window.addEventListener?.("popstate", () => {
 try {
   render();
 } catch (error) {
-  document.body.append(makeText("p", "archive-error site-shell", `設計模型頁無法載入：${error.message}`));
+  document.body.append(
+    makeText("p", "archive-error site-shell", `設計模型頁無法載入：${error.message}`),
+  );
   console.error(error);
 }
