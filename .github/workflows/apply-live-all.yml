@@ -1,0 +1,102 @@
+name: Apply simultaneous live model group
+
+on:
+  push:
+    branches:
+      - agent/live-all-model-surfaces
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  validate-and-apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/live-all-model-surfaces
+          fetch-depth: 0
+
+      - name: Verify and apply transformation
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'bac7b1a266eb5218acf06070b830a564ff8d9a93a9f2800156563802310e4292  .tmp-live-all/part-00.txt' | sha256sum -c -
+          echo '2c193dca662ff37af61aaf2400546d47d300bae8b0e525fdb5bb115981d8f2b5  .tmp-live-all/part-01.txt' | sha256sum -c -
+          echo '2af19fd1242f57565fad3a79abd1ef480f5abd88e265aa71cb58caca37e1a41b  .tmp-live-all/part-02.txt' | sha256sum -c -
+          echo 'd9afcce1face44164669d694d08664b1fe6c9ab76ca4be733e56bd4a608fe0ff  .tmp-live-all/part-03.txt' | sha256sum -c -
+          echo '3d55af0a43760d0d5f104f548dffbf7a16cd6014f4d36d584ea153ce687d1ced  .tmp-live-all/part-04.txt' | sha256sum -c -
+          cat .tmp-live-all/part-00.txt \
+            .tmp-live-all/part-01.txt \
+            .tmp-live-all/part-02.txt \
+            .tmp-live-all/part-03.txt \
+            .tmp-live-all/part-04.txt > /tmp/live-all.b64
+          echo 'bb8c2305d3238409cf5b02c0d41169d629f4601d313b0d279e4d3fae53bb316b  /tmp/live-all.b64' | sha256sum -c -
+          base64 --decode /tmp/live-all.b64 > /tmp/apply-live-all.mjs
+          echo '707dbc6e41b04085190512134b2823b04d647a77a5c0ec63b8710cea8f428ba7  /tmp/apply-live-all.mjs' | sha256sum -c -
+          node --check /tmp/apply-live-all.mjs
+          node /tmp/apply-live-all.mjs
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Install preview fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
+      - name: Generate previews and capture live-group browser review
+        run: |
+          node scripts/serve.mjs > /tmp/menu-lens-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          BROWSER_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$BROWSER_BIN"
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/generate-model-previews.mjs
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/capture-model-page-review.mjs
+
+      - name: Upload browser review
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: menu-lens-simultaneous-live-group-review
+          path: browser-review/
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Commit verified implementation
+        run: |
+          rm -f .github/workflows/apply-live-all.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research-history/model-page.mjs \
+            research-history/models/index.html \
+            research-history/model-page-workbench.css \
+            scripts/archive/capture-model-page-review.mjs \
+            scripts/archive/validate-model-page-renderer.mjs \
+            scripts/archive/validate-entrypoints.mjs
+          git add -A .tmp-live-all .github/workflows/apply-live-all.yml
+          git commit -m "Render full model groups as live surfaces"
+          git push origin HEAD:agent/live-all-model-surfaces
