@@ -13,6 +13,10 @@
   min-height: 3.9rem;
 }
 
+.model-page .model-definition-disclosure > summary .eyebrow {
+  display: none;
+}
+
 .model-page .model-workbench {
   padding-block: clamp(2.2rem, 4vw, 3.6rem);
 }
@@ -292,6 +296,32 @@
 }
 
 @media (max-width: 700px) {
+  .model-page .model-hero {
+    gap: 1rem;
+    padding-block: 1.55rem 1.35rem;
+  }
+
+  .model-page .model-hero h1 {
+    font-size: clamp(2.3rem, 12vw, 3.4rem);
+  }
+
+  .model-page .model-hero .lede {
+    font-size: .96rem;
+    line-height: 1.58;
+  }
+
+  .model-page .model-definition-disclosure > summary {
+    min-height: 3.25rem;
+  }
+
+  .model-page .model-workbench {
+    padding-block: 2rem;
+  }
+
+  .model-page .model-workbench__heading {
+    margin-bottom: 1rem;
+  }
+
   .model-page .model-section-heading {
     grid-template-columns: 1fr;
   }
