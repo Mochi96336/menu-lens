@@ -290,6 +290,7 @@ try {
   }
 
   const css = await readFile(new URL("research-history/model-page.css", root), "utf8");
+  const polishCss = await readFile(new URL("research-history/model-page-polish.css", root), "utf8");
   for (const contract of [
     "--preview-width: 320px",
     "--preview-width: 390px",
@@ -299,6 +300,12 @@ try {
     ".model-compare-view-switch:not([hidden])",
   ]) {
     if (!css.includes(contract)) throw new Error(`Model preview CSS is missing responsive contract: ${contract}`);
+  }
+  for (const contract of [
+    ".model-toolbar-link[hidden]",
+    "@media (min-width: 901px) and (max-width: 1050px)",
+  ]) {
+    if (!polishCss.includes(contract)) throw new Error(`Model polish CSS is missing visible-state contract: ${contract}`);
   }
   if (css.includes(".model-preview-frame, .model-preview-placeholder { max-width: 100%")) {
     throw new Error("Responsive CSS must not shrink controlled preview widths.");
