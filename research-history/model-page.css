@@ -249,13 +249,11 @@
   text-transform: uppercase;
 }
 
-.model-section-tabs,
 .model-variant-list {
   display: grid;
   border-top: 1px solid var(--line);
 }
 
-.model-section-tabs button,
 .model-variant-list button {
   width: 100%;
   border: 0;
@@ -264,21 +262,6 @@
   color: var(--muted);
   text-align: left;
   cursor: pointer;
-}
-
-.model-section-tabs button {
-  position: relative;
-  padding: .78rem .7rem .78rem 1rem;
-  border-left: 3px solid transparent;
-  font-family: "Noto Serif TC", "PMingLiU", Georgia, serif;
-  font-size: .96rem;
-  font-weight: 700;
-}
-
-.model-section-tabs button[aria-selected="true"] {
-  border-left-color: var(--accent);
-  background: var(--surface-strong);
-  color: var(--ink);
 }
 
 .model-variant-list {
@@ -867,7 +850,6 @@
     margin-top: 1rem;
   }
 
-  .model-section-tabs,
   .model-variant-list {
     display: flex;
     gap: .45rem;
@@ -877,31 +859,14 @@
     scrollbar-width: thin;
   }
 
-  .model-section-tabs button,
   .model-variant-list button {
+    display: block;
     flex: 0 0 auto;
     width: auto;
     min-height: 2.5rem;
+    padding: .5rem .7rem;
     border: 1px solid var(--line-strong);
     white-space: nowrap;
-  }
-
-  .model-section-tabs button {
-    padding: .55rem .75rem;
-    border-left-width: 1px;
-    font-family: inherit;
-    font-size: .78rem;
-  }
-
-  .model-section-tabs button[aria-selected="true"] {
-    border-color: var(--ink);
-    background: var(--ink);
-    color: var(--surface-strong);
-  }
-
-  .model-variant-list button {
-    display: block;
-    padding: .5rem .7rem;
   }
 
   .model-variant-list button::before,

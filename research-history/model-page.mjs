@@ -207,6 +207,41 @@ const shortSectionLabels = Object.freeze({
 });
 
 const sectionTabLabel = (section) => shortSectionLabels[section.id] ?? section.title;
+
+const syncSectionTabOverflow = () => {
+  const container = elements.sectionTabs;
+  const viewportWidth = Number(container.clientWidth) || 0;
+  const contentWidth = Number(container.scrollWidth) || 0;
+  const maxScroll = Math.max(0, contentWidth - viewportWidth);
+  const scrollLeft = Math.min(maxScroll, Math.max(0, Number(container.scrollLeft) || 0));
+  container.dataset.overflowStart = String(scrollLeft > 1);
+  container.dataset.overflowEnd = String(scrollLeft < maxScroll - 1);
+};
+
+const revealSelectedSectionTab = (button) => {
+  if (!button) return;
+  const reveal = () => {
+    const container = elements.sectionTabs;
+    const viewportWidth = Number(container.clientWidth) || 0;
+    const maxScroll = Math.max(0, (Number(container.scrollWidth) || 0) - viewportWidth);
+    const edgeInset = 12;
+    const tabStart = button.offsetLeft;
+    const tabEnd = tabStart + button.offsetWidth;
+    const visibleStart = Number(container.scrollLeft) || 0;
+    const visibleEnd = visibleStart + viewportWidth;
+    let target = visibleStart;
+    if (tabStart < visibleStart + edgeInset) target = tabStart - edgeInset;
+    else if (tabEnd > visibleEnd - edgeInset) target = tabEnd - viewportWidth + edgeInset;
+    container.scrollLeft = Math.min(maxScroll, Math.max(0, target));
+    syncSectionTabOverflow();
+  };
+  if (typeof requestAnimationFrame === "function") {
+    requestAnimationFrame(() => requestAnimationFrame(reveal));
+  } else {
+    reveal();
+  }
+};
+
 const cardPresentation = (object) => {
   if (object.objectType === "study") {
     const presentation = studyPresentations[object.id];
@@ -297,6 +332,7 @@ const renderModelDefinition = ({ model }) => {
 
 const renderSectionTabs = ({ model, section }) => {
   elements.sectionTabs.replaceChildren();
+  let selectedButton = null;
   for (const [index, candidate] of model.sections.entries()) {
     const selected = candidate.id === section.id;
     const button = document.createElement("button");
@@ -307,6 +343,7 @@ const renderSectionTabs = ({ model, section }) => {
     button.title = candidate.title;
     button.tabIndex = selected ? 0 : -1;
     button.setAttribute("aria-selected", String(selected));
+    if (selected) selectedButton = button;
     button.addEventListener("keydown", (event) =>
       focusAdjacent(event, [...elements.sectionTabs.children], index));
     button.addEventListener("click", () => {
@@ -316,6 +353,7 @@ const renderSectionTabs = ({ model, section }) => {
     elements.sectionTabs.append(button);
   }
   elements.sectionSummary.textContent = section.summary;
+  revealSelectedSectionTab(selectedButton);
 };
 
 const renderObjectSelect = ({ section, object }) => {
@@ -440,6 +478,12 @@ for (const button of viewportButtons) {
     render({ historyMode: "push" });
   });
 }
+
+elements.sectionTabs.addEventListener("scroll", syncSectionTabOverflow, { passive: true });
+const sectionTabsResizeObserver = typeof ResizeObserver === "function"
+  ? new ResizeObserver(syncSectionTabOverflow)
+  : null;
+sectionTabsResizeObserver?.observe(elements.sectionTabs);
 
 window.addEventListener?.("popstate", () => {
   state.replaceFromLocation();
