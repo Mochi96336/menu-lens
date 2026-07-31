@@ -24,6 +24,42 @@ jobs:
 
       - name: Apply explicit study presentation refinement
         run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/archive/apply-study-presentation-refinement.mjs')
+          source = path.read_text()
+          old = '''  source = replaceOnce(
+              source,
+              `      inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
+                > board.getBoundingClientRect().bottom - 4,
+        `,
+              `      inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
+                > board.getBoundingClientRect().bottom - 4,
+              compareToggleAttribute: document.querySelector('#compare-parent').hasAttribute('aria-pressed'),
+        `,
+              "browser review comparison action metric",
+            );'''
+          new = '''  source = replaceOnce(
+              source,
+              `      parentReused: parentFrame === window.__parentBoardFrame
+                && parentFrame.contentWindow.__parentMarker === '18',
+              documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+              inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
+                > board.getBoundingClientRect().bottom - 4,
+        `,
+              `      parentReused: parentFrame === window.__parentBoardFrame
+                && parentFrame.contentWindow.__parentMarker === '18',
+              documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+              inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
+                > board.getBoundingClientRect().bottom - 4,
+              compareToggleAttribute: document.querySelector('#compare-parent').hasAttribute('aria-pressed'),
+        `,
+              "browser review comparison action metric",
+            );'''
+          if source.count(old) != 1:
+              raise SystemExit(f'Expected one matcher block, found {source.count(old)}.')
+          path.write_text(source.replace(old, new))
+          PY
           node --check scripts/archive/apply-study-presentation-refinement.mjs
           node scripts/archive/apply-study-presentation-refinement.mjs
           node --check research-history/catalog/study-presentations.mjs
