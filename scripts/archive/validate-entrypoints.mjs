@@ -1,7 +1,6 @@
 import { access, readFile } from "node:fs/promises";
 import { loadArchiveCatalog, root } from "./load-catalog.mjs";
 
-// Full-group live surfaces are part of the published model-page entrypoint contract.
 const catalog = await loadArchiveCatalog();
 const archiveRoot = new URL("research-history/", root);
 
@@ -13,6 +12,10 @@ const requiredPaths = new Set([
   "model-page.css",
   "model-page-workbench.css",
   "model-live-surface.mjs",
+  "model-page-state.mjs",
+  "model-surface-pool.mjs",
+  "model-live-board.mjs",
+  "model-object-inspector.mjs",
   "model-page.mjs",
   "models/index.html",
   "catalog/index.mjs",
@@ -34,13 +37,28 @@ for (const object of catalog.objects) {
 
 await Promise.all([...requiredPaths].map((path) => access(new URL(path, archiveRoot))));
 
-const [index, renderer, loader, modelPage, modelRenderer, liveSurface] = await Promise.all([
+const [
+  index,
+  renderer,
+  loader,
+  modelPage,
+  modelRenderer,
+  liveSurface,
+  pageState,
+  surfacePool,
+  liveBoard,
+  inspector,
+] = await Promise.all([
   readFile(new URL("index.html", archiveRoot), "utf8"),
   readFile(new URL("catalog/render-index.mjs", archiveRoot), "utf8"),
   readFile(new URL("scripts/archive/load-catalog.mjs", root), "utf8"),
   readFile(new URL("models/index.html", archiveRoot), "utf8"),
   readFile(new URL("model-page.mjs", archiveRoot), "utf8"),
   readFile(new URL("model-live-surface.mjs", archiveRoot), "utf8"),
+  readFile(new URL("model-page-state.mjs", archiveRoot), "utf8"),
+  readFile(new URL("model-surface-pool.mjs", archiveRoot), "utf8"),
+  readFile(new URL("model-live-board.mjs", archiveRoot), "utf8"),
+  readFile(new URL("model-object-inspector.mjs", archiveRoot), "utf8"),
 ]);
 
 for (const contract of [
@@ -67,55 +85,54 @@ for (const contract of [
   '<script type="module" src="../model-page.mjs"></script>',
   'id="model-select"',
   'id="section-tabs"',
-  'id="variant-list"',
+  'id="object-select"',
+  'id="view-all"',
   'id="view-focus"',
   'id="compare-parent"',
-  'id="view-all"',
-  'id="preview-grid"',
-  'id="all-preview-grid"',
-  'class="model-inspector"',
-  'id="lineage"',
-  'id="record-links"',
+  'id="all-live-board"',
+  'id="inspector-tabs"',
+  'id="inspector-panel-summary"',
+  'id="inspector-panel-relations"',
+  'id="inspector-panel-records"',
 ]) {
-  if (!modelPage.includes(contract)) throw new Error(`Design model page is missing contract: ${contract}`);
+  if (!modelPage.includes(contract)) throw new Error(`Design model page is missing refactor contract: ${contract}`);
 }
 
-for (const oldSlogan of [
+for (const obsolete of [
+  'id="variant-list"',
+  'class="model-sidebar"',
+  'id="lineage"',
+  'id="record-links"',
   "在共同母體內比較，不把每個 ablation 當成獨立方案。",
   "看見 parent、同組物件與明確關係，不靠記憶往返頁面。",
   "模型頁負責理解，原始物件仍保持可追溯。",
 ]) {
-  if (modelPage.includes(oldSlogan)) throw new Error(`Design model page retains slogan copy: ${oldSlogan}`);
+  if (modelPage.includes(obsolete)) throw new Error(`Design model page retains obsolete hierarchy: ${obsolete}`);
 }
 
 for (const contract of [
   "buildArchiveCatalog",
   "designModels",
   "presentationNotes",
-  "researchParentId",
-  "data-viewport",
-  "受控變因",
-  "停止結果",
-  "保留條件",
-  "研究工具",
-  "previewAssetPath",
-  "renderAllPreviews",
-  "allLiveSurfaces",
-  "activeViewMode",
-  "createModelLiveSurface",
-  "syncLivePreview",
+  "createModelPageState",
+  "createModelSurfacePool",
+  "createModelLiveBoard",
+  "createModelObjectInspector",
+  "board.render",
 ]) {
-  if (!modelRenderer.includes(contract)) throw new Error(`Design model renderer is missing contract: ${contract}`);
+  if (!modelRenderer.includes(contract)) throw new Error(`Design model coordinator is missing contract: ${contract}`);
 }
 
-for (const contract of [
-  "defaultTargetSelectors",
-  "isolateTarget",
-  "model-live-ready",
-  "ResizeObserver",
-  "waitForImages",
+for (const [source, contracts, label] of [
+  [liveSurface, ["defaultTargetSelectors", "isolateTarget", "model-live-ready", "ResizeObserver", "waitForImages"], "live surface"],
+  [pageState, ["createModelPageState", "replaceFromLocation", "commitUrl", "viewMode"], "page state"],
+  [surfacePool, ["createModelSurfacePool", "prune", "destroy"], "surface pool"],
+  [liveBoard, ["createModelLiveBoard", "syncSection", "viewMode", "render"], "live board"],
+  [inspector, ["createModelObjectInspector", "renderRelations", "renderRecords", "setTab"], "object inspector"],
 ]) {
-  if (!liveSurface.includes(contract)) throw new Error(`Live-surface adapter is missing contract: ${contract}`);
+  for (const contract of contracts) {
+    if (!source.includes(contract)) throw new Error(`${label} module is missing contract: ${contract}`);
+  }
 }
 
 for (const source of [renderer, loader, modelRenderer]) {
@@ -135,4 +152,4 @@ if (renderer.includes('review.href = `../')) {
   throw new Error("Archive review links must remain relative to the published research-history root.");
 }
 
-console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the simultaneous live design model workbench.`);
+console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the wide canonical pooled-surface model workbench.`);
