@@ -51,18 +51,22 @@ await writeFile(metadataPath, metadata, "utf8");
 
 const pagePath = new URL("../../research-history/model-page.mjs", import.meta.url);
 let page = await readFile(pagePath, "utf8");
-const oldDisplayTitle = `const displayTitle = (object) => {
-  const title = String(object?.title ?? "");
-  const prefix = \`${object?.id ?? ""} \`;
-  return prefix.trim() && title.startsWith(prefix) ? title.slice(prefix.length).trim() : title;
-};`;
-const newDisplayTitle = `const displayTitle = (object) => {
-  const explicitTitle = studyPresentations[object?.id]?.title;
-  if (explicitTitle) return explicitTitle;
-  const title = String(object?.title ?? "");
-  const prefix = \`${object?.id ?? ""} \`;
-  return prefix.trim() && title.startsWith(prefix) ? title.slice(prefix.length).trim() : title;
-};`;
+const oldDisplayTitle = [
+  "const displayTitle = (object) => {",
+  "  const title = String(object?.title ?? \"\");",
+  "  const prefix = `${object?.id ?? \"\"} `;",
+  "  return prefix.trim() && title.startsWith(prefix) ? title.slice(prefix.length).trim() : title;",
+  "};",
+].join("\n");
+const newDisplayTitle = [
+  "const displayTitle = (object) => {",
+  "  const explicitTitle = studyPresentations[object?.id]?.title;",
+  "  if (explicitTitle) return explicitTitle;",
+  "  const title = String(object?.title ?? \"\");",
+  "  const prefix = `${object?.id ?? \"\"} `;",
+  "  return prefix.trim() && title.startsWith(prefix) ? title.slice(prefix.length).trim() : title;",
+  "};",
+].join("\n");
 const displayMatches = page.split(oldDisplayTitle).length - 1;
 if (displayMatches !== 1) throw new Error(`Expected one displayTitle block, found ${displayMatches}.`);
 page = page.replace(oldDisplayTitle, newDisplayTitle);
