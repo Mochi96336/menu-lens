@@ -22,8 +22,28 @@ jobs:
           ref: agent/refine-model-selection-semantics
           fetch-depth: 0
 
-      - name: Apply toolbar and study semantics refinement
+      - name: Repair and apply toolbar semantics refinement
         run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/archive/apply-model-toolbar-semantics.mjs')
+          source = path.read_text()
+          replacements = {
+            'title: `${object.id} · 研究工具`,': 'title: object.id + " · 研究工具",',
+            'meta: targets.length ? `比較 ${targets.join(" / ")}` : displayTitle(object),': 'meta: targets.length ? "比較 " + targets.join(" / ") : displayTitle(object),',
+            'return { title: `${object.id} · 必要修正`, meta: displayTitle(object) };': 'return { title: object.id + " · 必要修正", meta: displayTitle(object) };',
+            'elements.compareParent.textContent = comparing ? "結束比較" : `與 ${parent?.id ?? "parent"} 比較`;': 'elements.compareParent.textContent = comparing ? "結束比較" : "與 " + (parent?.id ?? "parent") + " 比較";',
+            'variable: targetIds.length ? `${targetIds.join(" / ")} 盲測` : "比較研究流程",': 'variable: targetIds.length ? targetIds.join(" / ") + " 盲測" : "比較研究流程",',
+            '? `${object.id} · 研究工具`': '? object.id + " · 研究工具"',
+            ': (object.objectType === "correction" ? `${object.id} · 必要修正` : objectLabel(object));': ': (object.objectType === "correction" ? object.id + " · 必要修正" : objectLabel(object));',
+          }
+          for before, after in replacements.items():
+            count = source.count(before)
+            if count != 1:
+              raise SystemExit(f'Expected one generated-template match for {before!r}, found {count}.')
+            source = source.replace(before, after)
+          path.write_text(source)
+          PY
           node --check scripts/archive/apply-model-toolbar-semantics.mjs
           node scripts/archive/apply-model-toolbar-semantics.mjs
           node --check research-history/model-page.mjs
