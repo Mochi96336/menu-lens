@@ -106,14 +106,7 @@ export const createModelLiveBoard = ({
       boardRoot.style.justifyContent = "flex-start";
       card.style.marginInline = viewMode === "focus" && cardFits ? "auto" : "0";
 
-      const finalize = () => {
-        boardRoot.scrollLeft = 0;
-        const boardRect = boardRoot.getBoundingClientRect?.();
-        const cardRect = card.getBoundingClientRect?.();
-        boardRoot.dataset.startEdgeVisible = String(
-          !boardRect || !cardRect || cardRect.left >= boardRect.left - 1,
-        );
-      };
+      const finalize = () => { boardRoot.scrollLeft = 0; };
       if (typeof requestAnimationFrame === "function") requestAnimationFrame(finalize);
       else finalize();
     };
@@ -159,7 +152,6 @@ export const createModelLiveBoard = ({
     if (viewMode === "all") {
       boardRoot.style.justifyContent = "";
       boardRoot.style.scrollSnapType = "";
-      delete boardRoot.dataset.startEdgeVisible;
       revealActiveCard(activeObject.id);
     } else {
       resetFilteredBoardPosition(activeObject.id, viewMode);
