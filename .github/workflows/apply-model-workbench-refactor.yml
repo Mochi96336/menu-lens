@@ -1,0 +1,110 @@
+name: Apply model workbench hierarchy refactor
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  validate-and-apply:
+    if: github.head_ref == 'agent/refactor-model-workbench-hierarchy' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out refactor branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/refactor-model-workbench-hierarchy
+          fetch-depth: 0
+
+      - name: Verify and extract refactor payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '821e9cb127583974654877f75100a3a877bc249cb19944981981eb11468de843  .tmp-model-refactor/part-00.txt' | sha256sum -c -
+          echo '41694ac92ebf2211c6f28578f3559d054b205e7386ea963989843419f8691f52  .tmp-model-refactor/part-01.txt' | sha256sum -c -
+          echo '7a6430d83bbca04a8f5305bf792b74eaf2d1d8436b3426c02a52f57102088431  .tmp-model-refactor/part-02.txt' | sha256sum -c -
+          echo '629087bc5835e2b12ff39f73d810c41d2d8a4fe9a212471214109ce212c4a760  .tmp-model-refactor/part-03.txt' | sha256sum -c -
+          echo 'e676f0a5777467422d792c3a611814eeb43e4403b7c9ddeef20bda5ba1dcefe6  .tmp-model-refactor/part-04.txt' | sha256sum -c -
+          cat .tmp-model-refactor/part-*.txt > /tmp/model-refactor.b64
+          echo '06c74bc24ebc3a10ffd1dafa93f41160c841228c4253c93fdb7f5ec18b0659fe  /tmp/model-refactor.b64' | sha256sum -c -
+          base64 --decode /tmp/model-refactor.b64 > /tmp/model-refactor.tar.gz
+          echo 'd75d439a0ef5134faf5b34eedfce72157184cbd2330774d797abfb850a10c762  /tmp/model-refactor.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/model-refactor.tar.gz -C .
+          node --check research-history/model-page-state.mjs
+          node --check research-history/model-surface-pool.mjs
+          node --check research-history/model-live-board.mjs
+          node --check research-history/model-object-inspector.mjs
+          node --check research-history/model-page.mjs
+          node --check scripts/archive/validate-model-page-renderer.mjs
+          node --check scripts/archive/capture-model-page-review.mjs
+          node --check scripts/archive/validate-entrypoints.mjs
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Install preview fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
+      - name: Generate previews and capture refactored workbench review
+        run: |
+          node scripts/serve.mjs > /tmp/menu-lens-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          BROWSER_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$BROWSER_BIN"
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/generate-model-previews.mjs
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/capture-model-page-review.mjs
+
+      - name: Upload refactored browser review
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: menu-lens-model-workbench-refactor-review
+          path: browser-review/
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Commit verified refactor
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            research-history/models/index.html \
+            research-history/model-page-workbench.css \
+            research-history/model-page-state.mjs \
+            research-history/model-surface-pool.mjs \
+            research-history/model-live-board.mjs \
+            research-history/model-object-inspector.mjs \
+            research-history/model-page.mjs \
+            scripts/archive/validate-model-page-renderer.mjs \
+            scripts/archive/capture-model-page-review.mjs \
+            scripts/archive/validate-entrypoints.mjs
+          git rm -r .tmp-model-refactor
+          git commit -m 'Refactor model workbench information hierarchy'
+          git push origin HEAD:agent/refactor-model-workbench-hierarchy
