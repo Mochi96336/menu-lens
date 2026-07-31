@@ -125,28 +125,6 @@
   margin-left: auto;
 }
 
-.model-selection-summary {
-  display: flex;
-  min-width: 0;
-  gap: .45rem;
-  align-items: baseline;
-  margin: 0;
-}
-
-.model-selection-summary > span {
-  color: var(--faint);
-  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
-  font-size: .63rem;
-}
-
-.model-selection-summary > strong {
-  overflow: hidden;
-  max-width: 28rem;
-  font-size: .78rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .model-object-picker {
   display: grid;
   grid-template-columns: auto minmax(12rem, 18rem);
@@ -567,10 +545,6 @@
   .model-toolbar__selection {
     align-items: stretch;
     flex-direction: column;
-  }
-
-  .model-selection-summary {
-    padding-block: .2rem;
   }
 
   .model-object-picker {
