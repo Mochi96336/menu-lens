@@ -290,7 +290,7 @@ export const createModelObjectInspector = ({
       links.push(makeRecordLink(
         "Source PR",
         `PR #${object.sourcePr}`,
-        `https://github.com/a20030824/menu-lens/pull/${object.sourcePr}`,
+        `https://github.com/Mochi96336/menu-lens/pull/${object.sourcePr}`,
         "provenance",
       ));
     }
@@ -298,7 +298,7 @@ export const createModelObjectInspector = ({
       links.push(makeRecordLink(
         "Source commit",
         object.sourceCommit.slice(0, 12),
-        `https://github.com/a20030824/menu-lens/commit/${object.sourceCommit}`,
+        `https://github.com/Mochi96336/menu-lens/commit/${object.sourceCommit}`,
         "provenance",
       ));
     }

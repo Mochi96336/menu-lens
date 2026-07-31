@@ -27,7 +27,7 @@ Additional references:
 Copy and adapt this block when opening a new conversation:
 
 ```text
-Repository: a20030824/menu-lens
+Repository: Mochi96336/menu-lens
 
 Before making changes, read:
 - README.md

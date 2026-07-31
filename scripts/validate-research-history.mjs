@@ -106,7 +106,7 @@ for (const expected of originalSnapshots) {
   if (actual.sourceType !== "original_implementation") {
     throw new Error(`${expected.slug} must remain labelled original_implementation.`);
   }
-  if (actual.repository !== "a20030824/menu-lens") {
+  if (actual.repository !== "Mochi96336/menu-lens") {
     throw new Error(`${expected.slug} has an unexpected source repository.`);
   }
   if (actual.pullRequest !== expected.pullRequest) {
