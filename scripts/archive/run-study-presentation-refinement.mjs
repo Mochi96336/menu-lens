@@ -35,3 +35,35 @@ if (count !== 1) throw new Error(`Expected one comparison matcher block, found $
 source = source.replace(oldBlock, newBlock);
 await writeFile(patchPath, source, "utf8");
 await import(`${patchPath.href}?run=${Date.now()}`);
+
+const metadataPath = new URL("../../research-history/catalog/study-presentations.mjs", import.meta.url);
+let metadata = await readFile(metadataPath, "utf8");
+const titleReplacements = [
+  ['  "12A-S1": Object.freeze({\n    method: "盲測比較",', '  "12A-S1": Object.freeze({\n    title: "Blinded Reader Comparison",\n    method: "盲測比較",'],
+  ['  "25P-S1": Object.freeze({\n    method: "陌生讀者任務",', '  "25P-S1": Object.freeze({\n    title: "Unfamiliar-reader Study",\n    method: "陌生讀者任務",'],
+];
+for (const [before, after] of titleReplacements) {
+  const matches = metadata.split(before).length - 1;
+  if (matches !== 1) throw new Error(`Expected one study title insertion point, found ${matches}.`);
+  metadata = metadata.replace(before, after);
+}
+await writeFile(metadataPath, metadata, "utf8");
+
+const pagePath = new URL("../../research-history/model-page.mjs", import.meta.url);
+let page = await readFile(pagePath, "utf8");
+const oldDisplayTitle = `const displayTitle = (object) => {
+  const title = String(object?.title ?? "");
+  const prefix = \`${object?.id ?? ""} \`;
+  return prefix.trim() && title.startsWith(prefix) ? title.slice(prefix.length).trim() : title;
+};`;
+const newDisplayTitle = `const displayTitle = (object) => {
+  const explicitTitle = studyPresentations[object?.id]?.title;
+  if (explicitTitle) return explicitTitle;
+  const title = String(object?.title ?? "");
+  const prefix = \`${object?.id ?? ""} \`;
+  return prefix.trim() && title.startsWith(prefix) ? title.slice(prefix.length).trim() : title;
+};`;
+const displayMatches = page.split(oldDisplayTitle).length - 1;
+if (displayMatches !== 1) throw new Error(`Expected one displayTitle block, found ${displayMatches}.`);
+page = page.replace(oldDisplayTitle, newDisplayTitle);
+await writeFile(pagePath, page, "utf8");
