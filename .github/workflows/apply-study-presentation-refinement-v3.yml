@@ -1,0 +1,134 @@
+name: Apply study presentation refinement v3
+
+on:
+  push:
+    branches: [agent/refine-model-selection-semantics]
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  validate-and-apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out refinement branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/refine-model-selection-semantics
+          fetch-depth: 0
+
+      - name: Repair matcher and apply refinement
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/archive/apply-study-presentation-refinement.mjs')
+          source = path.read_text()
+          old = '''  source = replaceOnce(
+              source,
+              `      inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
+                > board.getBoundingClientRect().bottom - 4,
+        `,
+              `      inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
+                > board.getBoundingClientRect().bottom - 4,
+              compareToggleAttribute: document.querySelector('#compare-parent').hasAttribute('aria-pressed'),
+        `,
+              "browser review comparison action metric",
+            );'''
+          new = '''  source = replaceOnce(
+              source,
+              `      parentReused: parentFrame === window.__parentBoardFrame
+                && parentFrame.contentWindow.__parentMarker === '18',
+              documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+              inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
+                > board.getBoundingClientRect().bottom - 4,
+        `,
+              `      parentReused: parentFrame === window.__parentBoardFrame
+                && parentFrame.contentWindow.__parentMarker === '18',
+              documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+              inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
+                > board.getBoundingClientRect().bottom - 4,
+              compareToggleAttribute: document.querySelector('#compare-parent').hasAttribute('aria-pressed'),
+        `,
+              "browser review comparison action metric",
+            );'''
+          if source.count(old) != 1:
+              raise SystemExit(f'Expected one matcher block, found {source.count(old)}.')
+          path.write_text(source.replace(old, new))
+          PY
+          node --check scripts/archive/apply-study-presentation-refinement.mjs
+          node scripts/archive/apply-study-presentation-refinement.mjs
+          node --check research-history/catalog/study-presentations.mjs
+          node --check research-history/model-page.mjs
+          node --check research-history/model-object-inspector.mjs
+          node --check scripts/archive/validate-model-page-renderer.mjs
+          node --check scripts/archive/capture-model-page-review.mjs
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Install preview fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
+      - name: Generate previews and capture browser review
+        run: |
+          node scripts/serve.mjs > /tmp/menu-lens-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          BROWSER_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$BROWSER_BIN"
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/generate-model-previews.mjs
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/capture-model-page-review.mjs
+
+      - name: Upload browser review
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: menu-lens-explicit-study-presentation-review-v3
+          path: browser-review/
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Commit verified refinement
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            research-history/catalog/study-presentations.mjs \
+            research-history/model-page.mjs \
+            research-history/model-object-inspector.mjs \
+            research-history/models/index.html \
+            research-history/model-page-workbench.css \
+            scripts/archive/validate-model-page-renderer.mjs \
+            scripts/archive/capture-model-page-review.mjs
+          git rm -f \
+            scripts/archive/apply-study-presentation-refinement.mjs \
+            scripts/archive/study-refinement-trigger.txt \
+            .github/workflows/apply-study-presentation-refinement.yml \
+            .github/workflows/apply-study-presentation-refinement-v2.yml \
+            .github/workflows/apply-study-presentation-refinement-v3.yml
+          git commit -m 'Refine explicit study presentation semantics'
+          git push origin HEAD:agent/refine-model-selection-semantics
