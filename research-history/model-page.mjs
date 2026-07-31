@@ -68,8 +68,11 @@ const setStatus = (element, object) => {
 
 const displayTitle = (object) => {
   const title = String(object?.title ?? "");
-  const prefix = `${object?.id ?? ""} `;
-  return prefix.trim() && title.startsWith(prefix) ? title.slice(prefix.length).trim() : title;
+  const prefixes = [object?.id, object?.researchParentId]
+    .filter(Boolean)
+    .map((id) => `${id} `);
+  const prefix = prefixes.find((candidate) => title.startsWith(candidate));
+  return prefix ? title.slice(prefix.length).trim() : title;
 };
 const objectLabel = (object) => `${object.id} · ${displayTitle(object)}`;
 const archivePath = (path) => `../${path}`;
