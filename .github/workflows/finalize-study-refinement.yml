@@ -1,0 +1,112 @@
+name: Finalize validated study refinement
+
+on:
+  push:
+    branches:
+      - agent/refine-model-selection-semantics
+
+permissions:
+  actions: read
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out refinement branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/refine-model-selection-semantics
+          fetch-depth: 0
+
+      - name: Download validated source artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api \
+            -H 'Accept: application/vnd.github+json' \
+            /repos/${GITHUB_REPOSITORY}/actions/artifacts/8782061669/zip \
+            > /tmp/pr64-validated.zip
+          rm -rf /tmp/pr64-validated
+          mkdir -p /tmp/pr64-validated
+          unzip -q /tmp/pr64-validated.zip -d /tmp/pr64-validated
+          test -f /tmp/pr64-validated/__validated-source/research-history/model-page.mjs
+
+      - name: Install validated sources and remove patch hooks
+        run: |
+          cp -a /tmp/pr64-validated/__validated-source/research-history/catalog/study-presentations.mjs research-history/catalog/study-presentations.mjs
+          cp -a /tmp/pr64-validated/__validated-source/research-history/model-object-inspector.mjs research-history/model-object-inspector.mjs
+          cp -a /tmp/pr64-validated/__validated-source/research-history/model-page-workbench.css research-history/model-page-workbench.css
+          cp -a /tmp/pr64-validated/__validated-source/research-history/model-page.mjs research-history/model-page.mjs
+          cp -a /tmp/pr64-validated/__validated-source/research-history/models/index.html research-history/models/index.html
+          cp -a /tmp/pr64-validated/__validated-source/scripts/archive/capture-model-page-review.mjs scripts/archive/capture-model-page-review.mjs
+          cp -a /tmp/pr64-validated/__validated-source/scripts/archive/validate-model-page-renderer.mjs scripts/archive/validate-model-page-renderer.mjs
+          git show origin/main:package.json > package.json
+          rm -f \
+            scripts/archive/apply-study-presentation-refinement.mjs \
+            scripts/archive/export-study-refinement-source.mjs \
+            scripts/archive/run-study-presentation-refinement.mjs \
+            scripts/archive/study-refinement-trigger.txt
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Validate clean source tree
+        run: |
+          npm run typecheck
+          npm test
+          npm run build
+
+      - name: Install preview fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
+      - name: Generate previews and capture browser review
+        run: |
+          node scripts/serve.mjs > /tmp/menu-lens-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          BROWSER_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$BROWSER_BIN"
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/generate-model-previews.mjs
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/capture-model-page-review.mjs
+
+      - name: Upload final browser review
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: menu-lens-final-study-refinement-review
+          path: browser-review/
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Commit validated clean sources
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            package.json \
+            research-history/catalog/study-presentations.mjs \
+            research-history/model-object-inspector.mjs \
+            research-history/model-page-workbench.css \
+            research-history/model-page.mjs \
+            research-history/models/index.html \
+            scripts/archive/capture-model-page-review.mjs \
+            scripts/archive/validate-model-page-renderer.mjs
+          git add -u scripts/archive
+          git commit -m 'Finalize explicit study presentation semantics'
+          git push origin HEAD:agent/refine-model-selection-semantics
