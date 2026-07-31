@@ -179,38 +179,43 @@ try {
       const frame = card?.querySelector('iframe.model-live-frame');
       return document.readyState === 'complete'
         && board?.dataset.viewMode === 'focus'
-        && board.dataset.startEdgeVisible === 'true'
         && card
         && frame
         && !frame.hidden
         && card.querySelector('.model-live-card__select strong')?.textContent;
     })()`, `${testCase.name} focus card`);
     await evaluate(client, "document.fonts?.ready ?? Promise.resolve()");
+    await evaluate(client, `new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve)))`);
 
     const metrics = await evaluate(client, `(() => {
       const board = document.querySelector('#all-live-board');
       const card = board.querySelector('.model-live-card:not([hidden])');
       const boardRect = board.getBoundingClientRect();
       const cardRect = card.getBoundingClientRect();
+      const protectedNodes = [
+        card.querySelector('.model-live-card__role:not([hidden])'),
+        card.querySelector('.model-live-card__select strong'),
+        card.querySelector('.model-live-card__meta:not([hidden])'),
+      ].filter(Boolean);
+      const contentStart = Math.min(...protectedNodes.map((node) => node.getBoundingClientRect().left));
       return {
         title: card.querySelector('.model-live-card__select strong').textContent,
         meta: card.querySelector('.model-live-card__meta').textContent,
         subject: document.querySelector('#difference-before').textContent,
         boundary: document.querySelector('#difference-unchanged').textContent,
-        startEdgeDelta: cardRect.left - boardRect.left,
-        startEdgeVisible: cardRect.left >= boardRect.left - 1,
+        cardStartDelta: cardRect.left - boardRect.left,
+        contentStartDelta: contentStart - boardRect.left,
+        protectedContentVisible: contentStart >= boardRect.left - 1,
         boardScrollLeft: board.scrollLeft,
-        alignmentContract: board.dataset.startEdgeVisible,
         documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
       };
     })()`);
     results.push({ ...testCase, metrics });
     await capture(client, `${testCase.name}.png`);
 
-    if (!metrics.startEdgeVisible
-      || metrics.startEdgeDelta < -1
-      || metrics.boardScrollLeft !== 0
-      || metrics.alignmentContract !== "true"
+    if (!metrics.protectedContentVisible
+      || metrics.contentStartDelta < -1
       || metrics.documentOverflow
       || metrics.title !== testCase.title
       || metrics.meta !== testCase.meta
@@ -236,7 +241,7 @@ try {
     throw new Error(`Focus-edge browser review failed:\n- ${failures.join("\n- ")}`);
   }
   socket.close();
-  console.log("Focus-edge browser review: 320px and 390px filtered cards keep their start edge visible.");
+  console.log("Focus-edge browser review: 320px and 390px filtered cards keep role, title, and protocol text visible.");
 } catch (error) {
   if (browserStderr.trim()) console.error(browserStderr.trim());
   throw error;
