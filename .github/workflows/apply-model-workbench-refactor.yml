@@ -41,6 +41,21 @@ jobs:
           base64 --decode /tmp/model-refactor-v2.b64 > /tmp/model-refactor-v2.tar.gz
           echo 'a047979b923541eef7e913d163f10d3c2a7cc7af9b0848870177f6658450cd52  /tmp/model-refactor-v2.tar.gz' | sha256sum -c -
           tar -xzf /tmp/model-refactor-v2.tar.gz -C .
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/archive/capture-model-page-review.mjs')
+          source = path.read_text()
+          before = """    window.__currentBoardFrame = document.querySelector('.model-live-card[data-current=\"true\"] iframe');
+              window.__parentBoardFrame = document.querySelector('.model-live-card[data-object-id=\"18\"] iframe');
+              window.__parentBoardFrame.contentWindow.__parentMarker = '18';"""
+          after = """    window.__currentBoardFrame = document.querySelector('.model-live-card[data-current=\"true\"] iframe');
+              window.__currentBoardFrame.contentWindow.__boardMarker = '18B';
+              window.__parentBoardFrame = document.querySelector('.model-live-card[data-object-id=\"18\"] iframe');
+              window.__parentBoardFrame.contentWindow.__parentMarker = '18';"""
+          if source.count(before) != 1:
+              raise SystemExit('Could not patch the 1440 current-frame marker exactly once.')
+          path.write_text(source.replace(before, after))
+          PY
           node --check research-history/model-page-state.mjs
           node --check research-history/model-surface-pool.mjs
           node --check research-history/model-live-board.mjs
