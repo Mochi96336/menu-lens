@@ -1,3 +1,4 @@
+// Card roles distinguish active selection, research tools, and explicit comparison positions.
 export const createModelLiveBoard = ({
   boardRoot,
   surfacePool,
