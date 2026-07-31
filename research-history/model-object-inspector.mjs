@@ -1,3 +1,5 @@
+import { studyPresentations } from "./catalog/study-presentations.mjs";
+
 const asArray = (value) => Array.isArray(value) ? value : [];
 
 const makeText = (tag, className, text) => {
@@ -66,15 +68,22 @@ export const createModelObjectInspector = ({
     const note = presentationNotes[object.id];
 
     if (object.objectType === "study") {
+      const presentation = studyPresentations[object.id];
+      if (!presentation) throw new Error(`Study ${object.id} is missing explicit presentation metadata.`);
+      const prerequisites = describeReferences(presentation.prerequisiteIds);
+      const boundary = [
+        prerequisites ? `前置條件：${prerequisites}。` : "",
+        presentation.boundary,
+      ].filter(Boolean).join(" ");
       return {
         eyebrow: "研究工具",
-        variable: "研究工具與證據範圍",
-        beforeLabel: "研究對象",
-        before: describeReferences(object.evidenceFor) || parent?.summary || "尚未記錄研究對象。",
-        afterLabel: "研究工具",
+        variable: presentation.method,
+        beforeLabel: presentation.subjectLabel,
+        before: describeReferences(presentation.subjectIds) || "尚未記錄研究對象。",
+        afterLabel: "研究流程",
         after: object.summary,
-        unchangedLabel: "證據邊界",
-        unchanged: "研究就緒與執行結果不直接代表 prototype 已獲採用。",
+        unchangedLabel: presentation.boundaryLabel,
+        unchanged: boundary,
       };
     }
 

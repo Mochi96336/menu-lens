@@ -248,6 +248,7 @@ try {
         return surface.scrollWidth > surface.clientWidth + 2;
       }),
       currentCount: cards.filter((card) => card.dataset.current === 'true').length,
+      selectionSummaryPresent: Boolean(document.querySelector('#selection-summary')),
       workbenchWidth: document.querySelector('.model-workbench-shell').getBoundingClientRect().width,
     };
   })()`);
@@ -322,6 +323,7 @@ try {
       documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
       inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
         > board.getBoundingClientRect().bottom - 4,
+      compareToggleAttribute: document.querySelector('#compare-parent').hasAttribute('aria-pressed'),
     };
   })()`);
   cases.push({ name: "landscape-1440-pooled-compare", width: 1440, height: 1000, metrics: compareMetrics });
@@ -367,25 +369,46 @@ try {
       relationVisible,
       recordsVisible: !document.querySelector('#inspector-panel-records').hidden,
       sourceText: document.querySelector('#inspector-records').textContent.includes('研究工具'),
+      inspectorTitle: document.querySelector('#inspector-object-title').textContent,
+      method: document.querySelector('#difference-variable').textContent,
+      cardTitle: visibleCard.querySelector('.model-live-card__select strong').textContent,
+      cardMeta: visibleCard.querySelector('.model-live-card__meta').textContent,
       documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
     };
   })()`);
   cases.push({ name: "paper-field-390-inspector-tabs", width: 390, height: 1000, metrics: studyMetrics });
   await capture(client, "paper-field-390-inspector-tabs.png");
 
+  const taskStudyPath = "/models/?model=depth-projection&section=projection-lens&variant=25P-S1&viewport=390&view=focus";
+  await navigate(client, taskStudyPath, 390);
+  await waitForVisibleBoard(client, 1);
+  const taskStudyMetrics = await evaluate(client, `(() => {
+    const visibleCard = document.querySelector('.model-live-card:not([hidden])');
+    return {
+      inspectorTitle: document.querySelector('#inspector-object-title').textContent,
+      method: document.querySelector('#difference-variable').textContent,
+      subject: document.querySelector('#difference-before').textContent,
+      boundary: document.querySelector('#difference-unchanged').textContent,
+      cardMeta: visibleCard.querySelector('.model-live-card__meta').textContent,
+    };
+  })()`);
+  cases.push({ name: "depth-390-task-study", width: 390, height: 1000, metrics: taskStudyMetrics });
+
   const failures = [];
   if (runtimeErrors.length) failures.push(`Runtime errors: ${runtimeErrors.join(" | ")}`);
   const mobile = cases.find((item) => item.name === "landscape-390-wide-live-board")?.metrics;
   if (!mobile || mobile.mode !== "true" || mobile.cardCount !== 4 || mobile.iframeCount !== 4
     || !mobile.boardHorizontal || mobile.documentOverflow || mobile.cardInternalOverflow
-    || mobile.currentCount !== 1 || !mobile.resizedState || !mobile.focusReuse || !mobile.allReuse
+    || mobile.currentCount !== 1 || mobile.selectionSummaryPresent
+    || !mobile.resizedState || !mobile.focusReuse || !mobile.allReuse
     || !mobile.boardVisible || mobile.activeTitle !== "18 · Landscape Paper"
     || mobile.selectedValue !== "18") {
     failures.push("390px full-board pooling and single-scroll contract failed.");
   }
   if (!compareMetrics.compareVisible || compareMetrics.paneCount !== 2
     || !compareMetrics.currentReused || !compareMetrics.parentReused
-    || compareMetrics.documentOverflow || !compareMetrics.inspectorBelow) {
+    || compareMetrics.documentOverflow || !compareMetrics.inspectorBelow
+    || compareMetrics.compareToggleAttribute) {
     failures.push("1440px pooled parent comparison contract failed.");
   }
   if (wideMetrics.workbenchWidth < 1600 || wideMetrics.viewportWidth !== 2048
@@ -396,8 +419,19 @@ try {
   }
   if (!studyMetrics.compareHidden || !studyMetrics.focusVisible || !studyMetrics.liveReady
     || !studyMetrics.relationVisible || !studyMetrics.recordsVisible || !studyMetrics.sourceText
+    || studyMetrics.inspectorTitle !== "12A-S1 · Blinded Reader Comparison"
+    || studyMetrics.method !== "盲測比較"
+    || studyMetrics.cardTitle !== "12A-S1 · Blinded Reader Comparison"
+    || studyMetrics.cardMeta !== "盲測比較 · 12 / 12A"
     || studyMetrics.documentOverflow) {
-    failures.push("Study and inspector-tab boundary failed.");
+    failures.push("12A-S1 identity and blinded-comparison presentation failed.");
+  }
+  if (taskStudyMetrics.inspectorTitle !== "25P-S1 · Unfamiliar-reader Study"
+    || taskStudyMetrics.method !== "陌生讀者任務"
+    || !taskStudyMetrics.subject.includes("25P") || taskStudyMetrics.subject.includes("25P-L1")
+    || !taskStudyMetrics.boundary.includes("25P-L1")
+    || taskStudyMetrics.cardMeta !== "陌生讀者任務 · 25P") {
+    failures.push("25P-S1 task-study presentation incorrectly implies a blind comparison.");
   }
 
   const report = {

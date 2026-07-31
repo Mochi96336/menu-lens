@@ -28,9 +28,9 @@
 
 .model-section-strip {
   display: grid;
-  grid-template-columns: minmax(0, auto) minmax(18rem, 1fr);
-  gap: .75rem 1.5rem;
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .5rem;
+  align-items: start;
   padding-bottom: .9rem;
   border-bottom: 2px solid var(--ink);
 }
@@ -49,7 +49,7 @@
   gap: .35rem;
   overflow-x: auto;
   padding-bottom: .1rem;
-  scrollbar-gutter: stable;
+  scrollbar-width: none;
 }
 
 .model-section-tabs button,
@@ -68,7 +68,16 @@
   font-family: "Noto Serif TC", "PMingLiU", Georgia, serif;
 }
 
-.model-section-tabs button[aria-selected="true"],
+.model-section-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.model-section-tabs button[aria-selected="true"] {
+  border-color: transparent transparent var(--accent);
+  background: transparent;
+  color: var(--ink);
+}
+
 .model-toolbar button[aria-pressed="true"],
 .model-inspector-tabs button[aria-selected="true"] {
   border-color: var(--ink);
@@ -108,12 +117,24 @@
   font-size: .75rem;
 }
 
-.model-object-picker {
-  display: grid;
-  grid-template-columns: auto minmax(12rem, 20rem);
-  gap: .4rem;
+.model-toolbar__selection {
+  display: flex;
+  min-width: 0;
+  gap: .55rem;
   align-items: center;
   margin-left: auto;
+}
+
+.model-object-picker {
+  display: grid;
+  grid-template-columns: auto minmax(12rem, 18rem);
+  gap: .4rem;
+  align-items: center;
+}
+
+.model-compare-action {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
 }
 
 .model-object-picker select {
@@ -211,6 +232,26 @@
   font-size: .95rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.model-live-card__meta {
+  display: block;
+  overflow: hidden;
+  margin-top: .2rem;
+  color: var(--muted);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: .66rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.model-live-card[data-object-type="study"] {
+  border-top-style: double;
+  background: color-mix(in srgb, var(--surface) 86%, var(--paper));
+}
+
+.model-live-card[data-object-type="study"] > header {
+  background: color-mix(in srgb, var(--surface) 72%, var(--paper));
 }
 
 .model-live-card > header > .status {
@@ -461,10 +502,14 @@
     grid-template-columns: 1fr;
   }
 
-  .model-object-picker {
-    grid-template-columns: auto minmax(10rem, 1fr);
+  .model-toolbar__selection {
     width: 100%;
     margin-left: 0;
+  }
+
+  .model-object-picker {
+    grid-template-columns: auto minmax(10rem, 1fr);
+    flex: 1 1 auto;
   }
 
   #inspector-panel-summary,
@@ -495,6 +540,11 @@
   .model-toolbar__group > span,
   .model-object-picker > span {
     display: none;
+  }
+
+  .model-toolbar__selection {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .model-object-picker {

@@ -112,7 +112,8 @@ class FakeElement {
 const ids = [
   "model-select", "model-eyebrow", "model-title", "model-summary", "model-stats",
   "model-substrate", "model-retains", "model-varies", "model-question", "section-tabs",
-  "section-summary", "object-select", "view-all", "view-focus", "compare-parent", "viewport-note",
+  "section-summary", "object-picker", "object-select",
+  "view-all", "view-focus", "compare-parent", "viewport-note",
   "all-live-board", "inspector-role", "inspector-object-title", "inspector-status", "inspector-tabs",
   "inspector-panel-summary", "inspector-panel-relations", "inspector-panel-records",
   "difference-eyebrow", "difference-variable", "difference-before-label", "difference-before",
@@ -145,7 +146,6 @@ const viewportButtons = ["320", "390", "desktop"].map((viewport) => {
 const viewModeButtons = [
   [selectors.get("#view-all"), "all"],
   [selectors.get("#view-focus"), "focus"],
-  [selectors.get("#compare-parent"), "compare"],
 ].map(([button, mode]) => {
   button.dataset.viewMode = mode;
   return button;
@@ -216,14 +216,20 @@ try {
   if (lastUrl?.includes("view=") || lastUrl?.includes("compare=")) {
     throw new Error("The default all-object URL must remain canonical.");
   }
+  if (!selectors.get("#object-picker").hidden || !selectors.get("#compare-parent").hidden) {
+    throw new Error("Full-group view must avoid duplicate selected-object and parent controls.");
+  }
 
   currentFrame.reviewMarker = "pool-preserved";
   selectors.get("#view-focus").dispatch("click");
   const focusCards = board.children.filter((card) => !card.hidden);
   const focusFrame = focusCards[0]?.querySelector("iframe.model-live-frame");
   if (board.dataset.viewMode !== "focus" || focusCards.length !== 1
-    || focusFrame !== currentFrame || focusFrame.reviewMarker !== "pool-preserved") {
-    throw new Error("Focus mode must filter the canonical board without moving or recreating its iframe.");
+    || focusFrame !== currentFrame || focusFrame.reviewMarker !== "pool-preserved"
+    || selectors.get("#object-picker").hidden
+    || selectors.get("#compare-parent").hidden
+    || selectors.get("#compare-parent").textContent !== "與 18 比較") {
+    throw new Error("Selected-object view must reveal its picker and concrete comparison action without recreating the iframe.");
   }
   selectors.get("#view-all").dispatch("click");
   const returnedFrame = board.children
@@ -263,10 +269,13 @@ try {
   const compareParent = board.children
     .find((card) => card.dataset.objectId === "18")
     ?.querySelector("iframe.model-live-frame");
+  const compareRoles = compareCards.map((card) => card.querySelector(".model-live-card__role")?.textContent);
   if (board.dataset.viewMode !== "compare" || compareCards.length !== 2
     || compareCurrent !== currentFrame || compareParent !== parentFrame
-    || compareParent.reviewMarker !== "parent-preserved") {
-    throw new Error("Parent mode must filter two canonical board cards without moving their iframes.");
+    || compareParent.reviewMarker !== "parent-preserved"
+    || selectors.get("#compare-parent").textContent !== "結束比較"
+    || !compareRoles.includes("比較對象") || !compareRoles.includes("比較基準")) {
+    throw new Error("Concrete comparison must label its object and baseline without using current/Parent ambiguity.");
   }
 
   const inspectorTabs = selectors.get("#inspector-tabs").children;
@@ -289,8 +298,28 @@ try {
   if (!selectors.get("#compare-parent").hidden) {
     throw new Error("Study objects must not expose a fake parent comparison.");
   }
-  if (selectors.get("#inspector-role").textContent !== "研究工具") {
-    throw new Error("Study objects must retain their research-tool role.");
+  if (selectors.get("#inspector-role").textContent !== "研究工具"
+    || selectors.get("#inspector-object-title").textContent !== "12A-S1 · Blinded Reader Comparison"
+    || selectors.get("#difference-variable").textContent !== "盲測比較") {
+    throw new Error("12A-S1 must retain its identity and explicit blinded-comparison method.");
+  }
+  const studyCard = selectors.get("#all-live-board").children.find((card) => card.dataset.objectId === "12A-S1");
+  if (studyCard?.querySelector(".model-live-card__select")?.children[0]?.textContent !== "12A-S1 · Blinded Reader Comparison"
+    || studyCard?.querySelector(".model-live-card__meta")?.textContent !== "盲測比較 · 12 / 12A") {
+    throw new Error("12A-S1 card must separate research-tool role, object identity, and protocol metadata.");
+  }
+
+  modelSelect.value = "depth-projection";
+  modelSelect.dispatch("change");
+  selectors.get("#object-select").value = "25P-S1";
+  selectors.get("#object-select").dispatch("change");
+  const depthStudyCard = selectors.get("#all-live-board").children.find((card) => card.dataset.objectId === "25P-S1");
+  if (selectors.get("#inspector-object-title").textContent !== "25P-S1 · Unfamiliar-reader Study"
+    || selectors.get("#difference-variable").textContent !== "陌生讀者任務"
+    || selectors.get("#difference-before").textContent.includes("25P-L1")
+    || !selectors.get("#difference-unchanged").textContent.includes("25P-L1")
+    || depthStudyCard?.querySelector(".model-live-card__meta")?.textContent !== "陌生讀者任務 · 25P") {
+    throw new Error("25P-S1 must describe one study condition with L1 as a prerequisite, not a blind comparison.");
   }
 
   if (typeof popstateListener !== "function") {
@@ -313,6 +342,7 @@ try {
     "flex: 0 0 calc(var(--model-live-width)",
     'data-view-mode="compare"',
     ".model-object-inspector",
+    'data-object-type="study"',
     "#inspector-panel-summary",
   ]) {
     if (!css.includes(contract)) throw new Error(`Model workbench CSS is missing refactor contract: ${contract}`);
