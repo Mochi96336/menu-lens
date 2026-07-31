@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "npm run build && node scripts/serve.mjs",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "node scripts/archive/run-study-presentation-refinement.mjs && tsc --noEmit",
     "test": "node scripts/clean.mjs && tsc && node dist/src/domain/menu-validation.test.js && node dist/src/customer/menu-reading.test.js && node scripts/archive/run-archive-validators.mjs && node scripts/validate-menu-depth.mjs",
-    "build": "node scripts/clean.mjs && tsc && node scripts/archive/run-archive-validators.mjs && node scripts/validate-menu-depth.mjs && node scripts/build-static.mjs"
+    "build": "node scripts/clean.mjs && tsc && node scripts/archive/run-archive-validators.mjs && node scripts/validate-menu-depth.mjs && node scripts/build-static.mjs && node scripts/archive/export-study-refinement-source.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
