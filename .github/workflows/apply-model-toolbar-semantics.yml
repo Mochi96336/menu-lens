@@ -36,8 +36,8 @@ jobs:
             'variable: targetIds.length ? `${targetIds.join(" / ")} 盲測` : "比較研究流程",': 'variable: targetIds.length ? targetIds.join(" / ") + " 盲測" : "比較研究流程",',
             '? `${object.id} · 研究工具`': '? object.id + " · 研究工具"',
             ': (object.objectType === "correction" ? `${object.id} · 必要修正` : objectLabel(object));': ': (object.objectType === "correction" ? object.id + " · 必要修正" : objectLabel(object));',
-            '? `${viewportLabel()} 原尺寸並排；整個操作板共用一條水平捲動。`': '? \\`${viewportLabel()} 原尺寸並排；整個操作板共用一條水平捲動。\\`',
-            ': `${viewportLabel()} 原尺寸操作；切換模式與寬度不會重載研究物件。`;': ': \\`${viewportLabel()} 原尺寸操作；切換模式與寬度不會重載研究物件。\\`;',
+            '? `${viewportLabel()} 原尺寸並排；整個操作板共用一條水平捲動。`': '? \\`\\${viewportLabel()} 原尺寸並排；整個操作板共用一條水平捲動。\\`',
+            ': `${viewportLabel()} 原尺寸操作；切換模式與寬度不會重載研究物件。`;': ': \\`\\${viewportLabel()} 原尺寸操作；切換模式與寬度不會重載研究物件。\\`;',
           }
           for before, after in replacements.items():
             count = source.count(before)
