@@ -70,6 +70,11 @@ export const createModelObjectInspector = ({
     if (object.objectType === "study") {
       const presentation = studyPresentations[object.id];
       if (!presentation) throw new Error(`Study ${object.id} is missing explicit presentation metadata.`);
+      const prerequisites = describeReferences(presentation.prerequisiteIds);
+      const boundary = [
+        prerequisites ? `前置條件：${prerequisites}。` : "",
+        presentation.boundary,
+      ].filter(Boolean).join(" ");
       return {
         eyebrow: "研究工具",
         variable: presentation.method,
@@ -78,7 +83,7 @@ export const createModelObjectInspector = ({
         afterLabel: "研究流程",
         after: object.summary,
         unchangedLabel: presentation.boundaryLabel,
-        unchanged: presentation.boundary,
+        unchanged: boundary,
       };
     }
 
