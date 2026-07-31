@@ -69,18 +69,16 @@ export const createModelObjectInspector = ({
 
     if (object.objectType === "study") {
       const presentation = studyPresentations[object.id];
-      const subjectIds = presentation?.subjectIds
-        ?? asArray(object.evidenceFor).filter((id) => objectById.has(id));
+      if (!presentation) throw new Error(`Study ${object.id} is missing explicit presentation metadata.`);
       return {
         eyebrow: "研究工具",
-        variable: presentation?.method ?? "研究流程",
-        beforeLabel: presentation?.subjectLabel ?? "研究對象",
-        before: describeReferences(subjectIds) || parent?.summary || "尚未記錄研究對象。",
+        variable: presentation.method,
+        beforeLabel: presentation.subjectLabel,
+        before: describeReferences(presentation.subjectIds) || "尚未記錄研究對象。",
         afterLabel: "研究流程",
         after: object.summary,
-        unchangedLabel: presentation?.boundaryLabel ?? "判讀限制",
-        unchanged: presentation?.boundary
-          ?? "研究工具是否可執行，不等於其中任何 prototype 已獲採用。",
+        unchangedLabel: presentation.boundaryLabel,
+        unchanged: presentation.boundary,
       };
     }
 
