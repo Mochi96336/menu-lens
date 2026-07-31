@@ -8,7 +8,6 @@ const studyIds = new Set(studies.map((object) => object.id));
 
 const allowedFields = new Set([
   "method",
-  "cardMeta",
   "subjectLabel",
   "subjectIds",
   "prerequisiteIds",
@@ -46,12 +45,15 @@ for (const study of studies) {
       throw new Error(`Study presentation ${study.id} has unsupported field ${key}.`);
     }
   }
-  if (Object.prototype.hasOwnProperty.call(presentation, "title")) {
-    throw new Error(`Study presentation ${study.id} must not duplicate canonical title identity.`);
+  for (const identityField of ["title", "cardMeta"]) {
+    if (Object.prototype.hasOwnProperty.call(presentation, identityField)) {
+      throw new Error(
+        `Study presentation ${study.id} must not duplicate derived or canonical field ${identityField}.`,
+      );
+    }
   }
 
   requireString(presentation.method, `Study presentation ${study.id}.method`);
-  requireString(presentation.cardMeta, `Study presentation ${study.id}.cardMeta`);
   requireString(presentation.subjectLabel, `Study presentation ${study.id}.subjectLabel`);
   requireReferenceIds(presentation.subjectIds, `Study presentation ${study.id}.subjectIds`);
   requireReferenceIds(
@@ -67,6 +69,13 @@ for (const study of studies) {
     throw new Error(
       `Study presentation ${study.id} cannot treat ${overlap.join(", ")} as both subject and prerequisite.`,
     );
+  }
+  for (const prerequisiteId of presentation.prerequisiteIds) {
+    if (!study.dependsOn.includes(prerequisiteId)) {
+      throw new Error(
+        `Study presentation ${study.id} prerequisite ${prerequisiteId} must appear in canonical dependsOn.`,
+      );
+    }
   }
 }
 
