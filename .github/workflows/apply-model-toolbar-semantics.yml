@@ -12,14 +12,14 @@ env:
 
 jobs:
   validate-and-apply:
-    if: github.head_ref == 'agent/refactor-model-workbench-hierarchy' && github.actor != 'github-actions[bot]'
+    if: github.head_ref == 'agent/refine-model-selection-semantics' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
-      - name: Check out refactor branch
+      - name: Check out refinement branch
         uses: actions/checkout@v6
         with:
-          ref: agent/refactor-model-workbench-hierarchy
+          ref: agent/refine-model-selection-semantics
           fetch-depth: 0
 
       - name: Apply toolbar and study semantics refinement
@@ -88,4 +88,4 @@ jobs:
             scripts/archive/validate-model-page-renderer.mjs
           git rm scripts/archive/apply-model-toolbar-semantics.mjs .github/workflows/apply-model-toolbar-semantics.yml
           git commit -m 'Refine model selection and comparison semantics'
-          git push origin HEAD:agent/refactor-model-workbench-hierarchy
+          git push origin HEAD:agent/refine-model-selection-semantics
