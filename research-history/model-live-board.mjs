@@ -4,6 +4,7 @@ export const createModelLiveBoard = ({
   objectLabel,
   setStatus,
   syncSurface,
+  cardPresentation,
   onSelect,
 }) => {
   const cards = new Map();
@@ -23,7 +24,9 @@ export const createModelLiveBoard = ({
     select.className = "model-live-card__select";
     select.dataset.allObjectId = object.id;
     const title = document.createElement("strong");
-    select.append(title);
+    const meta = document.createElement("small");
+    meta.className = "model-live-card__meta";
+    select.append(title, meta);
     select.addEventListener("click", () => onSelect(object));
 
     const status = document.createElement("span");
@@ -34,15 +37,19 @@ export const createModelLiveBoard = ({
     surface.className = "model-live-card__surface";
     card.append(header, surface);
 
-    const entry = { card, role, select, title, status, surface };
+    const entry = { card, role, select, title, meta, status, surface };
     cards.set(object.id, entry);
     return entry;
   };
 
   const syncCard = (entry, object, active) => {
+    const presentation = cardPresentation(object);
     entry.card.dataset.current = String(active);
+    entry.card.dataset.objectType = object.objectType;
     entry.select.setAttribute("aria-current", String(active));
-    entry.title.textContent = objectLabel(object);
+    entry.title.textContent = presentation.title;
+    entry.meta.textContent = presentation.meta;
+    entry.meta.hidden = !presentation.meta;
     setStatus(entry.status, object);
   };
 
@@ -105,8 +112,18 @@ export const createModelLiveBoard = ({
       entry.card.style.order = viewMode === "compare"
         ? String(isActive ? 0 : (isParent ? 1 : index + 2))
         : String(index);
-      entry.role.hidden = viewMode !== "compare" || !visible;
-      entry.role.textContent = isActive ? "目前" : (isParent ? "Parent" : "");
+      let roleText = "";
+      if (viewMode === "compare" && visible) {
+        roleText = isActive ? "比較對象" : (isParent ? "比較基準" : "");
+      } else if (object.objectType === "study") {
+        roleText = "研究工具";
+      } else if (object.objectType === "correction") {
+        roleText = "必要修正";
+      } else if (isActive) {
+        roleText = "已選取";
+      }
+      entry.role.hidden = !roleText;
+      entry.role.textContent = roleText;
     }
 
     if (viewMode === "all") revealActiveCard(activeObject.id);

@@ -60,11 +60,10 @@
         </div>
 
         <div class="model-toolbar" aria-label="研究物件顯示設定">
-          <div class="model-toolbar__group" aria-label="觀察模式">
-            <span>顯示</span>
-            <button id="view-all" type="button" data-view-mode="all" aria-pressed="true">本組全部</button>
-            <button id="view-focus" type="button" data-view-mode="focus" aria-pressed="false">單張</button>
-            <button id="compare-parent" type="button" data-view-mode="compare" aria-pressed="false">Parent</button>
+          <div class="model-toolbar__group" aria-label="檢視範圍">
+            <span>檢視</span>
+            <button id="view-all" type="button" data-view-mode="all" aria-pressed="true">整組</button>
+            <button id="view-focus" type="button" data-view-mode="focus" aria-pressed="false">選取</button>
           </div>
 
           <div class="model-toolbar__group" aria-label="Viewport 尺寸">
@@ -74,10 +73,17 @@
             <button type="button" data-viewport="desktop" aria-pressed="false">1024</button>
           </div>
 
-          <label class="model-object-picker">
-            <span>目前物件</span>
-            <select id="object-select" aria-label="切換目前研究物件"></select>
-          </label>
+          <div class="model-toolbar__selection">
+            <p id="selection-summary" class="model-selection-summary">
+              <span>已選取</span>
+              <strong id="selection-label"></strong>
+            </p>
+            <label id="object-picker" class="model-object-picker" hidden>
+              <span>選取物件</span>
+              <select id="object-select" aria-label="切換選取的研究物件"></select>
+            </label>
+            <button id="compare-parent" class="model-compare-action" type="button" aria-pressed="false" hidden>與 parent 比較</button>
+          </div>
         </div>
 
         <p id="viewport-note" class="model-viewport-note" aria-live="polite"></p>

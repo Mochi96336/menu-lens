@@ -122,6 +122,9 @@ const elements = Object.freeze({
   modelQuestion: requiredElement("#model-question"),
   sectionTabs: requiredElement("#section-tabs"),
   sectionSummary: requiredElement("#section-summary"),
+  selectionSummary: requiredElement("#selection-summary"),
+  selectionLabel: requiredElement("#selection-label"),
+  objectPicker: requiredElement("#object-picker"),
   objectSelect: requiredElement("#object-select"),
   viewAll: requiredElement("#view-all"),
   viewFocus: requiredElement("#view-focus"),
@@ -182,6 +185,40 @@ const variantStateLabel = (object) => {
   return dispositionLabels[object.disposition] ?? object.disposition;
 };
 
+const shortSectionLabels = Object.freeze({
+  baseline: "完整基準",
+  "ledger-density": "Ledger",
+  "market-baseline": "市場基準",
+  spread: "分類 Spread",
+  ribbon: "料理 Ribbon",
+  fisheye: "Fisheye",
+  "semantic-information": "固定紙面",
+  "stopped-lenses": "局部鏡頭",
+  "elastic-geometry": "彈性幾何",
+  core: "共同母體",
+  "reading-grammar": "閱讀文法",
+  "focus-geometry": "焦點幾何",
+  "reading-surface": "閱讀表面",
+  "vertical-writing": "直排",
+});
+
+const sectionTabLabel = (section) => shortSectionLabels[section.id] ?? section.title;
+const evidenceTargetIds = (object) => (Array.isArray(object.evidenceFor) ? object.evidenceFor : [])
+  .filter((id) => objectById.has(id));
+const cardPresentation = (object) => {
+  if (object.objectType === "study") {
+    const targets = evidenceTargetIds(object);
+    return {
+      title: object.id + " · 研究工具",
+      meta: targets.length ? "比較 " + targets.join(" / ") : displayTitle(object),
+    };
+  }
+  if (object.objectType === "correction") {
+    return { title: object.id + " · 必要修正", meta: displayTitle(object) };
+  }
+  return { title: objectLabel(object), meta: "" };
+};
+
 const canCompareWithParent = (object, parent) =>
   object.objectType === "prototype" && Boolean(object.entrypoint && parent?.entrypoint);
 
@@ -223,6 +260,7 @@ const board = createModelLiveBoard({
   objectLabel,
   setStatus,
   syncSurface,
+  cardPresentation,
   onSelect: (object) => {
     state.setObject(object);
     render({ historyMode: "push", focusTarget: { kind: "card", id: object.id } });
@@ -262,7 +300,8 @@ const renderSectionTabs = ({ model, section }) => {
     button.type = "button";
     button.role = "tab";
     button.dataset.sectionId = candidate.id;
-    button.textContent = candidate.title;
+    button.textContent = sectionTabLabel(candidate);
+    button.title = candidate.title;
     button.tabIndex = selected ? 0 : -1;
     button.setAttribute("aria-selected", String(selected));
     button.addEventListener("keydown", (event) =>
@@ -301,18 +340,27 @@ const renderToolbar = ({ object, viewport, viewMode }) => {
     state.setViewMode("focus");
     viewMode = "focus";
   }
-  elements.compareParent.hidden = !canCompare;
+  const comparing = viewMode === "compare";
+  elements.selectionSummary.hidden = viewMode !== "all";
+  elements.selectionLabel.textContent = objectLabel(object);
+  elements.objectPicker.hidden = viewMode === "all";
+  elements.compareParent.hidden = !canCompare || viewMode === "all";
   elements.compareParent.disabled = !canCompare;
+  elements.compareParent.setAttribute("aria-pressed", String(comparing));
+  elements.compareParent.textContent = comparing ? "結束比較" : "與 " + (parent?.id ?? "parent") + " 比較";
   for (const button of viewModeButtons) {
-    button.setAttribute("aria-pressed", String(button.dataset.viewMode === viewMode));
+    const selected = button.dataset.viewMode === "all" ? viewMode === "all" : viewMode !== "all";
+    button.setAttribute("aria-pressed", String(selected));
   }
   for (const button of viewportButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.viewport === viewport));
   }
   elements.board.dataset.viewport = viewport;
-  elements.viewportNote.textContent = viewMode === "all"
-    ? `${viewportLabel()} 原尺寸並排；整個操作板共用一條水平捲動。`
-    : `${viewportLabel()} 原尺寸操作；切換模式與寬度不會重載研究物件。`;
+  const needsViewportHint = viewport === "desktop";
+  elements.viewportNote.hidden = !needsViewportHint;
+  elements.viewportNote.textContent = needsViewportHint
+    ? "1024px 畫面維持原尺寸，請橫向移動操作板。"
+    : "";
   return { parent, canCompare, viewMode };
 };
 
@@ -380,6 +428,11 @@ for (const button of viewModeButtons) {
     render({ historyMode: "push" });
   });
 }
+
+elements.compareParent.addEventListener("click", () => {
+  state.setViewMode(state.value.viewMode === "compare" ? "focus" : "compare");
+  render({ historyMode: "push" });
+});
 
 for (const button of viewportButtons) {
   button.addEventListener("click", () => {
