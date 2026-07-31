@@ -112,7 +112,7 @@ class FakeElement {
 const ids = [
   "model-select", "model-eyebrow", "model-title", "model-summary", "model-stats",
   "model-substrate", "model-retains", "model-varies", "model-question", "section-tabs",
-  "section-summary", "selection-summary", "selection-label", "object-picker", "object-select",
+  "section-summary", "object-picker", "object-select",
   "view-all", "view-focus", "compare-parent", "viewport-note",
   "all-live-board", "inspector-role", "inspector-object-title", "inspector-status", "inspector-tabs",
   "inspector-panel-summary", "inspector-panel-relations", "inspector-panel-records",
@@ -216,11 +216,8 @@ try {
   if (lastUrl?.includes("view=") || lastUrl?.includes("compare=")) {
     throw new Error("The default all-object URL must remain canonical.");
   }
-  if (selectors.get("#selection-summary").hidden
-    || selectors.get("#selection-label").textContent !== "18B · Semantic Zoom"
-    || !selectors.get("#object-picker").hidden
-    || !selectors.get("#compare-parent").hidden) {
-    throw new Error("Full-group view must show a plain selected-object summary without parent controls.");
+  if (!selectors.get("#object-picker").hidden || !selectors.get("#compare-parent").hidden) {
+    throw new Error("Full-group view must avoid duplicate selected-object and parent controls.");
   }
 
   currentFrame.reviewMarker = "pool-preserved";
@@ -302,12 +299,27 @@ try {
     throw new Error("Study objects must not expose a fake parent comparison.");
   }
   if (selectors.get("#inspector-role").textContent !== "研究工具"
-    || selectors.get("#inspector-object-title").textContent !== "12A-S1 · 研究工具") {
-    throw new Error("Study objects must use a distinct research-tool presentation.");
+    || selectors.get("#inspector-object-title").textContent !== "12A-S1 · Blinded Reader Comparison"
+    || selectors.get("#difference-variable").textContent !== "盲測比較") {
+    throw new Error("12A-S1 must retain its identity and explicit blinded-comparison method.");
   }
   const studyCard = selectors.get("#all-live-board").children.find((card) => card.dataset.objectId === "12A-S1");
-  if (studyCard?.querySelector(".model-live-card__meta")?.textContent !== "比較 12 / 12A") {
-    throw new Error("Study cards must name their compared objects instead of resembling a normal variant.");
+  if (studyCard?.querySelector(".model-live-card__select")?.children[0]?.textContent !== "12A-S1 · Blinded Reader Comparison"
+    || studyCard?.querySelector(".model-live-card__meta")?.textContent !== "盲測比較 · 12 / 12A") {
+    throw new Error("12A-S1 card must separate research-tool role, object identity, and protocol metadata.");
+  }
+
+  modelSelect.value = "depth-projection";
+  modelSelect.dispatch("change");
+  selectors.get("#object-select").value = "25P-S1";
+  selectors.get("#object-select").dispatch("change");
+  const depthStudyCard = selectors.get("#all-live-board").children.find((card) => card.dataset.objectId === "25P-S1");
+  if (selectors.get("#inspector-object-title").textContent !== "25P-S1 · Unfamiliar-reader Study"
+    || selectors.get("#difference-variable").textContent !== "陌生讀者任務"
+    || selectors.get("#difference-before").textContent.includes("25P-L1")
+    || !selectors.get("#difference-unchanged").textContent.includes("25P-L1")
+    || depthStudyCard?.querySelector(".model-live-card__meta")?.textContent !== "陌生讀者任務 · 25P") {
+    throw new Error("25P-S1 must describe one study condition with L1 as a prerequisite, not a blind comparison.");
   }
 
   if (typeof popstateListener !== "function") {
@@ -330,7 +342,6 @@ try {
     "flex: 0 0 calc(var(--model-live-width)",
     'data-view-mode="compare"',
     ".model-object-inspector",
-    ".model-selection-summary",
     'data-object-type="study"',
     "#inspector-panel-summary",
   ]) {
