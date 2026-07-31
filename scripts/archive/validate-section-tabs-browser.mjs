@@ -145,6 +145,9 @@ const cases = [
     objectIds: ["19", "20", "21"],
     requireAllVisible: false,
     requireScrollable: true,
+    expectedOverflowStart: "true",
+    expectedOverflowEnd: "false",
+    requireMask: true,
   },
 ];
 
@@ -207,6 +210,8 @@ try {
       const tabs = [...strip.querySelectorAll('button')];
       const selected = tabs.find((button) => button.getAttribute('aria-selected') === 'true');
       const selectedRect = selected.getBoundingClientRect();
+      const style = getComputedStyle(strip);
+      const maskImage = style.maskImage || style.webkitMaskImage || 'none';
       const tabMetrics = tabs.map((button) => {
         const rect = button.getBoundingClientRect();
         return {
@@ -226,14 +231,19 @@ try {
         selectedLabel: selected.textContent,
         selectedVisible: selectedRect.left >= stripRect.left - 1
           && selectedRect.right <= stripRect.right + 1,
+        selectedFocused: document.activeElement === selected,
         allVisible: tabMetrics.every((tab) => tab.fullyVisible),
         fullWidthTab: tabMetrics.some((tab) => tab.width >= stripRect.width - 2),
         stripWidth: stripRect.width,
         stripScrollLeft: strip.scrollLeft,
         stripScrollable: strip.scrollWidth > strip.clientWidth + 1,
+        overflowStart: strip.dataset.overflowStart,
+        overflowEnd: strip.dataset.overflowEnd,
+        maskImage,
         summary: document.querySelector('#section-summary').textContent,
         objectIds: [...document.querySelectorAll('#all-live-board .model-live-card')]
           .map((card) => card.dataset.objectId),
+        url: location.href,
         documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
       };
     })()`);
@@ -249,10 +259,120 @@ try {
       || JSON.stringify(metrics.objectIds) !== JSON.stringify(testCase.objectIds)
       || (testCase.requireAllVisible && !metrics.allVisible)
       || (testCase.requireScrollable && !metrics.stripScrollable)
+      || (testCase.expectedOverflowStart && metrics.overflowStart !== testCase.expectedOverflowStart)
+      || (testCase.expectedOverflowEnd && metrics.overflowEnd !== testCase.expectedOverflowEnd)
+      || (testCase.requireMask && (!metrics.maskImage || metrics.maskImage === "none"))
       || metrics.documentOverflow) {
       failures.push(`${testCase.name}: ${JSON.stringify(metrics)}`);
     }
   }
+
+
+  const interactiveLabels = ["共同母體", "閱讀文法", "焦點幾何", "閱讀表面", "直排", "停止路線"];
+  const waitForInteractiveSection = (selectedId, objectIds, label) => waitFor(client, `(() => {
+    const selected = document.querySelector('#section-tabs button[aria-selected="true"]');
+    const visibleIds = [...document.querySelectorAll('#all-live-board .model-live-card')]
+      .map((card) => card.dataset.objectId);
+    return document.querySelector('#model-title')?.textContent === 'Landscape Paper'
+      && selected?.dataset.sectionId === ${JSON.stringify(selectedId)}
+      && JSON.stringify(visibleIds) === ${JSON.stringify(JSON.stringify(objectIds))};
+  })()`, label);
+  const settleInteractiveLayout = async () => {
+    await evaluate(client, "document.fonts?.ready ?? Promise.resolve()");
+    await evaluate(client, `new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve)))`);
+  };
+  const readInteractiveMetrics = () => evaluate(client, `(() => {
+    const strip = document.querySelector('#section-tabs');
+    const stripRect = strip.getBoundingClientRect();
+    const selected = strip.querySelector('button[aria-selected="true"]');
+    const selectedRect = selected.getBoundingClientRect();
+    const style = getComputedStyle(strip);
+    return {
+      labels: [...strip.querySelectorAll('button')].map((button) => button.textContent),
+      selectedId: selected.dataset.sectionId,
+      selectedVisible: selectedRect.left >= stripRect.left - 1
+        && selectedRect.right <= stripRect.right + 1,
+      selectedFocused: document.activeElement === selected,
+      stripScrollable: strip.scrollWidth > strip.clientWidth + 1,
+      stripScrollLeft: strip.scrollLeft,
+      overflowStart: strip.dataset.overflowStart,
+      overflowEnd: strip.dataset.overflowEnd,
+      maskImage: style.maskImage || style.webkitMaskImage || 'none',
+      summary: document.querySelector('#section-summary').textContent,
+      objectIds: [...document.querySelectorAll('#all-live-board .model-live-card')]
+        .map((card) => card.dataset.objectId),
+      url: location.href,
+      documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    };
+  })()`);
+
+  await setViewport(client, 390);
+  await client.send("Page.navigate", {
+    url: `${baseUrl}/models/?model=landscape-paper&section=core&variant=18&viewport=390`,
+  });
+  await waitForInteractiveSection("core", ["18", "18A"], "interactive core initial state");
+  await settleInteractiveLayout();
+  const initialMetrics = await readInteractiveMetrics();
+
+  await evaluate(client, `document.querySelector('[data-section-id="stopped-routes"]').click()`);
+  await waitForInteractiveSection("stopped-routes", ["19", "20", "21"], "interactive clicked stopped routes");
+  await settleInteractiveLayout();
+  const clickedMetrics = await readInteractiveMetrics();
+  await capture(client, "landscape-390-section-click.png");
+
+  await evaluate(client, "history.back()");
+  await waitForInteractiveSection("core", ["18", "18A"], "interactive history back");
+  await settleInteractiveLayout();
+  const backMetrics = await readInteractiveMetrics();
+
+  await evaluate(client, "history.forward()");
+  await waitForInteractiveSection("stopped-routes", ["19", "20", "21"], "interactive history forward");
+  await settleInteractiveLayout();
+  const forwardMetrics = await readInteractiveMetrics();
+
+  const coreSummary = "比較等寬三欄與依內容數量配置的 14:10:6 外欄比例，其他閱讀機制維持不變。";
+  const stoppedSummary = "Rigid locator、3D fold 與 two-column window 的執行結果顯示定位、遮擋或閱讀窗口限制，因此停止延伸。";
+  const coreValid = (metrics) => JSON.stringify(metrics.labels) === JSON.stringify(interactiveLabels)
+    && metrics.selectedId === "core"
+    && metrics.selectedVisible
+    && metrics.stripScrollable
+    && metrics.overflowStart === "false"
+    && metrics.overflowEnd === "true"
+    && metrics.maskImage !== "none"
+    && metrics.summary === coreSummary
+    && JSON.stringify(metrics.objectIds) === JSON.stringify(["18", "18A"])
+    && metrics.url.includes("section=core")
+    && metrics.url.includes("variant=18")
+    && !metrics.documentOverflow;
+  const stoppedValid = (metrics) => JSON.stringify(metrics.labels) === JSON.stringify(interactiveLabels)
+    && metrics.selectedId === "stopped-routes"
+    && metrics.selectedVisible
+    && metrics.stripScrollable
+    && metrics.overflowStart === "true"
+    && metrics.overflowEnd === "false"
+    && metrics.maskImage !== "none"
+    && metrics.summary === stoppedSummary
+    && JSON.stringify(metrics.objectIds) === JSON.stringify(["19", "20", "21"])
+    && metrics.url.includes("section=stopped-routes")
+    && metrics.url.includes("variant=19")
+    && !metrics.documentOverflow;
+  if (!coreValid(initialMetrics)
+    || !stoppedValid(clickedMetrics)
+    || !clickedMetrics.selectedFocused
+    || !coreValid(backMetrics)
+    || !stoppedValid(forwardMetrics)) {
+    failures.push(`click/back/forward contract: ${JSON.stringify({
+      initialMetrics,
+      clickedMetrics,
+      backMetrics,
+      forwardMetrics,
+    })}`);
+  }
+  results.push({
+    name: "landscape-390-click-back-forward",
+    metrics: { initialMetrics, clickedMetrics, backMetrics, forwardMetrics },
+  });
 
   const report = {
     browser,
@@ -269,7 +389,7 @@ try {
     throw new Error(`Section-tab browser review failed:\n- ${failures.join("\n- ")}`);
   }
   socket.close();
-  console.log("Section-tab browser review: labels, active section, summary, cards, and visible selected tab verified.");
+  console.log("Section-tab browser review: overflow cues, direct URLs, click navigation, and history restoration verified.");
 } catch (error) {
   if (browserStderr.trim()) console.error(browserStderr.trim());
   throw error;

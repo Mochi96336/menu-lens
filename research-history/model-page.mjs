@@ -208,19 +208,38 @@ const shortSectionLabels = Object.freeze({
 
 const sectionTabLabel = (section) => shortSectionLabels[section.id] ?? section.title;
 
+const syncSectionTabOverflow = () => {
+  const container = elements.sectionTabs;
+  const viewportWidth = Number(container.clientWidth) || 0;
+  const contentWidth = Number(container.scrollWidth) || 0;
+  const maxScroll = Math.max(0, contentWidth - viewportWidth);
+  const scrollLeft = Math.min(maxScroll, Math.max(0, Number(container.scrollLeft) || 0));
+  container.dataset.overflowStart = String(scrollLeft > 1);
+  container.dataset.overflowEnd = String(scrollLeft < maxScroll - 1);
+};
+
 const revealSelectedSectionTab = (button) => {
   if (!button) return;
   const reveal = () => {
     const container = elements.sectionTabs;
+    const viewportWidth = Number(container.clientWidth) || 0;
+    const maxScroll = Math.max(0, (Number(container.scrollWidth) || 0) - viewportWidth);
+    const edgeInset = 12;
     const tabStart = button.offsetLeft;
     const tabEnd = tabStart + button.offsetWidth;
     const visibleStart = Number(container.scrollLeft) || 0;
-    const visibleEnd = visibleStart + container.clientWidth;
-    if (tabStart < visibleStart) container.scrollLeft = tabStart;
-    else if (tabEnd > visibleEnd) container.scrollLeft = tabEnd - container.clientWidth;
+    const visibleEnd = visibleStart + viewportWidth;
+    let target = visibleStart;
+    if (tabStart < visibleStart + edgeInset) target = tabStart - edgeInset;
+    else if (tabEnd > visibleEnd - edgeInset) target = tabEnd - viewportWidth + edgeInset;
+    container.scrollLeft = Math.min(maxScroll, Math.max(0, target));
+    syncSectionTabOverflow();
   };
-  if (typeof requestAnimationFrame === "function") requestAnimationFrame(reveal);
-  else reveal();
+  if (typeof requestAnimationFrame === "function") {
+    requestAnimationFrame(() => requestAnimationFrame(reveal));
+  } else {
+    reveal();
+  }
 };
 
 const cardPresentation = (object) => {
@@ -459,6 +478,12 @@ for (const button of viewportButtons) {
     render({ historyMode: "push" });
   });
 }
+
+elements.sectionTabs.addEventListener("scroll", syncSectionTabOverflow, { passive: true });
+const sectionTabsResizeObserver = typeof ResizeObserver === "function"
+  ? new ResizeObserver(syncSectionTabOverflow)
+  : null;
+sectionTabsResizeObserver?.observe(elements.sectionTabs);
 
 window.addEventListener?.("popstate", () => {
   state.replaceFromLocation();
