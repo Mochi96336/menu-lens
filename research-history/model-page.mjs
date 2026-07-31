@@ -68,10 +68,12 @@ const setStatus = (element, object) => {
 
 const displayTitle = (object) => {
   const title = String(object?.title ?? "");
-  const prefixes = [object?.id, object?.researchParentId]
+  const prefixIds = [object?.id];
+  if (object?.objectType === "study") prefixIds.push(object?.researchParentId);
+  const prefix = prefixIds
     .filter(Boolean)
-    .map((id) => `${id} `);
-  const prefix = prefixes.find((candidate) => title.startsWith(candidate));
+    .map((id) => `${id} `)
+    .find((candidate) => title.startsWith(candidate));
   return prefix ? title.slice(prefix.length).trim() : title;
 };
 const objectLabel = (object) => `${object.id} · ${displayTitle(object)}`;
@@ -211,7 +213,7 @@ const cardPresentation = (object) => {
     if (!presentation) throw new Error(`Study ${object.id} is missing explicit presentation metadata.`);
     return {
       title: objectLabel(object),
-      meta: presentation.cardMeta,
+      meta: `${presentation.method} · ${presentation.subjectIds.join(" / ")}`,
     };
   }
   if (object.objectType === "correction") {
