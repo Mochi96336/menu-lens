@@ -108,6 +108,6 @@ jobs:
             research-history/model-object-inspector.mjs \
             research-history/model-page-workbench.css \
             scripts/archive/validate-model-page-renderer.mjs
-          git rm scripts/archive/apply-model-toolbar-semantics.mjs .github/workflows/apply-model-toolbar-semantics.yml
+          git rm -f scripts/archive/apply-model-toolbar-semantics.mjs .github/workflows/apply-model-toolbar-semantics.yml
           git commit -m 'Refine model selection and comparison semantics'
           git push origin HEAD:agent/refine-model-selection-semantics
