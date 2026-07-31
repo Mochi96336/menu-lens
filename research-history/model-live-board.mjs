@@ -100,13 +100,13 @@ export const createModelLiveBoard = ({
     if (!card) return;
     const reset = () => {
       boardRoot.scrollLeft = 0;
-      const boardRect = boardRoot.getBoundingClientRect?.();
-      const cardRect = card.getBoundingClientRect?.();
-      const cardFits = boardRect && cardRect
-        ? cardRect.width <= boardRect.width + 1
-        : card.offsetWidth <= boardRoot.clientWidth;
+      const boardWidth = boardRoot.getBoundingClientRect?.().width ?? boardRoot.clientWidth;
+      const cardWidth = card.getBoundingClientRect?.().width ?? card.offsetWidth;
+      const cardFits = cardWidth <= boardWidth + 1;
       card.style.marginInline = viewMode === "focus" && cardFits ? "auto" : "0";
       boardRoot.style.justifyContent = "flex-start";
+      const boardRect = boardRoot.getBoundingClientRect?.();
+      const cardRect = card.getBoundingClientRect?.();
       boardRoot.dataset.startEdgeVisible = String(
         !boardRect || !cardRect || cardRect.left >= boardRect.left - 1,
       );
