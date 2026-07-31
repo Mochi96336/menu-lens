@@ -207,6 +207,22 @@ const shortSectionLabels = Object.freeze({
 });
 
 const sectionTabLabel = (section) => shortSectionLabels[section.id] ?? section.title;
+
+const revealSelectedSectionTab = (button) => {
+  if (!button) return;
+  const reveal = () => {
+    const container = elements.sectionTabs;
+    const tabStart = button.offsetLeft;
+    const tabEnd = tabStart + button.offsetWidth;
+    const visibleStart = Number(container.scrollLeft) || 0;
+    const visibleEnd = visibleStart + container.clientWidth;
+    if (tabStart < visibleStart) container.scrollLeft = tabStart;
+    else if (tabEnd > visibleEnd) container.scrollLeft = tabEnd - container.clientWidth;
+  };
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(reveal);
+  else reveal();
+};
+
 const cardPresentation = (object) => {
   if (object.objectType === "study") {
     const presentation = studyPresentations[object.id];
@@ -297,6 +313,7 @@ const renderModelDefinition = ({ model }) => {
 
 const renderSectionTabs = ({ model, section }) => {
   elements.sectionTabs.replaceChildren();
+  let selectedButton = null;
   for (const [index, candidate] of model.sections.entries()) {
     const selected = candidate.id === section.id;
     const button = document.createElement("button");
@@ -307,6 +324,7 @@ const renderSectionTabs = ({ model, section }) => {
     button.title = candidate.title;
     button.tabIndex = selected ? 0 : -1;
     button.setAttribute("aria-selected", String(selected));
+    if (selected) selectedButton = button;
     button.addEventListener("keydown", (event) =>
       focusAdjacent(event, [...elements.sectionTabs.children], index));
     button.addEventListener("click", () => {
@@ -316,6 +334,7 @@ const renderSectionTabs = ({ model, section }) => {
     elements.sectionTabs.append(button);
   }
   elements.sectionSummary.textContent = section.summary;
+  revealSelectedSectionTab(selectedButton);
 };
 
 const renderObjectSelect = ({ section, object }) => {
