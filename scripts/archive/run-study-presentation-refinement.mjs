@@ -71,3 +71,12 @@ const displayMatches = page.split(oldDisplayTitle).length - 1;
 if (displayMatches !== 1) throw new Error(`Expected one displayTitle block, found ${displayMatches}.`);
 page = page.replace(oldDisplayTitle, newDisplayTitle);
 await writeFile(pagePath, page, "utf8");
+
+const validatorPath = new URL("./validate-model-page-renderer.mjs", import.meta.url);
+let validator = await readFile(validatorPath, "utf8");
+const oldSelector = 'studyCard?.querySelector(".model-live-card__select strong")?.textContent';
+const newSelector = 'studyCard?.querySelector(".model-live-card__select")?.children[0]?.textContent';
+const selectorMatches = validator.split(oldSelector).length - 1;
+if (selectorMatches !== 1) throw new Error(`Expected one fake-DOM study-card selector, found ${selectorMatches}.`);
+validator = validator.replace(oldSelector, newSelector);
+await writeFile(validatorPath, validator, "utf8");
