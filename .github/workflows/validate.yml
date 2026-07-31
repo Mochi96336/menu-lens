@@ -51,6 +51,7 @@ jobs:
           test -n "$BROWSER_BIN"
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/generate-model-previews.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/capture-model-page-review.mjs
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-focus-edge-browser.mjs
 
       - name: Upload static build
         uses: actions/upload-artifact@v6
