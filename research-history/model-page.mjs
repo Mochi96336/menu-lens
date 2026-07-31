@@ -67,8 +67,6 @@ const setStatus = (element, object) => {
 };
 
 const displayTitle = (object) => {
-  const explicitTitle = studyPresentations[object?.id]?.title;
-  if (explicitTitle) return explicitTitle;
   const title = String(object?.title ?? "");
   const prefix = `${object?.id ?? ""} `;
   return prefix.trim() && title.startsWith(prefix) ? title.slice(prefix.length).trim() : title;
@@ -207,9 +205,10 @@ const sectionTabLabel = (section) => shortSectionLabels[section.id] ?? section.t
 const cardPresentation = (object) => {
   if (object.objectType === "study") {
     const presentation = studyPresentations[object.id];
+    if (!presentation) throw new Error(`Study ${object.id} is missing explicit presentation metadata.`);
     return {
       title: objectLabel(object),
-      meta: presentation?.cardMeta ?? "研究流程",
+      meta: presentation.cardMeta,
     };
   }
   if (object.objectType === "correction") {
