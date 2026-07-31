@@ -2,6 +2,7 @@ import { buildArchiveCatalog } from "./catalog/index.mjs";
 import { archiveExtensions } from "./catalog/all-extensions.mjs";
 import { archiveLegacyOverrides } from "./catalog/legacy-overrides.mjs";
 import { designModels, modelById, presentationNotes } from "./catalog/presentation-models.mjs";
+import { studyPresentations } from "./catalog/study-presentations.mjs";
 import { createModelPageState, sectionForObject } from "./model-page-state.mjs";
 import { createModelSurfacePool } from "./model-surface-pool.mjs";
 import { createModelLiveBoard } from "./model-live-board.mjs";
@@ -66,6 +67,8 @@ const setStatus = (element, object) => {
 };
 
 const displayTitle = (object) => {
+  const explicitTitle = studyPresentations[object?.id]?.title;
+  if (explicitTitle) return explicitTitle;
   const title = String(object?.title ?? "");
   const prefix = `${object?.id ?? ""} `;
   return prefix.trim() && title.startsWith(prefix) ? title.slice(prefix.length).trim() : title;
@@ -122,8 +125,6 @@ const elements = Object.freeze({
   modelQuestion: requiredElement("#model-question"),
   sectionTabs: requiredElement("#section-tabs"),
   sectionSummary: requiredElement("#section-summary"),
-  selectionSummary: requiredElement("#selection-summary"),
-  selectionLabel: requiredElement("#selection-label"),
   objectPicker: requiredElement("#object-picker"),
   objectSelect: requiredElement("#object-select"),
   viewAll: requiredElement("#view-all"),
@@ -203,18 +204,16 @@ const shortSectionLabels = Object.freeze({
 });
 
 const sectionTabLabel = (section) => shortSectionLabels[section.id] ?? section.title;
-const evidenceTargetIds = (object) => (Array.isArray(object.evidenceFor) ? object.evidenceFor : [])
-  .filter((id) => objectById.has(id));
 const cardPresentation = (object) => {
   if (object.objectType === "study") {
-    const targets = evidenceTargetIds(object);
+    const presentation = studyPresentations[object.id];
     return {
-      title: object.id + " · 研究工具",
-      meta: targets.length ? "比較 " + targets.join(" / ") : displayTitle(object),
+      title: objectLabel(object),
+      meta: presentation?.cardMeta ?? "研究流程",
     };
   }
   if (object.objectType === "correction") {
-    return { title: object.id + " · 必要修正", meta: displayTitle(object) };
+    return { title: objectLabel(object), meta: "" };
   }
   return { title: objectLabel(object), meta: "" };
 };
@@ -341,12 +340,9 @@ const renderToolbar = ({ object, viewport, viewMode }) => {
     viewMode = "focus";
   }
   const comparing = viewMode === "compare";
-  elements.selectionSummary.hidden = viewMode !== "all";
-  elements.selectionLabel.textContent = objectLabel(object);
   elements.objectPicker.hidden = viewMode === "all";
   elements.compareParent.hidden = !canCompare || viewMode === "all";
   elements.compareParent.disabled = !canCompare;
-  elements.compareParent.setAttribute("aria-pressed", String(comparing));
   elements.compareParent.textContent = comparing ? "結束比較" : "與 " + (parent?.id ?? "parent") + " 比較";
   for (const button of viewModeButtons) {
     const selected = button.dataset.viewMode === "all" ? viewMode === "all" : viewMode !== "all";
