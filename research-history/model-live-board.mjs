@@ -94,6 +94,28 @@ export const createModelLiveBoard = ({
     } else reveal();
   };
 
+  const resetFilteredBoardPosition = (activeObjectId, viewMode) => {
+    if (viewMode === "all") return;
+    const card = cards.get(activeObjectId)?.card;
+    if (!card) return;
+    const reset = () => {
+      boardRoot.scrollLeft = 0;
+      const boardRect = boardRoot.getBoundingClientRect?.();
+      const cardRect = card.getBoundingClientRect?.();
+      const cardFits = boardRect && cardRect
+        ? cardRect.width <= boardRect.width + 1
+        : card.offsetWidth <= boardRoot.clientWidth;
+      card.style.marginInline = viewMode === "focus" && cardFits ? "auto" : "0";
+      boardRoot.style.justifyContent = "flex-start";
+      boardRoot.dataset.startEdgeVisible = String(
+        !boardRect || !cardRect || cardRect.left >= boardRect.left - 1,
+      );
+    };
+    if (typeof requestAnimationFrame === "function") {
+      requestAnimationFrame(() => requestAnimationFrame(reset));
+    } else reset();
+  };
+
   const render = ({ objects, activeObject, parent = null, viewMode, viewport }) => {
     boardRoot.hidden = false;
     boardRoot.dataset.viewMode = viewMode;
@@ -113,6 +135,7 @@ export const createModelLiveBoard = ({
       entry.card.style.order = viewMode === "compare"
         ? String(isActive ? 0 : (isParent ? 1 : index + 2))
         : String(index);
+      entry.card.style.marginInline = "";
       let roleText = "";
       if (viewMode === "compare" && visible) {
         roleText = isActive ? "比較對象" : (isParent ? "比較基準" : "");
@@ -127,7 +150,13 @@ export const createModelLiveBoard = ({
       entry.role.textContent = roleText;
     }
 
-    if (viewMode === "all") revealActiveCard(activeObject.id);
+    if (viewMode === "all") {
+      boardRoot.style.justifyContent = "";
+      delete boardRoot.dataset.startEdgeVisible;
+      revealActiveCard(activeObject.id);
+    } else {
+      resetFilteredBoardPosition(activeObject.id, viewMode);
+    }
   };
 
   return {
