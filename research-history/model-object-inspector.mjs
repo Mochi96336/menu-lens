@@ -1,3 +1,5 @@
+import { studyPresentations } from "./catalog/study-presentations.mjs";
+
 const asArray = (value) => Array.isArray(value) ? value : [];
 
 const makeText = (tag, className, text) => {
@@ -66,16 +68,19 @@ export const createModelObjectInspector = ({
     const note = presentationNotes[object.id];
 
     if (object.objectType === "study") {
-      const targetIds = asArray(object.evidenceFor).filter((id) => objectById.has(id));
+      const presentation = studyPresentations[object.id];
+      const subjectIds = presentation?.subjectIds
+        ?? asArray(object.evidenceFor).filter((id) => objectById.has(id));
       return {
         eyebrow: "研究工具",
-        variable: targetIds.length ? targetIds.join(" / ") + " 盲測" : "比較研究流程",
-        beforeLabel: "比較對象",
-        before: describeReferences(object.evidenceFor) || parent?.summary || "尚未記錄比較對象。",
+        variable: presentation?.method ?? "研究流程",
+        beforeLabel: presentation?.subjectLabel ?? "研究對象",
+        before: describeReferences(subjectIds) || parent?.summary || "尚未記錄研究對象。",
         afterLabel: "研究流程",
         after: object.summary,
-        unchangedLabel: "判讀限制",
-        unchanged: "研究工具是否可執行，不等於其中任何 prototype 已獲採用。",
+        unchangedLabel: presentation?.boundaryLabel ?? "判讀限制",
+        unchanged: presentation?.boundary
+          ?? "研究工具是否可執行，不等於其中任何 prototype 已獲採用。",
       };
     }
 
@@ -320,9 +325,7 @@ export const createModelObjectInspector = ({
   const render = (context) => {
     const { object } = context;
     elements.role.textContent = differenceCopy(context).eyebrow;
-    elements.title.textContent = object.objectType === "study"
-      ? object.id + " · 研究工具"
-      : (object.objectType === "correction" ? object.id + " · 必要修正" : objectLabel(object));
+    elements.title.textContent = objectLabel(object);
     setStatus(elements.status, object);
     renderSummary(context);
     renderRelations(context);
