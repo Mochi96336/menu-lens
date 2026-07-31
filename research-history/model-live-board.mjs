@@ -99,17 +99,23 @@ export const createModelLiveBoard = ({
     const card = cards.get(activeObjectId)?.card;
     if (!card) return;
     const reset = () => {
-      boardRoot.scrollLeft = 0;
       const boardWidth = boardRoot.getBoundingClientRect?.().width ?? boardRoot.clientWidth;
       const cardWidth = card.getBoundingClientRect?.().width ?? card.offsetWidth;
       const cardFits = cardWidth <= boardWidth + 1;
-      card.style.marginInline = viewMode === "focus" && cardFits ? "auto" : "0";
+      boardRoot.style.scrollSnapType = "none";
       boardRoot.style.justifyContent = "flex-start";
-      const boardRect = boardRoot.getBoundingClientRect?.();
-      const cardRect = card.getBoundingClientRect?.();
-      boardRoot.dataset.startEdgeVisible = String(
-        !boardRect || !cardRect || cardRect.left >= boardRect.left - 1,
-      );
+      card.style.marginInline = viewMode === "focus" && cardFits ? "auto" : "0";
+
+      const finalize = () => {
+        boardRoot.scrollLeft = 0;
+        const boardRect = boardRoot.getBoundingClientRect?.();
+        const cardRect = card.getBoundingClientRect?.();
+        boardRoot.dataset.startEdgeVisible = String(
+          !boardRect || !cardRect || cardRect.left >= boardRect.left - 1,
+        );
+      };
+      if (typeof requestAnimationFrame === "function") requestAnimationFrame(finalize);
+      else finalize();
     };
     if (typeof requestAnimationFrame === "function") {
       requestAnimationFrame(() => requestAnimationFrame(reset));
@@ -152,6 +158,7 @@ export const createModelLiveBoard = ({
 
     if (viewMode === "all") {
       boardRoot.style.justifyContent = "";
+      boardRoot.style.scrollSnapType = "";
       delete boardRoot.dataset.startEdgeVisible;
       revealActiveCard(activeObject.id);
     } else {
