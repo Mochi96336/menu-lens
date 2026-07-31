@@ -2,7 +2,7 @@
 
 Menu Lens is an executable research archive for mobile restaurant-menu reading.
 
-The current public artifact is the [Research History](https://a20030824.github.io/menu-lens/): a catalog of complete-menu, relational, horizontal, matrix, landscape-paper, and depth prototypes built from the same 30-product fixture. Each prototype remains a distinct research object with its own status and lineage.
+The current public artifact is the [Research History](https://mochi96336.github.io/menu-lens/): a catalog of complete-menu, relational, horizontal, matrix, landscape-paper, and depth prototypes built from the same 30-product fixture. Each prototype remains a distinct research object with its own status and lineage.
 
 Archive v2 intake is complete. The active phase is now **evidence closure**: direct review of the remaining provisional mechanisms, execution of the prepared participant studies, and a later product-direction synthesis. This publication still does not select a production UI or turn the archive into an ordering product.
 
