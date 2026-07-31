@@ -30,7 +30,7 @@ const waitForHttp = async (url, attempts = 300) => {
       const response = await fetch(url);
       if (response.ok) return;
     } catch {
-      // The server or DevTools endpoint is not ready yet.
+      // Server or DevTools is not ready yet.
     }
     await delay(100);
   }
@@ -56,14 +56,11 @@ class CdpClient {
       for (const listener of this.listeners.get(message.method) ?? []) listener(message.params ?? {});
     });
   }
-
   send(method, params = {}) {
-    const id = this.nextId;
-    this.nextId += 1;
+    const id = this.nextId++;
     this.socket.send(JSON.stringify({ id, method, params }));
     return new Promise((resolve, reject) => this.pending.set(id, { resolve, reject }));
   }
-
   on(method, listener) {
     const listeners = this.listeners.get(method) ?? [];
     listeners.push(listener);
@@ -78,13 +75,14 @@ const evaluate = async (client, expression) => {
     returnByValue: true,
   });
   if (result.exceptionDetails) {
-    const details = result.exceptionDetails;
-    throw new Error(details.exception?.description ?? details.text ?? "Runtime evaluation failed.");
+    throw new Error(result.exceptionDetails.exception?.description
+      ?? result.exceptionDetails.text
+      ?? "Runtime evaluation failed.");
   }
   return result.result?.value;
 };
 
-const setViewport = (client, width, height = 900) => client.send("Emulation.setDeviceMetricsOverride", {
+const setViewport = (client, width, height = 1000) => client.send("Emulation.setDeviceMetricsOverride", {
   width,
   height,
   deviceScaleFactor: 1,
@@ -93,7 +91,7 @@ const setViewport = (client, width, height = 900) => client.send("Emulation.setD
   screenHeight: height,
 });
 
-const waitFor = async (client, expression, label, attempts = 240) => {
+const waitFor = async (client, expression, label, attempts = 300) => {
   let lastValue = null;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     try {
@@ -107,43 +105,58 @@ const waitFor = async (client, expression, label, attempts = 240) => {
   throw new Error(`Timed out waiting for ${label}: ${JSON.stringify(lastValue)}`);
 };
 
-const navigate = async (client, path, width, height = 900) => {
+const navigate = async (client, path, width, height = 1000) => {
   await setViewport(client, width, height);
   await client.send("Page.navigate", { url: `${baseUrl}${path}` });
   await waitFor(client, `(() => location.pathname === ${JSON.stringify(path.split("?")[0])}
     && document.readyState === 'complete'
-    && Boolean(document.querySelector('#current-object-title')?.textContent))()`, `model page ${path}`);
+    && Boolean(document.querySelector('#inspector-object-title')?.textContent))()`, `model page ${path}`);
   await evaluate(client, "document.fonts?.ready ?? Promise.resolve()");
 };
 
-const waitForLive = (client, rootSelector) => waitFor(client, `(() => {
-  const root = document.querySelector(${JSON.stringify(rootSelector)});
+const waitForRoot = (client, rootExpression, label) => waitFor(client, `(() => {
+  const root = ${rootExpression};
   const frame = root?.querySelector('iframe.model-live-frame');
   if (!root || !frame || root.dataset.liveState !== 'ready' || frame.hidden) return false;
   const frameDocument = frame.contentDocument;
   const liveRoot = frameDocument?.querySelector(root.dataset.liveRoot || '#prototype');
   const frameHeight = Number.parseFloat(frame.style.height);
   const rootHeight = liveRoot?.getBoundingClientRect().height ?? 0;
-  return Boolean(frameDocument && liveRoot && frameHeight > 0
+  return Boolean(liveRoot && frameHeight > 0
     && Math.abs(frameHeight - rootHeight) < 3
     && getComputedStyle(frame).pointerEvents !== 'none');
-})()`, `live surface ${rootSelector}`);
+})()`, label);
 
-const waitForLiveGroup = (client) => waitFor(client, `(() => {
-  const board = document.querySelector('#all-preview-grid');
-  const cards = [...board?.querySelectorAll('.model-preview-card') ?? []];
-  const roots = [...board?.querySelectorAll('.model-preview-card__surface') ?? []];
-  if (!board || getComputedStyle(board).display === 'none' || !cards.length || roots.length !== cards.length) return false;
-  return roots.every((root) => {
-    const frame = root.querySelector('iframe.model-live-frame');
-    if (!frame) return root.dataset.liveState === 'fallback';
-    if (root.dataset.liveState !== 'ready' || frame.hidden || getComputedStyle(frame).pointerEvents === 'none') return false;
+const waitForBoard = (client, expectedCount = null) => waitFor(client, `(() => {
+  const board = document.querySelector('#all-live-board');
+  const cards = [...board?.querySelectorAll('.model-live-card') ?? []];
+  if (!board || board.hidden || !cards.length) return false;
+  if (${expectedCount ?? "null"} !== null && cards.length !== ${expectedCount ?? "null"}) return false;
+  return cards.every((card) => {
+    const root = card.querySelector('.model-pooled-surface');
+    const frame = root?.querySelector('iframe.model-live-frame');
+    if (!root || !frame || root.dataset.liveState !== 'ready' || frame.hidden) return false;
     const liveRoot = frame.contentDocument?.querySelector(root.dataset.liveRoot || '#prototype');
-    const frameHeight = Number.parseFloat(frame.style.height);
-    const rootHeight = liveRoot?.getBoundingClientRect().height ?? 0;
-    return Boolean(liveRoot && frameHeight > 0 && Math.abs(frameHeight - rootHeight) < 3);
+    return Boolean(liveRoot
+      && Math.abs(Number.parseFloat(frame.style.height) - liveRoot.getBoundingClientRect().height) < 3
+      && getComputedStyle(frame).pointerEvents !== 'none');
   });
-})()`, "simultaneously operable all-object group");
+})()`, `full live board${expectedCount ? ` with ${expectedCount} cards` : ""}`);
+
+const waitForVisibleBoard = (client, expectedCount) => waitFor(client, `(() => {
+  const board = document.querySelector('#all-live-board');
+  const cards = [...board?.querySelectorAll('.model-live-card') ?? []].filter((card) => !card.hidden);
+  if (!board || board.hidden || cards.length !== ${expectedCount}) return false;
+  return cards.every((card) => {
+    const root = card.querySelector('.model-pooled-surface');
+    const frame = root?.querySelector('iframe.model-live-frame');
+    if (!root || !frame || root.dataset.liveState !== 'ready' || frame.hidden) return false;
+    const liveRoot = frame.contentDocument?.querySelector(root.dataset.liveRoot || '#prototype');
+    return Boolean(liveRoot
+      && Math.abs(Number.parseFloat(frame.style.height) - liveRoot.getBoundingClientRect().height) < 3
+      && getComputedStyle(frame).pointerEvents !== 'none');
+  });
+})()`, `${expectedCount} visible pooled board cards`);
 
 const capture = async (client, filename) => {
   const screenshot = await client.send("Page.captureScreenshot", {
@@ -168,7 +181,6 @@ const browserProcess = spawn(browser, [
   `--user-data-dir=/tmp/menu-lens-model-review-${process.pid}`,
   "about:blank",
 ], { stdio: ["ignore", "pipe", "pipe"] });
-
 let browserStderr = "";
 browserProcess.stderr.on("data", (chunk) => { browserStderr += String(chunk); });
 
@@ -212,217 +224,180 @@ try {
   await client.send("Network.enable");
 
   const cases = [];
-  const allPath = "/models/?model=landscape-paper&section=reading-grammar&variant=18B&viewport=390";
-  const basePath = `${allPath}&view=focus`;
+  const landscapePath = "/models/?model=landscape-paper&section=reading-grammar&variant=18B&viewport=390";
 
-  await navigate(client, basePath, 320);
-  await waitForLive(client, "#current-preview");
+  await navigate(client, landscapePath, 390);
+  await waitForBoard(client, 4);
   await evaluate(client, `(() => {
-    const frame = document.querySelector('#current-preview iframe');
-    frame.contentWindow.__menuLensReviewMarker = 'focus-preserved';
-    document.querySelector('[data-viewport="desktop"]').click();
-  })()`);
-  await waitFor(client, `(() => {
-    const root = document.querySelector('#current-preview');
-    const frame = root.querySelector('iframe');
-    return root.dataset.liveState === 'ready'
-      && frame.style.width === '1024px'
-      && frame.contentWindow.__menuLensReviewMarker === 'focus-preserved';
-  })()`, "viewport resize without live reload");
-  await evaluate(client, `document.querySelector('#view-all').click()`);
-  await waitForLiveGroup(client);
-  await evaluate(client, `document.querySelector('#view-focus').click()`);
-  await waitForLive(client, "#current-preview");
-  await evaluate(client, `document.querySelector('[data-viewport="390"]').click()`);
-  await waitForLive(client, "#current-preview");
-  const mobileFocusMetrics = await evaluate(client, `(() => {
-    const root = document.querySelector('#current-preview');
-    const frame = root.querySelector('iframe');
-    const liveRoot = frame.contentDocument.querySelector(root.dataset.liveRoot);
-    return {
-      title: document.querySelector('#current-object-title').textContent,
-      documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-      iframeCount: document.querySelectorAll('#workbench iframe').length,
-      liveState: root.dataset.liveState,
-      frameVisible: !frame.hidden,
-      framePointerEvents: getComputedStyle(frame).pointerEvents,
-      frameWidth: frame.style.width,
-      frameHeight: Number.parseFloat(frame.style.height),
-      rootHeight: liveRoot.getBoundingClientRect().height,
-      rootTop: Math.abs(liveRoot.getBoundingClientRect().top),
-      sourcePath: new URL(frame.src).pathname,
-      statePreserved: frame.contentWindow.__menuLensReviewMarker === 'focus-preserved',
-      mode: document.querySelector('#preview-grid').dataset.viewMode,
-    };
-  })()`);
-  cases.push({ name: "landscape-320-live-focus", width: 320, height: 900, metrics: mobileFocusMetrics });
-  await capture(client, "landscape-320-live-focus.png");
-
-  await navigate(client, allPath, 390);
-  await waitForLiveGroup(client);
-  await evaluate(client, `(() => {
-    for (const root of document.querySelectorAll('#all-preview-grid .model-preview-card__surface')) {
-      const frame = root.querySelector('iframe');
-      if (frame) frame.contentWindow.__menuLensAllMarker = root.dataset.objectId;
+    for (const card of document.querySelectorAll('.model-live-card')) {
+      const frame = card.querySelector('iframe');
+      frame.contentWindow.__boardMarker = card.dataset.objectId;
     }
-    document.querySelector('[data-viewport="320"]').click();
   })()`);
-  await waitForLiveGroup(client);
-  await evaluate(client, `document.querySelector('[data-viewport="390"]').click()`);
-  await waitForLiveGroup(client);
-  const mobileAllMetrics = await evaluate(client, `(() => {
-    const board = document.querySelector('#all-preview-grid');
-    const cards = [...board.querySelectorAll('.model-preview-card')];
-    const roots = [...board.querySelectorAll('.model-preview-card__surface')];
-    const frames = roots.map((root) => root.querySelector('iframe')).filter(Boolean);
-    const targets = frames.map((frame, index) =>
-      frame.contentDocument.querySelector(roots[index].dataset.liveRoot));
+  const mobileBoardMetrics = await evaluate(client, `(() => {
+    const board = document.querySelector('#all-live-board');
+    const cards = [...board.querySelectorAll('.model-live-card')];
     return {
-      documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-      defaultAll: !board.hidden && document.querySelector('#preview-grid').hidden,
+      mode: document.querySelector('#view-all').getAttribute('aria-pressed'),
       cardCount: cards.length,
-      liveFrameCount: frames.length,
-      readyCount: roots.filter((root) => root.dataset.liveState === 'ready').length,
-      operableCount: frames.filter((frame) => getComputedStyle(frame).pointerEvents !== 'none').length,
-      allHeightsMatch: frames.every((frame, index) =>
-        Math.abs(Number.parseFloat(frame.style.height) - targets[index].getBoundingClientRect().height) < 3),
-      allWidthsMatch: frames.every((frame) => frame.style.width === '390px'),
-      statePreserved: frames.every((frame, index) =>
-        frame.contentWindow.__menuLensAllMarker === roots[index].dataset.objectId),
-      canonicalAllUrl: !new URL(location.href).searchParams.has('view')
-        && !new URL(location.href).searchParams.has('compare'),
+      iframeCount: board.querySelectorAll('iframe').length,
+      boardHorizontal: board.scrollWidth > board.clientWidth,
+      documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      cardInternalOverflow: cards.some((card) => {
+        const surface = card.querySelector('.model-live-card__surface');
+        return surface.scrollWidth > surface.clientWidth + 2;
+      }),
+      currentCount: cards.filter((card) => card.dataset.current === 'true').length,
+      workbenchWidth: document.querySelector('.model-workbench-shell').getBoundingClientRect().width,
     };
   })()`);
-  const selectedId = await evaluate(client, `(() => {
-    const button = [...document.querySelectorAll('[data-all-object-id]')]
-      .find((candidate) => candidate.dataset.allObjectId !== '18B');
-    const id = button.dataset.allObjectId;
-    button.click();
-    return id;
-  })()`);
-  await waitForLiveGroup(client);
-  const allSelectionMetrics = await evaluate(client, `(() => ({
-    remainedAll: !document.querySelector('#all-preview-grid').hidden
-      && document.querySelector('#preview-grid').hidden,
-    selectedObjectTitle: document.querySelector('#current-object-title').textContent,
-    currentCardCount: document.querySelectorAll('#all-preview-grid [data-current="true"]').length,
-  }))()`);
-  allSelectionMetrics.selectedId = selectedId;
-  cases.push({ name: "landscape-390-live-all", width: 390, height: 900, metrics: { ...mobileAllMetrics, ...allSelectionMetrics } });
-  await capture(client, "landscape-390-live-all.png");
+  await capture(client, "landscape-390-live-board.png");
 
-  for (const width of [1024, 1440]) {
-    await navigate(client, basePath, width);
-    await waitForLive(client, "#current-preview");
-    await evaluate(client, `(() => {
-      document.querySelector('#current-preview iframe').contentWindow.__currentMarker = 'current';
-      document.querySelector('#compare-parent').click();
-    })()`);
-    await waitForLive(client, "#parent-preview");
-    await evaluate(client, `(() => {
-      document.querySelector('#parent-preview iframe').contentWindow.__parentMarker = 'parent';
-      document.querySelector('#view-all').click();
-    })()`);
-    await waitForLiveGroup(client);
-    await evaluate(client, `document.querySelector('#compare-parent').click()`);
-    await waitForLive(client, "#current-preview");
-    await waitForLive(client, "#parent-preview");
-    const metrics = await evaluate(client, `(() => {
-      const layout = document.querySelector('.model-layout');
-      const preview = document.querySelector('#preview-grid');
-      const stage = document.querySelector('.model-stage-column');
-      const inspector = document.querySelector('.model-inspector');
-      const sidebar = document.querySelector('.model-sidebar');
-      const currentRoot = document.querySelector('#current-preview');
-      const parentRoot = document.querySelector('#parent-preview');
-      const currentFrame = currentRoot.querySelector('iframe');
-      const parentFrame = parentRoot.querySelector('iframe');
-      const currentTarget = currentFrame.contentDocument.querySelector(currentRoot.dataset.liveRoot);
-      const parentTarget = parentFrame.contentDocument.querySelector(parentRoot.dataset.liveRoot);
-      return {
-        documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-        layoutColumnCount: getComputedStyle(layout).gridTemplateColumns.trim().split(' ').filter(Boolean).length,
-        sidebarColumnCount: getComputedStyle(sidebar).gridTemplateColumns.trim().split(' ').filter(Boolean).length,
-        compareColumnCount: getComputedStyle(preview).gridTemplateColumns.trim().split(' ').filter(Boolean).length,
-        currentAndParentVisible: !document.querySelector('.model-preview-pane--current').hidden
-          && !document.querySelector('.model-preview-pane--parent').hidden,
-        iframeCount: preview.querySelectorAll('iframe').length,
-        bothReady: currentRoot.dataset.liveState === 'ready' && parentRoot.dataset.liveState === 'ready',
-        bothOperable: getComputedStyle(currentFrame).pointerEvents !== 'none'
-          && getComputedStyle(parentFrame).pointerEvents !== 'none',
-        statePreserved: currentFrame.contentWindow.__currentMarker === 'current'
-          && parentFrame.contentWindow.__parentMarker === 'parent',
-        currentHeightMatches: Math.abs(Number.parseFloat(currentFrame.style.height) - currentTarget.getBoundingClientRect().height) < 3,
-        parentHeightMatches: Math.abs(Number.parseFloat(parentFrame.style.height) - parentTarget.getBoundingClientRect().height) < 3,
-        inspectorBesideStage: Math.abs(inspector.getBoundingClientRect().top - stage.getBoundingClientRect().top) < 4,
-        inspectorBelowStage: inspector.getBoundingClientRect().top > stage.getBoundingClientRect().bottom - 4,
-      };
-    })()`);
-    cases.push({ name: `landscape-${width}-live-compare`, width, height: 900, metrics });
-    await capture(client, `landscape-${width}-live-compare.png`);
-  }
+  await evaluate(client, `document.querySelector('[data-viewport="320"]').click()`);
+  await waitForBoard(client, 4);
+  await evaluate(client, `document.querySelector('[data-viewport="390"]').click()`);
+  await waitForBoard(client, 4);
+  const resizedState = await evaluate(client, `(() => [...document.querySelectorAll('.model-live-card')].every((card) => {
+    const frame = card.querySelector('iframe');
+    return frame.style.width === '390px' && frame.contentWindow.__boardMarker === card.dataset.objectId;
+  }))()`);
+
+  await evaluate(client, `(() => {
+    const currentCard = document.querySelector('.model-live-card[data-current="true"]');
+    window.__currentBoardFrame = currentCard.querySelector('iframe');
+    document.querySelector('#view-focus').click();
+  })()`);
+  await waitForVisibleBoard(client, 1);
+  const focusReuse = await evaluate(client, `(() => {
+    const frame = document.querySelector('.model-live-card:not([hidden]) iframe');
+    return document.querySelector('#all-live-board').dataset.viewMode === 'focus'
+      && frame === window.__currentBoardFrame
+      && frame.contentWindow.__boardMarker === '18B';
+  })()`);
+  await evaluate(client, `document.querySelector('#view-all').click()`);
+  await waitForVisibleBoard(client, 4);
+  const allReuse = await evaluate(client, `document.querySelector('.model-live-card[data-current="true"] iframe') === window.__currentBoardFrame`);
+
+  await evaluate(client, `(() => {
+    const select = document.querySelector('#object-select');
+    select.value = '18';
+    select.dispatchEvent(new Event('change'));
+  })()`);
+  await waitForBoard(client, 4);
+  const selectionMetrics = await evaluate(client, `(() => ({
+    boardVisible: !document.querySelector('#all-live-board').hidden,
+    activeTitle: document.querySelector('#inspector-object-title').textContent,
+    currentCount: document.querySelectorAll('.model-live-card[data-current="true"]').length,
+    selectedValue: document.querySelector('#object-select').value,
+  }))()`);
+  cases.push({
+    name: "landscape-390-wide-live-board",
+    width: 390,
+    height: 1000,
+    metrics: { ...mobileBoardMetrics, resizedState, focusReuse, allReuse, ...selectionMetrics },
+  });
+
+  await navigate(client, landscapePath, 1440);
+  await waitForBoard(client, 4);
+  await evaluate(client, `(() => {
+    window.__currentBoardFrame = document.querySelector('.model-live-card[data-current="true"] iframe');
+    window.__currentBoardFrame.contentWindow.__boardMarker = '18B';
+    window.__parentBoardFrame = document.querySelector('.model-live-card[data-object-id="18"] iframe');
+    window.__parentBoardFrame.contentWindow.__parentMarker = '18';
+    document.querySelector('#compare-parent').click();
+  })()`);
+  await waitForVisibleBoard(client, 2);
+  const compareMetrics = await evaluate(client, `(() => {
+    const board = document.querySelector('#all-live-board');
+    const visibleCards = [...board.querySelectorAll('.model-live-card')].filter((card) => !card.hidden);
+    const currentFrame = board.querySelector('.model-live-card[data-object-id="18B"] iframe');
+    const parentFrame = board.querySelector('.model-live-card[data-object-id="18"] iframe');
+    return {
+      compareVisible: board.dataset.viewMode === 'compare',
+      paneCount: visibleCards.length,
+      currentReused: currentFrame === window.__currentBoardFrame
+        && currentFrame.contentWindow.__boardMarker === '18B',
+      parentReused: parentFrame === window.__parentBoardFrame
+        && parentFrame.contentWindow.__parentMarker === '18',
+      documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
+        > board.getBoundingClientRect().bottom - 4,
+    };
+  })()`);
+  cases.push({ name: "landscape-1440-pooled-compare", width: 1440, height: 1000, metrics: compareMetrics });
+  await capture(client, "landscape-1440-pooled-compare.png");
+
+  await navigate(client, "/models/?model=complete-document&section=ledger-density&variant=05&viewport=390", 2048, 1100);
+  await waitForBoard(client);
+  const wideMetrics = await evaluate(client, `(() => {
+    const shell = document.querySelector('.model-workbench-shell');
+    const board = document.querySelector('#all-live-board');
+    const cards = [...board.querySelectorAll('.model-live-card')];
+    return {
+      workbenchWidth: shell.getBoundingClientRect().width,
+      viewportWidth: innerWidth,
+      cardCount: cards.length,
+      cardsShareRow: cards.every((card) => Math.abs(card.getBoundingClientRect().top - cards[0].getBoundingClientRect().top) < 3),
+      cardInternalOverflow: cards.some((card) => {
+        const surface = card.querySelector('.model-live-card__surface');
+        return surface.scrollWidth > surface.clientWidth + 2;
+      }),
+      documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      boardOverflowOnly: board.scrollWidth >= board.clientWidth,
+      inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
+        > board.getBoundingClientRect().bottom - 4,
+    };
+  })()`);
+  cases.push({ name: "complete-document-2048-wide-board", width: 2048, height: 1100, metrics: wideMetrics });
+  await capture(client, "complete-document-2048-wide-board.png");
 
   const studyPath = "/models/?model=paper-field&section=semantic-information&variant=12A-S1&viewport=390&view=focus";
   await navigate(client, studyPath, 390);
-  await waitForLive(client, "#current-preview");
+  await waitForVisibleBoard(client, 1);
   const studyMetrics = await evaluate(client, `(() => {
-    const root = document.querySelector('#current-preview');
-    const frame = root.querySelector('iframe');
+    document.querySelector('[data-inspector-tab="relations"]').click();
+    const relationVisible = !document.querySelector('#inspector-panel-relations').hidden;
+    document.querySelector('[data-inspector-tab="records"]').click();
+    const visibleCard = document.querySelector('.model-live-card:not([hidden])');
     return {
       compareHidden: document.querySelector('#compare-parent').hidden,
-      parentRecordVisible: !document.querySelector('#parent-record-link').hidden,
-      sourceActionText: document.querySelector('#current-exact-link').textContent,
-      visibleIframeCount: [...document.querySelectorAll('#preview-grid .model-preview-pane:not([hidden]) iframe')].filter((item) => !item.hidden).length,
-      parentFrameIdle: !document.querySelector('#parent-preview iframe')?.getAttribute('src'),
-      liveReady: root.dataset.liveState === 'ready' && !frame.hidden,
-      liveRoot: root.dataset.liveRoot,
-      operable: getComputedStyle(frame).pointerEvents !== 'none',
-      titleDeduplicated: !document.querySelector('#current-object-title').textContent.match(/^(\\S+) · \\1\\b/),
+      focusVisible: document.querySelector('#all-live-board').dataset.viewMode === 'focus'
+        && Boolean(visibleCard),
+      liveReady: visibleCard.querySelector('.model-pooled-surface').dataset.liveState === 'ready',
+      relationVisible,
+      recordsVisible: !document.querySelector('#inspector-panel-records').hidden,
+      sourceText: document.querySelector('#inspector-records').textContent.includes('研究工具'),
+      documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
     };
   })()`);
-  cases.push({ name: "paper-field-390-live-study", width: 390, height: 900, metrics: studyMetrics });
-  await capture(client, "paper-field-390-live-study.png");
+  cases.push({ name: "paper-field-390-inspector-tabs", width: 390, height: 1000, metrics: studyMetrics });
+  await capture(client, "paper-field-390-inspector-tabs.png");
 
   const failures = [];
   if (runtimeErrors.length) failures.push(`Runtime errors: ${runtimeErrors.join(" | ")}`);
-  if (mobileFocusMetrics.title !== "18B · Semantic Zoom") failures.push(`Unexpected current title: ${mobileFocusMetrics.title}`);
-  if (mobileFocusMetrics.documentOverflow || mobileFocusMetrics.iframeCount < 1
-    || mobileFocusMetrics.liveState !== "ready" || !mobileFocusMetrics.frameVisible
-    || mobileFocusMetrics.framePointerEvents === "none" || mobileFocusMetrics.frameWidth !== "390px"
-    || Math.abs(mobileFocusMetrics.frameHeight - mobileFocusMetrics.rootHeight) >= 3
-    || mobileFocusMetrics.rootTop >= 3 || !mobileFocusMetrics.statePreserved
-    || mobileFocusMetrics.mode !== "focus" || !mobileFocusMetrics.sourcePath.includes("18b-semantic-zoom")) {
-    failures.push("320px operable focus surface contract failed.");
+  const mobile = cases.find((item) => item.name === "landscape-390-wide-live-board")?.metrics;
+  if (!mobile || mobile.mode !== "true" || mobile.cardCount !== 4 || mobile.iframeCount !== 4
+    || !mobile.boardHorizontal || mobile.documentOverflow || mobile.cardInternalOverflow
+    || mobile.currentCount !== 1 || !mobile.resizedState || !mobile.focusReuse || !mobile.allReuse
+    || !mobile.boardVisible || mobile.activeTitle !== "18 · Landscape Paper"
+    || mobile.selectedValue !== "18") {
+    failures.push("390px full-board pooling and single-scroll contract failed.");
   }
-  if (mobileAllMetrics.documentOverflow || !mobileAllMetrics.defaultAll || mobileAllMetrics.cardCount !== 4
-    || mobileAllMetrics.liveFrameCount !== 4 || mobileAllMetrics.readyCount !== 4
-    || mobileAllMetrics.operableCount !== 4 || !mobileAllMetrics.allHeightsMatch
-    || !mobileAllMetrics.allWidthsMatch || !mobileAllMetrics.statePreserved || !mobileAllMetrics.canonicalAllUrl
-    || !allSelectionMetrics.remainedAll || allSelectionMetrics.currentCardCount !== 1
-    || !allSelectionMetrics.selectedObjectTitle.startsWith(`${allSelectionMetrics.selectedId} ·`)) {
-    failures.push("390px simultaneous all-object operation contract failed.");
+  if (!compareMetrics.compareVisible || compareMetrics.paneCount !== 2
+    || !compareMetrics.currentReused || !compareMetrics.parentReused
+    || compareMetrics.documentOverflow || !compareMetrics.inspectorBelow) {
+    failures.push("1440px pooled parent comparison contract failed.");
   }
-  const desktop1024 = cases.find((reviewCase) => reviewCase.name === "landscape-1024-live-compare");
-  if (!desktop1024 || desktop1024.metrics.layoutColumnCount !== 2
-    || desktop1024.metrics.sidebarColumnCount !== 1 || desktop1024.metrics.compareColumnCount !== 2
-    || !desktop1024.metrics.currentAndParentVisible || desktop1024.metrics.iframeCount !== 2
-    || !desktop1024.metrics.bothReady || !desktop1024.metrics.bothOperable || !desktop1024.metrics.statePreserved
-    || !desktop1024.metrics.currentHeightMatches || !desktop1024.metrics.parentHeightMatches
-    || !desktop1024.metrics.inspectorBelowStage) {
-    failures.push("1024px operable side-by-side comparison contract failed.");
+  if (wideMetrics.workbenchWidth < 1600 || wideMetrics.viewportWidth !== 2048
+    || wideMetrics.cardCount !== 4 || !wideMetrics.cardsShareRow
+    || wideMetrics.cardInternalOverflow || wideMetrics.documentOverflow
+    || !wideMetrics.boardOverflowOnly || !wideMetrics.inspectorBelow) {
+    failures.push("2048px wide workbench and exact-width row contract failed.");
   }
-  const desktop1440 = cases.find((reviewCase) => reviewCase.name === "landscape-1440-live-compare");
-  if (!desktop1440 || desktop1440.metrics.layoutColumnCount !== 3 || desktop1440.metrics.compareColumnCount !== 2
-    || !desktop1440.metrics.currentAndParentVisible || desktop1440.metrics.iframeCount !== 2
-    || !desktop1440.metrics.bothReady || !desktop1440.metrics.bothOperable || !desktop1440.metrics.statePreserved
-    || !desktop1440.metrics.currentHeightMatches || !desktop1440.metrics.parentHeightMatches
-    || !desktop1440.metrics.inspectorBesideStage) {
-    failures.push("1440px operable side-by-side comparison contract failed.");
-  }
-  if (!studyMetrics.compareHidden || !studyMetrics.parentRecordVisible
-    || studyMetrics.sourceActionText !== "開啟研究工具 ↗" || studyMetrics.visibleIframeCount !== 1
-    || !studyMetrics.parentFrameIdle || !studyMetrics.liveReady || !studyMetrics.liveRoot || !studyMetrics.operable || !studyMetrics.titleDeduplicated) {
-    failures.push("Study live-surface boundary failed.");
+  if (!studyMetrics.compareHidden || !studyMetrics.focusVisible || !studyMetrics.liveReady
+    || !studyMetrics.relationVisible || !studyMetrics.recordsVisible || !studyMetrics.sourceText
+    || studyMetrics.documentOverflow) {
+    failures.push("Study and inspector-tab boundary failed.");
   }
 
   const report = {
@@ -436,7 +411,7 @@ try {
   await writeFile(new URL("results.json", outputDir), `${JSON.stringify(report, null, 2)}\n`);
   if (failures.length) throw new Error(`Model-page browser review failed:\n- ${failures.join("\n- ")}`);
   socket.close();
-  console.log("Model-page browser review: default simultaneous live group, operable focus/compare surfaces, preserved state, and study boundaries verified.");
+  console.log("Model-page browser review: wide exact-width canonical board, non-moving pooled surfaces, compact inspector, and study boundaries verified.");
 } catch (error) {
   if (browserStderr.trim()) console.error(browserStderr.trim());
   throw error;
