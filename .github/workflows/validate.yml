@@ -6,8 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  actions: read
-  contents: write
+  contents: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -15,38 +14,9 @@ env:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
     steps:
-      - name: Check out refinement branch
+      - name: Check out repository
         uses: actions/checkout@v6
-        with:
-          ref: agent/refine-model-selection-semantics
-          fetch-depth: 0
-
-      - name: Install validated source artifact
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api \
-            -H 'Accept: application/vnd.github+json' \
-            /repos/${GITHUB_REPOSITORY}/actions/artifacts/8782061669/zip \
-            > /tmp/pr64-validated.zip
-          rm -rf /tmp/pr64-validated
-          mkdir -p /tmp/pr64-validated
-          unzip -q /tmp/pr64-validated.zip -d /tmp/pr64-validated
-          cp -a /tmp/pr64-validated/__validated-source/research-history/catalog/study-presentations.mjs research-history/catalog/study-presentations.mjs
-          cp -a /tmp/pr64-validated/__validated-source/research-history/model-object-inspector.mjs research-history/model-object-inspector.mjs
-          cp -a /tmp/pr64-validated/__validated-source/research-history/model-page-workbench.css research-history/model-page-workbench.css
-          cp -a /tmp/pr64-validated/__validated-source/research-history/model-page.mjs research-history/model-page.mjs
-          cp -a /tmp/pr64-validated/__validated-source/research-history/models/index.html research-history/models/index.html
-          cp -a /tmp/pr64-validated/__validated-source/scripts/archive/capture-model-page-review.mjs scripts/archive/capture-model-page-review.mjs
-          cp -a /tmp/pr64-validated/__validated-source/scripts/archive/validate-model-page-renderer.mjs scripts/archive/validate-model-page-renderer.mjs
-          git show origin/main:package.json > package.json
-          rm -f \
-            scripts/archive/apply-study-presentation-refinement.mjs \
-            scripts/archive/export-study-refinement-source.mjs \
-            scripts/archive/run-study-presentation-refinement.mjs \
-            scripts/archive/study-refinement-trigger.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -98,25 +68,3 @@ jobs:
           path: browser-review/
           if-no-files-found: warn
           retention-days: 1
-
-      - name: Commit validated clean sources
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add \
-            package.json \
-            research-history/catalog/study-presentations.mjs \
-            research-history/model-object-inspector.mjs \
-            research-history/model-page-workbench.css \
-            research-history/model-page.mjs \
-            research-history/models/index.html \
-            scripts/archive/capture-model-page-review.mjs \
-            scripts/archive/validate-model-page-renderer.mjs
-          git add -u scripts/archive
-          if git diff --cached --quiet; then
-            echo 'Validated sources already match the branch.'
-            exit 0
-          fi
-          git commit -m 'Finalize explicit study presentation semantics'
-          git push origin HEAD:agent/refine-model-selection-semantics
