@@ -62,6 +62,7 @@
 }
 
 .model-section-tabs button {
+  width: auto;
   flex: 0 0 auto;
   padding: .55rem .75rem;
   white-space: nowrap;
