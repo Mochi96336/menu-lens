@@ -110,12 +110,12 @@ const capture = async (client, filename) => {
   await writeFile(new URL(filename, outputDir), Buffer.from(screenshot.data, "base64"));
 };
 
-const labels = ["市場基準", "分類 Spread", "料理 Ribbon", "Fisheye"];
 const cases = [
   {
     name: "horizontal-1792-section-tabs",
     width: 1792,
     path: "/models/?model=horizontal-navigation&section=spread&variant=08&viewport=390",
+    labels: ["市場基準", "分類 Spread", "料理 Ribbon", "Fisheye"],
     selectedId: "spread",
     selectedLabel: "分類 Spread",
     summary: "比較分類欄在同一張 spread 上的原地展寬，以及壓縮分類如何保留可辨識的內容分布。",
@@ -126,11 +126,25 @@ const cases = [
     name: "horizontal-390-section-tabs",
     width: 390,
     path: "/models/?model=horizontal-navigation&section=fisheye&variant=10&viewport=390",
+    labels: ["市場基準", "分類 Spread", "料理 Ribbon", "Fisheye"],
     selectedId: "fisheye",
     selectedLabel: "Fisheye",
     summary: "比較完整 Fisheye Ribbon 與局部 Fisheye。10A 只重新分配焦點附近的鄰居寬度，分類順序、完整 ribbon 與遠端項目維持不變。",
     objectIds: ["10", "10A"],
     requireAllVisible: false,
+  },
+  {
+    name: "landscape-390-overflow-section-tabs",
+    width: 390,
+    path: "/models/?model=landscape-paper&section=stopped-routes&variant=19&viewport=390",
+    modelTitle: "Landscape Paper",
+    labels: ["共同母體", "閱讀文法", "焦點幾何", "閱讀表面", "直排", "停止路線"],
+    selectedId: "stopped-routes",
+    selectedLabel: "停止路線",
+    summary: "Rigid locator、3D fold 與 two-column window 的執行結果顯示定位、遮擋或閱讀窗口限制，因此停止延伸。",
+    objectIds: ["19", "20", "21"],
+    requireAllVisible: false,
+    requireScrollable: true,
   },
 ];
 
@@ -176,14 +190,16 @@ try {
       const tabs = [...document.querySelectorAll('#section-tabs button')];
       const selected = document.querySelector('#section-tabs button[aria-selected="true"]');
       return document.readyState === 'complete'
-        && document.querySelector('#model-title')?.textContent === 'Horizontal Navigation'
-        && tabs.length === 4
+        && document.querySelector('#model-title')?.textContent === ${JSON.stringify(testCase.modelTitle ?? 'Horizontal Navigation')}
+        && tabs.length === ${testCase.labels.length}
         && selected?.dataset.sectionId === ${JSON.stringify(testCase.selectedId)}
         && document.querySelectorAll('#all-live-board .model-live-card').length === ${testCase.objectIds.length};
     })()`, `${testCase.name} rendered section`);
     await evaluate(client, "document.fonts?.ready ?? Promise.resolve()");
     await evaluate(client, `new Promise((resolve) =>
       requestAnimationFrame(() => requestAnimationFrame(resolve)))`);
+    await evaluate(client, `document.querySelector('#section-tabs').scrollIntoView({ block: 'start' })`);
+    await evaluate(client, `new Promise((resolve) => requestAnimationFrame(resolve))`);
 
     const metrics = await evaluate(client, `(() => {
       const strip = document.querySelector('#section-tabs');
@@ -224,7 +240,7 @@ try {
     results.push({ ...testCase, metrics });
     await capture(client, `${testCase.name}.png`);
 
-    if (JSON.stringify(metrics.labels) !== JSON.stringify(labels)
+    if (JSON.stringify(metrics.labels) !== JSON.stringify(testCase.labels)
       || metrics.selectedId !== testCase.selectedId
       || metrics.selectedLabel !== testCase.selectedLabel
       || !metrics.selectedVisible
@@ -232,6 +248,7 @@ try {
       || metrics.summary !== testCase.summary
       || JSON.stringify(metrics.objectIds) !== JSON.stringify(testCase.objectIds)
       || (testCase.requireAllVisible && !metrics.allVisible)
+      || (testCase.requireScrollable && !metrics.stripScrollable)
       || metrics.documentOverflow) {
       failures.push(`${testCase.name}: ${JSON.stringify(metrics)}`);
     }
