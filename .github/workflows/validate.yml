@@ -53,6 +53,7 @@ jobs:
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/capture-model-page-review.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-focus-edge-browser.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-section-tabs-browser.mjs
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-model-route-browser.mjs
 
       - name: Upload static build
         uses: actions/upload-artifact@v6

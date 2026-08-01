@@ -1,4 +1,4 @@
-// Card roles distinguish active selection, research tools, and explicit comparison positions.
+// Card roles distinguish research tools, corrections, and explicit comparison positions.
 export const createModelLiveBoard = ({
   boardRoot,
   surfacePool,
@@ -142,8 +142,6 @@ export const createModelLiveBoard = ({
         roleText = "研究工具";
       } else if (object.objectType === "correction") {
         roleText = "必要修正";
-      } else if (isActive) {
-        roleText = "已選取";
       }
       entry.role.hidden = !roleText;
       entry.role.textContent = roleText;

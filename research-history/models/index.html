@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../history.css" />
     <link rel="stylesheet" href="../model-page.css" />
     <link rel="stylesheet" href="../model-page-workbench.css" />
+    <link rel="stylesheet" href="../model-route-diagram.css" />
     <script src="../prototype-registry.js"></script>
   </head>
   <body class="model-page">
@@ -37,6 +38,14 @@
           <p id="model-stats" class="model-stats" aria-live="polite"></p>
         </div>
 
+        <aside id="model-concept" class="model-concept" hidden>
+          <div class="model-concept__copy">
+            <p id="model-diagram-signature" class="eyebrow"></p>
+            <p id="model-diagram-statement" class="model-concept__statement"></p>
+          </div>
+          <div id="model-concept-vignette" class="model-concept-vignette" aria-hidden="true"></div>
+        </aside>
+
         <details class="model-definition-disclosure">
           <summary>
             <strong>模型定義</strong>
@@ -55,8 +64,10 @@
     <main id="main">
       <section id="workbench" class="model-workbench model-workbench-shell" aria-label="研究物件工作台">
         <div class="model-section-strip">
-          <div id="section-tabs" class="model-section-tabs" role="tablist" aria-label="切換子研究"></div>
-          <p id="section-summary"></p>
+          <p class="model-section-strip__eyebrow eyebrow">Research route</p>
+          <div id="section-tabs" class="model-section-tabs" role="tablist" aria-label="切換研究方向"></div>
+          <p class="model-route__current"><strong id="section-current-label"></strong><span id="section-route-note"></span></p>
+          <p id="section-summary" class="model-section-summary"></p>
         </div>
 
         <div class="model-toolbar" aria-label="研究物件顯示設定">
