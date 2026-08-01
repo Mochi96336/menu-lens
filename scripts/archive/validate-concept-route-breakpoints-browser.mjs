@@ -149,6 +149,7 @@ const stateExpression = `(() => {
   const routeSection = document.querySelector('.model-section-strip');
   const route = document.querySelector('#section-tabs');
   const objectPanel = document.querySelector('#model-section-panel');
+  const routeRect = rect(route);
   const buttons = [...(route?.querySelectorAll('button[data-section-id]') ?? [])];
   const nodes = buttons.map((button) => rect(button));
   let overlaps = 0;
@@ -173,9 +174,13 @@ const stateExpression = `(() => {
     vignetteSvg: rect(vignetteSvg),
     statement: rect(statement),
     routeSection: rect(routeSection),
-    route: rect(route),
+    route: routeRect,
     objectPanel: rect(objectPanel),
     overlaps,
+    allNodesVisible: Boolean(routeRect)
+      && nodes.every((node) => node.left >= routeRect.left - 1 && node.right <= routeRect.right + 1),
+    routeClientWidth: Number(route?.clientWidth ?? 0),
+    routeScrollWidth: Number(route?.scrollWidth ?? 0),
     gridAreas: layoutStyle?.gridTemplateAreas ?? null,
     conceptColumns: conceptBodyStyle?.gridTemplateColumns ?? null,
     routeBorderStart: Number.parseFloat(routeStyle?.borderInlineStartWidth ?? '0') || 0,
@@ -258,6 +263,11 @@ try {
         check(Math.abs(state.concept.width - state.layout.width) <= 3, `${expected.model} ${width}px concept uses full row`, state);
         check(Math.abs(state.routeSection.width - state.layout.width) <= 3, `${expected.model} ${width}px route uses full row`, state);
         check(state.routeBorderStart === 0, `${expected.model} ${width}px removes desktop divider`, state);
+      }
+
+      if (width >= 768 && width <= 1360) {
+        check(state.routeScrollWidth <= state.routeClientWidth + 2, `${expected.model} ${width}px avoids hidden route scrolling`, state);
+        check(state.allNodesVisible, `${expected.model} ${width}px keeps every route node visible`, state);
       }
 
       if (width > 900 && width <= 1360) {
