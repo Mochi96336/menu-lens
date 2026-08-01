@@ -66,81 +66,86 @@
         <div class="model-section-strip">
           <p class="model-section-strip__eyebrow eyebrow">Research route</p>
           <div id="section-tabs" class="model-section-tabs" role="tablist" aria-label="切換研究方向"></div>
-          <p class="model-route__current"><strong id="section-current-label"></strong><span id="section-route-note"></span></p>
-          <p id="section-summary" class="model-section-summary"></p>
         </div>
 
-        <div class="model-toolbar" aria-label="研究物件顯示設定">
-          <div class="model-toolbar__group" aria-label="檢視範圍">
-            <span>檢視</span>
-            <button id="view-all" type="button" data-view-mode="all" aria-pressed="true">整組</button>
-            <button id="view-focus" type="button" data-view-mode="focus" aria-pressed="false">選取</button>
+        <div id="model-section-panel" class="model-section-panel" role="tabpanel">
+          <div class="model-section-copy" aria-live="polite">
+            <p class="model-route__current"><strong id="section-current-label"></strong><span id="section-route-note"></span></p>
+            <p id="section-summary" class="model-section-summary"></p>
           </div>
 
-          <div class="model-toolbar__group" aria-label="Viewport 尺寸">
-            <span>寬度</span>
-            <button type="button" data-viewport="320" aria-pressed="false">320</button>
-            <button type="button" data-viewport="390" aria-pressed="true">390</button>
-            <button type="button" data-viewport="desktop" aria-pressed="false">1024</button>
-          </div>
-
-          <div class="model-toolbar__selection">
-            <label id="object-picker" class="model-object-picker" hidden>
-              <span>選取物件</span>
-              <select id="object-select" aria-label="切換選取的研究物件"></select>
-            </label>
-            <button id="compare-parent" class="model-compare-action" type="button" hidden>與 parent 比較</button>
-          </div>
-        </div>
-
-        <p id="viewport-note" class="model-viewport-note" aria-live="polite"></p>
-
-        <div id="all-live-board" class="model-live-board" data-viewport="390" data-view-mode="all" aria-label="本組研究物件操作板"></div>
-
-        <section id="inspector" class="model-object-inspector" aria-labelledby="inspector-object-title">
-          <header class="model-object-inspector__header">
-            <div>
-              <p id="inspector-role" class="eyebrow">研究物件</p>
-              <h2 id="inspector-object-title"></h2>
+          <div class="model-toolbar" aria-label="研究物件顯示設定">
+            <div class="model-toolbar__group" aria-label="檢視範圍">
+              <span>檢視</span>
+              <button id="view-all" type="button" data-view-mode="all" aria-pressed="true">整組</button>
+              <button id="view-focus" type="button" data-view-mode="focus" aria-pressed="false">選取</button>
             </div>
-            <span id="inspector-status" class="status"></span>
-          </header>
 
-          <div id="inspector-tabs" class="model-inspector-tabs" role="tablist" aria-label="物件資訊">
-            <button id="inspector-tab-summary" type="button" role="tab" data-inspector-tab="summary" aria-selected="true" aria-controls="inspector-panel-summary">摘要</button>
-            <button id="inspector-tab-relations" type="button" role="tab" data-inspector-tab="relations" aria-selected="false" aria-controls="inspector-panel-relations">關聯</button>
-            <button id="inspector-tab-records" type="button" role="tab" data-inspector-tab="records" aria-selected="false" aria-controls="inspector-panel-records">記錄</button>
+            <div class="model-toolbar__group" aria-label="Viewport 尺寸">
+              <span>寬度</span>
+              <button type="button" data-viewport="320" aria-pressed="false">320</button>
+              <button type="button" data-viewport="390" aria-pressed="true">390</button>
+              <button type="button" data-viewport="desktop" aria-pressed="false">1024</button>
+            </div>
+
+            <div class="model-toolbar__selection">
+              <label id="object-picker" class="model-object-picker" hidden>
+                <span>選取物件</span>
+                <select id="object-select" aria-label="切換選取的研究物件"></select>
+              </label>
+              <button id="compare-parent" class="model-compare-action" type="button" hidden>與 parent 比較</button>
+            </div>
           </div>
 
-          <div id="inspector-panel-summary" class="model-inspector-panel" role="tabpanel" aria-labelledby="inspector-tab-summary">
-            <section class="model-inspector-block model-inspector-block--difference">
-              <p id="difference-eyebrow" class="eyebrow">研究角色</p>
-              <h3 id="difference-variable"></h3>
-              <dl class="model-difference-list">
-                <div><dt id="difference-before-label">來源脈絡</dt><dd id="difference-before"></dd></div>
-                <div><dt id="difference-after-label">目前物件</dt><dd id="difference-after"></dd></div>
-                <div><dt id="difference-unchanged-label">保留條件</dt><dd id="difference-unchanged"></dd></div>
-              </dl>
-            </section>
+          <p id="viewport-note" class="model-viewport-note" aria-live="polite"></p>
 
-            <section class="model-inspector-block model-inspector-block--outcome">
-              <h3 id="outcome-title">研究狀態</h3>
-              <dl class="model-outcome-list">
-                <div><dt>狀態</dt><dd id="outcome-disposition"></dd></div>
-                <div><dt>證據</dt><dd id="outcome-evidence"></dd></div>
-                <div id="outcome-next-row"><dt id="outcome-next-label">下一步</dt><dd id="outcome-next-gate"></dd></div>
-              </dl>
-            </section>
-          </div>
+          <div id="all-live-board" class="model-live-board" data-viewport="390" data-view-mode="all" aria-label="本組研究物件操作板"></div>
 
-          <div id="inspector-panel-relations" class="model-inspector-panel" role="tabpanel" aria-labelledby="inspector-tab-relations" hidden>
-            <div id="inspector-relations" class="model-lineage"></div>
-          </div>
+          <section id="inspector" class="model-object-inspector" aria-labelledby="inspector-object-title">
+            <header class="model-object-inspector__header">
+              <div>
+                <p id="inspector-role" class="eyebrow">研究物件</p>
+                <h2 id="inspector-object-title"></h2>
+              </div>
+              <span id="inspector-status" class="status"></span>
+            </header>
 
-          <div id="inspector-panel-records" class="model-inspector-panel" role="tabpanel" aria-labelledby="inspector-tab-records" hidden>
-            <div id="inspector-records" class="model-record-links"></div>
-          </div>
-        </section>
+            <div id="inspector-tabs" class="model-inspector-tabs" role="tablist" aria-label="物件資訊">
+              <button id="inspector-tab-summary" type="button" role="tab" data-inspector-tab="summary" aria-selected="true" aria-controls="inspector-panel-summary">摘要</button>
+              <button id="inspector-tab-relations" type="button" role="tab" data-inspector-tab="relations" aria-selected="false" aria-controls="inspector-panel-relations">關聯</button>
+              <button id="inspector-tab-records" type="button" role="tab" data-inspector-tab="records" aria-selected="false" aria-controls="inspector-panel-records">記錄</button>
+            </div>
+
+            <div id="inspector-panel-summary" class="model-inspector-panel" role="tabpanel" aria-labelledby="inspector-tab-summary">
+              <section class="model-inspector-block model-inspector-block--difference">
+                <p id="difference-eyebrow" class="eyebrow">研究角色</p>
+                <h3 id="difference-variable"></h3>
+                <dl class="model-difference-list">
+                  <div><dt id="difference-before-label">來源脈絡</dt><dd id="difference-before"></dd></div>
+                  <div><dt id="difference-after-label">目前物件</dt><dd id="difference-after"></dd></div>
+                  <div><dt id="difference-unchanged-label">保留條件</dt><dd id="difference-unchanged"></dd></div>
+                </dl>
+              </section>
+
+              <section class="model-inspector-block model-inspector-block--outcome">
+                <h3 id="outcome-title">研究狀態</h3>
+                <dl class="model-outcome-list">
+                  <div><dt>狀態</dt><dd id="outcome-disposition"></dd></div>
+                  <div><dt>證據</dt><dd id="outcome-evidence"></dd></div>
+                  <div id="outcome-next-row"><dt id="outcome-next-label">下一步</dt><dd id="outcome-next-gate"></dd></div>
+                </dl>
+              </section>
+            </div>
+
+            <div id="inspector-panel-relations" class="model-inspector-panel" role="tabpanel" aria-labelledby="inspector-tab-relations" hidden>
+              <div id="inspector-relations" class="model-lineage"></div>
+            </div>
+
+            <div id="inspector-panel-records" class="model-inspector-panel" role="tabpanel" aria-labelledby="inspector-tab-records" hidden>
+              <div id="inspector-records" class="model-record-links"></div>
+            </div>
+          </section>
+        </div>
       </section>
     </main>
 

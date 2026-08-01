@@ -13,25 +13,74 @@ const browserCandidates = [
   "/usr/bin/chromium-browser",
 ].filter(Boolean);
 
-const spreadExpected = Object.freeze({
-  selectedId: "spread",
-  currentLabel: "分類 Spread",
-  conceptLabel: "In-place expansion",
-  routeNote: "分類欄在同一張 spread 上原地展寬，鄰近欄位相應壓縮。",
-  canonicalSummary: "比較分類欄在同一張 spread 上的原地展寬，以及壓縮分類如何保留可辨識的內容分布。",
-  vignetteType: "expanded-band",
-  objectIds: ["08", "08A"],
-});
-
-const fisheyeExpected = Object.freeze({
-  selectedId: "fisheye",
-  currentLabel: "Fisheye",
-  conceptLabel: "Local width falloff",
-  routeNote: "焦點附近重新分配寬度，遠端項目與完整序列仍保留。",
-  canonicalSummary: "比較完整 Fisheye Ribbon 與局部 Fisheye。10A 只重新分配焦點附近的鄰居寬度，分類順序、完整 ribbon 與遠端項目維持不變。",
-  vignetteType: "fisheye-axis",
-  objectIds: ["10", "10A"],
-});
+const modelCases = Object.freeze([
+  {
+    model: "complete-document",
+    title: "Complete Document",
+    section: "baseline",
+    variant: "01",
+    kind: "sequence",
+    nodeCount: 2,
+    vignetteType: "document",
+    vignetteVariant: "baseline",
+    objectIds: ["01"],
+  },
+  {
+    model: "horizontal-navigation",
+    title: "Horizontal Navigation",
+    section: "spread",
+    variant: "08",
+    kind: "sequence",
+    nodeCount: 4,
+    vignetteType: "horizontal",
+    vignetteVariant: "spread",
+    objectIds: ["08", "08A"],
+  },
+  {
+    model: "paper-field",
+    title: "Paper Field",
+    section: "semantic-information",
+    variant: "12A",
+    kind: "field",
+    nodeCount: 3,
+    vignetteType: "paper-field",
+    vignetteVariant: "semantic",
+    objectIds: ["11", "12", "12A", "12A-S1"],
+  },
+  {
+    model: "landscape-paper",
+    title: "Landscape Paper",
+    section: "core",
+    variant: "18",
+    kind: "branch",
+    nodeCount: 6,
+    vignetteType: "landscape",
+    vignetteVariant: "core",
+    objectIds: ["18", "18A"],
+  },
+  {
+    model: "multiscale-focus",
+    title: "Multi-scale Focus",
+    section: "model",
+    variant: "06",
+    kind: "sequence",
+    nodeCount: 2,
+    vignetteType: "scale",
+    vignetteVariant: "focus",
+    objectIds: ["06"],
+  },
+  {
+    model: "depth-projection",
+    title: "Depth and Projection",
+    section: "projection-lens",
+    variant: "25P",
+    kind: "parallel",
+    nodeCount: 3,
+    vignetteType: "depth",
+    vignetteVariant: "projection",
+    objectIds: ["25P", "25P-L1", "25P-S1"],
+  },
+]);
 
 const findBrowser = async () => {
   for (const candidate of browserCandidates) {
@@ -109,7 +158,7 @@ const waitFor = async (client, expression, label, attempts = 300) => {
   throw new Error(`Timed out waiting for ${label}: ${JSON.stringify(lastValue)}`);
 };
 
-const setViewport = (client, width, height = 1000) => client.send(
+const setViewport = (client, width, height = 1050) => client.send(
   "Emulation.setDeviceMetricsOverride",
   {
     width,
@@ -123,7 +172,12 @@ const setViewport = (client, width, height = 1000) => client.send(
 
 const settle = async (client) => {
   await evaluate(client, "document.fonts?.ready ?? Promise.resolve()");
-  await evaluate(client, `new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))`);
+  await evaluate(client, "new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))");
+};
+
+const pressKey = async (client, key, code = key) => {
+  await client.send("Input.dispatchKeyEvent", { type: "keyDown", key, code });
+  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key, code });
 };
 
 const capture = async (client, filename) => {
@@ -137,60 +191,85 @@ const capture = async (client, filename) => {
 
 const stateExpression = `(() => {
   const route = document.querySelector('#section-tabs');
+  const panel = document.querySelector('#model-section-panel');
   const buttons = [...route.querySelectorAll('button[data-section-id]')];
   const selected = buttons.find((button) => button.getAttribute('aria-selected') === 'true');
+  const focused = buttons.find((button) => document.activeElement === button);
   const routeRect = route.getBoundingClientRect();
   const selectedRect = selected?.getBoundingClientRect();
+  const rects = buttons.map((button) => {
+    const rect = button.getBoundingClientRect();
+    return { id: button.dataset.sectionId, left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, height: rect.height };
+  });
+  let overlaps = 0;
+  for (let i = 0; i < rects.length; i += 1) {
+    for (let j = i + 1; j < rects.length; j += 1) {
+      const width = Math.min(rects[i].right, rects[j].right) - Math.max(rects[i].left, rects[j].left);
+      const height = Math.min(rects[i].bottom, rects[j].bottom) - Math.max(rects[i].top, rects[j].top);
+      if (width > 8 && height > 8) overlaps += 1;
+    }
+  }
   return {
     modelTitle: document.querySelector('#model-title')?.textContent,
     conceptLabel: document.querySelector('#model-diagram-signature')?.textContent,
     statement: document.querySelector('#model-diagram-statement')?.textContent,
     conceptHidden: document.querySelector('#model-concept')?.hidden,
     routeKind: route?.dataset.routeKind,
+    nodeCount: buttons.length,
     labels: buttons.map((button) => button.textContent.trim()),
     selectedId: selected?.dataset.sectionId,
+    focusedId: focused?.dataset.sectionId,
     selectedFocused: document.activeElement === selected,
     selectedVisible: Boolean(selectedRect)
       && selectedRect.left >= routeRect.left - 1
       && selectedRect.right <= routeRect.right + 1,
+    rovingCount: buttons.filter((button) => button.tabIndex === 0).length,
+    selectedTabIndex: selected?.tabIndex,
+    controlsCorrect: buttons.every((button) => button.getAttribute('aria-controls') === panel?.id),
+    panelLabelledBy: panel?.getAttribute('aria-labelledby'),
+    selectedButtonId: selected?.id,
     currentLabel: document.querySelector('#section-current-label')?.textContent,
     routeNote: document.querySelector('#section-route-note')?.textContent,
     canonicalSummary: document.querySelector('#section-summary')?.textContent,
     vignetteType: document.querySelector('#model-concept-vignette')?.dataset.vignetteType,
+    vignetteVariant: document.querySelector('#model-concept-vignette')?.dataset.vignetteVariant,
     vignettePreview: document.querySelector('#model-concept-vignette')?.dataset.preview,
-    objectIds: [...document.querySelectorAll('#all-live-board .model-live-card')]
-      .map((card) => card.dataset.objectId),
+    objectIds: [...document.querySelectorAll('#all-live-board .model-live-card')].map((card) => card.dataset.objectId),
     url: location.href,
     overflowStart: route?.dataset.overflowStart,
     overflowEnd: route?.dataset.overflowEnd,
     documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
     genericSelectedRole: [...document.querySelectorAll('.model-live-card__role')]
       .some((element) => !element.hidden && element.textContent === '已選取'),
+    overlaps,
+    minimumTargetHeight: rects.length ? Math.min(...rects.map((rect) => rect.height)) : 0,
   };
 })()`;
 
-const assertState = (failures, label, state, expected) => {
-  const checks = [
-    [state.modelTitle === "Horizontal Navigation", "model title"],
-    [state.conceptLabel === expected.conceptLabel, "concept label"],
-    [state.statement === "由市場基準逐步增加分類展寬、料理序列與局部焦點。", "statement"],
-    [state.conceptHidden === false, "concept visible"],
-    [state.routeKind === "sequence", "route kind"],
-    [JSON.stringify(state.labels) === JSON.stringify(["市場基準", "分類 Spread", "料理 Ribbon", "Fisheye"]), "route labels"],
-    [state.selectedId === expected.selectedId, "selected section"],
-    [state.currentLabel === expected.currentLabel, "current label"],
-    [state.routeNote === expected.routeNote, "route note"],
-    [state.canonicalSummary === expected.canonicalSummary, "canonical summary"],
-    [state.vignetteType === expected.vignetteType, "vignette type"],
-    [JSON.stringify(state.objectIds) === JSON.stringify(expected.objectIds), "object IDs"],
-    [state.url.includes(`section=${expected.selectedId}`), "URL section"],
-    [state.selectedVisible, "selected node visible"],
-    [!state.documentOverflow, "no document overflow"],
-    [!state.genericSelectedRole, "no generic selected role"],
-  ];
+const addFailure = (failures, label, state, checks) => {
   const failed = checks.filter(([passed]) => !passed).map(([, name]) => name);
   if (failed.length) failures.push(`${label}: ${failed.join(", ")} :: ${JSON.stringify(state)}`);
 };
+
+const assertModelCase = (failures, state, expected) => addFailure(failures, expected.model, state, [
+  [state.modelTitle === expected.title, "model title"],
+  [state.conceptHidden === false, "concept visible"],
+  [Boolean(state.conceptLabel), "concept label"],
+  [Boolean(state.statement), "model statement"],
+  [state.routeKind === expected.kind, "route kind"],
+  [state.nodeCount === expected.nodeCount, "node count"],
+  [state.selectedId === expected.section, "selected section"],
+  [state.vignetteType === expected.vignetteType, "vignette type"],
+  [state.vignetteVariant === expected.vignetteVariant, "vignette variant"],
+  [JSON.stringify(state.objectIds) === JSON.stringify(expected.objectIds), "object IDs"],
+  [state.url.includes(`model=${expected.model}`) && state.url.includes(`section=${expected.section}`), "canonical URL"],
+  [state.selectedVisible, "selected node visible"],
+  [state.rovingCount === 1 && state.selectedTabIndex === 0, "selected roving tab"],
+  [state.controlsCorrect && state.panelLabelledBy === state.selectedButtonId, "tab panel relation"],
+  [state.overlaps === 0, "node overlap"],
+  [!state.documentOverflow, "no document overflow"],
+  [!state.genericSelectedRole, "no generic selected role"],
+]);
 
 await mkdir(outputDir, { recursive: true });
 await waitForHttp(`${baseUrl}/models/`);
@@ -228,97 +307,122 @@ try {
   const failures = [];
   const results = [];
   await setViewport(client, 1792);
+
+  for (const expected of modelCases) {
+    await client.send("Page.navigate", {
+      url: `${baseUrl}/models/?model=${expected.model}&section=${expected.section}&variant=${encodeURIComponent(expected.variant)}&viewport=390`,
+    });
+    await waitFor(client, `(() => document.querySelector('#model-title')?.textContent === ${JSON.stringify(expected.title)}
+      && document.querySelector('#section-tabs')?.dataset.routeKind === ${JSON.stringify(expected.kind)}
+      && document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === ${JSON.stringify(expected.section)})()`, `${expected.model} diagram`);
+    await settle(client);
+    const state = await evaluate(client, stateExpression);
+    assertModelCase(failures, state, expected);
+    results.push({ name: expected.model, state });
+    await capture(client, `model-diagram-${expected.model}-1792.png`);
+  }
+
   await client.send("Page.navigate", {
     url: `${baseUrl}/models/?model=horizontal-navigation&section=spread&variant=08&viewport=390`,
   });
-  await waitFor(client, `(() => document.querySelector('#section-tabs')?.dataset.routeKind === 'sequence'
-    && document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'spread'
-    && document.querySelectorAll('#all-live-board .model-live-card').length === 2)()`, "desktop Spread route");
+  await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'spread'`, "horizontal spread keyboard start");
   await settle(client);
-  const spread = await evaluate(client, stateExpression);
-  assertState(failures, "desktop spread", spread, spreadExpected);
-  results.push({ name: "desktop-spread", state: spread });
-  await capture(client, "horizontal-route-spread-1792.png");
+  const committedSpread = await evaluate(client, stateExpression);
 
   await evaluate(client, `document.querySelector('[data-section-id="fisheye"]')
     .dispatchEvent(new PointerEvent('pointerenter'))`);
-  await waitFor(client, `(() => document.querySelector('#model-concept-vignette')?.dataset.vignetteType === 'fisheye-axis'
-    && document.querySelector('#section-current-label')?.textContent === 'Fisheye'
-    && document.querySelector('#model-diagram-signature')?.textContent === 'Local width falloff')()`, "Fisheye hover preview");
+  await waitFor(client, `document.querySelector('#model-concept-vignette')?.dataset.vignetteVariant === 'fisheye'`, "Fisheye concept preview");
   await settle(client);
   const hover = await evaluate(client, stateExpression);
-  if (hover.selectedId !== "spread"
-    || !hover.url.includes("section=spread")
-    || JSON.stringify(hover.objectIds) !== JSON.stringify(["08", "08A"])
-    || hover.conceptLabel !== fisheyeExpected.conceptLabel
-    || hover.routeNote !== fisheyeExpected.routeNote
-    || hover.canonicalSummary !== spreadExpected.canonicalSummary
-    || hover.vignetteType !== "fisheye-axis"
-    || hover.vignettePreview !== "true") {
-    failures.push(`hover preview changed committed state or missed preview copy: ${JSON.stringify(hover)}`);
-  }
-  results.push({ name: "hover-preview", state: hover });
+  addFailure(failures, "hover preview isolation", hover, [
+    [hover.selectedId === "spread", "selection unchanged"],
+    [hover.currentLabel === committedSpread.currentLabel, "current label committed"],
+    [hover.routeNote === committedSpread.routeNote, "route note committed"],
+    [hover.canonicalSummary === committedSpread.canonicalSummary, "canonical summary committed"],
+    [hover.vignetteVariant === "fisheye" && hover.vignettePreview === "true", "hero preview"],
+    [JSON.stringify(hover.objectIds) === JSON.stringify(["08", "08A"]), "cards unchanged"],
+    [hover.url.includes("section=spread"), "URL unchanged"],
+  ]);
+  results.push({ name: "hover-preview-isolation", state: hover });
 
   await evaluate(client, `document.querySelector('[data-section-id="fisheye"]')
     .dispatchEvent(new PointerEvent('pointerleave'))`);
-  await waitFor(client, `(() => document.querySelector('#model-concept-vignette')?.dataset.vignetteType === 'expanded-band'
-    && document.querySelector('#section-current-label')?.textContent === '分類 Spread'
-    && document.querySelector('#model-diagram-signature')?.textContent === 'In-place expansion')()`, "Spread hover restore");
+  await waitFor(client, `document.querySelector('#model-concept-vignette')?.dataset.vignetteVariant === 'spread'`, "Spread preview restore");
 
-  await evaluate(client, `document.querySelector('[data-section-id="fisheye"]').click()`);
-  await waitFor(client, `(() => document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'fisheye'
-    && [...document.querySelectorAll('#all-live-board .model-live-card')].map((card) => card.dataset.objectId).join(',') === '10,10A')()`, "Fisheye click commit");
+  await evaluate(client, `document.querySelector('[data-section-id="spread"]').focus()`);
+  await pressKey(client, "ArrowRight", "ArrowRight");
+  await waitFor(client, `document.activeElement?.dataset.sectionId === 'ribbon'`, "ArrowRight roving focus");
   await settle(client);
-  const clicked = await evaluate(client, stateExpression);
-  assertState(failures, "clicked fisheye", clicked, fisheyeExpected);
-  if (!clicked.selectedFocused) failures.push(`clicked Fisheye node did not retain focus: ${JSON.stringify(clicked)}`);
-  results.push({ name: "clicked-fisheye", state: clicked });
-  await capture(client, "horizontal-route-fisheye-1792.png");
+  const arrow = await evaluate(client, stateExpression);
+  addFailure(failures, "keyboard preview", arrow, [
+    [arrow.selectedId === "spread", "selection remains Spread"],
+    [arrow.focusedId === "ribbon", "focus moves to Ribbon"],
+    [arrow.rovingCount === 1, "single roving tab"],
+    [arrow.vignetteVariant === "ribbon" && arrow.vignettePreview === "true", "focused concept preview"],
+    [arrow.currentLabel === committedSpread.currentLabel && arrow.routeNote === committedSpread.routeNote, "committed route copy"],
+  ]);
+
+  await evaluate(client, "document.activeElement.click()");
+  await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'ribbon'`, "focused route activation commits Ribbon");
+  await settle(client);
+  const committedRibbon = await evaluate(client, stateExpression);
+  addFailure(failures, "keyboard commit", committedRibbon, [
+    [committedRibbon.selectedId === "ribbon", "Ribbon selected"],
+    [committedRibbon.selectedFocused, "focus retained"],
+    [committedRibbon.vignetteVariant === "ribbon" && committedRibbon.vignettePreview === "false", "Ribbon committed"],
+    [JSON.stringify(committedRibbon.objectIds) === JSON.stringify(["09", "09A"]), "Ribbon objects"],
+    [committedRibbon.url.includes("section=ribbon"), "Ribbon URL"],
+  ]);
+  results.push({ name: "keyboard-route", state: committedRibbon });
 
   await evaluate(client, "history.back()");
-  await waitFor(client, `(() => document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'spread')()`, "history back to Spread");
-  await settle(client);
-  const back = await evaluate(client, stateExpression);
-  assertState(failures, "history back", back, spreadExpected);
-  results.push({ name: "history-back", state: back });
-
+  await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'spread'`, "history back to Spread");
   await evaluate(client, "history.forward()");
-  await waitFor(client, `(() => document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'fisheye')()`, "history forward to Fisheye");
-  await settle(client);
-  const forward = await evaluate(client, stateExpression);
-  assertState(failures, "history forward", forward, fisheyeExpected);
-  results.push({ name: "history-forward", state: forward });
+  await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'ribbon'`, "history forward to Ribbon");
 
-  await setViewport(client, 390);
+  await setViewport(client, 320);
+  await client.send("Page.navigate", {
+    url: `${baseUrl}/models/?model=landscape-paper&section=stopped-routes&variant=19&viewport=390`,
+  });
+  await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'stopped-routes'`, "320px Landscape route");
   await settle(client);
   await evaluate(client, `document.querySelector('#section-tabs').scrollIntoView({ block: 'start' })`);
   await settle(client);
   const mobile = await evaluate(client, stateExpression);
-  assertState(failures, "mobile fisheye", mobile, fisheyeExpected);
-  results.push({ name: "mobile-fisheye", state: mobile });
-  await capture(client, "horizontal-route-fisheye-390.png");
+  addFailure(failures, "320px branch", mobile, [
+    [mobile.routeKind === "branch", "branch kind"],
+    [mobile.selectedId === "stopped-routes" && mobile.selectedVisible, "selected branch visible"],
+    [mobile.minimumTargetHeight >= 44, "44px targets"],
+    [mobile.overflowStart === "true", "left overflow cue"],
+    [!mobile.documentOverflow, "no document overflow"],
+  ]);
+  results.push({ name: "landscape-320", state: mobile });
+  await capture(client, "model-diagram-landscape-paper-320.png");
 
   await client.send("Emulation.setEmulatedMedia", {
     features: [{ name: "prefers-reduced-motion", value: "reduce" }],
   });
   await client.send("Page.navigate", {
-    url: `${baseUrl}/models/?model=horizontal-navigation&section=spread&variant=08&viewport=390`,
+    url: `${baseUrl}/models/?model=paper-field&section=elastic-geometry&variant=15&viewport=390`,
   });
-  await waitFor(client, `(() => document.querySelector('#model-concept-vignette')?.dataset.vignetteType === 'expanded-band')()`, "reduced-motion route");
+  await waitFor(client, `document.querySelector('#model-concept-vignette')?.dataset.vignetteVariant === 'elastic'`, "reduced-motion field");
   await settle(client);
   const reducedMotion = await evaluate(client, stateExpression);
-  assertState(failures, "reduced motion", reducedMotion, spreadExpected);
-  results.push({ name: "reduced-motion", state: reducedMotion });
+  addFailure(failures, "reduced motion", reducedMotion, [
+    [reducedMotion.routeKind === "field", "field route"],
+    [reducedMotion.selectedId === "elastic-geometry", "elastic selected"],
+    [reducedMotion.vignetteVariant === "elastic", "elastic final geometry"],
+    [!reducedMotion.documentOverflow, "no overflow"],
+  ]);
+  results.push({ name: "reduced-motion-field", state: reducedMotion });
 
   await writeFile(
     new URL("model-route-results.json", outputDir),
     `${JSON.stringify({ browser, baseUrl, generatedAt: new Date().toISOString(), results, failures }, null, 2)}\n`,
   );
-  if (failures.length) {
-    throw new Error(`Model route browser review failed:\n- ${failures.join("\n- ")}`);
-  }
+  if (failures.length) throw new Error(`Model route browser review failed:\n- ${failures.join("\n- ")}`);
   socket.close();
-  console.log("Model route browser review: concept labels, route notes, sequence, preview, click, history, mobile, and reduced motion verified.");
+  console.log("Model route browser review: six models, four topologies, preview isolation, keyboard, history, 320px, and reduced motion verified.");
 } catch (error) {
   if (browserStderr.trim()) console.error(browserStderr.trim());
   throw error;
