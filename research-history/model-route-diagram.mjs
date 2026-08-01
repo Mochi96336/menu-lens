@@ -19,9 +19,7 @@ const edgeIsActive = ({ kind, edge, model, activeSectionId }) => {
     const activeIndex = sectionIndex(model, activeSectionId);
     return sectionIndex(model, to) <= activeIndex;
   }
-  if (kind === "branch" || kind === "field") {
-    return activeSectionId !== from && (activeSectionId === to || activeSectionId === from);
-  }
+  if (kind === "branch" || kind === "field") return activeSectionId === to;
   return false;
 };
 
@@ -43,12 +41,7 @@ const createRouteSvg = ({ model, presentation, activeSectionId }) => {
     line.setAttribute("y1", String(from.y));
     line.setAttribute("x2", String(to.x));
     line.setAttribute("y2", String(to.y));
-    line.setAttribute("class", edgeIsActive({
-      kind: presentation.kind,
-      edge,
-      model,
-      activeSectionId,
-    })
+    line.setAttribute("class", edgeIsActive({ kind: presentation.kind, edge, model, activeSectionId })
       ? "model-route__line model-route__line--active"
       : "model-route__line model-route__line--base");
     svg.append(line);
@@ -71,7 +64,7 @@ const moveRovingFocus = (event, buttons, currentIndex) => {
 
 export const createModelRouteDiagram = ({
   root,
-  panel,
+  panel = document.querySelector?.("#model-section-panel") ?? root,
   currentLabel,
   currentNote,
   labelForSection,
@@ -128,7 +121,7 @@ export const createModelRouteDiagram = ({
     button.title = candidate.title;
     button.tabIndex = selected ? 0 : -1;
     button.setAttribute("aria-selected", String(selected));
-    button.setAttribute("aria-controls", panel.id);
+    button.setAttribute("aria-controls", panel.id || root.id);
     button.style.setProperty("--route-x", `${sectionPresentation.position.x}%`);
     button.style.setProperty("--route-y", `${sectionPresentation.position.y}%`);
 
@@ -169,7 +162,7 @@ export const createModelRouteDiagram = ({
     }
     root.append(canvas);
     setCurrentCopy(section, presentation);
-    panel.setAttribute("aria-labelledby", selectedButton?.id ?? "");
+    panel.setAttribute?.("aria-labelledby", selectedButton?.id ?? "");
     revealSelected();
   };
 
