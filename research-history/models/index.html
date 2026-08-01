@@ -70,40 +70,37 @@
             <div class="model-concept__body">
               <p id="model-diagram-statement" class="model-concept__statement"></p>
               <div id="model-concept-vignette" class="model-concept-vignette" aria-hidden="true"></div>
+              <div class="model-concept__section-copy" aria-live="polite">
+                <p class="model-route__current"><strong id="section-current-label"></strong><span id="section-route-note"></span></p>
+                <p id="section-summary" class="model-concept__section-summary"></p>
+              </div>
             </div>
           </details>
         </div>
 
         <div id="model-section-panel" class="model-section-panel" role="tabpanel">
-          <div class="model-section-copy" aria-live="polite">
-            <p class="model-route__current"><strong id="section-current-label"></strong><span id="section-route-note"></span></p>
-            <p id="section-summary" class="model-section-summary"></p>
-          </div>
-
-          <div class="model-toolbar" aria-label="研究物件顯示設定">
-            <div class="model-toolbar__group" aria-label="檢視範圍">
-              <span>檢視</span>
-              <button id="view-all" type="button" data-view-mode="all" aria-pressed="true">整組</button>
-              <button id="view-focus" type="button" data-view-mode="focus" aria-pressed="false">選取</button>
+          <header class="model-object-bar">
+            <div class="model-object-bar__heading">
+              <p class="eyebrow">Research objects</p>
+              <h2 id="model-object-title">研究物件</h2>
             </div>
 
-            <div class="model-toolbar__group" aria-label="Viewport 尺寸">
-              <span>寬度</span>
-              <button type="button" data-viewport="320" aria-pressed="false">320</button>
-              <button type="button" data-viewport="390" aria-pressed="true">390</button>
-              <button type="button" data-viewport="desktop" aria-pressed="false">1024</button>
-            </div>
-
-            <div class="model-toolbar__selection">
-              <label id="object-picker" class="model-object-picker" hidden>
-                <span>選取物件</span>
-                <select id="object-select" aria-label="切換選取的研究物件"></select>
-              </label>
+            <div class="model-object-bar__actions" aria-label="研究物件操作">
+              <button id="show-all" type="button" hidden>返回整組</button>
               <button id="compare-parent" class="model-compare-action" type="button" hidden>與 parent 比較</button>
+              <label class="model-viewport-picker">
+                <span>預覽</span>
+                <select id="viewport-select" aria-label="預覽尺寸">
+                  <option value="320">320px</option>
+                  <option value="390">390px</option>
+                  <option value="desktop">1024px</option>
+                </select>
+              </label>
             </div>
-          </div>
+          </header>
 
-          <p id="viewport-note" class="model-viewport-note" aria-live="polite"></p>
+          <select id="object-select" hidden aria-hidden="true" tabindex="-1"></select>
+          <p id="viewport-note" class="sr-only" aria-live="polite"></p>
 
           <div id="all-live-board" class="model-live-board" data-viewport="390" data-view-mode="all" aria-label="本組研究物件操作板"></div>
 
