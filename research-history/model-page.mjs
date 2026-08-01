@@ -3,10 +3,13 @@ import { archiveExtensions } from "./catalog/all-extensions.mjs";
 import { archiveLegacyOverrides } from "./catalog/legacy-overrides.mjs";
 import { designModels, modelById, presentationNotes } from "./catalog/presentation-models.mjs";
 import { studyPresentations } from "./catalog/study-presentations.mjs";
+import { modelDiagramPresentations } from "./catalog/model-diagram-presentations.mjs";
 import { createModelPageState, sectionForObject } from "./model-page-state.mjs";
 import { createModelSurfacePool } from "./model-surface-pool.mjs";
 import { createModelLiveBoard } from "./model-live-board.mjs";
 import { createModelObjectInspector } from "./model-object-inspector.mjs";
+import { createModelRouteDiagram } from "./model-route-diagram.mjs";
+import { createModelConceptVignette } from "./model-concept-vignette.mjs";
 
 const requiredElement = (selector) => {
   const element = document.querySelector(selector);
@@ -76,6 +79,7 @@ const displayTitle = (object) => {
     .find((candidate) => title.startsWith(candidate));
   return prefix ? title.slice(prefix.length).trim() : title;
 };
+
 const objectLabel = (object) => `${object.id} · ${displayTitle(object)}`;
 const archivePath = (path) => `../${path}`;
 
@@ -122,11 +126,16 @@ const elements = Object.freeze({
   modelTitle: requiredElement("#model-title"),
   modelSummary: requiredElement("#model-summary"),
   modelStats: requiredElement("#model-stats"),
+  modelConcept: requiredElement("#model-concept"),
+  modelDiagramSignature: requiredElement("#model-diagram-signature"),
+  modelDiagramStatement: requiredElement("#model-diagram-statement"),
+  modelConceptVignette: requiredElement("#model-concept-vignette"),
   modelSubstrate: requiredElement("#model-substrate"),
   modelRetains: requiredElement("#model-retains"),
   modelVaries: requiredElement("#model-varies"),
   modelQuestion: requiredElement("#model-question"),
   sectionTabs: requiredElement("#section-tabs"),
+  sectionCurrentLabel: requiredElement("#section-current-label"),
   sectionSummary: requiredElement("#section-summary"),
   objectPicker: requiredElement("#object-picker"),
   objectSelect: requiredElement("#object-select"),
@@ -207,40 +216,41 @@ const shortSectionLabels = Object.freeze({
 });
 
 const sectionTabLabel = (section) => shortSectionLabels[section.id] ?? section.title;
+const diagramPresentationFor = (model) => modelDiagramPresentations[model.id] ?? null;
+let previewSection = null;
 
-const syncSectionTabOverflow = () => {
-  const container = elements.sectionTabs;
-  const viewportWidth = Number(container.clientWidth) || 0;
-  const contentWidth = Number(container.scrollWidth) || 0;
-  const maxScroll = Math.max(0, contentWidth - viewportWidth);
-  const scrollLeft = Math.min(maxScroll, Math.max(0, Number(container.scrollLeft) || 0));
-  container.dataset.overflowStart = String(scrollLeft > 1);
-  container.dataset.overflowEnd = String(scrollLeft < maxScroll - 1);
+const vignette = createModelConceptVignette({ root: elements.modelConceptVignette });
+
+const renderConcept = (section, { preview = false } = {}) => {
+  const presentation = diagramPresentationFor(state.value.model);
+  vignette.render({ presentation, sectionId: section.id, preview });
 };
 
-const revealSelectedSectionTab = (button) => {
-  if (!button) return;
-  const reveal = () => {
-    const container = elements.sectionTabs;
-    const viewportWidth = Number(container.clientWidth) || 0;
-    const maxScroll = Math.max(0, (Number(container.scrollWidth) || 0) - viewportWidth);
-    const edgeInset = 12;
-    const tabStart = button.offsetLeft;
-    const tabEnd = tabStart + button.offsetWidth;
-    const visibleStart = Number(container.scrollLeft) || 0;
-    const visibleEnd = visibleStart + viewportWidth;
-    let target = visibleStart;
-    if (tabStart < visibleStart + edgeInset) target = tabStart - edgeInset;
-    else if (tabEnd > visibleEnd - edgeInset) target = tabEnd - viewportWidth + edgeInset;
-    container.scrollLeft = Math.min(maxScroll, Math.max(0, target));
-    syncSectionTabOverflow();
-  };
-  if (typeof requestAnimationFrame === "function") {
-    requestAnimationFrame(() => requestAnimationFrame(reveal));
-  } else {
-    reveal();
-  }
-};
+const routeDiagram = createModelRouteDiagram({
+  root: elements.sectionTabs,
+  currentLabel: elements.sectionCurrentLabel,
+  currentNote: elements.sectionSummary,
+  labelForSection: sectionTabLabel,
+  onSelect: (section) => {
+    previewSection = null;
+    state.setSection(section);
+    render({ historyMode: "push", focusTarget: { kind: "section", id: section.id } });
+  },
+  onPreview: (section) => {
+    const presentation = diagramPresentationFor(state.value.model);
+    if (!presentation || section.id === state.value.section.id) return;
+    previewSection = section;
+    routeDiagram.preview({ section, presentation });
+    renderConcept(section, { preview: true });
+  },
+  onPreviewEnd: () => {
+    if (!previewSection) return;
+    previewSection = null;
+    const presentation = diagramPresentationFor(state.value.model);
+    routeDiagram.restore({ section: state.value.section, presentation });
+    renderConcept(state.value.section);
+  },
+});
 
 const cardPresentation = (object) => {
   if (object.objectType === "study") {
@@ -269,6 +279,7 @@ const navigateToObject = (objectId) => {
     window.location.href = "../#catalog";
     return;
   }
+  previewSection = null;
   if (model.id !== state.value.model.id) state.setModel(model);
   state.patch({ model, section, object, viewMode: "all" });
   render({ historyMode: "push" });
@@ -305,18 +316,7 @@ const board = createModelLiveBoard({
   },
 });
 
-const focusAdjacent = (event, buttons, currentIndex) => {
-  if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key) || !buttons.length) return;
-  event.preventDefault();
-  const nextIndex = event.key === "Home"
-    ? 0
-    : (event.key === "End"
-      ? buttons.length - 1
-      : ((currentIndex + (event.key === "ArrowRight" ? 1 : -1) + buttons.length) % buttons.length));
-  buttons[nextIndex].focus();
-};
-
-const renderModelDefinition = ({ model }) => {
+const renderModelDefinition = ({ model, section }) => {
   document.title = `Menu Lens — ${model.title}`;
   elements.modelSelect.value = model.id;
   elements.modelEyebrow.textContent = model.eyebrow;
@@ -326,34 +326,22 @@ const renderModelDefinition = ({ model }) => {
   elements.modelRetains.textContent = model.retains;
   elements.modelVaries.textContent = model.varies;
   elements.modelQuestion.textContent = model.question;
-  const objectCount = new Set(model.sections.flatMap((section) => section.objectIds)).size;
+  const objectCount = new Set(model.sections.flatMap((candidate) => candidate.objectIds)).size;
   elements.modelStats.textContent = `${model.sections.length} 組子研究 · ${objectCount} 個研究物件`;
+
+  const presentation = diagramPresentationFor(model);
+  elements.modelConcept.hidden = !presentation;
+  elements.modelDiagramSignature.textContent = presentation?.signature ?? "";
+  elements.modelDiagramStatement.textContent = presentation?.statement ?? "";
+  renderConcept(previewSection ?? section, { preview: Boolean(previewSection) });
 };
 
-const renderSectionTabs = ({ model, section }) => {
-  elements.sectionTabs.replaceChildren();
-  let selectedButton = null;
-  for (const [index, candidate] of model.sections.entries()) {
-    const selected = candidate.id === section.id;
-    const button = document.createElement("button");
-    button.type = "button";
-    button.role = "tab";
-    button.dataset.sectionId = candidate.id;
-    button.textContent = sectionTabLabel(candidate);
-    button.title = candidate.title;
-    button.tabIndex = selected ? 0 : -1;
-    button.setAttribute("aria-selected", String(selected));
-    if (selected) selectedButton = button;
-    button.addEventListener("keydown", (event) =>
-      focusAdjacent(event, [...elements.sectionTabs.children], index));
-    button.addEventListener("click", () => {
-      state.setSection(candidate);
-      render({ historyMode: "push", focusTarget: { kind: "section", id: candidate.id } });
-    });
-    elements.sectionTabs.append(button);
-  }
-  elements.sectionSummary.textContent = section.summary;
-  revealSelectedSectionTab(selectedButton);
+const renderSectionRoute = ({ model, section }) => {
+  routeDiagram.render({
+    model,
+    section,
+    presentation: diagramPresentationFor(model),
+  });
 };
 
 const renderObjectSelect = ({ section, object }) => {
@@ -385,7 +373,7 @@ const renderToolbar = ({ object, viewport, viewMode }) => {
   elements.objectPicker.hidden = viewMode === "all";
   elements.compareParent.hidden = !canCompare || viewMode === "all";
   elements.compareParent.disabled = !canCompare;
-  elements.compareParent.textContent = comparing ? "結束比較" : "與 " + (parent?.id ?? "parent") + " 比較";
+  elements.compareParent.textContent = comparing ? "結束比較" : `與 ${parent?.id ?? "parent"} 比較`;
   for (const button of viewModeButtons) {
     const selected = button.dataset.viewMode === "all" ? viewMode === "all" : viewMode !== "all";
     button.setAttribute("aria-pressed", String(selected));
@@ -417,7 +405,7 @@ const renderStage = (snapshot) => {
 const restoreFocus = (target) => {
   if (!target) return;
   if (target.kind === "section") {
-    [...elements.sectionTabs.children]
+    routeDiagram.getButtons()
       .find((button) => button.dataset.sectionId === target.id)?.focus();
     return;
   }
@@ -431,7 +419,7 @@ const restoreFocus = (target) => {
 function render({ historyMode = "replace", focusTarget = null } = {}) {
   const snapshot = state.value;
   renderModelDefinition(snapshot);
-  renderSectionTabs(snapshot);
+  renderSectionRoute(snapshot);
   renderObjectSelect(snapshot);
   renderStage(snapshot);
   inspector.render(snapshot);
@@ -447,6 +435,7 @@ for (const model of designModels) {
 }
 
 elements.modelSelect.addEventListener("change", () => {
+  previewSection = null;
   const model = modelById.get(elements.modelSelect.value);
   if (!model) return;
   state.setModel(model);
@@ -479,13 +468,8 @@ for (const button of viewportButtons) {
   });
 }
 
-elements.sectionTabs.addEventListener("scroll", syncSectionTabOverflow, { passive: true });
-const sectionTabsResizeObserver = typeof ResizeObserver === "function"
-  ? new ResizeObserver(syncSectionTabOverflow)
-  : null;
-sectionTabsResizeObserver?.observe(elements.sectionTabs);
-
 window.addEventListener?.("popstate", () => {
+  previewSection = null;
   state.replaceFromLocation();
   render({ historyMode: null });
 });
