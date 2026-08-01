@@ -38,14 +38,6 @@
           <p id="model-stats" class="model-stats" aria-live="polite"></p>
         </div>
 
-        <aside id="model-concept" class="model-concept" hidden>
-          <div class="model-concept__copy">
-            <p id="model-diagram-signature" class="eyebrow"></p>
-            <p id="model-diagram-statement" class="model-concept__statement"></p>
-          </div>
-          <div id="model-concept-vignette" class="model-concept-vignette" aria-hidden="true"></div>
-        </aside>
-
         <details class="model-definition-disclosure">
           <summary>
             <strong>模型定義</strong>
@@ -63,9 +55,23 @@
 
     <main id="main">
       <section id="workbench" class="model-workbench model-workbench-shell" aria-label="研究物件工作台">
-        <div class="model-section-strip">
-          <p class="model-section-strip__eyebrow eyebrow">Research route</p>
-          <div id="section-tabs" class="model-section-tabs" role="tablist" aria-label="切換研究方向"></div>
+        <div class="model-route-layout">
+          <div class="model-section-strip">
+            <p class="model-section-strip__eyebrow eyebrow">Research route</p>
+            <div id="section-tabs" class="model-section-tabs" role="tablist" aria-label="切換研究方向"></div>
+          </div>
+
+          <details id="model-concept" class="model-concept" hidden>
+            <summary id="model-concept-summary" class="model-concept__summary">
+              <span class="model-concept__summary-label">概念預覽</span>
+              <strong id="model-diagram-signature"></strong>
+              <span class="model-concept__summary-hint" aria-hidden="true">展開</span>
+            </summary>
+            <div class="model-concept__body">
+              <p id="model-diagram-statement" class="model-concept__statement"></p>
+              <div id="model-concept-vignette" class="model-concept-vignette" aria-hidden="true"></div>
+            </div>
+          </details>
         </div>
 
         <div id="model-section-panel" class="model-section-panel" role="tabpanel">
