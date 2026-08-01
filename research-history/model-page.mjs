@@ -129,10 +129,11 @@ const elements = Object.freeze({
   modelTitle: requiredElement("#model-title"),
   modelSummary: requiredElement("#model-summary"),
   modelStats: requiredElement("#model-stats"),
-  modelConcept: optionalElement("#model-concept", "aside"),
-  modelDiagramSignature: optionalElement("#model-diagram-signature", "p"),
-  modelDiagramStatement: optionalElement("#model-diagram-statement", "p"),
-  modelConceptVignette: optionalElement("#model-concept-vignette"),
+  modelConcept: requiredElement("#model-concept"),
+  modelConceptSummary: requiredElement("#model-concept-summary"),
+  modelDiagramSignature: requiredElement("#model-diagram-signature"),
+  modelDiagramStatement: requiredElement("#model-diagram-statement"),
+  modelConceptVignette: requiredElement("#model-concept-vignette"),
   modelSubstrate: requiredElement("#model-substrate"),
   modelRetains: requiredElement("#model-retains"),
   modelVaries: requiredElement("#model-varies"),
@@ -177,6 +178,21 @@ const elements = Object.freeze({
 
 const viewportButtons = [...document.querySelectorAll("[data-viewport]")];
 const viewModeButtons = [...document.querySelectorAll("[data-view-mode]")];
+
+const conceptDisclosureMedia = typeof window.matchMedia === "function"
+  ? window.matchMedia("(min-width: 1100px)")
+  : null;
+
+const syncConceptDisclosure = () => {
+  if (elements.modelConcept.dataset.userToggled === "true") return;
+  elements.modelConcept.open = conceptDisclosureMedia?.matches ?? true;
+};
+
+elements.modelConceptSummary.addEventListener("click", () => {
+  elements.modelConcept.dataset.userToggled = "true";
+});
+conceptDisclosureMedia?.addEventListener?.("change", syncConceptDisclosure);
+syncConceptDisclosure();
 
 const state = createModelPageState({ designModels, modelById, objectById });
 const surfacePool = createModelSurfacePool();
@@ -227,6 +243,9 @@ const vignette = createModelConceptVignette({ root: elements.modelConceptVignett
 
 const renderConcept = (section, { preview = false } = {}) => {
   const presentation = diagramPresentationFor(state.value.model);
+  const sectionPresentation = presentation?.sections?.[section.id];
+  elements.modelDiagramSignature.textContent =
+    sectionPresentation?.conceptLabel ?? presentation?.signature ?? "";
   vignette.render({ presentation, sectionId: section.id, preview });
 };
 
@@ -335,7 +354,6 @@ const renderModelDefinition = ({ model, section }) => {
 
   const presentation = diagramPresentationFor(model);
   elements.modelConcept.hidden = !presentation;
-  elements.modelDiagramSignature.textContent = presentation?.signature ?? "";
   elements.modelDiagramStatement.textContent = presentation?.statement ?? "";
   renderConcept(previewSection ?? section, { preview: Boolean(previewSection) });
 };
