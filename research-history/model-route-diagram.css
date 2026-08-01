@@ -369,16 +369,28 @@
     gap: .18rem;
   }
 
-  .model-route__canvas {
-    min-width: calc(var(--route-count) * 8rem);
+  .model-section-tabs--route,
+  .model-section-tabs--branch,
+  .model-section-tabs--field,
+  .model-section-tabs--parallel {
+    min-height: 5.8rem;
   }
 
+  .model-route__canvas,
   .model-route__canvas--branch,
-  .model-route__canvas--field {
-    min-width: calc(var(--route-count) * 7.8rem);
+  .model-route__canvas--field,
+  .model-route__canvas--parallel {
+    min-width: calc(var(--route-count) * 8rem);
+    height: 5.25rem;
+  }
+
+  .model-route__lines {
+    display: none;
   }
 
   .model-section-tabs--route .model-route__canvas > button {
+    left: var(--route-mobile-x);
+    top: 50%;
     width: 7.5rem;
     min-width: 7.5rem;
     min-height: 3.25rem;
