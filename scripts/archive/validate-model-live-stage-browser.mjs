@@ -152,6 +152,7 @@ try {
   const results = [];
   const failures = [];
   let overflowSurfaceCount = 0;
+  let fallbackSurfaceCount = 0;
 
   for (const model of models) {
     for (const viewport of viewports) {
@@ -159,12 +160,16 @@ try {
       await client.send("Page.navigate", { url: `${baseUrl}${path}` });
       await waitFor(client, `(() => {
         const cards = [...document.querySelectorAll('#all-live-board .model-live-card:not([hidden])')];
-        const roots = cards.map((card) => card.querySelector('.model-pooled-surface'));
-        const frames = cards.map((card) => card.querySelector('iframe.model-live-frame'));
         return document.readyState === 'complete'
           && cards.length > 0
-          && roots.every((root) => root?.dataset.liveState === 'ready')
-          && frames.every((frame) => frame && !frame.hidden);
+          && cards.every((card) => {
+            const root = card.querySelector('.model-pooled-surface');
+            const frame = root?.querySelector('iframe.model-live-frame');
+            const fallback = root?.querySelector('.model-live-fallback');
+            if (root?.dataset.liveState === 'ready') return Boolean(frame && !frame.hidden);
+            if (root?.dataset.liveState === 'fallback') return Boolean(fallback && !fallback.hidden);
+            return false;
+          });
       })()`, `${model} ${viewport.value} live stages`);
       await evaluate(client, "document.fonts?.ready ?? Promise.resolve()");
       await evaluate(client, `new Promise((resolve) =>
@@ -173,17 +178,24 @@ try {
       const metrics = await evaluate(client, `(() => {
         const cards = [...document.querySelectorAll('#all-live-board .model-live-card:not([hidden])')];
         const surfaces = cards.map((card) => {
-          const frame = card.querySelector('iframe.model-live-frame');
-          const root = frame.closest('.model-pooled-surface');
-          const frameDocument = frame.contentDocument;
+          const root = card.querySelector('.model-pooled-surface');
+          const frame = root.querySelector('iframe.model-live-frame');
+          const fallback = root.querySelector('.model-live-fallback');
+          const state = root.dataset.liveState;
+          const renderedStage = state === 'ready' ? frame : fallback;
+          const frameDocument = state === 'ready' ? frame.contentDocument : null;
+          const contentHeightValue = root.dataset.liveContentHeight;
           return {
-            objectId: root?.dataset.objectId ?? card.dataset.objectId,
-            frameHeight: Math.round(frame.getBoundingClientRect().height),
+            objectId: root.dataset.objectId ?? card.dataset.objectId,
+            state,
+            renderedHeight: Math.round(renderedStage.getBoundingClientRect().height),
+            frameHidden: frame.hidden,
+            fallbackHidden: fallback.hidden,
             scrolling: frame.getAttribute('scrolling'),
-            liveHeight: Number(root?.dataset.liveHeight),
-            stageHeight: Number(root?.dataset.liveStageHeight),
-            contentHeight: Number(root?.dataset.liveContentHeight),
-            overflow: root?.dataset.liveOverflow === 'true',
+            liveHeight: Number(root.dataset.liveHeight),
+            stageHeight: Number(root.dataset.liveStageHeight),
+            contentHeight: contentHeightValue === undefined ? null : Number(contentHeightValue),
+            overflow: root.dataset.liveOverflow === 'true',
             documentScrollable: Boolean(frameDocument)
               && frameDocument.documentElement.scrollHeight > frame.contentWindow.innerHeight + 1,
           };
@@ -195,15 +207,24 @@ try {
         };
       })()`);
 
-      const surfaceFailures = metrics.surfaces.filter((surface) =>
-        surface.frameHeight !== viewport.expectedHeight
-        || surface.liveHeight !== viewport.expectedHeight
-        || surface.stageHeight !== viewport.expectedHeight
-        || surface.scrolling !== "auto"
-        || !Number.isFinite(surface.contentHeight)
-        || surface.contentHeight <= 0
-        || (surface.overflow && !surface.documentScrollable));
+      const surfaceFailures = metrics.surfaces.filter((surface) => {
+        const commonFailure = surface.renderedHeight !== viewport.expectedHeight
+          || surface.liveHeight !== viewport.expectedHeight
+          || surface.stageHeight !== viewport.expectedHeight;
+        if (commonFailure) return true;
+        if (surface.state === "fallback") {
+          return !surface.frameHidden || surface.fallbackHidden || surface.contentHeight !== null;
+        }
+        return surface.state !== "ready"
+          || surface.frameHidden
+          || !surface.fallbackHidden
+          || surface.scrolling !== "auto"
+          || !Number.isFinite(surface.contentHeight)
+          || surface.contentHeight <= 0
+          || (surface.overflow && !surface.documentScrollable);
+      });
       overflowSurfaceCount += metrics.surfaces.filter((surface) => surface.overflow).length;
+      fallbackSurfaceCount += metrics.surfaces.filter((surface) => surface.state === "fallback").length;
       results.push({ path, expectedHeight: viewport.expectedHeight, ...metrics });
       if (metrics.model !== model
         || metrics.viewport !== viewport.value
@@ -216,12 +237,16 @@ try {
   if (overflowSurfaceCount === 0) {
     failures.push("No model surface exceeded its fixed stage, so internal scrolling was not exercised.");
   }
+  if (fallbackSurfaceCount === 0) {
+    failures.push("No entrypoint-free model object exercised the fixed fallback stage.");
+  }
 
   const report = {
     browser,
     baseUrl,
     generatedAt: new Date().toISOString(),
     overflowSurfaceCount,
+    fallbackSurfaceCount,
     cases: results,
     failures,
   };
@@ -233,7 +258,7 @@ try {
     throw new Error(`Model live-stage browser review failed:\n- ${failures.join("\n- ")}`);
   }
   socket.close();
-  console.log("Model live-stage browser review: six models share fixed 320px, 390px, and desktop stage heights with internal scrolling.");
+  console.log("Model live-stage browser review: six models share fixed 320px, 390px, and desktop stages across live and fallback surfaces.");
 } catch (error) {
   if (browserStderr.trim()) console.error(browserStderr.trim());
   throw error;
