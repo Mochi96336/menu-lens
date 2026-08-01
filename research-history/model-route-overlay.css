@@ -1,14 +1,15 @@
 .model-route-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-areas:
-    "concept"
-    "route";
-  gap: clamp(.8rem, 1.5vw, 1.25rem);
+  grid-template-columns: minmax(0, 1fr) minmax(32rem, 38rem);
+  grid-template-areas: "concept route";
+  gap: clamp(1.5rem, 3vw, 3.5rem);
+  align-items: stretch;
 }
 
 .model-section-strip {
   grid-area: route;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   width: 100%;
   min-width: 0;
 }
@@ -17,6 +18,11 @@
   min-height: 0;
   margin-bottom: .35rem !important;
   padding-right: 0;
+}
+
+.model-section-tabs--route {
+  align-self: center;
+  width: 100%;
 }
 
 .model-concept {
@@ -86,6 +92,21 @@
    the stroke meet the visible marker border instead of appearing disconnected. */
 .model-route__marker {
   box-shadow: none;
+}
+
+@media (max-width: 1280px) {
+  .model-route-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "concept"
+      "route";
+    gap: clamp(.8rem, 1.5vw, 1.25rem);
+    align-items: start;
+  }
+
+  .model-section-strip {
+    display: block;
+  }
 }
 
 @media (max-width: 900px) {
