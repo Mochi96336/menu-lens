@@ -188,9 +188,12 @@
   padding-block: .15rem .45rem;
 }
 
-.model-section-tabs--branch,
 .model-section-tabs--field {
   min-height: 11rem;
+}
+
+.model-section-tabs--branch {
+  min-height: 17.5rem;
 }
 
 .model-section-tabs--parallel {
@@ -204,10 +207,17 @@
   height: 6rem;
 }
 
-.model-route__canvas--branch,
 .model-route__canvas--field {
   min-width: max(100%, calc(var(--route-count) * 8rem));
   height: 10.5rem;
+}
+
+.model-route__canvas--branch {
+  width: min(74rem, 100%);
+  max-width: 100%;
+  min-width: 48rem;
+  height: 17rem;
+  margin-inline: auto;
 }
 
 .model-route__canvas--parallel {
@@ -224,8 +234,10 @@
 }
 
 .model-route__line {
+  fill: none;
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .model-route__line--base {
@@ -271,6 +283,12 @@
   color: var(--muted);
   text-align: center;
   white-space: normal;
+}
+
+.model-section-tabs--branch .model-route__canvas > button {
+  width: 10rem;
+  min-width: 10rem;
+  min-height: 3rem;
 }
 
 .model-section-tabs--route .model-route__canvas > button:hover {
@@ -346,12 +364,25 @@
   }
 }
 
+@media (min-width: 521px) and (max-width: 720px) {
+  .model-route__canvas--branch {
+    width: 60rem;
+    max-width: none;
+    min-width: 60rem;
+    height: 16rem;
+    margin-inline: 0;
+  }
+
+  .model-section-tabs--branch {
+    min-height: 16.5rem;
+  }
+}
+
 @media (max-width: 720px) {
   .model-route__canvas {
     min-width: calc(var(--route-count) * 8.5rem);
   }
 
-  .model-route__canvas--branch,
   .model-route__canvas--field {
     min-width: calc(var(--route-count) * 8.25rem);
   }
@@ -359,6 +390,11 @@
   .model-section-tabs--route .model-route__canvas > button {
     width: 8rem;
     min-width: 8rem;
+  }
+
+  .model-section-tabs--branch .model-route__canvas > button {
+    width: 10rem;
+    min-width: 10rem;
   }
 }
 
@@ -393,15 +429,19 @@
   .model-route__canvas--branch,
   .model-route__canvas--field,
   .model-route__canvas--parallel {
+    width: auto;
+    max-width: none;
     min-width: calc(var(--route-count) * 8rem);
     height: 4.9rem;
+    margin-inline: 0;
   }
 
   .model-route__lines {
     display: none;
   }
 
-  .model-section-tabs--route .model-route__canvas > button {
+  .model-section-tabs--route .model-route__canvas > button,
+  .model-section-tabs--branch .model-route__canvas > button {
     left: var(--route-mobile-x);
     top: 50%;
     width: 7.5rem;
