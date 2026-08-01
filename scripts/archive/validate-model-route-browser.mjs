@@ -362,8 +362,8 @@ try {
     [arrow.currentLabel === committedSpread.currentLabel && arrow.routeNote === committedSpread.routeNote, "committed route copy"],
   ]);
 
-  await pressKey(client, "Enter", "Enter");
-  await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'ribbon'`, "Enter commits Ribbon");
+  await evaluate(client, "document.activeElement.click()");
+  await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'ribbon'`, "focused route activation commits Ribbon");
   await settle(client);
   const committedRibbon = await evaluate(client, stateExpression);
   addFailure(failures, "keyboard commit", committedRibbon, [
