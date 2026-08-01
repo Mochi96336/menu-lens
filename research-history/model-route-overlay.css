@@ -1,10 +1,15 @@
 .model-route-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(1rem, 2vw, 1.5rem);
+  grid-template-columns: minmax(0, 1fr) minmax(23rem, 28rem);
+  grid-template-areas: "route concept";
+  gap: clamp(1.5rem, 3vw, 3.5rem);
+  align-items: stretch;
 }
 
 .model-section-strip {
+  grid-area: route;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   width: 100%;
   min-width: 0;
 }
@@ -15,11 +20,17 @@
   padding-right: 0;
 }
 
+.model-section-tabs--route {
+  align-self: center;
+  width: 100%;
+}
+
 .model-concept {
   position: relative;
-  order: -1;
+  grid-area: concept;
   width: 100%;
   min-width: 0;
+  align-self: stretch;
   border-top: 2px solid var(--ink);
   border-bottom: 1px solid var(--line-strong);
   border-inline: 0;
@@ -40,42 +51,80 @@
 
 .model-concept > .model-concept__body {
   display: grid;
-  grid-template-columns: minmax(20rem, 30rem) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
-    "vignette statement"
-    "vignette copy";
-  gap: .8rem clamp(1.5rem, 4vw, 4rem);
-  align-items: start;
-  padding: 1rem 0 1.15rem;
+    "vignette"
+    "statement"
+    "copy";
+  gap: .65rem;
+  align-content: start;
+  padding: .85rem 0 1rem;
   border-top: 0;
 }
 
 .model-concept__statement {
   grid-area: statement;
-  max-width: 44rem;
-  padding-top: .1rem;
-  font-size: .82rem;
-  line-height: 1.6;
+  max-width: none;
+  padding-top: 0;
+  font-size: .78rem;
+  line-height: 1.55;
 }
 
 .model-concept-vignette {
   grid-area: vignette;
-  min-height: 8rem;
+  min-height: 7.5rem;
   align-self: center;
-  justify-self: stretch;
+  justify-self: center;
 }
 
 .model-concept .model-vignette__svg {
-  width: min(100%, 28rem);
+  width: min(100%, 24rem);
 }
 
 .model-concept__section-copy {
   grid-area: copy;
-  max-width: 44rem;
+  max-width: none;
 }
 
 .model-concept .model-route__current {
-  margin-top: .2rem;
+  margin-top: .1rem;
+}
+
+/* Route paths are already anchored to marker centres. Removing the paper halo
+   lets each stroke visibly meet the marker border instead of stopping short. */
+.model-route__marker {
+  box-shadow: none;
+}
+
+@media (max-width: 1180px) {
+  .model-route-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "concept"
+      "route";
+    align-items: start;
+  }
+
+  .model-section-strip {
+    display: block;
+  }
+
+  .model-concept > .model-concept__body {
+    grid-template-columns: minmax(18rem, 26rem) minmax(0, 1fr);
+    grid-template-areas:
+      "vignette statement"
+      "vignette copy";
+    gap: .8rem clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .model-concept-vignette {
+    min-height: 8rem;
+    justify-self: stretch;
+  }
+
+  .model-concept .model-vignette__svg {
+    width: min(100%, 24rem);
+  }
 }
 
 @media (max-width: 900px) {
@@ -95,11 +144,6 @@
 
   .model-concept .model-vignette__svg {
     width: min(100%, 22rem);
-  }
-
-  .model-concept__statement,
-  .model-concept__section-copy {
-    max-width: none;
   }
 }
 
