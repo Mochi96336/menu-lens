@@ -14,7 +14,7 @@ const setRouteClass = (root, kind) => {
 const sectionIndex = (model, id) => model.sections.findIndex((section) => section.id === id);
 
 const edgeIsActive = ({ kind, edge, model, activeSectionId }) => {
-  const [from, to] = edge;
+  const [, to] = edge;
   if (kind === "sequence") {
     const activeIndex = sectionIndex(model, activeSectionId);
     return sectionIndex(model, to) <= activeIndex;
@@ -89,14 +89,27 @@ export const createModelRouteDiagram = ({
     const reveal = () => {
       const viewportWidth = Number(root.clientWidth) || 0;
       const maxScroll = Math.max(0, (Number(root.scrollWidth) || 0) - viewportWidth);
-      const edgeInset = 16;
-      const tabStart = Number(button.offsetLeft) || 0;
-      const tabEnd = tabStart + (Number(button.offsetWidth) || 0);
       const visibleStart = Number(root.scrollLeft) || 0;
-      const visibleEnd = visibleStart + viewportWidth;
+      const edgeInset = 16;
       let target = visibleStart;
-      if (tabStart < visibleStart + edgeInset) target = tabStart - edgeInset;
-      else if (tabEnd > visibleEnd - edgeInset) target = tabEnd - viewportWidth + edgeInset;
+
+      if (typeof root.getBoundingClientRect === "function"
+        && typeof button.getBoundingClientRect === "function") {
+        const rootRect = root.getBoundingClientRect();
+        const buttonRect = button.getBoundingClientRect();
+        if (buttonRect.left < rootRect.left + edgeInset) {
+          target += buttonRect.left - rootRect.left - edgeInset;
+        } else if (buttonRect.right > rootRect.right - edgeInset) {
+          target += buttonRect.right - rootRect.right + edgeInset;
+        }
+      } else {
+        const tabStart = Number(button.offsetLeft) || 0;
+        const tabEnd = tabStart + (Number(button.offsetWidth) || 0);
+        const visibleEnd = visibleStart + viewportWidth;
+        if (tabStart < visibleStart + edgeInset) target = tabStart - edgeInset;
+        else if (tabEnd > visibleEnd - edgeInset) target = tabEnd - viewportWidth + edgeInset;
+      }
+
       root.scrollLeft = Math.min(maxScroll, Math.max(0, target));
       syncOverflow();
     };
