@@ -139,6 +139,7 @@ export const createModelRouteDiagram = ({
       ? "model-route__canvas model-route__canvas--sequence"
       : "model-route__canvas model-route__canvas--tabs";
     canvas.style.setProperty("--route-count", String(model.sections.length));
+    canvas.style.setProperty("--route-edge", `${50 / Math.max(1, model.sections.length)}%`);
 
     const activeIndex = Math.max(0, model.sections.findIndex((candidate) => candidate.id === section.id));
     if (presentation?.kind === "sequence") canvas.append(createRouteSvg(model.sections.length, activeIndex));
