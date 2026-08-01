@@ -8,7 +8,7 @@ import {
 
 const modelById = new Map(designModels.map((model) => [model.id, model]));
 const allowedModelFields = new Set(["kind", "signature", "statement", "motif", "sections"]);
-const allowedSectionFields = new Set(["label", "note", "vignette"]);
+const allowedSectionFields = new Set(["label", "conceptLabel", "note", "vignette"]);
 const allowedVignetteFields = new Set(["type", "activeIndex", "expansion", "falloff"]);
 
 const requireString = (value, label) => {
@@ -49,6 +49,7 @@ for (const [modelId, presentation] of Object.entries(modelDiagramPresentations))
       }
     }
     requireString(sectionPresentation.label, `${modelId}/${section.id}.label`);
+    requireString(sectionPresentation.conceptLabel, `${modelId}/${section.id}.conceptLabel`);
     requireString(sectionPresentation.note, `${modelId}/${section.id}.note`);
     if ("objectIds" in sectionPresentation || "defaultObjectId" in sectionPresentation) {
       throw new Error(`${modelId}/${section.id} presentation must not override canonical object membership.`);
