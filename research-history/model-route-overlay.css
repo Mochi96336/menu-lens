@@ -90,10 +90,39 @@
   margin-top: .2rem;
 }
 
-/* Paths are anchored to marker centres. Removing the paper-coloured halo lets
-   the stroke meet the visible marker border instead of appearing disconnected. */
+/* Route strokes and markers share one visual centre. Open markers remain
+   transparent so the incoming stroke visibly reaches the node. */
 .model-route__marker {
   box-shadow: none;
+}
+
+@media (min-width: 521px) {
+  .model-section-tabs--route
+  .model-route__canvas > button:not([aria-selected="true"])
+  .model-route__marker {
+    background: transparent;
+  }
+
+  .model-route__canvas--layout-compact-sequence > button {
+    display: block;
+    min-height: 4rem;
+    padding: 0;
+  }
+
+  .model-route__canvas--layout-compact-sequence .model-route__marker {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .model-route__canvas--layout-compact-sequence .model-route__label {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + .78rem);
+    width: 100%;
+    transform: translateX(-50%);
+  }
 }
 
 @media (min-width: 1361px) {
