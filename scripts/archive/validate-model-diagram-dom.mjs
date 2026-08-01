@@ -79,6 +79,10 @@ for (const contract of [
   "display: none",
   "box-shadow: none",
   "pointer-events: none",
+  'button:not([aria-selected="true"])',
+  ".model-route__canvas--layout-compact-sequence .model-route__marker",
+  ".model-route__canvas--layout-compact-sequence .model-route__label",
+  "background: transparent",
 ]) {
   if (!overlayCss.includes(contract)) throw new Error(`Route/core-concept CSS is missing: ${contract}`);
 }
@@ -92,4 +96,4 @@ if (!html.includes('<script type="module" src="../model-page.mjs"')) {
   throw new Error("Model page must use the canonical model-page renderer.");
 }
 
-console.log(`Model diagram DOM: ${requiredIds.length} required nodes, large concept-first desktop pairing, adaptive right-column routes, responsive stacking, connected marker paths, mobile copy deduplication, and compact object controls verified.`);
+console.log(`Model diagram DOM: ${requiredIds.length} required nodes, large concept-first desktop pairing, adaptive right-column routes, responsive stacking, marker-centred sequence axes, visibly connected open route nodes, mobile copy deduplication, and compact object controls verified.`);
