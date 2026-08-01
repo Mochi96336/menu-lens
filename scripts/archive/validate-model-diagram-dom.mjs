@@ -13,6 +13,9 @@ const requiredIds = [
   "section-current-label",
   "section-route-note",
   "section-summary",
+  "model-object-title",
+  "show-all",
+  "viewport-select",
 ];
 
 for (const id of requiredIds) {
@@ -30,6 +33,13 @@ if (!html.includes('<summary id="model-concept-summary" class="model-concept__su
 if (html.indexOf('id="model-concept"') < html.indexOf('id="workbench"')) {
   throw new Error("Concept preview must not compete with the model Hero.");
 }
+if (html.indexOf('id="section-summary"') < html.indexOf('id="model-concept"')
+  || html.indexOf('id="section-summary"') > html.indexOf('id="model-section-panel"')) {
+  throw new Error("Canonical section copy must remain inside the optional concept disclosure.");
+}
+if (html.includes('class="model-section-copy"') || html.includes('class="model-toolbar"')) {
+  throw new Error("The prototype reading path must not retain a duplicate section block or mode toolbar.");
+}
 if (!html.includes('id="section-tabs" class="model-section-tabs" role="tablist"')) {
   throw new Error("Model route must remain an explicit tablist.");
 }
@@ -46,4 +56,4 @@ if (!html.includes('<script type="module" src="../model-page.mjs"')) {
   throw new Error("Model page must use the canonical model-page renderer.");
 }
 
-console.log(`Model diagram DOM: ${requiredIds.length} required nodes and route-side disclosure verified.`);
+console.log(`Model diagram DOM: ${requiredIds.length} required nodes, optional section copy, and compact object controls verified.`);
