@@ -23,13 +23,28 @@ const edgeIsActive = ({ kind, edge, model, activeSectionId }) => {
   return false;
 };
 
-const createRouteSvg = ({ model, presentation, activeSectionId }) => {
+const createSvgRoot = () => {
   const svg = svgElement("svg");
   svg.setAttribute("class", "model-route__lines");
   svg.setAttribute("viewBox", "0 0 100 100");
   svg.setAttribute("preserveAspectRatio", "none");
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
+  return svg;
+};
+
+const appendPath = ({ svg, d, className, segment, targetId }) => {
+  const path = svgElement("path");
+  path.setAttribute("d", d);
+  path.setAttribute("class", className);
+  path.setAttribute("data-route-segment", segment);
+  if (targetId) path.setAttribute("data-route-target", targetId);
+  svg.append(path);
+  return path;
+};
+
+const createDirectRouteSvg = ({ model, presentation, activeSectionId }) => {
+  const svg = createSvgRoot();
 
   for (const edge of presentation.edges) {
     const [fromId, toId] = edge;
@@ -48,6 +63,66 @@ const createRouteSvg = ({ model, presentation, activeSectionId }) => {
   }
   return svg;
 };
+
+const createOrthogonalBranchSvg = ({ presentation, activeSectionId }) => {
+  const svg = createSvgRoot();
+  const { rootId, trunkX } = presentation.routeLayout;
+  const root = presentation.sections[rootId]?.position;
+  const targets = presentation.edges
+    .map(([, targetId]) => ({
+      id: targetId,
+      position: presentation.sections[targetId]?.position,
+    }))
+    .filter(({ position }) => Boolean(position));
+
+  if (!root || !targets.length) return svg;
+
+  const minY = Math.min(...targets.map(({ position }) => position.y));
+  const maxY = Math.max(...targets.map(({ position }) => position.y));
+  const baseClass = "model-route__line model-route__line--base";
+
+  appendPath({
+    svg,
+    d: `M ${root.x} ${root.y} H ${trunkX}`,
+    className: baseClass,
+    segment: "stem",
+  });
+  appendPath({
+    svg,
+    d: `M ${trunkX} ${minY} V ${maxY}`,
+    className: baseClass,
+    segment: "trunk",
+  });
+
+  for (const target of targets) {
+    appendPath({
+      svg,
+      d: `M ${trunkX} ${target.position.y} H ${target.position.x}`,
+      className: baseClass,
+      segment: "arm",
+      targetId: target.id,
+    });
+  }
+
+  if (activeSectionId !== rootId) {
+    const active = presentation.sections[activeSectionId]?.position;
+    if (active) {
+      appendPath({
+        svg,
+        d: `M ${root.x} ${root.y} H ${trunkX} V ${active.y} H ${active.x}`,
+        className: "model-route__line model-route__line--active",
+        segment: "active",
+        targetId: activeSectionId,
+      });
+    }
+  }
+
+  return svg;
+};
+
+const createRouteSvg = (context) => context.presentation.routeLayout?.type === "orthogonal-branch"
+  ? createOrthogonalBranchSvg(context)
+  : createDirectRouteSvg(context);
 
 const moveRovingFocus = (event, buttons, currentIndex) => {
   if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key) || !buttons.length) return;
