@@ -123,8 +123,10 @@ const stateExpression = `(() => {
   const selected = buttons.find((button) => button.getAttribute('aria-selected') === 'true');
   const routeRect = route?.getBoundingClientRect();
   const selectedRect = selected?.getBoundingClientRect();
+  const canvasRect = canvas?.getBoundingClientRect();
   const rects = buttons.map((button) => {
     const rect = button.getBoundingClientRect();
+    const markerRect = button.querySelector('.model-route__marker')?.getBoundingClientRect();
     return {
       id: button.dataset.sectionId,
       left: rect.left,
@@ -135,6 +137,8 @@ const stateExpression = `(() => {
       height: rect.height,
       centerX: (rect.left + rect.right) / 2,
       centerY: (rect.top + rect.bottom) / 2,
+      markerCenterX: markerRect ? (markerRect.left + markerRect.right) / 2 : null,
+      markerCenterY: markerRect ? (markerRect.top + markerRect.bottom) / 2 : null,
     };
   });
   let overlaps = 0;
@@ -155,7 +159,8 @@ const stateExpression = `(() => {
     labels: buttons.map((button) => button.dataset.sectionId),
     lineCount: svg?.querySelectorAll('line').length ?? 0,
     segments,
-    canvasWidth: canvas?.getBoundingClientRect().width ?? 0,
+    canvasWidth: canvasRect?.width ?? 0,
+    canvasHeight: canvasRect?.height ?? 0,
     nodeRects: rects,
     overlaps,
     selectedVisible: Boolean(routeRect && selectedRect)
@@ -216,21 +221,26 @@ try {
   await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'core'`, "Landscape core route");
   await settle(client);
   const core = await evaluate(client, stateExpression);
+  const rootRect = core.nodeRects.find(({ id }) => id === "core");
   const peerRects = core.nodeRects.filter(({ id }) => id !== "core");
-  const peerXs = peerRects.map(({ centerX }) => centerX);
-  const peerYs = peerRects.map(({ centerY }) => centerY);
+  const peerMarkerXs = peerRects.map(({ markerCenterX }) => markerCenterX);
+  const peerMarkerYs = peerRects.map(({ markerCenterY }) => markerCenterY);
+  const peersMidpoint = (Math.min(...peerMarkerXs) + Math.max(...peerMarkerXs)) / 2;
   check(core.lineCount === 0, "Landscape branch must not render radial line elements", core);
   check(segmentCount(core, "stem") === 1, "Landscape branch requires one shared stem", core);
-  check(segmentCount(core, "trunk") === 1, "Landscape branch requires one shared trunk", core);
-  check(segmentCount(core, "arm") === 5, "Landscape branch requires five peer arms", core);
+  check(segmentCount(core, "rail") === 1, "Landscape branch requires one shared horizontal rail", core);
+  check(segmentCount(core, "drop") === 5, "Landscape branch requires five peer drops", core);
   check(segmentCount(core, "active") === 0, "Core selection must not color the whole branch tree", core);
-  check(Math.max(...peerXs) - Math.min(...peerXs) <= 2, "Landscape peers must share one visual x-axis", core);
-  check(peerYs.every((value, index) => index === 0 || value > peerYs[index - 1]), "Landscape peers must preserve vertical canonical order", core);
-  check(core.canvasWidth <= 1190, "Landscape branch canvas must not span the full wide workbench", core);
+  check(Math.max(...peerMarkerYs) - Math.min(...peerMarkerYs) <= 2, "Landscape peers must share one visual y-axis", core);
+  check(peerMarkerXs.every((value, index) => index === 0 || value > peerMarkerXs[index - 1]), "Landscape peers must preserve horizontal canonical order", core);
+  check(rootRect?.markerCenterY < Math.min(...peerMarkerYs) - 70, "Landscape root must sit clearly above its peers", core);
+  check(Math.abs((rootRect?.markerCenterX ?? 0) - peersMidpoint) <= 2, "Landscape root must stay centered above the peer rail", core);
+  check(core.canvasWidth <= 1100, "Landscape branch canvas must remain compact on wide screens", core);
+  check(core.canvasHeight <= 240, "Landscape branch canvas must not become vertically excessive", core);
   check(core.overlaps === 0, "Landscape branch nodes must not overlap", core);
   check(!core.documentOverflow, "Landscape desktop route must not overflow the document", core);
   results.push({ name: "core", state: core });
-  await capture(client, "model-diagram-landscape-orthogonal-1792.png");
+  await capture(client, "model-diagram-landscape-rail-1792.png");
 
   await evaluate(client, `document.querySelector('[data-section-id="stopped-routes"]').click()`);
   await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'stopped-routes'`, "Landscape stopped route");
@@ -240,7 +250,7 @@ try {
   check(stopped.lineCount === 0, "Active Landscape branch must remain path-based", stopped);
   check(segmentCount(stopped, "active") === 1, "Selected peer requires one active overlay", stopped);
   check(stoppedActive?.target === "stopped-routes", "Active overlay must target stopped-routes", stopped);
-  check(/^M\s[\d.]+\s[\d.]+\sH\s[\d.]+\sV\s[\d.]+\sH\s[\d.]+$/.test(stoppedActive?.d ?? ""), "Active overlay must follow stem-trunk-arm geometry", stopped);
+  check(/^M\s[\d.]+\s[\d.]+\sV\s[\d.]+\sH\s[\d.]+\sV\s[\d.]+$/.test(stoppedActive?.d ?? ""), "Active overlay must follow stem-rail-drop geometry", stopped);
   check(stopped.url.includes("section=stopped-routes"), "Landscape selection must update the URL", stopped);
   results.push({ name: "stopped-routes", state: stopped });
 
@@ -249,7 +259,7 @@ try {
   await settle(client);
   const restored = await evaluate(client, stateExpression);
   check(segmentCount(restored, "active") === 0, "History back to core must remove active overlay", restored);
-  check(segmentCount(restored, "arm") === 5, "History back must preserve all peer arms", restored);
+  check(segmentCount(restored, "drop") === 5, "History back must preserve all peer drops", restored);
   results.push({ name: "history-back", state: restored });
 
   await setViewport(client, 320, 900);
@@ -272,7 +282,7 @@ try {
   check(mobile.minimumTargetHeight >= 44, "Landscape mobile targets must remain at least 44px tall", mobile);
   check(!mobile.documentOverflow, "Landscape mobile route must not overflow the document", mobile);
   results.push({ name: "mobile", state: mobile });
-  await capture(client, "model-diagram-landscape-orthogonal-320.png");
+  await capture(client, "model-diagram-landscape-rail-320.png");
 
   await writeFile(
     new URL("landscape-branch-results.json", outputDir),
@@ -280,7 +290,7 @@ try {
   );
 
   if (failures.length) throw new Error(`Landscape branch browser review failed:\n- ${failures.join("\n- ")}`);
-  console.log("Landscape branch browser review passed: orthogonal desktop routing and mobile fallback verified.");
+  console.log("Landscape branch browser review passed: balanced rail routing and mobile fallback verified.");
   socket.close();
 } finally {
   browserProcess.kill("SIGTERM");
