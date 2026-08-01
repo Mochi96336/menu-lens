@@ -1,10 +1,12 @@
 .model-route-layout {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(1rem, 2vw, 1.5rem);
 }
 
 .model-section-strip {
   width: 100%;
+  min-width: 0;
 }
 
 .model-section-strip__eyebrow {
