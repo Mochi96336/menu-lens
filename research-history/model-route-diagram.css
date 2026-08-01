@@ -193,7 +193,7 @@
 }
 
 .model-section-tabs--branch {
-  min-height: 19rem;
+  min-height: 15rem;
 }
 
 .model-section-tabs--parallel {
@@ -213,10 +213,10 @@
 }
 
 .model-route__canvas--branch {
-  width: min(74rem, 100%);
+  width: min(68rem, 100%);
   max-width: 100%;
   min-width: 48rem;
-  height: 18.5rem;
+  height: 14.5rem;
   margin-inline: auto;
 }
 
@@ -283,13 +283,6 @@
   color: var(--muted);
   text-align: center;
   white-space: normal;
-}
-
-.model-section-tabs--branch .model-route__canvas > button {
-  width: 10rem;
-  min-width: 10rem;
-  min-height: 3rem;
-  transform: translate(-50%, -.62rem);
 }
 
 .model-section-tabs--route .model-route__canvas > button:hover {
@@ -365,17 +358,49 @@
   }
 }
 
+@media (min-width: 521px) {
+  .model-section-tabs--branch .model-route__canvas > button {
+    display: block;
+    width: 10rem;
+    min-width: 10rem;
+    height: 3.5rem;
+    min-height: 3.5rem;
+    padding: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .model-section-tabs--branch .model-route__marker {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .model-section-tabs--branch .model-route__label {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + .78rem);
+    width: 100%;
+    transform: translateX(-50%);
+  }
+
+  .model-section-tabs--branch .model-route__canvas > button:first-of-type .model-route__label {
+    top: auto;
+    bottom: calc(50% + .82rem);
+  }
+}
+
 @media (min-width: 521px) and (max-width: 720px) {
   .model-route__canvas--branch {
     width: 60rem;
     max-width: none;
     min-width: 60rem;
-    height: 17.5rem;
+    height: 14.5rem;
     margin-inline: 0;
   }
 
   .model-section-tabs--branch {
-    min-height: 18rem;
+    min-height: 15rem;
   }
 }
 
