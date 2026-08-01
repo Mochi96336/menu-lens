@@ -146,8 +146,8 @@
 
   .model-section-tabs--route[data-route-model="horizontal-navigation"]
   .model-route__canvas--layout-compact-sequence {
-    width: calc(100% - 2rem);
-    max-width: min(var(--route-max-width), calc(100% - 2rem));
+    width: calc(100% - 3rem);
+    max-width: min(var(--route-max-width), calc(100% - 3rem));
     min-width: 0;
     margin-inline: auto;
   }
