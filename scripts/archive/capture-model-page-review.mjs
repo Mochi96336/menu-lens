@@ -114,19 +114,6 @@ const navigate = async (client, path, width, height = 1000) => {
   await evaluate(client, "document.fonts?.ready ?? Promise.resolve()");
 };
 
-const waitForRoot = (client, rootExpression, label) => waitFor(client, `(() => {
-  const root = ${rootExpression};
-  const frame = root?.querySelector('iframe.model-live-frame');
-  if (!root || !frame || root.dataset.liveState !== 'ready' || frame.hidden) return false;
-  const frameDocument = frame.contentDocument;
-  const liveRoot = frameDocument?.querySelector(root.dataset.liveRoot || '#prototype');
-  const frameHeight = Number.parseFloat(frame.style.height);
-  const rootHeight = liveRoot?.getBoundingClientRect().height ?? 0;
-  return Boolean(liveRoot && frameHeight > 0
-    && Math.abs(frameHeight - rootHeight) < 3
-    && getComputedStyle(frame).pointerEvents !== 'none');
-})()`, label);
-
 const waitForBoard = (client, expectedCount = null) => waitFor(client, `(() => {
   const board = document.querySelector('#all-live-board');
   const cards = [...board?.querySelectorAll('.model-live-card') ?? []];
@@ -238,7 +225,10 @@ try {
     const board = document.querySelector('#all-live-board');
     const cards = [...board.querySelectorAll('.model-live-card')];
     return {
-      mode: document.querySelector('#view-all').getAttribute('aria-pressed'),
+      mode: board.dataset.viewMode,
+      showAllHidden: document.querySelector('#show-all').hidden,
+      objectTitle: document.querySelector('#model-object-title').textContent,
+      oldControlsAbsent: !document.querySelector('#view-all') && !document.querySelector('#view-focus'),
       cardCount: cards.length,
       iframeCount: board.querySelectorAll('iframe').length,
       boardHorizontal: board.scrollWidth > board.clientWidth,
@@ -248,15 +238,22 @@ try {
         return surface.scrollWidth > surface.clientWidth + 2;
       }),
       currentCount: cards.filter((card) => card.dataset.current === 'true').length,
-      selectionSummaryPresent: Boolean(document.querySelector('#selection-summary')),
       workbenchWidth: document.querySelector('.model-workbench-shell').getBoundingClientRect().width,
     };
   })()`);
   await capture(client, "landscape-390-live-board.png");
 
-  await evaluate(client, `document.querySelector('[data-viewport="320"]').click()`);
+  await evaluate(client, `(() => {
+    const select = document.querySelector('#viewport-select');
+    select.value = '320';
+    select.dispatchEvent(new Event('change'));
+  })()`);
   await waitForBoard(client, 4);
-  await evaluate(client, `document.querySelector('[data-viewport="390"]').click()`);
+  await evaluate(client, `(() => {
+    const select = document.querySelector('#viewport-select');
+    select.value = '390';
+    select.dispatchEvent(new Event('change'));
+  })()`);
   await waitForBoard(client, 4);
   const resizedState = await evaluate(client, `(() => [...document.querySelectorAll('.model-live-card')].every((card) => {
     const frame = card.querySelector('iframe');
@@ -266,28 +263,34 @@ try {
   await evaluate(client, `(() => {
     const currentCard = document.querySelector('.model-live-card[data-current="true"]');
     window.__currentBoardFrame = currentCard.querySelector('iframe');
-    document.querySelector('#view-focus').click();
+    currentCard.querySelector('.model-live-card__select').click();
   })()`);
   await waitForVisibleBoard(client, 1);
   const focusReuse = await evaluate(client, `(() => {
     const frame = document.querySelector('.model-live-card:not([hidden]) iframe');
     return document.querySelector('#all-live-board').dataset.viewMode === 'focus'
+      && !document.querySelector('#show-all').hidden
+      && document.querySelector('#model-object-title').textContent === '18B · Semantic Zoom'
       && frame === window.__currentBoardFrame
       && frame.contentWindow.__boardMarker === '18B';
   })()`);
-  await evaluate(client, `document.querySelector('#view-all').click()`);
+  await evaluate(client, `document.querySelector('#show-all').click()`);
   await waitForVisibleBoard(client, 4);
-  const allReuse = await evaluate(client, `document.querySelector('.model-live-card[data-current="true"] iframe') === window.__currentBoardFrame`);
+  const allReuse = await evaluate(client, `document.querySelector('.model-live-card[data-current="true"] iframe') === window.__currentBoardFrame
+    && document.querySelector('#show-all').hidden
+    && document.querySelector('#model-object-title').textContent === '研究物件 · 4'`);
 
   await evaluate(client, `(() => {
     const select = document.querySelector('#object-select');
     select.value = '18';
     select.dispatchEvent(new Event('change'));
   })()`);
-  await waitForBoard(client, 4);
+  await waitForVisibleBoard(client, 1);
   const selectionMetrics = await evaluate(client, `(() => ({
     boardVisible: !document.querySelector('#all-live-board').hidden,
     activeTitle: document.querySelector('#inspector-object-title').textContent,
+    objectTitle: document.querySelector('#model-object-title').textContent,
+    mode: document.querySelector('#all-live-board').dataset.viewMode,
     currentCount: document.querySelectorAll('.model-live-card[data-current="true"]').length,
     selectedValue: document.querySelector('#object-select').value,
   }))()`);
@@ -301,12 +304,15 @@ try {
   await navigate(client, landscapePath, 1440);
   await waitForBoard(client, 4);
   await evaluate(client, `(() => {
-    window.__currentBoardFrame = document.querySelector('.model-live-card[data-current="true"] iframe');
+    const currentCard = document.querySelector('.model-live-card[data-current="true"]');
+    window.__currentBoardFrame = currentCard.querySelector('iframe');
     window.__currentBoardFrame.contentWindow.__boardMarker = '18B';
     window.__parentBoardFrame = document.querySelector('.model-live-card[data-object-id="18"] iframe');
     window.__parentBoardFrame.contentWindow.__parentMarker = '18';
-    document.querySelector('#compare-parent').click();
+    currentCard.querySelector('.model-live-card__select').click();
   })()`);
+  await waitForVisibleBoard(client, 1);
+  await evaluate(client, `document.querySelector('#compare-parent').click()`);
   await waitForVisibleBoard(client, 2);
   const compareMetrics = await evaluate(client, `(() => {
     const board = document.querySelector('#all-live-board');
@@ -324,6 +330,7 @@ try {
       inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
         > board.getBoundingClientRect().bottom - 4,
       compareToggleAttribute: document.querySelector('#compare-parent').hasAttribute('aria-pressed'),
+      showAllVisible: !document.querySelector('#show-all').hidden,
     };
   })()`);
   cases.push({ name: "landscape-1440-pooled-compare", width: 1440, height: 1000, metrics: compareMetrics });
@@ -348,6 +355,7 @@ try {
       boardOverflowOnly: board.scrollWidth >= board.clientWidth,
       inspectorBelow: document.querySelector('#inspector').getBoundingClientRect().top
         > board.getBoundingClientRect().bottom - 4,
+      compactBar: document.querySelector('.model-object-bar').getBoundingClientRect().height < 80,
     };
   })()`);
   cases.push({ name: "complete-document-2048-wide-board", width: 2048, height: 1100, metrics: wideMetrics });
@@ -363,6 +371,7 @@ try {
     const visibleCard = document.querySelector('.model-live-card:not([hidden])');
     return {
       compareHidden: document.querySelector('#compare-parent').hidden,
+      showAllVisible: !document.querySelector('#show-all').hidden,
       focusVisible: document.querySelector('#all-live-board').dataset.viewMode === 'focus'
         && Boolean(visibleCard),
       liveReady: visibleCard.querySelector('.model-pooled-surface').dataset.liveState === 'ready',
@@ -397,27 +406,28 @@ try {
   const failures = [];
   if (runtimeErrors.length) failures.push(`Runtime errors: ${runtimeErrors.join(" | ")}`);
   const mobile = cases.find((item) => item.name === "landscape-390-wide-live-board")?.metrics;
-  if (!mobile || mobile.mode !== "true" || mobile.cardCount !== 4 || mobile.iframeCount !== 4
+  if (!mobile || mobile.mode !== "focus" || mobile.cardCount !== 4 || mobile.iframeCount !== 4
     || !mobile.boardHorizontal || mobile.documentOverflow || mobile.cardInternalOverflow
-    || mobile.currentCount !== 1 || mobile.selectionSummaryPresent
+    || mobile.currentCount !== 1 || !mobile.oldControlsAbsent
     || !mobile.resizedState || !mobile.focusReuse || !mobile.allReuse
     || !mobile.boardVisible || mobile.activeTitle !== "18 · Landscape Paper"
-    || mobile.selectedValue !== "18") {
-    failures.push("390px full-board pooling and single-scroll contract failed.");
+    || mobile.objectTitle !== "18 · Landscape Paper" || mobile.selectedValue !== "18") {
+    failures.push("390px card-driven focus, pooling, and single-scroll contract failed.");
   }
   if (!compareMetrics.compareVisible || compareMetrics.paneCount !== 2
     || !compareMetrics.currentReused || !compareMetrics.parentReused
     || compareMetrics.documentOverflow || !compareMetrics.inspectorBelow
-    || compareMetrics.compareToggleAttribute) {
+    || compareMetrics.compareToggleAttribute || !compareMetrics.showAllVisible) {
     failures.push("1440px pooled parent comparison contract failed.");
   }
   if (wideMetrics.workbenchWidth < 1600 || wideMetrics.viewportWidth !== 2048
     || wideMetrics.cardCount !== 4 || !wideMetrics.cardsShareRow
     || wideMetrics.cardInternalOverflow || wideMetrics.documentOverflow
-    || !wideMetrics.boardOverflowOnly || !wideMetrics.inspectorBelow) {
-    failures.push("2048px wide workbench and exact-width row contract failed.");
+    || !wideMetrics.boardOverflowOnly || !wideMetrics.inspectorBelow || !wideMetrics.compactBar) {
+    failures.push("2048px wide workbench and compact object-bar contract failed.");
   }
-  if (!studyMetrics.compareHidden || !studyMetrics.focusVisible || !studyMetrics.liveReady
+  if (!studyMetrics.compareHidden || !studyMetrics.showAllVisible
+    || !studyMetrics.focusVisible || !studyMetrics.liveReady
     || !studyMetrics.relationVisible || !studyMetrics.recordsVisible || !studyMetrics.sourceText
     || studyMetrics.inspectorTitle !== "12A-S1 · Blinded Reader Comparison"
     || studyMetrics.method !== "盲測比較"
@@ -445,7 +455,7 @@ try {
   await writeFile(new URL("results.json", outputDir), `${JSON.stringify(report, null, 2)}\n`);
   if (failures.length) throw new Error(`Model-page browser review failed:\n- ${failures.join("\n- ")}`);
   socket.close();
-  console.log("Model-page browser review: wide exact-width canonical board, non-moving pooled surfaces, compact inspector, and study boundaries verified.");
+  console.log("Model-page browser review: card-driven focus, compact preview sizing, pooled surfaces, comparison, and study boundaries verified.");
 } catch (error) {
   if (browserStderr.trim()) console.error(browserStderr.trim());
   throw error;
