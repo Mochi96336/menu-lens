@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="../model-page.css" />
     <link rel="stylesheet" href="../model-page-workbench.css" />
     <link rel="stylesheet" href="../model-route-diagram.css" />
+    <link rel="stylesheet" href="../model-route-overlay.css" />
     <script src="../prototype-registry.js"></script>
   </head>
   <body class="model-page">
@@ -61,7 +62,7 @@
             <div id="section-tabs" class="model-section-tabs" role="tablist" aria-label="切換研究方向"></div>
           </div>
 
-          <details id="model-concept" class="model-concept" hidden>
+          <details id="model-concept" class="model-concept" data-user-toggled="true" hidden>
             <summary id="model-concept-summary" class="model-concept__summary">
               <span class="model-concept__summary-label">概念預覽</span>
               <strong id="model-diagram-signature"></strong>
