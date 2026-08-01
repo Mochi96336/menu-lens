@@ -43,6 +43,7 @@ class FakeElement {
     this.src = "";
     this.alt = "";
     this.hidden = false;
+    this.open = false;
     this.disabled = false;
     this.tabIndex = 0;
     this.title = "";
@@ -111,9 +112,10 @@ class FakeElement {
 
 const ids = [
   "model-select", "model-eyebrow", "model-title", "model-summary", "model-stats",
-  "model-substrate", "model-retains", "model-varies", "model-question", "section-tabs",
-  "section-summary", "object-picker", "object-select",
-  "view-all", "view-focus", "compare-parent", "viewport-note",
+  "model-concept", "model-concept-summary", "model-diagram-signature", "model-diagram-statement",
+  "model-concept-vignette", "model-substrate", "model-retains", "model-varies", "model-question",
+  "section-tabs", "section-current-label", "section-route-note", "section-summary",
+  "object-picker", "object-select", "view-all", "view-focus", "compare-parent", "viewport-note",
   "all-live-board", "inspector-role", "inspector-object-title", "inspector-status", "inspector-tabs",
   "inspector-panel-summary", "inspector-panel-relations", "inspector-panel-records",
   "difference-eyebrow", "difference-variable", "difference-before-label", "difference-before",
@@ -121,8 +123,14 @@ const ids = [
   "outcome-title", "outcome-disposition", "outcome-evidence", "outcome-next-row", "outcome-next-label",
   "outcome-next-gate", "inspector-relations", "inspector-records",
 ];
+const elementTagFor = (id) => {
+  if (id.includes("select")) return "select";
+  if (id === "model-concept") return "details";
+  if (id === "model-concept-summary") return "summary";
+  return "div";
+};
 const selectors = new Map(ids.map((id) => {
-  const element = new FakeElement(id.includes("select") ? "select" : "div");
+  const element = new FakeElement(elementTagFor(id));
   element.id = id;
   return [`#${id}`, element];
 }));
@@ -185,6 +193,7 @@ try {
       href: "",
     },
     history: null,
+    matchMedia: () => ({ matches: false, addEventListener() {} }),
     addEventListener: (type, listener) => { if (type === "popstate") popstateListener = listener; },
   };
   globalThis.history = {
@@ -200,6 +209,12 @@ try {
 
   if (selectors.get("#model-title").textContent !== "Landscape Paper") {
     throw new Error("Model viewer did not resolve the requested design model.");
+  }
+  if (selectors.get("#model-concept").open) {
+    throw new Error("Narrow model views must begin with the secondary concept preview collapsed.");
+  }
+  if (!selectors.get("#model-diagram-signature").textContent) {
+    throw new Error("Collapsed concept summary must identify the active section concept.");
   }
   if (selectors.get("#inspector-object-title").textContent !== "18B · Semantic Zoom") {
     throw new Error("Inspector must identify the active object once.");
