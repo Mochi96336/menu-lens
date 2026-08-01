@@ -137,6 +137,7 @@ export const createModelRouteDiagram = ({
     button.setAttribute("aria-controls", panel.id || root.id);
     button.style.setProperty("--route-x", `${sectionPresentation.position.x}%`);
     button.style.setProperty("--route-y", `${sectionPresentation.position.y}%`);
+    button.style.setProperty("--route-mobile-x", `${index * 8 + 4}rem`);
 
     const marker = document.createElement("span");
     marker.className = "model-route__marker";
