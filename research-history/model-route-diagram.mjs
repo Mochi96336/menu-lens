@@ -57,6 +57,7 @@ export const createModelRouteDiagram = ({
   onPreview,
   onPreviewEnd,
 }) => {
+  let selectedButton = null;
   const buttons = () => [...root.querySelectorAll("[data-section-id]")];
 
   const syncOverflow = () => {
@@ -68,7 +69,7 @@ export const createModelRouteDiagram = ({
     root.dataset.overflowEnd = String(scrollLeft < maxScroll - 1);
   };
 
-  const revealSelected = (button) => {
+  const revealSelected = (button = selectedButton) => {
     if (!button) return;
     const reveal = () => {
       const viewportWidth = Number(root.clientWidth) || 0;
@@ -142,7 +143,7 @@ export const createModelRouteDiagram = ({
     const activeIndex = Math.max(0, model.sections.findIndex((candidate) => candidate.id === section.id));
     if (presentation?.kind === "sequence") canvas.append(createRouteSvg(model.sections.length, activeIndex));
 
-    let selectedButton = null;
+    selectedButton = null;
     for (const [index, candidate] of model.sections.entries()) {
       const selected = candidate.id === section.id;
       const button = createButton({ candidate, selected, index, presentation });
@@ -151,14 +152,19 @@ export const createModelRouteDiagram = ({
     }
     root.append(canvas);
     setCurrentCopy(section, presentation);
-    revealSelected(selectedButton);
+    revealSelected();
   };
 
   const preview = ({ section, presentation }) => setCurrentCopy(section, presentation);
   const restore = ({ section, presentation }) => setCurrentCopy(section, presentation);
 
   root.addEventListener("scroll", syncOverflow, { passive: true });
-  const resizeObserver = typeof ResizeObserver === "function" ? new ResizeObserver(syncOverflow) : null;
+  const resizeObserver = typeof ResizeObserver === "function"
+    ? new ResizeObserver(() => {
+      syncOverflow();
+      revealSelected();
+    })
+    : null;
   resizeObserver?.observe(root);
 
   return {
