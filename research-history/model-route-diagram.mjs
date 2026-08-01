@@ -1,14 +1,25 @@
 const SVG_NS = "http://www.w3.org/2000/svg";
 
+const svgElement = (name) => typeof document.createElementNS === "function"
+  ? document.createElementNS(SVG_NS, name)
+  : document.createElement(name);
+
+const setRouteClass = (root, enabled) => {
+  const names = String(root.className || "").split(/\s+/).filter(Boolean);
+  const retained = names.filter((name) => name !== "model-section-tabs--route");
+  if (enabled) retained.push("model-section-tabs--route");
+  root.className = [...new Set(retained)].join(" ");
+};
+
 const createRouteSvg = (count, activeIndex) => {
-  const svg = document.createElementNS(SVG_NS, "svg");
-  svg.classList.add("model-route__lines");
+  const svg = svgElement("svg");
+  svg.setAttribute("class", "model-route__lines");
   svg.setAttribute("viewBox", "0 0 100 12");
   svg.setAttribute("preserveAspectRatio", "none");
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
 
-  const base = document.createElementNS(SVG_NS, "line");
+  const base = svgElement("line");
   base.setAttribute("x1", "0");
   base.setAttribute("y1", "6");
   base.setAttribute("x2", "100");
@@ -16,7 +27,7 @@ const createRouteSvg = (count, activeIndex) => {
   base.setAttribute("class", "model-route__line model-route__line--base");
   svg.append(base);
 
-  const progress = document.createElementNS(SVG_NS, "line");
+  const progress = svgElement("line");
   progress.setAttribute("x1", "0");
   progress.setAttribute("y1", "6");
   progress.setAttribute("x2", count <= 1 ? "0" : String((activeIndex / (count - 1)) * 100));
@@ -46,7 +57,7 @@ export const createModelRouteDiagram = ({
   onPreview,
   onPreviewEnd,
 }) => {
-  const buttons = () => [...root.querySelectorAll("button[data-section-id]")];
+  const buttons = () => [...root.querySelectorAll("[data-section-id]")];
 
   const syncOverflow = () => {
     const viewportWidth = Number(root.clientWidth) || 0;
@@ -120,7 +131,7 @@ export const createModelRouteDiagram = ({
   const render = ({ model, section, presentation }) => {
     root.replaceChildren();
     root.dataset.routeKind = presentation?.kind ?? "tabs";
-    root.classList.toggle("model-section-tabs--route", Boolean(presentation));
+    setRouteClass(root, Boolean(presentation));
 
     const canvas = document.createElement("div");
     canvas.className = presentation
