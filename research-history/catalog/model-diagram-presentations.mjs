@@ -1,6 +1,7 @@
 const freezeVignette = (vignette) => Object.freeze({ ...vignette });
 const freezePosition = (position) => Object.freeze({ ...position });
 const freezeEdge = (edge) => Object.freeze([...edge]);
+const freezeRouteLayout = (layout) => layout ? Object.freeze({ ...layout }) : null;
 
 const freezeSectionPresentation = (section) => Object.freeze({
   ...section,
@@ -10,6 +11,9 @@ const freezeSectionPresentation = (section) => Object.freeze({
 
 const freezeModelPresentation = (presentation) => Object.freeze({
   ...presentation,
+  ...(presentation.routeLayout
+    ? { routeLayout: freezeRouteLayout(presentation.routeLayout) }
+    : {}),
   edges: Object.freeze(presentation.edges.map(freezeEdge)),
   sections: Object.freeze(Object.fromEntries(
     Object.entries(presentation.sections)
@@ -116,6 +120,11 @@ export const modelDiagramPresentations = Object.freeze({
     signature: "Three-column paper",
     statement: "共同的 3 × 2 紙面向閱讀文法、焦點、表面、直排與停止結果分支。",
     motif: "landscape-paper",
+    routeLayout: {
+      type: "orthogonal-branch",
+      rootId: "core",
+      trunkX: 30,
+    },
     edges: [
       ["core", "reading-grammar"],
       ["core", "focus-geometry"],
@@ -128,42 +137,42 @@ export const modelDiagramPresentations = Object.freeze({
         label: "共同母體",
         conceptLabel: "Shared paper substrate",
         note: "3 × 2 紙面 · 固定地標",
-        position: { x: 10, y: 50 },
+        position: { x: 12, y: 50 },
         vignette: { type: "landscape", variant: "core" },
       },
       "reading-grammar": {
         label: "閱讀文法",
         conceptLabel: "Entry and reading path",
         note: "入口方式 · 細節位置",
-        position: { x: 38, y: 17 },
+        position: { x: 72, y: 14 },
         vignette: { type: "landscape", variant: "grammar" },
       },
       "focus-geometry": {
         label: "焦點幾何",
         conceptLabel: "Separated focus variables",
         note: "列欄加權 · Camera 分離",
-        position: { x: 65, y: 17 },
+        position: { x: 72, y: 32 },
         vignette: { type: "landscape", variant: "focus" },
       },
       "reading-surface": {
         label: "閱讀表面",
         conceptLabel: "Content-bearing surface",
         note: "字級內距 · 配對收合",
-        position: { x: 90, y: 50 },
+        position: { x: 72, y: 50 },
         vignette: { type: "landscape", variant: "surface" },
       },
       "vertical-writing": {
         label: "直排",
         conceptLabel: "Vertical reading lanes",
         note: "直排名稱 · 價格方向",
-        position: { x: 65, y: 83 },
+        position: { x: 72, y: 68 },
         vignette: { type: "landscape", variant: "vertical" },
       },
       "stopped-routes": {
         label: "停止路線",
         conceptLabel: "Blocked spatial routes",
         note: "定位遮擋 · 閱讀窗口",
-        position: { x: 38, y: 83 },
+        position: { x: 72, y: 86 },
         vignette: { type: "landscape", variant: "stopped" },
       },
     },
