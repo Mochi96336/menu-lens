@@ -17,9 +17,6 @@ const requiredElement = (selector) => {
   return element;
 };
 
-const optionalElement = (selector, tagName = "div") =>
-  document.querySelector(selector) ?? document.createElement(tagName);
-
 const dispositionLabels = Object.freeze({
   substrate: "substrate",
   reference: "reference",
@@ -129,23 +126,24 @@ const elements = Object.freeze({
   modelTitle: requiredElement("#model-title"),
   modelSummary: requiredElement("#model-summary"),
   modelStats: requiredElement("#model-stats"),
-  modelConcept: optionalElement("#model-concept", "aside"),
-  modelDiagramSignature: optionalElement("#model-diagram-signature", "p"),
-  modelDiagramStatement: optionalElement("#model-diagram-statement", "p"),
-  modelConceptVignette: optionalElement("#model-concept-vignette"),
+  modelConcept: requiredElement("#model-concept"),
+  modelConceptSummary: requiredElement("#model-concept-summary"),
+  modelDiagramSignature: requiredElement("#model-diagram-signature"),
+  modelDiagramStatement: requiredElement("#model-diagram-statement"),
+  modelConceptVignette: requiredElement("#model-concept-vignette"),
   modelSubstrate: requiredElement("#model-substrate"),
   modelRetains: requiredElement("#model-retains"),
   modelVaries: requiredElement("#model-varies"),
   modelQuestion: requiredElement("#model-question"),
   sectionTabs: requiredElement("#section-tabs"),
-  sectionCurrentLabel: optionalElement("#section-current-label", "strong"),
-  sectionRouteNote: optionalElement("#section-route-note", "span"),
+  sectionCurrentLabel: requiredElement("#section-current-label"),
+  sectionRouteNote: requiredElement("#section-route-note"),
   sectionSummary: requiredElement("#section-summary"),
-  objectPicker: requiredElement("#object-picker"),
+  modelObjectTitle: requiredElement("#model-object-title"),
+  showAll: requiredElement("#show-all"),
   objectSelect: requiredElement("#object-select"),
-  viewAll: requiredElement("#view-all"),
-  viewFocus: requiredElement("#view-focus"),
   compareParent: requiredElement("#compare-parent"),
+  viewportSelect: requiredElement("#viewport-select"),
   viewportNote: requiredElement("#viewport-note"),
   board: requiredElement("#all-live-board"),
   inspector: {
@@ -175,8 +173,20 @@ const elements = Object.freeze({
   },
 });
 
-const viewportButtons = [...document.querySelectorAll("[data-viewport]")];
-const viewModeButtons = [...document.querySelectorAll("[data-view-mode]")];
+const conceptDisclosureMedia = typeof window.matchMedia === "function"
+  ? window.matchMedia("(min-width: 1100px)")
+  : null;
+
+const syncConceptDisclosure = () => {
+  if (elements.modelConcept.dataset.userToggled === "true") return;
+  elements.modelConcept.open = conceptDisclosureMedia?.matches ?? true;
+};
+
+elements.modelConceptSummary.addEventListener("click", () => {
+  elements.modelConcept.dataset.userToggled = "true";
+});
+conceptDisclosureMedia?.addEventListener?.("change", syncConceptDisclosure);
+syncConceptDisclosure();
 
 const state = createModelPageState({ designModels, modelById, objectById });
 const surfacePool = createModelSurfacePool();
@@ -194,13 +204,6 @@ const syncSurface = (surface, object, role) => surface.sync({
   previewSrc: previewAssetPath(object),
   previewAlt: `${role}：${objectLabel(object)}，${viewportLabel()} 靜態載入畫面`,
 });
-
-const variantStateLabel = (object) => {
-  if (stoppedDispositions.has(object.disposition)) return "stopped";
-  if (object.objectType === "study") return "study";
-  if (object.objectType === "correction") return "correction";
-  return dispositionLabels[object.disposition] ?? object.disposition;
-};
 
 const shortSectionLabels = Object.freeze({
   baseline: "完整基準",
@@ -227,6 +230,9 @@ const vignette = createModelConceptVignette({ root: elements.modelConceptVignett
 
 const renderConcept = (section, { preview = false } = {}) => {
   const presentation = diagramPresentationFor(state.value.model);
+  const sectionPresentation = presentation?.sections?.[section.id];
+  elements.modelDiagramSignature.textContent =
+    sectionPresentation?.conceptLabel ?? presentation?.signature ?? "";
   vignette.render({ presentation, sectionId: section.id, preview });
 };
 
@@ -315,7 +321,7 @@ const board = createModelLiveBoard({
   syncSurface,
   cardPresentation,
   onSelect: (object) => {
-    state.setObject(object);
+    state.patch({ object, viewMode: "focus" });
     render({ historyMode: "push", focusTarget: { kind: "card", id: object.id } });
   },
 });
@@ -335,7 +341,6 @@ const renderModelDefinition = ({ model, section }) => {
 
   const presentation = diagramPresentationFor(model);
   elements.modelConcept.hidden = !presentation;
-  elements.modelDiagramSignature.textContent = presentation?.signature ?? "";
   elements.modelDiagramStatement.textContent = presentation?.statement ?? "";
   renderConcept(previewSection ?? section, { preview: Boolean(previewSection) });
 };
@@ -367,32 +372,29 @@ const renderObjectSelect = ({ section, object }) => {
   elements.objectSelect.value = object.id;
 };
 
-const renderToolbar = ({ object, viewport, viewMode }) => {
+const renderToolbar = ({ section, object, viewport, viewMode }) => {
   const parent = object.researchParentId ? objectById.get(object.researchParentId) : null;
   const canCompare = canCompareWithParent(object, parent);
   if (viewMode === "compare" && !canCompare) {
     state.setViewMode("focus");
     viewMode = "focus";
   }
+
+  const objectCount = section.objectIds.filter((id) => objectById.has(id)).length;
   const comparing = viewMode === "compare";
-  elements.objectPicker.hidden = viewMode === "all";
+  elements.modelObjectTitle.textContent = viewMode === "all"
+    ? `研究物件 · ${objectCount}`
+    : objectLabel(object);
+  elements.showAll.hidden = viewMode === "all";
   elements.compareParent.hidden = !canCompare || viewMode === "all";
   elements.compareParent.disabled = !canCompare;
   elements.compareParent.textContent = comparing ? "結束比較" : `與 ${parent?.id ?? "parent"} 比較`;
-  for (const button of viewModeButtons) {
-    const selected = button.dataset.viewMode === "all" ? viewMode === "all" : viewMode !== "all";
-    button.setAttribute("aria-pressed", String(selected));
-  }
-  for (const button of viewportButtons) {
-    button.setAttribute("aria-pressed", String(button.dataset.viewport === viewport));
-  }
+  elements.viewportSelect.value = viewport;
   elements.board.dataset.viewport = viewport;
-  const needsViewportHint = viewport === "desktop";
-  elements.viewportNote.hidden = !needsViewportHint;
-  elements.viewportNote.textContent = needsViewportHint
-    ? "1024px 畫面維持原尺寸，請橫向移動操作板。"
-    : "";
-  return { parent, canCompare, viewMode };
+  elements.viewportNote.textContent = viewport === "desktop"
+    ? "1024px 畫面維持原尺寸，可在研究物件區水平移動。"
+    : `${viewportPixelWidth()}px 預覽尺寸`;
+  return { parent, viewMode };
 };
 
 const renderStage = (snapshot) => {
@@ -414,11 +416,7 @@ const restoreFocus = (target) => {
       .find((button) => button.dataset.sectionId === target.id)?.focus();
     return;
   }
-  if (target.kind === "card") {
-    board.getCard(target.id)?.select.focus();
-    return;
-  }
-  if (target.kind === "object") elements.objectSelect.focus();
+  if (target.kind === "card") board.getCard(target.id)?.select.focus();
 };
 
 function render({ historyMode = "replace", focusTarget = null } = {}) {
@@ -450,28 +448,25 @@ elements.modelSelect.addEventListener("change", () => {
 elements.objectSelect.addEventListener("change", () => {
   const object = objectById.get(elements.objectSelect.value);
   if (!object || !state.value.section.objectIds.includes(object.id)) return;
-  state.setObject(object);
-  render({ historyMode: "push", focusTarget: { kind: "object", id: object.id } });
+  state.patch({ object, viewMode: "focus" });
+  render({ historyMode: "push", focusTarget: { kind: "card", id: object.id } });
 });
 
-for (const button of viewModeButtons) {
-  button.addEventListener("click", () => {
-    state.setViewMode(button.dataset.viewMode);
-    render({ historyMode: "push" });
-  });
-}
+elements.showAll.addEventListener("click", () => {
+  const activeId = state.value.object.id;
+  state.setViewMode("all");
+  render({ historyMode: "push", focusTarget: { kind: "card", id: activeId } });
+});
 
 elements.compareParent.addEventListener("click", () => {
   state.setViewMode(state.value.viewMode === "compare" ? "focus" : "compare");
   render({ historyMode: "push" });
 });
 
-for (const button of viewportButtons) {
-  button.addEventListener("click", () => {
-    state.setViewport(button.dataset.viewport);
-    render({ historyMode: "push" });
-  });
-}
+elements.viewportSelect.addEventListener("change", () => {
+  state.setViewport(elements.viewportSelect.value);
+  render({ historyMode: "push" });
+});
 
 window.addEventListener?.("popstate", () => {
   previewSection = null;

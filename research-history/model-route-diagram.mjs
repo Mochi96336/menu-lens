@@ -23,13 +23,28 @@ const edgeIsActive = ({ kind, edge, model, activeSectionId }) => {
   return false;
 };
 
-const createRouteSvg = ({ model, presentation, activeSectionId }) => {
+const createSvgRoot = () => {
   const svg = svgElement("svg");
   svg.setAttribute("class", "model-route__lines");
   svg.setAttribute("viewBox", "0 0 100 100");
   svg.setAttribute("preserveAspectRatio", "none");
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
+  return svg;
+};
+
+const appendPath = ({ svg, d, className, segment, targetId }) => {
+  const path = svgElement("path");
+  path.setAttribute("d", d);
+  path.setAttribute("class", className);
+  path.setAttribute("data-route-segment", segment);
+  if (targetId) path.setAttribute("data-route-target", targetId);
+  svg.append(path);
+  return path;
+};
+
+const createDirectRouteSvg = ({ model, presentation, activeSectionId }) => {
+  const svg = createSvgRoot();
 
   for (const edge of presentation.edges) {
     const [fromId, toId] = edge;
@@ -47,6 +62,116 @@ const createRouteSvg = ({ model, presentation, activeSectionId }) => {
     svg.append(line);
   }
   return svg;
+};
+
+const createBalancedRailSvg = ({ presentation, activeSectionId }) => {
+  const svg = createSvgRoot();
+  const { rootId, railY } = presentation.routeLayout;
+  const root = presentation.sections[rootId]?.position;
+  const targets = presentation.edges
+    .map(([, targetId]) => ({
+      id: targetId,
+      position: presentation.sections[targetId]?.position,
+    }))
+    .filter(({ position }) => Boolean(position));
+
+  if (!root || !targets.length) return svg;
+
+  const minX = Math.min(...targets.map(({ position }) => position.x));
+  const maxX = Math.max(...targets.map(({ position }) => position.x));
+  const baseClass = "model-route__line model-route__line--base";
+
+  appendPath({
+    svg,
+    d: `M ${root.x} ${root.y} V ${railY}`,
+    className: baseClass,
+    segment: "stem",
+  });
+  appendPath({
+    svg,
+    d: `M ${minX} ${railY} H ${maxX}`,
+    className: baseClass,
+    segment: "rail",
+  });
+
+  for (const target of targets) {
+    appendPath({
+      svg,
+      d: `M ${target.position.x} ${railY} V ${target.position.y}`,
+      className: baseClass,
+      segment: "drop",
+      targetId: target.id,
+    });
+  }
+
+  if (activeSectionId !== rootId) {
+    const active = presentation.sections[activeSectionId]?.position;
+    if (active) {
+      appendPath({
+        svg,
+        d: `M ${root.x} ${root.y} V ${railY} H ${active.x} V ${active.y}`,
+        className: "model-route__line model-route__line--active",
+        segment: "active",
+        targetId: activeSectionId,
+      });
+    }
+  }
+
+  return svg;
+};
+
+const createParallelRailSvg = ({ model, presentation, activeSectionId }) => {
+  const svg = createSvgRoot();
+  const { railY } = presentation.routeLayout;
+  const peers = model.sections
+    .map((section) => ({
+      id: section.id,
+      position: presentation.sections[section.id]?.position,
+    }))
+    .filter(({ position }) => Boolean(position));
+
+  if (!peers.length) return svg;
+
+  const minX = Math.min(...peers.map(({ position }) => position.x));
+  const maxX = Math.max(...peers.map(({ position }) => position.x));
+  const baseClass = "model-route__line model-route__line--base";
+
+  appendPath({
+    svg,
+    d: `M ${minX} ${railY} H ${maxX}`,
+    className: baseClass,
+    segment: "rail",
+  });
+
+  for (const peer of peers) {
+    appendPath({
+      svg,
+      d: `M ${peer.position.x} ${railY} V ${peer.position.y}`,
+      className: baseClass,
+      segment: "drop",
+      targetId: peer.id,
+    });
+  }
+
+  const active = presentation.sections[activeSectionId]?.position;
+  if (active) {
+    appendPath({
+      svg,
+      d: `M ${active.x} ${railY} V ${active.y}`,
+      className: "model-route__line model-route__line--active",
+      segment: "active",
+      targetId: activeSectionId,
+    });
+  }
+
+  return svg;
+};
+
+const createRouteSvg = (context) => {
+  const type = context.presentation.routeLayout?.type;
+  if (type === "balanced-rail") return createBalancedRailSvg(context);
+  if (type === "parallel-rail") return createParallelRailSvg(context);
+  return createDirectRouteSvg(context);
 };
 
 const moveRovingFocus = (event, buttons, currentIndex) => {
@@ -160,11 +285,16 @@ export const createModelRouteDiagram = ({
     if (!presentation) throw new Error(`Model ${model.id} is missing diagram presentation metadata.`);
     root.replaceChildren();
     root.dataset.routeKind = presentation.kind;
+    root.dataset.routeLayout = presentation.routeLayout?.type ?? "direct";
     setRouteClass(root, presentation.kind);
 
+    const layoutType = presentation.routeLayout?.type ?? "direct";
     const canvas = document.createElement("div");
-    canvas.className = `model-route__canvas model-route__canvas--${presentation.kind}`;
+    canvas.className = `model-route__canvas model-route__canvas--${presentation.kind} model-route__canvas--layout-${layoutType}`;
     canvas.style.setProperty("--route-count", String(model.sections.length));
+    if (presentation.routeLayout?.maxWidth) {
+      canvas.style.setProperty("--route-max-width", `${presentation.routeLayout.maxWidth}rem`);
+    }
     canvas.append(createRouteSvg({ model, presentation, activeSectionId: section.id }));
 
     selectedButton = null;

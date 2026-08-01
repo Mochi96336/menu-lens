@@ -8,10 +8,12 @@ import {
 } from "../../research-history/catalog/model-diagram-presentations.mjs";
 
 const modelById = new Map(designModels.map((model) => [model.id, model]));
-const allowedModelFields = new Set(["kind", "signature", "statement", "motif", "edges", "sections"]);
+const allowedModelFields = new Set(["kind", "signature", "statement", "motif", "routeLayout", "edges", "sections"]);
+const allowedRouteLayoutFields = new Set(["type", "rootId", "railY", "maxWidth"]);
 const allowedSectionFields = new Set(["label", "conceptLabel", "note", "position", "vignette"]);
 const allowedPositionFields = new Set(["x", "y"]);
 const allowedVignetteFields = new Set(["type", "variant", "activeIndex", "expansion", "falloff"]);
+const allowedRouteLayoutTypes = new Set(["compact-sequence", "balanced-rail", "parallel-rail"]);
 
 const requireString = (value, label) => {
   if (typeof value !== "string" || !value.trim()) throw new Error(`${label} must be a non-empty string.`);
@@ -20,6 +22,14 @@ const requireString = (value, label) => {
 const requireFiniteRange = (value, label, minimum, maximum) => {
   if (!Number.isFinite(value) || value < minimum || value > maximum) {
     throw new Error(`${label} must be finite and between ${minimum} and ${maximum}.`);
+  }
+};
+
+const requireIncreasing = (values, minimumGap, label) => {
+  for (let index = 1; index < values.length; index += 1) {
+    if (values[index] - values[index - 1] < minimumGap) {
+      throw new Error(`${label} must preserve order with at least ${minimumGap} units of separation.`);
+    }
   }
 };
 
@@ -74,6 +84,97 @@ for (const [modelId, presentation] of Object.entries(modelDiagramPresentations))
   }
   if (presentation.kind === "branch" && presentation.edges.length !== model.sections.length - 1) {
     throw new Error(`${modelId} branch must connect one root to every branch section.`);
+  }
+
+  const routeLayout = presentation.routeLayout;
+  if (!routeLayout || typeof routeLayout !== "object" || Array.isArray(routeLayout)) {
+    throw new Error(`${modelId} requires explicit routeLayout metadata.`);
+  }
+  for (const field of Object.keys(routeLayout)) {
+    if (!allowedRouteLayoutFields.has(field)) {
+      throw new Error(`${modelId}.routeLayout has unsupported field ${field}.`);
+    }
+  }
+  if (!allowedRouteLayoutTypes.has(routeLayout.type)) {
+    throw new Error(`${modelId}.routeLayout.type ${routeLayout.type} is not implemented.`);
+  }
+  requireFiniteRange(routeLayout.maxWidth, `${modelId}.routeLayout.maxWidth`, 28, 72);
+
+  const positions = canonicalSectionIds.map((id) => presentation.sections[id]?.position);
+
+  if (routeLayout.type === "compact-sequence") {
+    if (presentation.kind !== "sequence") {
+      throw new Error(`${modelId} compact-sequence layout requires sequence kind.`);
+    }
+    if ("rootId" in routeLayout || "railY" in routeLayout) {
+      throw new Error(`${modelId} compact-sequence must not declare rootId or railY.`);
+    }
+  }
+
+  if (routeLayout.type === "balanced-rail") {
+    if (!(presentation.kind === "branch" || presentation.kind === "field")) {
+      throw new Error(`${modelId} balanced-rail layout requires branch or field kind.`);
+    }
+    if (!canonicalSectionIds.includes(routeLayout.rootId)) {
+      throw new Error(`${modelId}.routeLayout.rootId references unknown section ${routeLayout.rootId}.`);
+    }
+    if (routeLayout.rootId !== canonicalSectionIds[0]) {
+      throw new Error(`${modelId}.routeLayout.rootId must be the first canonical section.`);
+    }
+    requireFiniteRange(routeLayout.railY, `${modelId}.routeLayout.railY`, 25, 65);
+
+    const sources = new Set(presentation.edges.map(([from]) => from));
+    if (sources.size !== 1 || !sources.has(routeLayout.rootId)) {
+      throw new Error(`${modelId} balanced-rail edges must share routeLayout.rootId as their source.`);
+    }
+
+    const targets = presentation.edges.map(([, to]) => to);
+    const expectedTargets = canonicalSectionIds.filter((id) => id !== routeLayout.rootId);
+    if (JSON.stringify(targets) !== JSON.stringify(expectedTargets)) {
+      throw new Error(`${modelId} balanced-rail must connect its root to every peer in canonical order.`);
+    }
+
+    const root = presentation.sections[routeLayout.rootId]?.position;
+    const targetPositions = expectedTargets.map((id) => presentation.sections[id]?.position);
+    if (!root || root.y >= routeLayout.railY - 8) {
+      throw new Error(`${modelId} balanced-rail root must remain above the shared rail.`);
+    }
+    if (targetPositions.some((position) => !position || position.y <= routeLayout.railY + 8)) {
+      throw new Error(`${modelId} balanced-rail peers must remain below the shared rail.`);
+    }
+
+    const targetXs = targetPositions.map(({ x }) => x);
+    const targetYs = targetPositions.map(({ y }) => y);
+    if (Math.max(...targetYs) - Math.min(...targetYs) > 1) {
+      throw new Error(`${modelId} balanced-rail peers must share one horizontal axis.`);
+    }
+    requireIncreasing(targetXs, presentation.kind === "branch" ? 16 : 20, `${modelId} balanced-rail peer x positions`);
+    const peerCenter = (targetXs[0] + targetXs[targetXs.length - 1]) / 2;
+    if (Math.abs(root.x - peerCenter) > 1) {
+      throw new Error(`${modelId} balanced-rail root must remain centered above its peers.`);
+    }
+  }
+
+  if (routeLayout.type === "parallel-rail") {
+    if (presentation.kind !== "parallel") {
+      throw new Error(`${modelId} parallel-rail layout requires parallel kind.`);
+    }
+    if (presentation.edges.length !== 0) {
+      throw new Error(`${modelId} parallel-rail must not encode sequential edges.`);
+    }
+    if ("rootId" in routeLayout) {
+      throw new Error(`${modelId} parallel-rail must not declare a rootId.`);
+    }
+    requireFiniteRange(routeLayout.railY, `${modelId}.routeLayout.railY`, 20, 55);
+    if (positions.some((position) => !position || position.y <= routeLayout.railY + 8)) {
+      throw new Error(`${modelId} parallel-rail nodes must remain below the shared grouping rail.`);
+    }
+    const xs = positions.map(({ x }) => x);
+    const ys = positions.map(({ y }) => y);
+    if (Math.max(...ys) - Math.min(...ys) > 1) {
+      throw new Error(`${modelId} parallel-rail nodes must share one horizontal axis.`);
+    }
+    requireIncreasing(xs, 20, `${modelId} parallel-rail x positions`);
   }
 
   for (const section of model.sections) {

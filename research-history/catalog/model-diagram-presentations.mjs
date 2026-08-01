@@ -1,6 +1,7 @@
 const freezeVignette = (vignette) => Object.freeze({ ...vignette });
 const freezePosition = (position) => Object.freeze({ ...position });
 const freezeEdge = (edge) => Object.freeze([...edge]);
+const freezeRouteLayout = (layout) => layout ? Object.freeze({ ...layout }) : null;
 
 const freezeSectionPresentation = (section) => Object.freeze({
   ...section,
@@ -10,6 +11,9 @@ const freezeSectionPresentation = (section) => Object.freeze({
 
 const freezeModelPresentation = (presentation) => Object.freeze({
   ...presentation,
+  ...(presentation.routeLayout
+    ? { routeLayout: freezeRouteLayout(presentation.routeLayout) }
+    : {}),
   edges: Object.freeze(presentation.edges.map(freezeEdge)),
   sections: Object.freeze(Object.fromEntries(
     Object.entries(presentation.sections)
@@ -23,20 +27,24 @@ export const modelDiagramPresentations = Object.freeze({
     signature: "Linear document",
     statement: "由完整長頁比較基準，轉向更緊密的 Ledger 節奏與窄欄重排。",
     motif: "linear-document",
+    routeLayout: {
+      type: "compact-sequence",
+      maxWidth: 38,
+    },
     edges: [["baseline", "ledger-density"]],
     sections: {
       baseline: {
         label: "完整基準",
         conceptLabel: "Continuous document",
         note: "完整順序 · 原地細節",
-        position: { x: 24, y: 50 },
+        position: { x: 22, y: 50 },
         vignette: { type: "document", variant: "baseline" },
       },
       "ledger-density": {
         label: "Ledger",
         conceptLabel: "Compressed reading rhythm",
         note: "密度調整 · 窄欄重排",
-        position: { x: 76, y: 50 },
+        position: { x: 78, y: 50 },
         vignette: { type: "document", variant: "density" },
       },
     },
@@ -47,6 +55,10 @@ export const modelDiagramPresentations = Object.freeze({
     signature: "Horizontal sequence",
     statement: "沿著實際研究 lineage，比較分類展寬、料理序列與局部焦點。",
     motif: "horizontal-axis",
+    routeLayout: {
+      type: "compact-sequence",
+      maxWidth: 62,
+    },
     edges: [["market-baseline", "spread"], ["spread", "ribbon"], ["ribbon", "fisheye"]],
     sections: {
       "market-baseline": {
@@ -85,27 +97,33 @@ export const modelDiagramPresentations = Object.freeze({
     signature: "Two-dimensional paper",
     statement: "固定二維紙面是共同場域；局部鏡頭與彈性幾何分別測試閱讀邊界。",
     motif: "paper-field",
+    routeLayout: {
+      type: "balanced-rail",
+      rootId: "semantic-information",
+      railY: 48,
+      maxWidth: 44,
+    },
     edges: [["semantic-information", "stopped-lenses"], ["semantic-information", "elastic-geometry"]],
     sections: {
       "semantic-information": {
         label: "固定紙面",
         conceptLabel: "Scale-aware paper",
         note: "固定格線 · 分尺度資訊",
-        position: { x: 18, y: 28 },
+        position: { x: 50, y: 18 },
         vignette: { type: "paper-field", variant: "semantic" },
       },
       "stopped-lenses": {
         label: "局部鏡頭",
         conceptLabel: "Bounded local lens",
         note: "局部可讀 · 邊界受限",
-        position: { x: 50, y: 74 },
+        position: { x: 28, y: 76 },
         vignette: { type: "paper-field", variant: "stopped" },
       },
       "elastic-geometry": {
         label: "彈性幾何",
         conceptLabel: "Weighted local field",
         note: "局部加權 · 全局仍在場",
-        position: { x: 82, y: 28 },
+        position: { x: 72, y: 76 },
         vignette: { type: "paper-field", variant: "elastic" },
       },
     },
@@ -116,6 +134,12 @@ export const modelDiagramPresentations = Object.freeze({
     signature: "Three-column paper",
     statement: "共同的 3 × 2 紙面向閱讀文法、焦點、表面、直排與停止結果分支。",
     motif: "landscape-paper",
+    routeLayout: {
+      type: "balanced-rail",
+      rootId: "core",
+      railY: 48,
+      maxWidth: 68,
+    },
     edges: [
       ["core", "reading-grammar"],
       ["core", "focus-geometry"],
@@ -128,42 +152,42 @@ export const modelDiagramPresentations = Object.freeze({
         label: "共同母體",
         conceptLabel: "Shared paper substrate",
         note: "3 × 2 紙面 · 固定地標",
-        position: { x: 10, y: 50 },
+        position: { x: 50, y: 18 },
         vignette: { type: "landscape", variant: "core" },
       },
       "reading-grammar": {
         label: "閱讀文法",
         conceptLabel: "Entry and reading path",
         note: "入口方式 · 細節位置",
-        position: { x: 38, y: 17 },
+        position: { x: 10, y: 76 },
         vignette: { type: "landscape", variant: "grammar" },
       },
       "focus-geometry": {
         label: "焦點幾何",
         conceptLabel: "Separated focus variables",
         note: "列欄加權 · Camera 分離",
-        position: { x: 65, y: 17 },
+        position: { x: 30, y: 76 },
         vignette: { type: "landscape", variant: "focus" },
       },
       "reading-surface": {
         label: "閱讀表面",
         conceptLabel: "Content-bearing surface",
         note: "字級內距 · 配對收合",
-        position: { x: 90, y: 50 },
+        position: { x: 50, y: 76 },
         vignette: { type: "landscape", variant: "surface" },
       },
       "vertical-writing": {
         label: "直排",
         conceptLabel: "Vertical reading lanes",
         note: "直排名稱 · 價格方向",
-        position: { x: 65, y: 83 },
+        position: { x: 70, y: 76 },
         vignette: { type: "landscape", variant: "vertical" },
       },
       "stopped-routes": {
         label: "停止路線",
         conceptLabel: "Blocked spatial routes",
         note: "定位遮擋 · 閱讀窗口",
-        position: { x: 38, y: 83 },
+        position: { x: 90, y: 76 },
         vignette: { type: "landscape", variant: "stopped" },
       },
     },
@@ -174,20 +198,24 @@ export const modelDiagramPresentations = Object.freeze({
     signature: "Overview to category",
     statement: "由 overview 進入單一分類後，以返回 continuity 與狀態 truth 補齊可信閱讀。",
     motif: "scale-transition",
+    routeLayout: {
+      type: "compact-sequence",
+      maxWidth: 38,
+    },
     edges: [["model", "necessary-corrections"]],
     sections: {
       model: {
         label: "尺度模型",
         conceptLabel: "Overview-preserving focus",
         note: "單類放大 · 其餘留作地標",
-        position: { x: 25, y: 50 },
+        position: { x: 22, y: 50 },
         vignette: { type: "scale", variant: "focus" },
       },
       "necessary-corrections": {
         label: "必要修正",
         conceptLabel: "Return and status truth",
         note: "返回連續 · 完整菜單仍在",
-        position: { x: 75, y: 50 },
+        position: { x: 78, y: 50 },
         vignette: { type: "scale", variant: "continuity" },
       },
     },
@@ -198,27 +226,32 @@ export const modelDiagramPresentations = Object.freeze({
     signature: "Third dimension",
     statement: "三個方向平行比較：重置維度、以資料軸投影，以及把 depth 當成排版體積。",
     motif: "depth-projection",
-    edges: [["dimension-reset", "projection-lens"], ["projection-lens", "parallax-volume"]],
+    routeLayout: {
+      type: "parallel-rail",
+      railY: 34,
+      maxWidth: 48,
+    },
+    edges: [],
     sections: {
       "dimension-reset": {
         label: "Dimension Reset",
         conceptLabel: "Shared depth slices",
         note: "共同切片 · 資料語意待證",
-        position: { x: 18, y: 50 },
+        position: { x: 20, y: 70 },
         vignette: { type: "depth", variant: "reset" },
       },
       "projection-lens": {
         label: "Projection Lens",
         conceptLabel: "Data-axis projection",
         note: "價格份量時間 · 可逆投影",
-        position: { x: 50, y: 50 },
+        position: { x: 50, y: 70 },
         vignette: { type: "depth", variant: "projection" },
       },
       "parallax-volume": {
         label: "Parallax Volume",
         conceptLabel: "Layered spatial volume",
         note: "深度地標 · Flat recovery",
-        position: { x: 82, y: 50 },
+        position: { x: 80, y: 70 },
         vignette: { type: "depth", variant: "parallax" },
       },
     },

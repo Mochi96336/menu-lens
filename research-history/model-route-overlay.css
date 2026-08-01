@@ -1,0 +1,174 @@
+.model-route-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(34rem, 40rem);
+  grid-template-areas: "concept route";
+  gap: clamp(1.5rem, 3vw, 3.5rem);
+  align-items: stretch;
+}
+
+.model-section-strip {
+  grid-area: route;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
+}
+
+.model-section-strip__eyebrow {
+  min-height: 0;
+  margin-bottom: .35rem !important;
+  padding-right: 0;
+}
+
+.model-section-tabs--route {
+  align-self: center;
+  width: 100%;
+}
+
+.model-concept {
+  position: relative;
+  grid-area: concept;
+  width: 100%;
+  min-width: 0;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--line-strong);
+  border-inline: 0;
+  background: transparent;
+}
+
+.model-concept__summary {
+  min-height: 0;
+  padding: .7rem 0 .55rem;
+  border-bottom: 1px solid var(--line);
+  cursor: default;
+  pointer-events: none;
+}
+
+.model-concept__summary-hint {
+  display: none;
+}
+
+.model-concept > .model-concept__body {
+  display: grid;
+  grid-template-columns: minmax(20rem, 30rem) minmax(0, 1fr);
+  grid-template-areas:
+    "vignette statement"
+    "vignette copy";
+  gap: .8rem clamp(1.5rem, 4vw, 4rem);
+  align-items: start;
+  padding: 1rem 0 1.15rem;
+  border-top: 0;
+}
+
+.model-concept__statement {
+  grid-area: statement;
+  max-width: 44rem;
+  padding-top: .1rem;
+  font-size: .82rem;
+  line-height: 1.6;
+}
+
+.model-concept-vignette {
+  grid-area: vignette;
+  min-height: 8rem;
+  align-self: center;
+  justify-self: stretch;
+}
+
+.model-concept .model-vignette__svg {
+  width: min(100%, 28rem);
+}
+
+.model-concept__section-copy {
+  grid-area: copy;
+  max-width: 44rem;
+}
+
+.model-concept .model-route__current {
+  margin-top: .2rem;
+}
+
+/* Paths are anchored to marker centres. Removing the paper-coloured halo lets
+   the stroke meet the visible marker border instead of appearing disconnected. */
+.model-route__marker {
+  box-shadow: none;
+}
+
+@media (min-width: 1361px) {
+  .model-section-strip .model-route__canvas--layout-balanced-rail > button {
+    width: 6.75rem;
+    min-width: 6.75rem;
+  }
+
+  .model-section-strip .model-route__canvas--layout-balanced-rail .model-route__label {
+    width: 6.75rem;
+    max-width: 6.75rem;
+    font-size: .78rem;
+    line-height: 1.3;
+  }
+}
+
+@media (max-width: 1360px) {
+  .model-route-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "concept"
+      "route";
+    gap: clamp(.8rem, 1.5vw, 1.25rem);
+    align-items: start;
+  }
+
+  .model-section-strip {
+    display: block;
+  }
+}
+
+@media (max-width: 900px) {
+  .model-concept > .model-concept__body {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "vignette"
+      "statement"
+      "copy";
+    gap: .7rem;
+  }
+
+  .model-concept-vignette {
+    min-height: 7rem;
+    justify-self: center;
+  }
+
+  .model-concept .model-vignette__svg {
+    width: min(100%, 22rem);
+  }
+
+  .model-concept__statement,
+  .model-concept__section-copy {
+    max-width: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .model-route-layout {
+    gap: .8rem;
+  }
+
+  .model-concept__summary {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: .5rem;
+    padding-block: .6rem .5rem;
+  }
+
+  .model-concept__summary-label {
+    display: inline;
+  }
+
+  .model-concept > .model-concept__body {
+    padding-block: .75rem .9rem;
+  }
+
+  .model-concept-vignette {
+    min-height: 6.5rem;
+  }
+}
