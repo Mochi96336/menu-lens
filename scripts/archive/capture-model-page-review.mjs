@@ -124,8 +124,13 @@ const waitForBoard = (client, expectedCount = null) => waitFor(client, `(() => {
     const frame = root?.querySelector('iframe.model-live-frame');
     if (!root || !frame || root.dataset.liveState !== 'ready' || frame.hidden) return false;
     const liveRoot = frame.contentDocument?.querySelector(root.dataset.liveRoot || '#prototype');
+    const stageHeight = Number(root.dataset.liveStageHeight);
+    const contentHeight = Number(root.dataset.liveContentHeight);
     return Boolean(liveRoot
-      && Math.abs(Number.parseFloat(frame.style.height) - liveRoot.getBoundingClientRect().height) < 3
+      && Number.isFinite(stageHeight)
+      && Number.isFinite(contentHeight)
+      && Math.abs(Number.parseFloat(frame.style.height) - stageHeight) < 1
+      && contentHeight > 0
       && getComputedStyle(frame).pointerEvents !== 'none');
   });
 })()`, `full live board${expectedCount ? ` with ${expectedCount} cards` : ""}`);
@@ -139,8 +144,13 @@ const waitForVisibleBoard = (client, expectedCount) => waitFor(client, `(() => {
     const frame = root?.querySelector('iframe.model-live-frame');
     if (!root || !frame || root.dataset.liveState !== 'ready' || frame.hidden) return false;
     const liveRoot = frame.contentDocument?.querySelector(root.dataset.liveRoot || '#prototype');
+    const stageHeight = Number(root.dataset.liveStageHeight);
+    const contentHeight = Number(root.dataset.liveContentHeight);
     return Boolean(liveRoot
-      && Math.abs(Number.parseFloat(frame.style.height) - liveRoot.getBoundingClientRect().height) < 3
+      && Number.isFinite(stageHeight)
+      && Number.isFinite(contentHeight)
+      && Math.abs(Number.parseFloat(frame.style.height) - stageHeight) < 1
+      && contentHeight > 0
       && getComputedStyle(frame).pointerEvents !== 'none');
   });
 })()`, `${expectedCount} visible pooled board cards`);

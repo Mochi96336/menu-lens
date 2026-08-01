@@ -5,6 +5,15 @@ const defaultTargetSelectors = Object.freeze([
   "#studies",
 ]);
 
+const stageHeightByViewportWidth = Object.freeze({
+  320: 568,
+  390: 693,
+  1024: 640,
+});
+
+export const modelLiveStageHeightFor = (viewportWidth) =>
+  stageHeightByViewportWidth[String(Number(viewportWidth))] ?? 640;
+
 const nextPaint = (view) => new Promise((resolve) => {
   const request = view?.requestAnimationFrame?.bind(view) ?? requestAnimationFrame;
   request(() => request(resolve));
@@ -60,8 +69,17 @@ const ensureDocumentStyle = (documentRoot) => {
     "  scroll-behavior: auto !important;",
     "  overscroll-behavior: contain !important;",
     "}",
-    "html.model-live-ready, html.model-live-ready body {",
-    "  overflow: hidden !important;",
+    "html.model-live-ready {",
+    "  overflow-x: hidden !important;",
+    "  overflow-y: auto !important;",
+    "  scrollbar-width: none;",
+    "}",
+    "html.model-live-ready::-webkit-scrollbar {",
+    "  width: 0;",
+    "  height: 0;",
+    "}",
+    "html.model-live-ready body {",
+    "  overflow: visible !important;",
     "}",
   ].join("\n");
 };
@@ -85,14 +103,21 @@ export const createModelLiveSurface = (root, options = {}) => {
   const targetSelectors = options.targetSelectors ?? defaultTargetSelectors;
   const shell = document.createElement("div");
   shell.className = "model-live-surface";
+  shell.style.position = "relative";
 
   const { fallback, image, status } = makeFallback(document);
+  fallback.style.position = "absolute";
+  fallback.style.inset = "0";
+  fallback.style.overflow = "hidden";
+  fallback.style.boxSizing = "border-box";
+
   const frame = document.createElement("iframe");
   frame.className = "model-live-frame";
   frame.loading = "eager";
-  frame.setAttribute("scrolling", "no");
+  frame.setAttribute("scrolling", "auto");
   frame.setAttribute("allow", "clipboard-read; clipboard-write");
   frame.setAttribute("aria-live", "off");
+  frame.style.boxSizing = "border-box";
   frame.hidden = true;
   shell.append(fallback, frame);
   root.replaceChildren(shell);
@@ -104,6 +129,20 @@ export const createModelLiveSurface = (root, options = {}) => {
   let resizeObserver = null;
   let activeTarget = null;
   let activeSelector = null;
+  let stageHeight = modelLiveStageHeightFor(390);
+
+  const syncStageHeight = (viewportWidth) => {
+    stageHeight = modelLiveStageHeightFor(viewportWidth);
+    const stageHeightCss = `${stageHeight}px`;
+    shell.style.height = stageHeightCss;
+    shell.style.minHeight = stageHeightCss;
+    frame.style.height = stageHeightCss;
+    fallback.style.height = stageHeightCss;
+    root.dataset.liveHeight = String(stageHeight);
+    root.dataset.liveStageHeight = String(stageHeight);
+  };
+
+  syncStageHeight(390);
 
   const setState = (state) => {
     root.dataset.liveState = state;
@@ -157,12 +196,13 @@ export const createModelLiveSurface = (root, options = {}) => {
     });
     await nextPaint(frameView);
     frameDocument.documentElement.classList.add("model-live-ready");
+    await nextPaint(frameView);
     const rect = activeTarget.getBoundingClientRect();
     if (measurement !== measurementVersion || expectedVersion !== loadVersion) return false;
-    const height = Math.max(1, Math.ceil(rect.height));
-    frame.style.height = `${height}px`;
+    const contentHeight = Math.max(1, Math.ceil(rect.height));
     root.dataset.liveRoot = activeSelector;
-    root.dataset.liveHeight = String(height);
+    root.dataset.liveContentHeight = String(contentHeight);
+    root.dataset.liveOverflow = String(contentHeight > stageHeight);
     showFrame();
     return true;
   };
@@ -185,7 +225,7 @@ export const createModelLiveSurface = (root, options = {}) => {
       if (expectedVersion === loadVersion) connectResizeObserver();
     } catch (error) {
       if (expectedVersion !== loadVersion) return;
-      showFallback("無法裁切可操作畫面；請開啟原始頁面。", true);
+      showFallback("無法整理可操作畫面；請開啟原始頁面。", true);
       root.dataset.liveError = error.message;
     }
   });
@@ -195,6 +235,7 @@ export const createModelLiveSurface = (root, options = {}) => {
     root.closest?.(".model-preview-pane")?.style.setProperty("--model-live-width", `${viewportWidth}px`);
     root.dataset.objectId = key;
     root.dataset.viewportWidth = String(viewportWidth);
+    syncStageHeight(viewportWidth);
     frame.style.width = `${viewportWidth}px`;
     frame.title = title;
     image.src = previewSrc;
@@ -209,6 +250,8 @@ export const createModelLiveSurface = (root, options = {}) => {
       resizeObserver = null;
       measurementVersion += 1;
       frame.removeAttribute("src");
+      delete root.dataset.liveContentHeight;
+      delete root.dataset.liveOverflow;
       showFallback("此研究物件沒有獨立可操作畫面。", true, false);
       return frame;
     }
@@ -220,6 +263,8 @@ export const createModelLiveSurface = (root, options = {}) => {
       activeTarget = null;
       activeSelector = null;
       delete root.dataset.liveError;
+      delete root.dataset.liveContentHeight;
+      delete root.dataset.liveOverflow;
       showFallback("正在載入可操作畫面…");
       frame.src = src;
       return frame;
