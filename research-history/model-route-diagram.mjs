@@ -66,7 +66,7 @@ const createDirectRouteSvg = ({ model, presentation, activeSectionId }) => {
 
 const createOrthogonalBranchSvg = ({ presentation, activeSectionId }) => {
   const svg = createSvgRoot();
-  const { rootId, trunkX } = presentation.routeLayout;
+  const { rootId, railY } = presentation.routeLayout;
   const root = presentation.sections[rootId]?.position;
   const targets = presentation.edges
     .map(([, targetId]) => ({
@@ -77,29 +77,29 @@ const createOrthogonalBranchSvg = ({ presentation, activeSectionId }) => {
 
   if (!root || !targets.length) return svg;
 
-  const minY = Math.min(...targets.map(({ position }) => position.y));
-  const maxY = Math.max(...targets.map(({ position }) => position.y));
+  const minX = Math.min(...targets.map(({ position }) => position.x));
+  const maxX = Math.max(...targets.map(({ position }) => position.x));
   const baseClass = "model-route__line model-route__line--base";
 
   appendPath({
     svg,
-    d: `M ${root.x} ${root.y} H ${trunkX}`,
+    d: `M ${root.x} ${root.y} V ${railY}`,
     className: baseClass,
     segment: "stem",
   });
   appendPath({
     svg,
-    d: `M ${trunkX} ${minY} V ${maxY}`,
+    d: `M ${minX} ${railY} H ${maxX}`,
     className: baseClass,
-    segment: "trunk",
+    segment: "rail",
   });
 
   for (const target of targets) {
     appendPath({
       svg,
-      d: `M ${trunkX} ${target.position.y} H ${target.position.x}`,
+      d: `M ${target.position.x} ${railY} V ${target.position.y}`,
       className: baseClass,
-      segment: "arm",
+      segment: "drop",
       targetId: target.id,
     });
   }
@@ -109,7 +109,7 @@ const createOrthogonalBranchSvg = ({ presentation, activeSectionId }) => {
     if (active) {
       appendPath({
         svg,
-        d: `M ${root.x} ${root.y} H ${trunkX} V ${active.y} H ${active.x}`,
+        d: `M ${root.x} ${root.y} V ${railY} H ${active.x} V ${active.y}`,
         className: "model-route__line model-route__line--active",
         segment: "active",
         targetId: activeSectionId,
