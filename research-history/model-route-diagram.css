@@ -436,24 +436,24 @@
   }
 
   .model-section-tabs--route {
-    --section-tab-fade: 3rem;
-    scroll-padding-inline: 2rem;
+    --section-tab-fade: 4rem;
+    scroll-padding-inline: 2.5rem;
     scroll-snap-type: x proximity;
   }
 
   .model-section-tabs--route[data-overflow-start="true"][data-overflow-end="true"] {
-    -webkit-mask-image: linear-gradient(to right, transparent 0, transparent .65rem, #000 3rem, #000 calc(100% - 3rem), transparent calc(100% - .65rem), transparent 100%);
-    mask-image: linear-gradient(to right, transparent 0, transparent .65rem, #000 3rem, #000 calc(100% - 3rem), transparent calc(100% - .65rem), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 2rem, #000 4rem, #000 calc(100% - 4rem), transparent calc(100% - 2rem), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, transparent 2rem, #000 4rem, #000 calc(100% - 4rem), transparent calc(100% - 2rem), transparent 100%);
   }
 
   .model-section-tabs--route[data-overflow-start="true"][data-overflow-end="false"] {
-    -webkit-mask-image: linear-gradient(to right, transparent 0, transparent .65rem, #000 3rem);
-    mask-image: linear-gradient(to right, transparent 0, transparent .65rem, #000 3rem);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 2rem, #000 4rem);
+    mask-image: linear-gradient(to right, transparent 0, transparent 2rem, #000 4rem);
   }
 
   .model-section-tabs--route[data-overflow-start="false"][data-overflow-end="true"] {
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 3rem), transparent calc(100% - .65rem), transparent 100%);
-    mask-image: linear-gradient(to right, #000 calc(100% - 3rem), transparent calc(100% - .65rem), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 4rem), transparent calc(100% - 2rem), transparent 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - 4rem), transparent calc(100% - 2rem), transparent 100%);
   }
 
   .model-section-tabs--route,
