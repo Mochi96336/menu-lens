@@ -8,7 +8,8 @@ import {
 } from "../../research-history/catalog/model-diagram-presentations.mjs";
 
 const modelById = new Map(designModels.map((model) => [model.id, model]));
-const allowedModelFields = new Set(["kind", "signature", "statement", "motif", "edges", "sections"]);
+const allowedModelFields = new Set(["kind", "signature", "statement", "motif", "routeLayout", "edges", "sections"]);
+const allowedRouteLayoutFields = new Set(["type", "rootId", "trunkX"]);
 const allowedSectionFields = new Set(["label", "conceptLabel", "note", "position", "vignette"]);
 const allowedPositionFields = new Set(["x", "y"]);
 const allowedVignetteFields = new Set(["type", "variant", "activeIndex", "expansion", "falloff"]);
@@ -74,6 +75,63 @@ for (const [modelId, presentation] of Object.entries(modelDiagramPresentations))
   }
   if (presentation.kind === "branch" && presentation.edges.length !== model.sections.length - 1) {
     throw new Error(`${modelId} branch must connect one root to every branch section.`);
+  }
+
+  const routeLayout = presentation.routeLayout;
+  if (presentation.kind === "branch") {
+    if (!routeLayout || typeof routeLayout !== "object" || Array.isArray(routeLayout)) {
+      throw new Error(`${modelId} branch requires routeLayout metadata.`);
+    }
+    for (const field of Object.keys(routeLayout)) {
+      if (!allowedRouteLayoutFields.has(field)) {
+        throw new Error(`${modelId}.routeLayout has unsupported field ${field}.`);
+      }
+    }
+    if (routeLayout.type !== "orthogonal-branch") {
+      throw new Error(`${modelId}.routeLayout.type must be orthogonal-branch.`);
+    }
+    if (!canonicalSectionIds.includes(routeLayout.rootId)) {
+      throw new Error(`${modelId}.routeLayout.rootId references unknown section ${routeLayout.rootId}.`);
+    }
+    if (routeLayout.rootId !== canonicalSectionIds[0]) {
+      throw new Error(`${modelId}.routeLayout.rootId must be the first canonical section.`);
+    }
+    requireFiniteRange(routeLayout.trunkX, `${modelId}.routeLayout.trunkX`, 10, 45);
+
+    const sources = new Set(presentation.edges.map(([from]) => from));
+    if (sources.size !== 1 || !sources.has(routeLayout.rootId)) {
+      throw new Error(`${modelId} branch edges must share routeLayout.rootId as their source.`);
+    }
+
+    const targets = presentation.edges.map(([, to]) => to);
+    const expectedTargets = canonicalSectionIds.filter((id) => id !== routeLayout.rootId);
+    if (JSON.stringify(targets) !== JSON.stringify(expectedTargets)) {
+      throw new Error(`${modelId} branch must connect its root to every peer in canonical order.`);
+    }
+
+    const rootX = presentation.sections[routeLayout.rootId]?.position?.x;
+    if (!Number.isFinite(rootX) || routeLayout.trunkX <= rootX + 4) {
+      throw new Error(`${modelId} branch trunk must clear the root node.`);
+    }
+    const targetPositions = expectedTargets.map((id) => presentation.sections[id]?.position);
+    if (targetPositions.some((position) => !position || position.x <= routeLayout.trunkX + 8)) {
+      throw new Error(`${modelId} branch targets must remain beyond the shared trunk.`);
+    }
+
+    if (modelId === "landscape-paper") {
+      const targetXs = targetPositions.map(({ x }) => x);
+      const targetYs = targetPositions.map(({ y }) => y);
+      if (Math.max(...targetXs) - Math.min(...targetXs) > 1) {
+        throw new Error("Landscape Paper peer targets must share one vertical axis.");
+      }
+      for (let index = 1; index < targetYs.length; index += 1) {
+        if (targetYs[index] - targetYs[index - 1] < 16) {
+          throw new Error("Landscape Paper peer targets need sufficient vertical separation.");
+        }
+      }
+    }
+  } else if (routeLayout) {
+    throw new Error(`${modelId}.routeLayout is only implemented for branch diagrams.`);
   }
 
   for (const section of model.sections) {
