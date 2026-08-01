@@ -115,7 +115,7 @@ const ids = [
   "model-concept", "model-concept-summary", "model-diagram-signature", "model-diagram-statement",
   "model-concept-vignette", "model-substrate", "model-retains", "model-varies", "model-question",
   "section-tabs", "section-current-label", "section-route-note", "section-summary",
-  "object-picker", "object-select", "view-all", "view-focus", "compare-parent", "viewport-note",
+  "model-object-title", "show-all", "object-select", "compare-parent", "viewport-select", "viewport-note",
   "all-live-board", "inspector-role", "inspector-object-title", "inspector-status", "inspector-tabs",
   "inspector-panel-summary", "inspector-panel-relations", "inspector-panel-records",
   "difference-eyebrow", "difference-variable", "difference-before-label", "difference-before",
@@ -127,6 +127,7 @@ const elementTagFor = (id) => {
   if (id.includes("select")) return "select";
   if (id === "model-concept") return "details";
   if (id === "model-concept-summary") return "summary";
+  if (["show-all", "compare-parent"].includes(id)) return "button";
   return "div";
 };
 const selectors = new Map(ids.map((id) => {
@@ -134,6 +135,13 @@ const selectors = new Map(ids.map((id) => {
   element.id = id;
   return [`#${id}`, element];
 }));
+
+for (const [value, label] of [["320", "320px"], ["390", "390px"], ["desktop", "1024px"]]) {
+  const option = new FakeElement("option");
+  option.value = value;
+  option.textContent = label;
+  selectors.get("#viewport-select").append(option);
+}
 
 for (const [id, tab] of [
   ["summary", "inspector-panel-summary"],
@@ -145,19 +153,6 @@ for (const [id, tab] of [
   button.setAttribute("aria-controls", tab);
   selectors.get("#inspector-tabs").append(button);
 }
-
-const viewportButtons = ["320", "390", "desktop"].map((viewport) => {
-  const button = new FakeElement("button");
-  button.dataset.viewport = viewport;
-  return button;
-});
-const viewModeButtons = [
-  [selectors.get("#view-all"), "all"],
-  [selectors.get("#view-focus"), "focus"],
-].map(([button, mode]) => {
-  button.dataset.viewMode = mode;
-  return button;
-});
 
 const body = new FakeElement("body");
 const registrySource = await readFile(new URL("research-history/prototype-registry.js", root), "utf8");
@@ -178,11 +173,7 @@ try {
     body,
     activeElement: null,
     querySelector: (selector) => selectors.get(selector) ?? null,
-    querySelectorAll: (selector) => {
-      if (selector === "[data-viewport]") return viewportButtons;
-      if (selector === "[data-view-mode]") return viewModeButtons;
-      return [];
-    },
+    querySelectorAll: () => [],
     createElement: (tagName) => new FakeElement(tagName),
   };
   globalThis.window = {
@@ -205,7 +196,7 @@ try {
   globalThis.ResizeObserver = class { observe() {} disconnect() {} };
 
   const rendererUrl = new URL("research-history/model-page.mjs", root);
-  await import(`${rendererUrl.href}?model-workbench-refactor=${Date.now()}`);
+  await import(`${rendererUrl.href}?model-workbench-simplification=${Date.now()}`);
 
   if (selectors.get("#model-title").textContent !== "Landscape Paper") {
     throw new Error("Model viewer did not resolve the requested design model.");
@@ -216,9 +207,16 @@ try {
   if (!selectors.get("#model-diagram-signature").textContent) {
     throw new Error("Collapsed concept summary must identify the active section concept.");
   }
+  if (selectors.get("#model-object-title").textContent !== "研究物件 · 4") {
+    throw new Error("Full-group mode must identify the object count without a view-mode switch.");
+  }
+  if (!selectors.get("#show-all").hidden || !selectors.get("#compare-parent").hidden) {
+    throw new Error("Full-group mode must hide controls that only apply after selecting an object.");
+  }
   if (selectors.get("#inspector-object-title").textContent !== "18B · Semantic Zoom") {
     throw new Error("Inspector must identify the active object once.");
   }
+
   const board = selectors.get("#all-live-board");
   if (board.hidden || board.children.length !== 4) {
     throw new Error("Default view must show every object in the active sub-study.");
@@ -231,43 +229,46 @@ try {
   if (lastUrl?.includes("view=") || lastUrl?.includes("compare=")) {
     throw new Error("The default all-object URL must remain canonical.");
   }
-  if (!selectors.get("#object-picker").hidden || !selectors.get("#compare-parent").hidden) {
-    throw new Error("Full-group view must avoid duplicate selected-object and parent controls.");
-  }
 
   currentFrame.reviewMarker = "pool-preserved";
-  selectors.get("#view-focus").dispatch("click");
+  currentCard.querySelector(".model-live-card__select").dispatch("click");
   const focusCards = board.children.filter((card) => !card.hidden);
   const focusFrame = focusCards[0]?.querySelector("iframe.model-live-frame");
   if (board.dataset.viewMode !== "focus" || focusCards.length !== 1
     || focusFrame !== currentFrame || focusFrame.reviewMarker !== "pool-preserved"
-    || selectors.get("#object-picker").hidden
+    || selectors.get("#show-all").hidden
     || selectors.get("#compare-parent").hidden
+    || selectors.get("#model-object-title").textContent !== "18B · Semantic Zoom"
     || selectors.get("#compare-parent").textContent !== "與 18 比較") {
-    throw new Error("Selected-object view must reveal its picker and concrete comparison action without recreating the iframe.");
+    throw new Error("Clicking a card must enter focus directly without recreating its iframe.");
   }
-  selectors.get("#view-all").dispatch("click");
+
+  selectors.get("#show-all").dispatch("click");
   const returnedFrame = board.children
     .find((card) => card.dataset.objectId === "18B")
     ?.querySelector("iframe.model-live-frame");
   if (board.dataset.viewMode !== "all" || board.children.some((card) => card.hidden)
-    || returnedFrame !== currentFrame) {
-    throw new Error("Returning to the full board must reveal the same iframe instances.");
+    || returnedFrame !== currentFrame || !selectors.get("#show-all").hidden) {
+    throw new Error("Returning to the full group must reveal the same iframe instances.");
   }
 
-  viewportButtons[2].dispatch("click");
+  const viewportSelect = selectors.get("#viewport-select");
+  viewportSelect.value = "desktop";
+  viewportSelect.dispatch("change");
   if (currentFrame.style.width !== "1024px" || currentFrame.reviewMarker !== "pool-preserved") {
-    throw new Error("Viewport changes must resize pooled surfaces without reloading them.");
+    throw new Error("Preview-size changes must resize pooled surfaces without reloading them.");
   }
   if (!pushedUrl?.includes("viewport=desktop")) {
-    throw new Error("Viewport changes must create navigable history entries.");
+    throw new Error("Preview-size changes must create navigable history entries.");
   }
 
   const objectSelect = selectors.get("#object-select");
   objectSelect.value = "18";
   objectSelect.dispatch("change");
-  if (board.hidden || selectors.get("#inspector-object-title").textContent !== "18 · Landscape Paper") {
-    throw new Error("Object selection must update the inspector without closing the full board.");
+  if (board.dataset.viewMode !== "focus"
+    || selectors.get("#inspector-object-title").textContent !== "18 · Landscape Paper"
+    || selectors.get("#model-object-title").textContent !== "18 · Landscape Paper") {
+    throw new Error("Programmatic object selection must use the same focused-object contract.");
   }
 
   objectSelect.value = "18B";
@@ -290,7 +291,7 @@ try {
     || compareParent.reviewMarker !== "parent-preserved"
     || selectors.get("#compare-parent").textContent !== "結束比較"
     || !compareRoles.includes("比較對象") || !compareRoles.includes("比較基準")) {
-    throw new Error("Concrete comparison must label its object and baseline without using current/Parent ambiguity.");
+    throw new Error("Concrete comparison must label its object and baseline without recreating either iframe.");
   }
 
   const inspectorTabs = selectors.get("#inspector-tabs").children;
@@ -345,13 +346,16 @@ try {
   if (selectors.get("#model-title").textContent !== "Complete Document"
     || selectors.get("#all-live-board").dataset.viewMode !== "focus"
     || selectors.get("#all-live-board").children.filter((card) => !card.hidden).length !== 1
-    || selectors.get("#object-select").value !== "01") {
-    throw new Error("Browser history must restore model, section, object, viewport, and mode.");
+    || selectors.get("#object-select").value !== "01"
+    || selectors.get("#viewport-select").value !== "320") {
+    throw new Error("Browser history must restore model, section, object, preview size, and focused mode.");
   }
 
   const css = await readFile(new URL("research-history/model-page-workbench.css", root), "utf8");
   for (const contract of [
     "width: min(1760px",
+    ".model-object-bar",
+    ".model-viewport-picker",
     ".model-live-board",
     "overflow-x: auto",
     "flex: 0 0 calc(var(--model-live-width)",
@@ -378,4 +382,4 @@ try {
   }
 }
 
-console.log("Design model workbench: canonical live board, filtered focus/compare modes, compact navigation, inspector tabs, and history contracts verified.");
+console.log("Design model workbench: card-driven focus, compact preview sizing, pooled comparison, inspector, and history contracts verified.");
