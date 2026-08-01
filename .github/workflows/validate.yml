@@ -55,6 +55,7 @@ jobs:
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-model-route-browser.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-landscape-branch-browser.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-route-geometry-browser.mjs
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-model-live-stage-browser.mjs
 
       - name: Upload static build
         uses: actions/upload-artifact@v6
