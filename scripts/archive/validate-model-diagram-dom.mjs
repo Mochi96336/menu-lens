@@ -4,6 +4,7 @@ import { root } from "./load-catalog.mjs";
 const html = await readFile(new URL("research-history/models/index.html", root), "utf8");
 const requiredIds = [
   "model-concept",
+  "model-concept-summary",
   "model-diagram-signature",
   "model-diagram-statement",
   "model-concept-vignette",
@@ -16,6 +17,18 @@ const requiredIds = [
 
 for (const id of requiredIds) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Model diagram DOM is missing #${id}.`);
+}
+if (!html.includes('<div class="model-route-layout">')) {
+  throw new Error("Route and concept preview must share the route layout.");
+}
+if (!html.includes('<details id="model-concept" class="model-concept" hidden>')) {
+  throw new Error("Concept preview must remain a collapsible details element.");
+}
+if (!html.includes('<summary id="model-concept-summary" class="model-concept__summary">')) {
+  throw new Error("Concept disclosure must expose a stable summary control.");
+}
+if (html.indexOf('id="model-concept"') < html.indexOf('id="workbench"')) {
+  throw new Error("Concept preview must not compete with the model Hero.");
 }
 if (!html.includes('id="section-tabs" class="model-section-tabs" role="tablist"')) {
   throw new Error("Model route must remain an explicit tablist.");
@@ -33,4 +46,4 @@ if (!html.includes('<script type="module" src="../model-page.mjs"')) {
   throw new Error("Model page must use the canonical model-page renderer.");
 }
 
-console.log(`Model diagram DOM: ${requiredIds.length} required nodes and tab semantics verified.`);
+console.log(`Model diagram DOM: ${requiredIds.length} required nodes and route-side disclosure verified.`);
