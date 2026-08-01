@@ -4,40 +4,59 @@ const svgElement = (name) => typeof document.createElementNS === "function"
   ? document.createElementNS(SVG_NS, name)
   : document.createElement(name);
 
-const setRouteClass = (root, enabled) => {
+const setRouteClass = (root, kind) => {
   const names = String(root.className || "").split(/\s+/).filter(Boolean);
-  const retained = names.filter((name) => name !== "model-section-tabs--route");
-  if (enabled) retained.push("model-section-tabs--route");
+  const retained = names.filter((name) => !name.startsWith("model-section-tabs--"));
+  retained.push("model-section-tabs--route", `model-section-tabs--${kind}`);
   root.className = [...new Set(retained)].join(" ");
 };
 
-const createRouteSvg = (count, activeIndex) => {
+const sectionIndex = (model, id) => model.sections.findIndex((section) => section.id === id);
+
+const edgeIsActive = ({ kind, edge, model, activeSectionId }) => {
+  const [from, to] = edge;
+  if (kind === "sequence") {
+    const activeIndex = sectionIndex(model, activeSectionId);
+    return sectionIndex(model, to) <= activeIndex;
+  }
+  if (kind === "branch" || kind === "field") {
+    return activeSectionId !== from && (activeSectionId === to || activeSectionId === from);
+  }
+  return false;
+};
+
+const createRouteSvg = ({ model, presentation, activeSectionId }) => {
   const svg = svgElement("svg");
   svg.setAttribute("class", "model-route__lines");
-  svg.setAttribute("viewBox", "0 0 100 12");
+  svg.setAttribute("viewBox", "0 0 100 100");
   svg.setAttribute("preserveAspectRatio", "none");
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
 
-  const base = svgElement("line");
-  base.setAttribute("x1", "0");
-  base.setAttribute("y1", "6");
-  base.setAttribute("x2", "100");
-  base.setAttribute("y2", "6");
-  base.setAttribute("class", "model-route__line model-route__line--base");
-  svg.append(base);
-
-  const progress = svgElement("line");
-  progress.setAttribute("x1", "0");
-  progress.setAttribute("y1", "6");
-  progress.setAttribute("x2", count <= 1 ? "0" : String((activeIndex / (count - 1)) * 100));
-  progress.setAttribute("y2", "6");
-  progress.setAttribute("class", "model-route__line model-route__line--active");
-  svg.append(progress);
+  for (const edge of presentation.edges) {
+    const [fromId, toId] = edge;
+    const from = presentation.sections[fromId]?.position;
+    const to = presentation.sections[toId]?.position;
+    if (!from || !to) continue;
+    const line = svgElement("line");
+    line.setAttribute("x1", String(from.x));
+    line.setAttribute("y1", String(from.y));
+    line.setAttribute("x2", String(to.x));
+    line.setAttribute("y2", String(to.y));
+    line.setAttribute("class", edgeIsActive({
+      kind: presentation.kind,
+      edge,
+      model,
+      activeSectionId,
+    })
+      ? "model-route__line model-route__line--active"
+      : "model-route__line model-route__line--base");
+    svg.append(line);
+  }
   return svg;
 };
 
-const focusAdjacent = (event, buttons, currentIndex) => {
+const moveRovingFocus = (event, buttons, currentIndex) => {
   if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key) || !buttons.length) return;
   event.preventDefault();
   const nextIndex = event.key === "Home"
@@ -45,11 +64,14 @@ const focusAdjacent = (event, buttons, currentIndex) => {
     : (event.key === "End"
       ? buttons.length - 1
       : ((currentIndex + (event.key === "ArrowRight" ? 1 : -1) + buttons.length) % buttons.length));
+  for (const button of buttons) button.tabIndex = -1;
+  buttons[nextIndex].tabIndex = 0;
   buttons[nextIndex].focus();
 };
 
 export const createModelRouteDiagram = ({
   root,
+  panel,
   currentLabel,
   currentNote,
   labelForSection,
@@ -58,7 +80,7 @@ export const createModelRouteDiagram = ({
   onPreviewEnd,
 }) => {
   let selectedButton = null;
-  const buttons = () => [...root.querySelectorAll("[data-section-id]")];
+  const buttons = () => [...root.querySelectorAll("button[data-section-id]")];
 
   const syncOverflow = () => {
     const viewportWidth = Number(root.clientWidth) || 0;
@@ -74,9 +96,9 @@ export const createModelRouteDiagram = ({
     const reveal = () => {
       const viewportWidth = Number(root.clientWidth) || 0;
       const maxScroll = Math.max(0, (Number(root.scrollWidth) || 0) - viewportWidth);
-      const edgeInset = 12;
-      const tabStart = button.offsetLeft;
-      const tabEnd = tabStart + button.offsetWidth;
+      const edgeInset = 16;
+      const tabStart = Number(button.offsetLeft) || 0;
+      const tabEnd = tabStart + (Number(button.offsetWidth) || 0);
       const visibleStart = Number(root.scrollLeft) || 0;
       const visibleEnd = visibleStart + viewportWidth;
       let target = visibleStart;
@@ -91,58 +113,52 @@ export const createModelRouteDiagram = ({
   };
 
   const setCurrentCopy = (section, presentation) => {
-    const sectionPresentation = presentation?.sections?.[section.id];
-    currentLabel.textContent = sectionPresentation?.label ?? labelForSection(section);
-    currentNote.textContent = sectionPresentation?.note ?? section.summary;
+    const sectionPresentation = presentation.sections[section.id];
+    currentLabel.textContent = sectionPresentation.label;
+    currentNote.textContent = sectionPresentation.note;
   };
 
   const createButton = ({ candidate, selected, index, presentation }) => {
-    const sectionPresentation = presentation?.sections?.[candidate.id];
+    const sectionPresentation = presentation.sections[candidate.id];
     const button = document.createElement("button");
     button.type = "button";
     button.role = "tab";
+    button.id = `model-section-tab-${candidate.id}`;
     button.dataset.sectionId = candidate.id;
     button.title = candidate.title;
     button.tabIndex = selected ? 0 : -1;
     button.setAttribute("aria-selected", String(selected));
+    button.setAttribute("aria-controls", panel.id);
+    button.style.setProperty("--route-x", `${sectionPresentation.position.x}%`);
+    button.style.setProperty("--route-y", `${sectionPresentation.position.y}%`);
 
-    if (presentation?.kind === "sequence") {
-      const marker = document.createElement("span");
-      marker.className = "model-route__marker";
-      marker.setAttribute("aria-hidden", "true");
-      const label = document.createElement("span");
-      label.className = "model-route__label";
-      label.textContent = sectionPresentation?.label ?? labelForSection(candidate);
-      button.append(marker, label);
-    } else {
-      button.textContent = labelForSection(candidate);
-    }
+    const marker = document.createElement("span");
+    marker.className = "model-route__marker";
+    marker.setAttribute("aria-hidden", "true");
+    const label = document.createElement("span");
+    label.className = "model-route__label";
+    label.textContent = sectionPresentation.label ?? labelForSection(candidate);
+    button.append(marker, label);
 
-    button.addEventListener("keydown", (event) => focusAdjacent(event, buttons(), index));
+    button.addEventListener("keydown", (event) => moveRovingFocus(event, buttons(), index));
     button.addEventListener("click", () => onSelect(candidate));
-    if (presentation) {
-      button.addEventListener("pointerenter", () => onPreview(candidate));
-      button.addEventListener("pointerleave", onPreviewEnd);
-      button.addEventListener("focus", () => onPreview(candidate));
-      button.addEventListener("blur", onPreviewEnd);
-    }
+    button.addEventListener("pointerenter", () => onPreview(candidate));
+    button.addEventListener("pointerleave", onPreviewEnd);
+    button.addEventListener("focus", () => onPreview(candidate));
+    button.addEventListener("blur", onPreviewEnd);
     return button;
   };
 
   const render = ({ model, section, presentation }) => {
+    if (!presentation) throw new Error(`Model ${model.id} is missing diagram presentation metadata.`);
     root.replaceChildren();
-    root.dataset.routeKind = presentation?.kind ?? "tabs";
-    setRouteClass(root, Boolean(presentation));
+    root.dataset.routeKind = presentation.kind;
+    setRouteClass(root, presentation.kind);
 
     const canvas = document.createElement("div");
-    canvas.className = presentation
-      ? "model-route__canvas model-route__canvas--sequence"
-      : "model-route__canvas model-route__canvas--tabs";
+    canvas.className = `model-route__canvas model-route__canvas--${presentation.kind}`;
     canvas.style.setProperty("--route-count", String(model.sections.length));
-    canvas.style.setProperty("--route-edge", `${50 / Math.max(1, model.sections.length)}%`);
-
-    const activeIndex = Math.max(0, model.sections.findIndex((candidate) => candidate.id === section.id));
-    if (presentation?.kind === "sequence") canvas.append(createRouteSvg(model.sections.length, activeIndex));
+    canvas.append(createRouteSvg({ model, presentation, activeSectionId: section.id }));
 
     selectedButton = null;
     for (const [index, candidate] of model.sections.entries()) {
@@ -153,11 +169,9 @@ export const createModelRouteDiagram = ({
     }
     root.append(canvas);
     setCurrentCopy(section, presentation);
+    panel.setAttribute("aria-labelledby", selectedButton?.id ?? "");
     revealSelected();
   };
-
-  const preview = ({ section, presentation }) => setCurrentCopy(section, presentation);
-  const restore = ({ section, presentation }) => setCurrentCopy(section, presentation);
 
   root.addEventListener("scroll", syncOverflow, { passive: true });
   const resizeObserver = typeof ResizeObserver === "function"
@@ -170,8 +184,8 @@ export const createModelRouteDiagram = ({
 
   return {
     render,
-    preview,
-    restore,
+    preview: () => {},
+    restore: () => {},
     syncOverflow,
     revealSelected,
     getButtons: buttons,
