@@ -9,7 +9,7 @@ import {
 
 const modelById = new Map(designModels.map((model) => [model.id, model]));
 const allowedModelFields = new Set(["kind", "signature", "statement", "motif", "routeLayout", "edges", "sections"]);
-const allowedRouteLayoutFields = new Set(["type", "rootId", "trunkX"]);
+const allowedRouteLayoutFields = new Set(["type", "rootId", "railY"]);
 const allowedSectionFields = new Set(["label", "conceptLabel", "note", "position", "vignette"]);
 const allowedPositionFields = new Set(["x", "y"]);
 const allowedVignetteFields = new Set(["type", "variant", "activeIndex", "expansion", "falloff"]);
@@ -96,7 +96,7 @@ for (const [modelId, presentation] of Object.entries(modelDiagramPresentations))
     if (routeLayout.rootId !== canonicalSectionIds[0]) {
       throw new Error(`${modelId}.routeLayout.rootId must be the first canonical section.`);
     }
-    requireFiniteRange(routeLayout.trunkX, `${modelId}.routeLayout.trunkX`, 10, 45);
+    requireFiniteRange(routeLayout.railY, `${modelId}.routeLayout.railY`, 25, 65);
 
     const sources = new Set(presentation.edges.map(([from]) => from));
     if (sources.size !== 1 || !sources.has(routeLayout.rootId)) {
@@ -109,25 +109,32 @@ for (const [modelId, presentation] of Object.entries(modelDiagramPresentations))
       throw new Error(`${modelId} branch must connect its root to every peer in canonical order.`);
     }
 
-    const rootX = presentation.sections[routeLayout.rootId]?.position?.x;
-    if (!Number.isFinite(rootX) || routeLayout.trunkX <= rootX + 4) {
-      throw new Error(`${modelId} branch trunk must clear the root node.`);
-    }
+    const rootPosition = presentation.sections[routeLayout.rootId]?.position;
     const targetPositions = expectedTargets.map((id) => presentation.sections[id]?.position);
-    if (targetPositions.some((position) => !position || position.x <= routeLayout.trunkX + 8)) {
-      throw new Error(`${modelId} branch targets must remain beyond the shared trunk.`);
+    if (!rootPosition || targetPositions.some((position) => !position)) {
+      throw new Error(`${modelId} branch route positions must exist before layout validation.`);
+    }
+    if (routeLayout.railY <= rootPosition.y + 8) {
+      throw new Error(`${modelId} branch rail must clear the root marker and label.`);
+    }
+    if (targetPositions.some(({ y }) => y <= routeLayout.railY + 8)) {
+      throw new Error(`${modelId} branch targets must remain below the shared rail.`);
     }
 
     if (modelId === "landscape-paper") {
       const targetXs = targetPositions.map(({ x }) => x);
       const targetYs = targetPositions.map(({ y }) => y);
-      if (Math.max(...targetXs) - Math.min(...targetXs) > 1) {
-        throw new Error("Landscape Paper peer targets must share one vertical axis.");
+      if (Math.max(...targetYs) - Math.min(...targetYs) > 1) {
+        throw new Error("Landscape Paper peer targets must share one horizontal axis.");
       }
-      for (let index = 1; index < targetYs.length; index += 1) {
-        if (targetYs[index] - targetYs[index - 1] < 16) {
-          throw new Error("Landscape Paper peer targets need sufficient vertical separation.");
+      for (let index = 1; index < targetXs.length; index += 1) {
+        if (targetXs[index] - targetXs[index - 1] < 14) {
+          throw new Error("Landscape Paper peer targets need sufficient horizontal separation.");
         }
+      }
+      const peersMidpoint = (Math.min(...targetXs) + Math.max(...targetXs)) / 2;
+      if (Math.abs(rootPosition.x - peersMidpoint) > 1) {
+        throw new Error("Landscape Paper root must remain centered above its peer rail.");
       }
     }
   } else if (routeLayout) {
