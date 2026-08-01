@@ -42,7 +42,7 @@ if (html.indexOf('id="model-concept"') > html.indexOf('id="section-tabs"')) {
 }
 if (html.indexOf('id="section-summary"') < html.indexOf('id="model-concept"')
   || html.indexOf('id="section-summary"') > html.indexOf('id="model-section-panel"')) {
-  throw new Error("Canonical section copy must remain inside the visible core concept band.");
+  throw new Error("Canonical section copy must remain inside the visible core concept region.");
 }
 if (html.includes('class="model-section-copy"') || html.includes('class="model-toolbar"')) {
   throw new Error("The prototype reading path must not retain a duplicate section block or mode toolbar.");
@@ -60,18 +60,21 @@ if (!html.includes('<link rel="stylesheet" href="../model-route-diagram.css"')) 
   throw new Error("Model page must load the diagram stylesheet after the workbench stylesheet.");
 }
 if (!html.includes('<link rel="stylesheet" href="../model-route-overlay.css"')) {
-  throw new Error("Model page must load the core-concept stylesheet after diagram geometry.");
+  throw new Error("Model page must load the route/concept composition stylesheet after diagram geometry.");
 }
 for (const contract of [
-  "grid-template-columns: minmax(0, 1fr)",
-  'grid-template-columns: minmax(20rem, 30rem) minmax(0, 1fr)',
-  '"vignette statement"',
+  "grid-template-columns: minmax(0, 1fr) minmax(23rem, 28rem)",
+  'grid-template-areas: "route concept"',
+  "grid-area: route",
+  "grid-area: concept",
+  '"concept"\n      "route"',
+  "box-shadow: none",
   "pointer-events: none",
 ]) {
-  if (!overlayCss.includes(contract)) throw new Error(`Visible core-concept CSS is missing: ${contract}`);
+  if (!overlayCss.includes(contract)) throw new Error(`Route/core-concept CSS is missing: ${contract}`);
 }
 if (!html.includes('<script type="module" src="../model-page.mjs"')) {
   throw new Error("Model page must use the canonical model-page renderer.");
 }
 
-console.log(`Model diagram DOM: ${requiredIds.length} required nodes, semantically first always-visible core concept, full-width route, and compact object controls verified.`);
+console.log(`Model diagram DOM: ${requiredIds.length} required nodes, visible route-side core concept, connected marker paths, and compact object controls verified.`);
