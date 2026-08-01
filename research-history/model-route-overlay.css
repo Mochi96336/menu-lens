@@ -1,6 +1,6 @@
 .model-route-layout {
-  position: relative;
-  display: block;
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
 }
 
 .model-section-strip {
@@ -8,64 +8,120 @@
 }
 
 .model-section-strip__eyebrow {
-  display: flex;
-  min-height: 3rem;
-  align-items: center;
-  margin-bottom: 0 !important;
-  padding-right: min(18rem, 34vw);
+  min-height: 0;
+  margin-bottom: .35rem !important;
+  padding-right: 0;
 }
 
 .model-concept {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 5;
-  width: min(17rem, calc(100% - 8rem));
-  max-width: 100%;
-  border-inline: 1px solid var(--line-strong);
-  background: var(--paper);
-}
-
-.model-concept[open] {
-  width: min(28rem, calc(100% - 2rem));
-  max-height: min(38rem, calc(100vh - 2rem));
-  overflow: auto;
-  box-shadow: 0 .9rem 2.4rem color-mix(in srgb, var(--ink) 16%, transparent);
-}
-
-.model-concept[open] .model-vignette__svg {
-  width: min(100%, 24rem);
+  position: relative;
+  order: -1;
+  width: 100%;
+  min-width: 0;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--line-strong);
+  border-inline: 0;
+  background: transparent;
 }
 
 .model-concept__summary {
-  min-height: 3rem;
+  min-height: 0;
+  padding: .7rem 0 .55rem;
+  border-bottom: 1px solid var(--line);
+  cursor: default;
+  pointer-events: none;
 }
 
-@media (max-width: 1099px) {
+.model-concept__summary-hint {
+  display: none;
+}
+
+.model-concept > .model-concept__body {
+  display: grid;
+  grid-template-columns: minmax(20rem, 30rem) minmax(0, 1fr);
+  grid-template-areas:
+    "vignette statement"
+    "vignette copy";
+  gap: .8rem clamp(1.5rem, 4vw, 4rem);
+  align-items: start;
+  padding: 1rem 0 1.15rem;
+  border-top: 0;
+}
+
+.model-concept__statement {
+  grid-area: statement;
+  max-width: 44rem;
+  padding-top: .1rem;
+  font-size: .82rem;
+  line-height: 1.6;
+}
+
+.model-concept-vignette {
+  grid-area: vignette;
+  min-height: 8rem;
+  align-self: center;
+  justify-self: stretch;
+}
+
+.model-concept .model-vignette__svg {
+  width: min(100%, 28rem);
+}
+
+.model-concept__section-copy {
+  grid-area: copy;
+  max-width: 44rem;
+}
+
+.model-concept .model-route__current {
+  margin-top: .2rem;
+}
+
+@media (max-width: 900px) {
+  .model-concept > .model-concept__body {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "vignette"
+      "statement"
+      "copy";
+    gap: .7rem;
+  }
+
+  .model-concept-vignette {
+    min-height: 7rem;
+    justify-self: center;
+  }
+
+  .model-concept .model-vignette__svg {
+    width: min(100%, 22rem);
+  }
+
+  .model-concept__statement,
+  .model-concept__section-copy {
+    max-width: none;
+  }
+}
+
+@media (max-width: 520px) {
   .model-route-layout {
+    gap: .8rem;
+  }
+
+  .model-concept__summary {
     display: grid;
-    gap: .55rem;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: .5rem;
+    padding-block: .6rem .5rem;
   }
 
-  .model-section-strip__eyebrow {
-    min-height: 0;
-    margin-bottom: .35rem !important;
-    padding-right: 0;
+  .model-concept__summary-label {
+    display: inline;
   }
 
-  .model-concept,
-  .model-concept[open] {
-    position: relative;
-    inset: auto;
-    z-index: auto;
-    width: 100%;
-    max-height: none;
-    overflow: visible;
-    border-inline: 0;
-    box-shadow: none;
+  .model-concept > .model-concept__body {
+    padding-block: .75rem .9rem;
   }
 
-  .model-concept[open] .model-vignette__svg {
-    width: min(100%, 20rem);
+  .model-concept-vignette {
+    min-height: 6.5rem;
   }
 }
