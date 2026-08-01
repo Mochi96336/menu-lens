@@ -1,7 +1,9 @@
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 const svgElement = (name, attributes = {}) => {
-  const element = document.createElementNS(SVG_NS, name);
+  const element = typeof document.createElementNS === "function"
+    ? document.createElementNS(SVG_NS, name)
+    : document.createElement(name);
   for (const [key, value] of Object.entries(attributes)) {
     element.setAttribute(key, String(value));
   }
@@ -104,17 +106,22 @@ const renderScene = (vignette) => {
   return svg;
 };
 
-export const createModelConceptVignette = ({ root }) => {
+export const createModelConceptVignette = ({
+  root,
+  signature = document.querySelector?.("#model-diagram-signature") ?? null,
+}) => {
   const render = ({ presentation, sectionId, preview = false }) => {
     const sectionPresentation = presentation?.sections?.[sectionId];
     if (!presentation || !sectionPresentation) {
       root.hidden = true;
       root.replaceChildren();
+      if (signature) signature.textContent = "";
       delete root.dataset.vignetteType;
       delete root.dataset.preview;
       return;
     }
     root.hidden = false;
+    if (signature) signature.textContent = sectionPresentation.conceptLabel ?? presentation.signature;
     root.dataset.vignetteType = sectionPresentation.vignette.type;
     root.dataset.preview = String(preview);
     root.replaceChildren(renderScene(sectionPresentation.vignette));
