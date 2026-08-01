@@ -17,6 +17,9 @@ const requiredElement = (selector) => {
   return element;
 };
 
+const optionalElement = (selector, tagName = "div") =>
+  document.querySelector(selector) ?? document.createElement(tagName);
+
 const dispositionLabels = Object.freeze({
   substrate: "substrate",
   reference: "reference",
@@ -126,16 +129,17 @@ const elements = Object.freeze({
   modelTitle: requiredElement("#model-title"),
   modelSummary: requiredElement("#model-summary"),
   modelStats: requiredElement("#model-stats"),
-  modelConcept: requiredElement("#model-concept"),
-  modelDiagramSignature: requiredElement("#model-diagram-signature"),
-  modelDiagramStatement: requiredElement("#model-diagram-statement"),
-  modelConceptVignette: requiredElement("#model-concept-vignette"),
+  modelConcept: optionalElement("#model-concept", "aside"),
+  modelDiagramSignature: optionalElement("#model-diagram-signature", "p"),
+  modelDiagramStatement: optionalElement("#model-diagram-statement", "p"),
+  modelConceptVignette: optionalElement("#model-concept-vignette"),
   modelSubstrate: requiredElement("#model-substrate"),
   modelRetains: requiredElement("#model-retains"),
   modelVaries: requiredElement("#model-varies"),
   modelQuestion: requiredElement("#model-question"),
   sectionTabs: requiredElement("#section-tabs"),
-  sectionCurrentLabel: requiredElement("#section-current-label"),
+  sectionCurrentLabel: optionalElement("#section-current-label", "strong"),
+  sectionRouteNote: optionalElement("#section-route-note", "span"),
   sectionSummary: requiredElement("#section-summary"),
   objectPicker: requiredElement("#object-picker"),
   objectSelect: requiredElement("#object-select"),
@@ -229,7 +233,7 @@ const renderConcept = (section, { preview = false } = {}) => {
 const routeDiagram = createModelRouteDiagram({
   root: elements.sectionTabs,
   currentLabel: elements.sectionCurrentLabel,
-  currentNote: elements.sectionSummary,
+  currentNote: elements.sectionRouteNote,
   labelForSection: sectionTabLabel,
   onSelect: (section) => {
     previewSection = null;
@@ -337,6 +341,7 @@ const renderModelDefinition = ({ model, section }) => {
 };
 
 const renderSectionRoute = ({ model, section }) => {
+  elements.sectionSummary.textContent = section.summary;
   routeDiagram.render({
     model,
     section,
