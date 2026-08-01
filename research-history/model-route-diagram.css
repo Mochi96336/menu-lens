@@ -22,6 +22,10 @@
   margin: 0;
 }
 
+.model-concept__copy .eyebrow {
+  color: var(--accent);
+}
+
 .model-concept__statement {
   max-width: 34ch;
   color: var(--muted);
@@ -87,6 +91,10 @@
   position: relative;
 }
 
+.model-section-strip__eyebrow {
+  margin-bottom: .35rem !important;
+}
+
 .model-route__current {
   display: grid;
   grid-template-columns: minmax(7rem, auto) minmax(0, 1fr);
@@ -101,6 +109,14 @@
 
 .model-route__current span {
   color: var(--muted);
+}
+
+.model-section-summary {
+  margin-top: .35rem !important;
+  padding-top: .45rem;
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  color: var(--faint) !important;
+  font-size: .78rem !important;
 }
 
 .model-section-tabs--route {
@@ -128,8 +144,9 @@
 
 .model-route__lines {
   position: absolute;
-  inset: .8rem 4.4rem auto;
-  width: calc(100% - 8.8rem);
+  inset-block: .8rem auto;
+  inset-inline: var(--route-edge);
+  width: calc(100% - var(--route-edge) - var(--route-edge));
   height: .75rem;
   overflow: visible;
   pointer-events: none;
@@ -239,11 +256,6 @@
   .model-route__canvas--sequence {
     grid-template-columns: repeat(var(--route-count), minmax(8rem, 1fr));
     min-width: calc(var(--route-count) * 8rem);
-  }
-
-  .model-route__lines {
-    inset-inline: 4rem;
-    width: calc(100% - 8rem);
   }
 
   .model-section-tabs--route .model-route__canvas--sequence > button {
