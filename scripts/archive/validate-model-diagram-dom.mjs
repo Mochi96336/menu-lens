@@ -63,10 +63,12 @@ if (!html.includes('<link rel="stylesheet" href="../model-route-overlay.css"')) 
   throw new Error("Model page must load the route/concept composition stylesheet after diagram geometry.");
 }
 for (const contract of [
-  "grid-template-columns: minmax(0, 1fr) minmax(23rem, 28rem)",
-  'grid-template-areas: "route concept"',
+  "grid-template-columns: minmax(0, 1fr) minmax(32rem, 38rem)",
+  'grid-template-areas: "concept route"',
   "grid-area: route",
   "grid-area: concept",
+  'grid-template-columns: minmax(20rem, 30rem) minmax(0, 1fr)',
+  '"vignette statement"',
   '"concept"\n      "route"',
   "box-shadow: none",
   "pointer-events: none",
@@ -77,4 +79,4 @@ if (!html.includes('<script type="module" src="../model-page.mjs"')) {
   throw new Error("Model page must use the canonical model-page renderer.");
 }
 
-console.log(`Model diagram DOM: ${requiredIds.length} required nodes, visible route-side core concept, connected marker paths, and compact object controls verified.`);
+console.log(`Model diagram DOM: ${requiredIds.length} required nodes, concept-first desktop pairing, responsive stacking, connected marker paths, and compact object controls verified.`);
