@@ -6,11 +6,12 @@
     <meta name="theme-color" content="#eeeae2" />
     <meta
       name="description"
-      content="Menu Lens 手機菜單閱讀研究檔案：從完整長頁、紙面、橫向鏡頭到深度投影，保留可執行原型、修正、停止理由與待驗證問題。"
+      content="Menu Lens 手機菜單閱讀研究檔案：先從六個設計模型進入，再查看完整長頁、紙面、橫向鏡頭、深度投影與研究證據。"
     />
     <title>Menu Lens — Research History</title>
     <link rel="stylesheet" href="./history.css" />
     <link rel="stylesheet" href="./archive-index.css" />
+    <link rel="stylesheet" href="./archive-home.css" />
     <script src="./prototype-registry.js"></script>
   </head>
   <body class="archive-index-page">
@@ -20,54 +21,227 @@
       <nav class="archive-nav site-shell" aria-label="研究檔案導覽">
         <a class="archive-wordmark" href="./">Menu Lens</a>
         <div class="archive-nav__links">
-          <a href="#notes">研究筆記</a>
           <a href="#start">設計模型</a>
+          <a href="#notes">研究判斷</a>
           <a href="#stopped">停止路線</a>
           <a href="#catalog">完整目錄</a>
         </div>
       </nav>
 
-      <div class="archive-hero__body site-shell">
+      <div class="archive-hero__body archive-hero__body--model-first site-shell">
         <div class="archive-hero__copy">
           <p class="eyebrow">Mobile menu reading / research archive</p>
-          <h1>把一份菜單<br />留在眼前</h1>
+          <h1 style="max-width: 10ch">先看模型，<br />再讀研究。</h1>
           <p class="lede">
-            手機菜單不一定要先變成卡片、篩選器與購物車。這份檔案追問的是：當 30 道料理被壓進一個螢幕，哪些東西還能保留——全貌、位置、價格關係，還是只剩縮小的字？
+            Menu Lens 保存六種手機菜單閱讀結構，以及它們各自的修正、停止理由與待驗證問題。從設計模型進入，可以直接操作共同母體，再沿著研究路線查看每次只改一個變因後發生了什麼。
           </p>
+          <div class="archive-hero__actions">
+            <a
+              class="archive-hero__action"
+              href="./models/?model=landscape-paper&amp;section=focus-geometry&amp;viewport=390"
+            >進入目前檢查中的模型</a>
+            <a class="archive-hero__action--secondary" href="#start">瀏覽全部六個模型</a>
+          </div>
         </div>
 
-        <aside class="archive-state" aria-label="研究檔案狀態">
-          <p class="phase-index">Archive state</p>
-          <dl>
-            <div>
-              <dt>Archive v2</dt>
-              <dd>入庫完成</dd>
-            </div>
-            <div>
-              <dt>Evidence</dt>
-              <dd>仍在收尾</dd>
-            </div>
-            <div>
-              <dt>Product direction</dt>
-              <dd>尚未選定</dd>
-            </div>
-          </dl>
-        </aside>
+        <a
+          class="archive-hero__spotlight"
+          href="./models/?model=landscape-paper&amp;section=focus-geometry&amp;viewport=390"
+          aria-label="開啟 Landscape Paper 目前直接檢查中的焦點幾何研究"
+        >
+          <div class="archive-hero__spotlight-head">
+            <p class="phase-index">Current evidence queue</p>
+            <span class="archive-status-tag archive-status-tag--active">Direct review</span>
+          </div>
+          <div>
+            <h2>Landscape Paper</h2>
+            <p class="archive-hero__spotlight-copy">
+              目前正在比較 geometry、typography、padding 與 collapse：不是把 camera 移得更準，而是確認哪一個變因真正增加閱讀空間。
+            </p>
+          </div>
+          <div class="archive-hero__model-diagram diagram--landscape" aria-hidden="true">
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+          </div>
+          <span class="archive-hero__spotlight-link">開啟模型與研究路線 →</span>
+        </a>
       </div>
 
-      <div class="archive-hero__meta site-shell" aria-label="研究檔案資訊">
+      <div class="archive-hero__meta archive-hero__meta--compact site-shell" aria-label="研究檔案資訊">
         <span id="object-count">研究物件</span>
         <span id="executable-count">可執行入口</span>
         <span id="study-count">研究工具</span>
         <span>同一份 6 分類、30 道料理 fixture</span>
+        <span class="archive-state-line">Archive v2 complete · Evidence closure active · Product direction unselected</span>
       </div>
     </header>
 
     <main id="main" class="archive-index-main">
-      <section class="section site-shell archive-thesis" aria-labelledby="thesis-title">
+      <section id="start" class="section site-shell archive-models-first" aria-labelledby="start-title">
+        <div class="archive-entry-heading">
+          <p class="eyebrow">Start with the active questions</p>
+          <h2 id="start-title">先從目前正在推進的三個入口開始。</h2>
+          <p>
+            這不是模型排名，也不是產品方向。它只把現在的 evidence queue 與模型入口放在同一個地方，讓第一次進站的人不必先讀完整個 Archive 才知道該看哪裡。
+          </p>
+        </div>
+
+        <div class="archive-priority-grid">
+          <a
+            class="archive-priority-card"
+            href="./models/?model=landscape-paper&amp;section=focus-geometry&amp;viewport=390"
+          >
+            <div class="archive-priority-card__head">
+              <p class="phase-index">01 / Active direct review</p>
+              <span class="archive-status-tag archive-status-tag--active">Now</span>
+            </div>
+            <div class="archive-model-card__diagram diagram--landscape" aria-hidden="true">
+              <span></span><span></span><span></span>
+              <span></span><span></span><span></span>
+            </div>
+            <h3>Landscape Paper</h3>
+            <p class="archive-priority-card__question">哪一種局部改變，真的讓固定紙面變得更可讀？</p>
+            <p class="archive-priority-card__detail">
+              直接檢查 <code>22D–22G</code> 與 <code>24A–24C</code>，比較焦點幾何、字級、內距、收合與直排閱讀。
+            </p>
+            <span class="archive-priority-card__link">進入目前檢查中的模型 →</span>
+          </a>
+
+          <a
+            class="archive-priority-card"
+            href="./models/?model=paper-field&amp;section=semantic-information&amp;variant=12A&amp;viewport=390"
+          >
+            <div class="archive-priority-card__head">
+              <p class="phase-index">02 / Participant study first</p>
+              <span class="archive-status-tag">12A-S1</span>
+            </div>
+            <div class="archive-model-card__diagram diagram--paper" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <h3>Paper Field</h3>
+            <p class="archive-priority-card__question">全貌看不清時，overview 應該留下哪些語意？</p>
+            <p class="archive-priority-card__detail">
+              下一個核心 participant study 比較不可讀的微型 Product name，與分類、數量、價格範圍及密度資訊。
+            </p>
+            <span class="archive-priority-card__link">查看 12A 與研究條件 →</span>
+          </a>
+
+          <a
+            class="archive-priority-card"
+            href="./models/?model=depth-projection&amp;section=projection-lens&amp;variant=25P&amp;viewport=390"
+          >
+            <div class="archive-priority-card__head">
+              <p class="phase-index">03 / Conditional study</p>
+              <span class="archive-status-tag">25P-S1</span>
+            </div>
+            <div class="archive-model-card__diagram diagram--depth" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <h3>Depth &amp; Projection</h3>
+            <p class="archive-priority-card__question">第三維能否成為可理解、可逆的資料投影？</p>
+            <p class="archive-priority-card__detail">
+              只有 25P 在 synthesis 前仍值得保留為 secondary lens，才執行第二順位的陌生讀者研究。
+            </p>
+            <span class="archive-priority-card__link">查看 Projection Lens →</span>
+          </a>
+        </div>
+
+        <div class="archive-all-models" aria-labelledby="all-models-title">
+          <div class="archive-all-models__heading">
+            <div>
+              <p class="eyebrow">All design models</p>
+              <h2 id="all-models-title">六個共同母體</h2>
+            </div>
+            <p>每張卡先說明模型真正要回答的問題；family 編號、variant、viewport 與 parent comparison 留在模型頁內。</p>
+          </div>
+
+          <div class="archive-model-grid">
+            <a class="archive-model-card" href="./models/?model=complete-document">
+              <div class="archive-model-card__head">
+                <p class="phase-index">01 · 05 family</p>
+                <span class="archive-status-tag">Linear</span>
+              </div>
+              <div class="archive-model-card__diagram diagram--document" aria-hidden="true">
+                <span></span><span></span>
+              </div>
+              <h3>Complete Document</h3>
+              <p class="archive-model-card__question">完整長頁能壓縮到什麼程度，仍保留穩定閱讀節奏？</p>
+              <span class="archive-model-card__link">開啟模型 →</span>
+            </a>
+
+            <a class="archive-model-card" href="./models/?model=horizontal-navigation">
+              <div class="archive-model-card__head">
+                <p class="phase-index">07–10 family</p>
+                <span class="archive-status-tag">Sequence</span>
+              </div>
+              <div class="archive-model-card__diagram diagram--horizontal" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+              </div>
+              <h3>Horizontal Navigation</h3>
+              <p class="archive-model-card__question">橫向展寬與局部焦點，能否保留長距離的位置感？</p>
+              <span class="archive-model-card__link">開啟模型 →</span>
+            </a>
+
+            <a class="archive-model-card" href="./models/?model=paper-field">
+              <div class="archive-model-card__head">
+                <p class="phase-index">11–17 family</p>
+                <span class="archive-status-tag">Field</span>
+              </div>
+              <div class="archive-model-card__diagram diagram--paper" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+              <h3>Paper Field</h3>
+              <p class="archive-model-card__question">完整紙面保留全貌時，縮小資訊應該變成什麼？</p>
+              <span class="archive-model-card__link">開啟模型 →</span>
+            </a>
+
+            <a class="archive-model-card" href="./models/?model=landscape-paper">
+              <div class="archive-model-card__head">
+                <p class="phase-index">18–24 family</p>
+                <span class="archive-status-tag archive-status-tag--active">Active</span>
+              </div>
+              <div class="archive-model-card__diagram diagram--landscape" aria-hidden="true">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+              </div>
+              <h3>Landscape Paper</h3>
+              <p class="archive-model-card__question">固定 3 × 2 紙面如何增加局部閱讀，又不失去周圍地標？</p>
+              <span class="archive-model-card__link">開啟模型 →</span>
+            </a>
+
+            <a class="archive-model-card" href="./models/?model=multiscale-focus">
+              <div class="archive-model-card__head">
+                <p class="phase-index">06 + corrections</p>
+                <span class="archive-status-tag">Scale</span>
+              </div>
+              <div class="archive-model-card__diagram diagram--scale" aria-hidden="true">
+                <span></span><span></span>
+              </div>
+              <h3>Multi-scale Focus</h3>
+              <p class="archive-model-card__question">進入單一分類後，怎麼返回並證明完整菜單仍然存在？</p>
+              <span class="archive-model-card__link">開啟模型 →</span>
+            </a>
+
+            <a class="archive-model-card" href="./models/?model=depth-projection">
+              <div class="archive-model-card__head">
+                <p class="phase-index">25–26 family</p>
+                <span class="archive-status-tag">Parallel</span>
+              </div>
+              <div class="archive-model-card__diagram diagram--depth" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+              <h3>Depth &amp; Projection</h3>
+              <p class="archive-model-card__question">第三維究竟承載資料語意，還是只是一種排版體積？</p>
+              <span class="archive-model-card__link">開啟模型 →</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section site-shell archive-thesis archive-thesis--after-models" aria-labelledby="thesis-title">
         <p class="eyebrow">Archive premise</p>
         <div class="archive-thesis__layout">
-          <h2 id="thesis-title">這裡保存的不是答案。</h2>
+          <h2 id="thesis-title">模型不是答案。</h2>
           <div>
             <p class="archive-thesis__statement">
               保存的是每次只改一個變因後，閱讀發生了什麼；也保存那些做得出來、卻不值得繼續的版本。
@@ -120,58 +294,6 @@
             <a href="./models/?model=depth-projection&amp;section=projection-lens&amp;variant=25P&amp;viewport=390">在模型頁查看 Projection Lens</a>
           </li>
         </ol>
-      </section>
-
-      <section id="start" class="section site-shell" aria-labelledby="start-title">
-        <div class="section-heading archive-section-intro">
-          <p class="eyebrow">Explore six design models</p>
-          <h2 id="start-title">一個設計模型一頁，研究步驟留在頁內。</h2>
-          <p>首頁不再把每個 ablation 當成獨立方案。先選擇共同母體，再於模型頁切換 sub-study、variant、viewport 與 parent comparison。</p>
-        </div>
-
-        <div class="archive-routes">
-          <article class="archive-route archive-route--wide">
-            <p class="phase-index">01 · 05 family</p>
-            <h3>Complete Document</h3>
-            <p>完整長頁與 Ledger 共用一份垂直文件，只比較 row density、category rhythm 與窄螢幕重排。</p>
-            <a href="./models/?model=complete-document">開啟設計模型</a>
-          </article>
-
-          <article class="archive-route">
-            <p class="phase-index">07–10 family</p>
-            <h3>Horizontal Navigation</h3>
-            <p>把 spread、ribbon 與 fisheye 分成三個子研究，避免七個近似原型平鋪。</p>
-            <a href="./models/?model=horizontal-navigation">開啟設計模型</a>
-          </article>
-
-          <article class="archive-route">
-            <p class="phase-index">11–17 family</p>
-            <h3>Paper Field</h3>
-            <p>固定紙面、semantic information 與 elastic geometry 在同一頁依研究問題分段。</p>
-            <a href="./models/?model=paper-field">開啟設計模型</a>
-          </article>
-
-          <article class="archive-route archive-route--wide">
-            <p class="phase-index">18–24 family</p>
-            <h3>Landscape Paper</h3>
-            <p>共同 3 × 2 紙面內比較 reading grammar、focus geometry、reading surface 與 vertical writing。</p>
-            <a href="./models/?model=landscape-paper">開啟設計模型</a>
-          </article>
-
-          <article class="archive-route archive-route--wide">
-            <p class="phase-index">06 + corrections</p>
-            <h3>Multi-scale Focus</h3>
-            <p>06 與 A-M3／A-M4 放在一起，清楚區分尺度模型與必要的回程、狀態真實性修正。</p>
-            <a href="./models/?model=multiscale-focus">開啟設計模型</a>
-          </article>
-
-          <article class="archive-route">
-            <p class="phase-index">25–26 family</p>
-            <h3>Depth and Projection</h3>
-            <p>共同 Z 切片的失敗、資料投影與 Parallax Volume 分成三個不同子研究。</p>
-            <a href="./models/?model=depth-projection">開啟設計模型</a>
-          </article>
-        </div>
       </section>
 
       <section id="stopped" class="section archive-stopped" aria-labelledby="stopped-title">
