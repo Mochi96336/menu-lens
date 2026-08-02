@@ -3,6 +3,7 @@ import { root } from "./load-catalog.mjs";
 
 const html = await readFile(new URL("research-history/models/index.html", root), "utf8");
 const overlayCss = await readFile(new URL("research-history/model-route-overlay.css", root), "utf8");
+const routeRenderer = await readFile(new URL("research-history/model-route-diagram.mjs", root), "utf8");
 const requiredIds = [
   "model-concept",
   "model-concept-summary",
@@ -42,7 +43,7 @@ if (html.indexOf('id="model-concept"') > html.indexOf('id="section-tabs"')) {
 }
 if (html.indexOf('id="section-summary"') < html.indexOf('id="model-concept"')
   || html.indexOf('id="section-summary"') > html.indexOf('id="model-section-panel"')) {
-  throw new Error("Canonical section copy must remain inside the visible core concept region.");
+  throw new Error("Canonical section copy must remain inside the core concept region.");
 }
 if (html.includes('class="model-section-copy"') || html.includes('class="model-toolbar"')) {
   throw new Error("The prototype reading path must not retain a duplicate section block or mode toolbar.");
@@ -69,16 +70,30 @@ for (const contract of [
   "grid-area: concept",
   'grid-template-columns: minmax(20rem, 30rem) minmax(0, 1fr)',
   '"vignette statement"',
+  "border-inline-start: 1px solid",
+  '[data-route-count="2"]',
   ".model-section-strip .model-route__canvas--layout-balanced-rail > button",
-  "width: 6.75rem",
+  "width: 7rem",
   '"concept"\n      "route"',
+  ".model-concept__section-summary",
+  "display: none",
   "box-shadow: none",
   "pointer-events: none",
+  'button:not([aria-selected="true"])',
+  ".model-route__canvas--layout-compact-sequence .model-route__marker",
+  ".model-route__canvas--layout-compact-sequence .model-route__label",
+  "background: transparent",
 ]) {
   if (!overlayCss.includes(contract)) throw new Error(`Route/core-concept CSS is missing: ${contract}`);
+}
+for (const contract of [
+  "root.dataset.routeModel = model.id",
+  "root.dataset.routeCount = String(model.sections.length)",
+]) {
+  if (!routeRenderer.includes(contract)) throw new Error(`Route renderer is missing responsive identity: ${contract}`);
 }
 if (!html.includes('<script type="module" src="../model-page.mjs"')) {
   throw new Error("Model page must use the canonical model-page renderer.");
 }
 
-console.log(`Model diagram DOM: ${requiredIds.length} required nodes, large concept-first desktop pairing, compact right-column routes, responsive stacking, connected marker paths, and compact object controls verified.`);
+console.log(`Model diagram DOM: ${requiredIds.length} required nodes, large concept-first desktop pairing, adaptive right-column routes, responsive stacking, marker-centred sequence axes, visibly connected open route nodes, mobile copy deduplication, and compact object controls verified.`);

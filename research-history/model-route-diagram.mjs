@@ -284,6 +284,8 @@ export const createModelRouteDiagram = ({
   const render = ({ model, section, presentation }) => {
     if (!presentation) throw new Error(`Model ${model.id} is missing diagram presentation metadata.`);
     root.replaceChildren();
+    root.dataset.routeModel = model.id;
+    root.dataset.routeCount = String(model.sections.length);
     root.dataset.routeKind = presentation.kind;
     root.dataset.routeLayout = presentation.routeLayout?.type ?? "direct";
     setRouteClass(root, presentation.kind);
