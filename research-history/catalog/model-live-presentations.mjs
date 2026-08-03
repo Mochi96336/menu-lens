@@ -377,7 +377,7 @@ const assign = (profileId, objectIds) => {
   });
 };
 
-assign("multiscale", ["06", "A-M3", "A-M4"]);
+assign("multiscale", ["06"]);
 assign("spread", ["08", "08A"]);
 assign("ribbon", ["09", "09A"]);
 assign("fisheye", ["10", "10A"]);
