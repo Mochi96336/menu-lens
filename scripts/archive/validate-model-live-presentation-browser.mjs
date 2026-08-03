@@ -101,10 +101,7 @@ for (const model of designModels) {
   for (const section of model.sections) {
     for (const objectId of section.objectIds) {
       if (!routeByObjectId.has(objectId)) {
-        routeByObjectId.set(objectId, {
-          modelId: model.id,
-          sectionId: section.id,
-        });
+        routeByObjectId.set(objectId, { modelId: model.id, sectionId: section.id });
       }
     }
   }
@@ -124,7 +121,7 @@ const routePath = ({ modelId, sectionId, objectId, view = "all" }) => {
 const profileInitialContracts = Object.freeze({
   multiscale: {
     hidden: [".workspace-topbar"],
-    visible: [".multiscale-screen > header", ".multiscale-workspace"],
+    visible: [".multiscale-screen > header", ".scale-map"],
   },
   spread: {
     hidden: [".spread-toolbar"],
@@ -199,12 +196,7 @@ for (const entry of modelLivePresentationEntries) {
   const contract = profileInitialContracts[entry.profileId];
   if (!contract) throw new Error(`No initial browser contract exists for profile ${entry.profileId}.`);
   const groupKey = `${route.modelId}/${route.sectionId}`;
-  if (!initialCoverageGroups.has(groupKey)) {
-    initialCoverageGroups.set(groupKey, {
-      ...route,
-      entries: [],
-    });
-  }
+  if (!initialCoverageGroups.has(groupKey)) initialCoverageGroups.set(groupKey, { ...route, entries: [] });
   initialCoverageGroups.get(groupKey).entries.push({ ...entry, contract });
 }
 
@@ -226,7 +218,7 @@ const interactionCases = [
     enter: { click: ".scale-category > button", state: "focus" },
     focus: {
       hidden: [".multiscale-screen > header", "#scale-label"],
-      visible: [".workspace-topbar", "#collapse-all"],
+      visible: [".workspace-topbar", "#collapse-all", ".scale-map"],
       absolute: [".workspace-topbar"],
       interactive: ["#collapse-all"],
     },
@@ -543,8 +535,8 @@ const pointerPointExpression = (objectId, selector) => `(() => {
   const localY = rect.top + rect.height / 2;
   const hit = documentRoot.elementFromPoint(localX, localY);
   return {
-    x: frameRect.left + localX,
-    y: frameRect.top + localY,
+    x: frameRect.left + frame.clientLeft + localX,
+    y: frameRect.top + frame.clientTop + localY,
     width: rect.width,
     height: rect.height,
     frameVisible: frameRect.right > 0
@@ -565,17 +557,11 @@ const pointerClick = async (client, objectId, selector) => {
   await evaluate(client, centerSurfaceExpression(objectId));
   const point = await evaluate(client, pointerPointExpression(objectId, selector));
   if (!point) return { ok: false, reason: `could not find ${selector}` };
-  if (!point.frameVisible || !point.localInViewport) {
-    return { ok: false, reason: `${selector} is outside the visible frame`, point };
-  }
+  if (!point.frameVisible || !point.localInViewport) return { ok: false, reason: `${selector} is outside the visible frame`, point };
   if (!point.hitSelf) return { ok: false, reason: `${selector} is covered at its center point`, point };
   if (point.disabled) return { ok: false, reason: `${selector} is disabled`, point };
   if (point.pointerEvents === "none") return { ok: false, reason: `${selector} ignores pointer input`, point };
-  await client.send("Input.dispatchMouseEvent", {
-    type: "mouseMoved",
-    x: point.x,
-    y: point.y,
-  });
+  await client.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: point.x, y: point.y });
   await client.send("Input.dispatchMouseEvent", {
     type: "mousePressed",
     x: point.x,
@@ -710,14 +696,9 @@ try {
       await waitFor(client, surfaceReadyExpression(entry.objectId), `${entry.objectId} mapped live surface`);
       await evaluate(client, centerSurfaceExpression(entry.objectId));
       await nextPaint(client);
-      const snapshot = await evaluate(
-        client,
-        snapshotExpression(entry.objectId, selectorsFor(entry.contract)),
-      );
+      const snapshot = await evaluate(client, snapshotExpression(entry.objectId, selectorsFor(entry.contract)));
       const caseFailures = [];
-      if (snapshot.profile !== entry.profileId) {
-        caseFailures.push(`profile ${JSON.stringify(snapshot.profile)} !== ${JSON.stringify(entry.profileId)}`);
-      }
+      if (snapshot.profile !== entry.profileId) caseFailures.push(`profile ${JSON.stringify(snapshot.profile)} !== ${JSON.stringify(entry.profileId)}`);
       caseFailures.push(...checkExpectation(snapshot, entry.contract, "initial"));
       initialCoverage.push({
         objectId: entry.objectId,
@@ -738,13 +719,8 @@ try {
       await nextPaint(client);
 
       const caseFailures = [];
-      const initial = await evaluate(
-        client,
-        snapshotExpression(testCase.objectId, selectorsFor(testCase.initial)),
-      );
-      if (initial.profile !== testCase.profile) {
-        caseFailures.push(`initial: profile ${JSON.stringify(initial.profile)} !== ${JSON.stringify(testCase.profile)}`);
-      }
+      const initial = await evaluate(client, snapshotExpression(testCase.objectId, selectorsFor(testCase.initial)));
+      if (initial.profile !== testCase.profile) caseFailures.push(`initial: profile ${JSON.stringify(initial.profile)} !== ${JSON.stringify(testCase.profile)}`);
       caseFailures.push(...checkExpectation(initial, testCase.initial, "initial"));
 
       let focus = null;
@@ -762,16 +738,10 @@ try {
             );
           }
           await nextPaint(client);
-          focus = await evaluate(
-            client,
-            snapshotExpression(testCase.objectId, selectorsFor(testCase.focus)),
-          );
+          focus = await evaluate(client, snapshotExpression(testCase.objectId, selectorsFor(testCase.focus)));
           caseFailures.push(...checkExpectation(focus, testCase.focus, "focus"));
           if (viewport === "390") {
-            focusScreenshot = await captureScreenshot(
-              client,
-              `model-live-${slugify(testCase.name)}-390-focus.png`,
-            );
+            focusScreenshot = await captureScreenshot(client, `model-live-${slugify(testCase.name)}-390-focus.png`);
           }
         }
       }
@@ -790,10 +760,7 @@ try {
             );
           }
           await nextPaint(client);
-          returned = await evaluate(
-            client,
-            snapshotExpression(testCase.objectId, selectorsFor(testCase.returned)),
-          );
+          returned = await evaluate(client, snapshotExpression(testCase.objectId, selectorsFor(testCase.returned)));
           caseFailures.push(...checkExpectation(returned, testCase.returned, "returned"));
         }
       }
@@ -828,13 +795,8 @@ try {
     interactions,
     failures,
   };
-  await writeFile(
-    new URL("model-live-presentation-results.json", outputDir),
-    `${JSON.stringify(report, null, 2)}\n`,
-  );
-  if (failures.length) {
-    throw new Error(`Model live-presentation browser review failed:\n- ${failures.join("\n- ")}`);
-  }
+  await writeFile(new URL("model-live-presentation-results.json", outputDir), `${JSON.stringify(report, null, 2)}\n`);
+  if (failures.length) throw new Error(`Model live-presentation browser review failed:\n- ${failures.join("\n- ")}`);
   socket.close();
   console.log(`Model live-presentation browser review: ${modelLivePresentationEntries.length} mapped objects and real pointer interactions pass.`);
 } catch (error) {
