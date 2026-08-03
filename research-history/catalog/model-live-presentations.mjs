@@ -46,6 +46,39 @@ const compactReturnCss = ({ profile, phone, toolbar, returnSelector }) => `
   }
 `;
 
+const compactNavigatorCss = ({ profile, phone, toolbar, hiddenSelector }) => `
+  [data-model-live-presentation="${profile}"] ${phone} {
+    position: relative !important;
+  }
+  [data-model-live-presentation="${profile}"] ${toolbar} {
+    position: absolute !important;
+    top: 2.55rem !important;
+    right: .55rem !important;
+    z-index: 40 !important;
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: auto !important;
+    width: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: .2rem !important;
+    gap: .2rem !important;
+    border: 1px solid var(--line) !important;
+    background: rgb(255 253 248 / 94%) !important;
+    box-shadow: 0 .2rem .7rem rgb(38 31 24 / 12%) !important;
+    backdrop-filter: blur(8px);
+  }
+  [data-model-live-presentation="${profile}"] ${toolbar} button {
+    display: block !important;
+    min-width: 2rem !important;
+    min-height: 2rem !important;
+    padding: .25rem .4rem !important;
+  }
+  [data-model-live-presentation="${profile}"] ${hiddenSelector} {
+    display: none !important;
+  }
+`;
+
 const overviewOnlyRestaurantCss = ({ profile, restaurant }) => `
   [data-model-live-presentation="${profile}"][data-model-live-presentation-state="focus"] ${restaurant} {
     display: none !important;
@@ -188,35 +221,12 @@ const presentations = Object.freeze({
     id: "loupe",
     state: null,
     css: `
-      [data-model-live-presentation="loupe"] .paper-phone {
-        position: relative !important;
-      }
-      [data-model-live-presentation="loupe"] .paper-restaurant,
-      [data-model-live-presentation="loupe"] .paper-location {
-        display: none !important;
-      }
-      [data-model-live-presentation="loupe"] .paper-toolbar {
-        position: absolute !important;
-        top: 2.55rem !important;
-        right: .55rem !important;
-        z-index: 40 !important;
-        display: grid !important;
-        grid-template-columns: repeat(3, auto) !important;
-        width: auto !important;
-        min-height: 0 !important;
-        margin: 0 !important;
-        padding: .2rem !important;
-        gap: .2rem !important;
-        border: 1px solid var(--line) !important;
-        background: rgb(255 253 248 / 94%) !important;
-        box-shadow: 0 .2rem .7rem rgb(38 31 24 / 12%) !important;
-        backdrop-filter: blur(8px);
-      }
-      [data-model-live-presentation="loupe"] .paper-toolbar button {
-        min-width: 2rem !important;
-        min-height: 2rem !important;
-        padding: .25rem .4rem !important;
-      }
+      ${compactNavigatorCss({
+        profile: "loupe",
+        phone: ".paper-phone",
+        toolbar: ".paper-toolbar",
+        hiddenSelector: ".paper-restaurant, .paper-location",
+      })}
     `,
   }),
   landscapeCamera: freezePresentation({
@@ -235,6 +245,18 @@ const presentations = Object.freeze({
         returnSelector: ".paper-toolbar > button:first-child",
       })}
       ${overviewOnlyRestaurantCss({ profile: "landscape-camera", restaurant: ".paper-restaurant" })}
+    `,
+  }),
+  landscapeContinuous: freezePresentation({
+    id: "landscape-continuous",
+    state: null,
+    css: `
+      ${compactNavigatorCss({
+        profile: "landscape-continuous",
+        phone: ".paper-phone",
+        toolbar: ".paper-toolbar",
+        hiddenSelector: ".paper-restaurant, .paper-location",
+      })}
     `,
   }),
   landscapeFocus: freezePresentation({
@@ -346,9 +368,13 @@ const presentations = Object.freeze({
 });
 
 const profileByObjectId = new Map();
+const presentationEntries = [];
 const assign = (profileId, objectIds) => {
   const presentation = presentations[profileId];
-  objectIds.forEach((objectId) => profileByObjectId.set(objectId, presentation));
+  objectIds.forEach((objectId) => {
+    profileByObjectId.set(objectId, presentation);
+    presentationEntries.push(Object.freeze({ objectId, profileId: presentation.id }));
+  });
 };
 
 assign("multiscale", ["06", "A-M3", "A-M4"]);
@@ -359,9 +385,10 @@ assign("matrix", ["11"]);
 assign("paper", ["12", "12A", "14", "15", "15A", "16", "16A", "17", "17A"]);
 assign("loupe", ["13"]);
 assign("landscapeCamera", [
-  "18", "18A", "18B", "18C", "18D",
+  "18", "18B", "18C", "18D",
   "24", "24A", "24B", "24C",
 ]);
+assign("landscapeContinuous", ["18A"]);
 assign("landscapeFocus", ["22", "22A", "22B", "22C", "22D", "22E", "22F", "22G", "23"]);
 assign("rigidSheet", ["19"]);
 assign("trifold", ["20"]);
@@ -373,4 +400,5 @@ assign("parallax", ["26", "26A", "26C"]);
 export const modelLivePresentationFor = (objectId) =>
   profileByObjectId.get(String(objectId)) ?? null;
 
+export const modelLivePresentationEntries = Object.freeze([...presentationEntries]);
 export const modelLivePresentationProfiles = presentations;
