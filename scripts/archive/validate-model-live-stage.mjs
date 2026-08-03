@@ -15,6 +15,8 @@ assert.equal(modelLiveStageHeightFor(777), 640, "Unknown widths should fall back
 
 assert.equal(modelLivePresentationFor("01"), null, "The scrolling document should keep its native header flow.");
 assert.equal(modelLivePresentationFor("05C"), null, "Ledger variants should not inherit fixed-canvas cleanup.");
+assert.equal(modelLivePresentationFor("A-M3"), null, "Non-interactive correction records should not pretend to be live multiscale surfaces.");
+assert.equal(modelLivePresentationFor("A-M4"), null, "Non-interactive correction records should not pretend to be live multiscale surfaces.");
 assert.equal(modelLivePresentationFor("06")?.id, "multiscale", "06 should preserve a compact focus return control.");
 assert.equal(modelLivePresentationFor("08")?.id, "spread", "08 should remove its redundant full-width toolbar.");
 assert.equal(modelLivePresentationFor("08A")?.id, "spread", "08A should share 08 presentation cleanup.");
@@ -32,7 +34,7 @@ assert.equal(modelLivePresentationFor("25B")?.id, "volume", "25B should retain o
 assert.equal(modelLivePresentationFor("25P")?.id, "projection", "25P should remove only redundant restaurant identity.");
 assert.equal(modelLivePresentationFor("26C")?.id, "parallax", "Parallax corrections should share the parallax profile.");
 
-assert.equal(modelLivePresentationEntries.length, 46, "Every explicit presentation object should remain enumerable for browser coverage.");
+assert.equal(modelLivePresentationEntries.length, 44, "Every interactive presentation object should remain enumerable for browser coverage.");
 assert.equal(
   new Set(modelLivePresentationEntries.map(({ objectId }) => objectId)).size,
   modelLivePresentationEntries.length,
@@ -95,6 +97,8 @@ assert.match(source, /fallback\.style\.position\s*=\s*"absolute"/, "Loading fall
 assert.match(source, /modelLivePresentationFor\(key\)/, "Each live object should resolve its own presentation profile.");
 assert.match(source, /data-model-live-presentation-state|modelLivePresentationState/, "Live state should drive contextual header cleanup.");
 assert.match(source, /MutationObserver/, "Presentation state must follow prototype state changes without changing the prototype source.");
+assert.match(presentationSource, /assign\("multiscale", \["06"\]\)/, "Only the interactive 06 surface should receive the multiscale profile.");
+assert.doesNotMatch(presentationSource, /assign\([^\n]*A-M3|assign\([^\n]*A-M4/, "Correction records must remain outside live-presentation mapping.");
 assert.match(presentationSource, /assign\("spread", \["08", "08A"\]\)/, "Parent and child spread objects should share one explicit profile.");
 assert.match(presentationSource, /assign\("landscapeCamera", \[/, "Camera-scale landscape variants should be listed explicitly.");
 assert.match(presentationSource, /assign\("landscapeContinuous", \["18A"\]\)/, "18A must not inherit a nonexistent scale-state contract.");
@@ -102,7 +106,7 @@ assert.match(presentationSource, /assign\("landscapeFocus", \[/, "Direct-reset l
 assert.match(presentationSource, /assign\("rigidSheet", \["19"\]\)/, "19 must not inherit the landscape viewport contract.");
 assert.match(presentationSource, /assign\("trifold", \["20"\]\)/, "20 must not inherit the landscape viewport contract.");
 assert.match(presentationSource, /assign\("twoColumn", \["21"\]\)/, "21 must not inherit the landscape viewport contract.");
-assert.match(presentationBrowserReview, /modelLivePresentationEntries/, "Browser review should derive initial coverage from the complete presentation mapping.");
+assert.match(presentationBrowserReview, /modelLivePresentationEntries/, "Browser review should derive initial coverage from the complete interactive presentation mapping.");
 assert.match(presentationBrowserReview, /Input\.dispatchMouseEvent/, "Browser review should use hit-tested pointer input instead of DOM click shortcuts.");
 assert.match(presentationBrowserReview, /elementFromPoint/, "Browser review should prove compact controls are not covered by another element.");
 assert.match(presentationBrowserReview, /captureScreenshot/, "390px focus states should leave visual evidence.");
