@@ -187,6 +187,10 @@ const presentations = Object.freeze({
       [data-model-live-presentation="fisheye"] .fisheye-lens-switch > span {
         display: none !important;
       }
+      [data-model-live-presentation="fisheye"] .fisheye-lens-switch button {
+        min-height: 2rem !important;
+        padding-block: .3rem !important;
+      }
     `,
   }),
   matrix: freezePresentation({
