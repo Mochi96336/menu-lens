@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { modelLiveStageHeightFor } from "../../research-history/model-live-surface.mjs";
 import {
+  modelLivePresentationEntries,
   modelLivePresentationFor,
   modelLivePresentationProfiles,
 } from "../../research-history/catalog/model-live-presentations.mjs";
@@ -21,6 +22,7 @@ assert.equal(modelLivePresentationFor("09A")?.id, "ribbon", "09A should retain o
 assert.equal(modelLivePresentationFor("10A")?.id, "fisheye", "10A should retain its lens control without the location bar.");
 assert.equal(modelLivePresentationFor("12A")?.id, "paper", "Paper variants should use paper-specific state cleanup.");
 assert.equal(modelLivePresentationFor("13")?.id, "loupe", "The always-active loupe should use compact floating controls instead of paper focus cleanup.");
+assert.equal(modelLivePresentationFor("18A")?.id, "landscape-continuous", "18A should keep compact previous/next navigation without pretending to have a reading mode.");
 assert.equal(modelLivePresentationFor("19")?.id, "rigid-sheet", "19 should keep its own reading return contract.");
 assert.equal(modelLivePresentationFor("20")?.id, "trifold", "20 should keep its own folded-panel return contract.");
 assert.equal(modelLivePresentationFor("21")?.id, "two-column", "21 should keep its own window return contract.");
@@ -30,17 +32,34 @@ assert.equal(modelLivePresentationFor("25B")?.id, "volume", "25B should retain o
 assert.equal(modelLivePresentationFor("25P")?.id, "projection", "25P should remove only redundant restaurant identity.");
 assert.equal(modelLivePresentationFor("26C")?.id, "parallax", "Parallax corrections should share the parallax profile.");
 
+assert.equal(modelLivePresentationEntries.length, 46, "Every explicit presentation object should remain enumerable for browser coverage.");
+assert.equal(
+  new Set(modelLivePresentationEntries.map(({ objectId }) => objectId)).size,
+  modelLivePresentationEntries.length,
+  "An object must not be assigned to more than one live-presentation profile.",
+);
+for (const { objectId, profileId } of modelLivePresentationEntries) {
+  assert.equal(modelLivePresentationFor(objectId)?.id, profileId, `${objectId} should resolve to its exported profile entry.`);
+  assert.ok(
+    Object.values(modelLivePresentationProfiles).some((profile) => profile.id === profileId),
+    `${objectId} references missing profile ${profileId}.`,
+  );
+}
+
 assert.equal(modelLivePresentationProfiles.spread.state.selector, ".spread-map");
 assert.equal(modelLivePresentationProfiles.paper.state.selector, ".paper-viewport");
 assert.equal(modelLivePresentationProfiles.landscapeCamera.state.selector, ".landscape-viewport");
 assert.equal(modelLivePresentationProfiles.landscapeCamera.state.map.reading, "focus");
+assert.equal(modelLivePresentationProfiles.landscapeContinuous.state, null, "18A navigation is continuous, not overview/reading stateful.");
 assert.ok(modelLivePresentationProfiles.landscapeFocus.state.activeSelectors.includes(".paper-category[data-focused=\"true\"]"));
 assert.equal(modelLivePresentationProfiles.volume.state.selector, "#volume-stack");
 assert.match(modelLivePresentationProfiles.spread.css, /\.spread-toolbar/);
 assert.match(modelLivePresentationProfiles.ribbon.css, /#ribbon-overview/);
 assert.match(modelLivePresentationProfiles.multiscale.css, /#collapse-all/);
 assert.match(modelLivePresentationProfiles.fisheye.css, /\.fisheye-lens-switch/);
-assert.match(modelLivePresentationProfiles.loupe.css, /#loupe-center|\.paper-toolbar/);
+assert.match(modelLivePresentationProfiles.loupe.css, /\.paper-toolbar/);
+assert.match(modelLivePresentationProfiles.landscapeContinuous.css, /\.paper-location/);
+assert.match(modelLivePresentationProfiles.landscapeContinuous.css, /\.paper-toolbar button/);
 assert.match(modelLivePresentationProfiles.rigidSheet.css, /#rigid-overview/);
 assert.match(modelLivePresentationProfiles.trifold.css, /#trifold-overview/);
 assert.match(modelLivePresentationProfiles.twoColumn.css, /#window-overview/);
@@ -63,6 +82,10 @@ const browserReview = await readFile(
   new URL("./capture-model-page-review.mjs", import.meta.url),
   "utf8",
 );
+const presentationBrowserReview = await readFile(
+  new URL("./validate-model-live-presentation-browser.mjs", import.meta.url),
+  "utf8",
+);
 
 assert.match(source, /frame\.setAttribute\("scrolling", "auto"\)/, "The fixed stage must remain internally scrollable.");
 assert.doesNotMatch(source, /frame\.style\.height\s*=\s*`\$\{height\}px`/, "Measured content height must not resize the outer stage.");
@@ -74,10 +97,15 @@ assert.match(source, /data-model-live-presentation-state|modelLivePresentationSt
 assert.match(source, /MutationObserver/, "Presentation state must follow prototype state changes without changing the prototype source.");
 assert.match(presentationSource, /assign\("spread", \["08", "08A"\]\)/, "Parent and child spread objects should share one explicit profile.");
 assert.match(presentationSource, /assign\("landscapeCamera", \[/, "Camera-scale landscape variants should be listed explicitly.");
+assert.match(presentationSource, /assign\("landscapeContinuous", \["18A"\]\)/, "18A must not inherit a nonexistent scale-state contract.");
 assert.match(presentationSource, /assign\("landscapeFocus", \[/, "Direct-reset landscape variants should use their own state contract.");
 assert.match(presentationSource, /assign\("rigidSheet", \["19"\]\)/, "19 must not inherit the landscape viewport contract.");
 assert.match(presentationSource, /assign\("trifold", \["20"\]\)/, "20 must not inherit the landscape viewport contract.");
 assert.match(presentationSource, /assign\("twoColumn", \["21"\]\)/, "21 must not inherit the landscape viewport contract.");
+assert.match(presentationBrowserReview, /modelLivePresentationEntries/, "Browser review should derive initial coverage from the complete presentation mapping.");
+assert.match(presentationBrowserReview, /Input\.dispatchMouseEvent/, "Browser review should use hit-tested pointer input instead of DOM click shortcuts.");
+assert.match(presentationBrowserReview, /elementFromPoint/, "Browser review should prove compact controls are not covered by another element.");
+assert.match(presentationBrowserReview, /captureScreenshot/, "390px focus states should leave visual evidence.");
 assert.doesNotMatch(
   browserReview,
   /frame\.style\.height\) - liveRoot\.getBoundingClientRect\(\)\.height/,
@@ -86,4 +114,4 @@ assert.doesNotMatch(
 assert.match(browserReview, /root\.dataset\.liveStageHeight/g, "Browser review should verify the fixed stage height.");
 assert.match(browserReview, /root\.dataset\.liveContentHeight/g, "Browser review should still require measured content height.");
 
-console.log("Model live-stage validator: fixed stages now apply model-specific chrome cleanup without flattening distinct interactions.");
+console.log("Model live-stage validator: fixed stages now apply explicit, enumerable interaction contracts without flattening distinct models.");
