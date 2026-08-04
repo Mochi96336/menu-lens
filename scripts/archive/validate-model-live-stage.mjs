@@ -75,8 +75,10 @@ assert.equal(modelLivePresentationProfiles.volume.state.selector, "#volume-stack
 
 const combinedCss = Object.values(modelLivePresentationProfiles).map((profile) => profile.css).join("\n");
 assert.match(modelLivePresentationProfiles.spread.css, /#spread-overview/);
+assert.match(modelLivePresentationProfiles.spread.css, /\.spread-hint/);
 assert.match(modelLivePresentationProfiles.matrix.css, /#matrix-overview/);
 assert.match(modelLivePresentationProfiles.paper.css, /button:first-child/);
+assert.match(modelLivePresentationProfiles.paper.css, /\.paper-hint/);
 assert.match(modelLivePresentationProfiles.fisheye.css, /#fisheye-category-lens/);
 assert.match(modelLivePresentationProfiles.fisheye.css, /\.fisheye-hint/);
 assert.match(modelLivePresentationProfiles.ribbon.css, /#ribbon-overview/);
@@ -88,7 +90,8 @@ assert.match(modelLivePresentationProfiles.trifold.css, /#trifold-overview/);
 assert.match(modelLivePresentationProfiles.twoColumn.css, /#window-overview/);
 assert.match(modelLivePresentationProfiles.volume.css, /#volume-overview/);
 assert.match(combinedCss, /\.phone-status\s*\{\s*display: none/s, "Mapped live prototypes should remove the fake phone status row.");
-assert.match(combinedCss, /left: \.55rem/, "Focus returns should stay in the predictable top-left position.");
+assert.match(combinedCss, /min-height: 3\.15rem/, "Focus returns should receive a small dedicated row instead of covering menu content.");
+assert.match(combinedCss, /position: relative/, "Focus return rows should stay in normal flow.");
 assert.doesNotMatch(
   combinedCss,
   /\.phone-screen\s*>\s*header|\[class\*=["']toolbar["']\]/,
@@ -138,4 +141,4 @@ assert.doesNotMatch(
 assert.match(browserReview, /root\.dataset\.liveStageHeight/g);
 assert.match(browserReview, /root\.dataset\.liveContentHeight/g);
 
-console.log("Model live-stage validator: focus models now expose one human-readable return without changing their native mechanisms.");
+console.log("Model live-stage validator: focus models now expose one in-flow human-readable return without changing their native mechanisms.");
