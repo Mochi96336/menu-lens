@@ -118,73 +118,74 @@ const routePath = ({ modelId, sectionId, objectId, view = "all" }) => {
   return `/models/?${params}`;
 };
 
+const statusHidden = [".phone-status"];
 const profileInitialContracts = Object.freeze({
   multiscale: {
-    hidden: [".workspace-topbar"],
+    hidden: [".workspace-topbar", ...statusHidden],
     visible: [".multiscale-screen > header", ".scale-map"],
   },
   spread: {
-    hidden: [".spread-toolbar"],
+    hidden: [".spread-toolbar", ...statusHidden],
     visible: [".spread-restaurant", ".spread-map"],
   },
   ribbon: {
-    hidden: [".ribbon-scale-bar"],
+    hidden: [".ribbon-scale-bar", ...statusHidden],
     visible: [".ribbon-restaurant", ".ribbon-viewport"],
   },
   fisheye: {
-    hidden: [".fisheye-toolbar"],
-    visible: [".fisheye-restaurant", ".fisheye-lens-switch", ".fisheye-stage"],
+    hidden: [".fisheye-toolbar", ".fisheye-lens-switch", ".fisheye-hint", ...statusHidden],
+    visible: [".fisheye-restaurant", ".fisheye-stage"],
   },
   matrix: {
-    hidden: [".matrix-toolbar"],
+    hidden: [".matrix-toolbar", ...statusHidden],
     visible: [".matrix-restaurant", ".matrix-board"],
   },
   paper: {
-    hidden: [".paper-toolbar"],
+    hidden: [".paper-toolbar", ...statusHidden],
     visible: [".paper-restaurant", ".paper-viewport"],
   },
   loupe: {
-    hidden: [".paper-restaurant", ".paper-location"],
+    hidden: [".paper-restaurant", ".paper-location", ...statusHidden],
     visible: [".paper-toolbar", "#loupe-center", "#loupe-viewport"],
     absolute: [".paper-toolbar"],
     interactive: ["#loupe-center", ".paper-toolbar button:not(:disabled)"],
   },
   "landscape-camera": {
-    hidden: [".paper-toolbar"],
+    hidden: [".paper-toolbar", ...statusHidden],
     visible: [".paper-restaurant", ".landscape-viewport"],
   },
   "landscape-continuous": {
-    hidden: [".paper-restaurant", ".paper-location"],
+    hidden: [".paper-restaurant", ".paper-location", ...statusHidden],
     visible: [".paper-toolbar", ".landscape-viewport"],
     absolute: [".paper-toolbar"],
     interactive: [".paper-toolbar button:not(:disabled)"],
   },
   "landscape-focus": {
-    hidden: [".paper-toolbar"],
+    hidden: [".paper-toolbar", ...statusHidden],
     visible: [".paper-restaurant", ".landscape-viewport"],
   },
   "rigid-sheet": {
-    hidden: [".paper-toolbar"],
+    hidden: [".paper-toolbar", ...statusHidden],
     visible: [".paper-restaurant", "#rigid-minimap", "#rigid-stage"],
   },
   trifold: {
-    hidden: [".paper-toolbar"],
+    hidden: [".paper-toolbar", ...statusHidden],
     visible: [".paper-restaurant", "#trifold-stage"],
   },
   "two-column": {
-    hidden: [".paper-toolbar"],
+    hidden: [".paper-toolbar", ...statusHidden],
     visible: [".paper-restaurant", "#window-map", "#window-stage"],
   },
   volume: {
-    hidden: [".depth-toolbar"],
+    hidden: [".depth-toolbar", ...statusHidden],
     visible: [".depth-restaurant", "#volume-layer-picker", "#volume-stage"],
   },
   projection: {
-    hidden: [".projection-restaurant"],
+    hidden: [".projection-restaurant", ...statusHidden],
     visible: [".projection-controls", ".projection-plot"],
   },
   parallax: {
-    hidden: [".parallax-restaurant"],
+    hidden: [".parallax-restaurant", ...statusHidden],
     visible: [".parallax-stage"],
   },
 });
@@ -200,6 +201,21 @@ for (const entry of modelLivePresentationEntries) {
   initialCoverageGroups.get(groupKey).entries.push({ ...entry, contract });
 }
 
+const returnExpectation = ({
+  toolbar,
+  button,
+  text,
+  hidden = [],
+  visible = [],
+}) => ({
+  hidden: [...hidden, ...statusHidden],
+  visible: [toolbar, button, ...visible],
+  absolute: [toolbar],
+  interactive: [button],
+  expectedText: { [button]: text },
+  expectedAriaLabel: { [button]: text.replace(/^←\s*/, "") },
+});
+
 const interactionViewports = ["320", "390", "desktop"];
 const interactionCases = [
   {
@@ -210,87 +226,109 @@ const interactionCases = [
     initial: { visible: [".restaurant-name"] },
   },
   {
-    name: "multiscale keeps only a compact focus return",
+    name: "multiscale exposes one return to all categories",
     path: "/models/?model=multiscale-focus&section=model&variant=06&view=focus",
     objectId: "06",
     profile: "multiscale",
     initial: profileInitialContracts.multiscale,
     enter: { click: ".scale-category > button", state: "focus" },
-    focus: {
+    focus: returnExpectation({
+      toolbar: ".workspace-topbar",
+      button: "#collapse-all",
+      text: "← 返回全部分類",
       hidden: [".multiscale-screen > header", "#scale-label"],
-      visible: [".workspace-topbar", "#collapse-all", ".scale-map"],
-      absolute: [".workspace-topbar"],
-      interactive: ["#collapse-all"],
-    },
+      visible: [".scale-map"],
+    }),
     exit: { click: "#collapse-all", state: "overview" },
     returned: profileInitialContracts.multiscale,
   },
   {
-    name: "spread removes the duplicate location toolbar",
+    name: "spread exposes one return to all categories",
     path: "/models/?model=horizontal-navigation&section=spread&variant=08&view=focus",
     objectId: "08",
     profile: "spread",
     initial: profileInitialContracts.spread,
     enter: { click: ".spread-category__focus", state: "focus" },
-    focus: { hidden: [".spread-toolbar", ".spread-restaurant"], visible: [".spread-map"] },
-    exit: { click: ".spread-category[data-focused=\"true\"] .spread-category__focus", state: "overview" },
+    focus: returnExpectation({
+      toolbar: ".spread-toolbar",
+      button: "#spread-overview",
+      text: "← 返回全部分類",
+      hidden: [".spread-restaurant", ".spread-location", "#spread-previous", "#spread-next"],
+      visible: [".spread-map"],
+    }),
+    exit: { click: "#spread-overview", state: "overview" },
     returned: profileInitialContracts.spread,
   },
   {
-    name: "ribbon turns the scale bar into a reading-only return",
+    name: "ribbon distinguishes return from previous dish",
     path: "/models/?model=horizontal-navigation&section=ribbon&variant=09&view=focus",
     objectId: "09",
     profile: "ribbon",
     initial: profileInitialContracts.ribbon,
     enter: { click: ".ribbon-product summary", state: "focus" },
-    focus: {
+    focus: returnExpectation({
+      toolbar: ".ribbon-scale-bar",
+      button: "#ribbon-overview",
+      text: "← 返回全部料理",
       hidden: [".ribbon-restaurant", "#ribbon-reading", ".ribbon-location", "#ribbon-previous", "#ribbon-next"],
-      visible: [".ribbon-scale-bar", "#ribbon-overview", ".ribbon-viewport"],
-      absolute: [".ribbon-scale-bar"],
-      interactive: ["#ribbon-overview"],
-    },
+      visible: [".ribbon-viewport"],
+    }),
     exit: { click: "#ribbon-overview", state: "overview" },
     returned: profileInitialContracts.ribbon,
   },
   {
-    name: "fisheye keeps its compact lens switch without the location bar",
+    name: "fisheye replaces lens choices with return to category",
     path: "/models/?model=horizontal-navigation&section=fisheye&variant=10&view=focus",
     objectId: "10",
     profile: "fisheye",
-    initial: { ...profileInitialContracts.fisheye, interactive: ["#fisheye-product-lens"] },
-    enter: { click: "#fisheye-product-lens", state: "focus" },
-    focus: {
-      hidden: [".fisheye-toolbar", ".fisheye-restaurant"],
-      visible: [".fisheye-lens-switch", ".fisheye-stage"],
-      interactive: ["#fisheye-category-lens"],
-    },
+    initial: profileInitialContracts.fisheye,
+    enter: { click: ".fisheye-product[data-category-focused=\"true\"] summary", state: "focus" },
+    focus: returnExpectation({
+      toolbar: ".fisheye-lens-switch",
+      button: "#fisheye-category-lens",
+      text: "← 返回分類",
+      hidden: [".fisheye-toolbar", ".fisheye-restaurant", "#fisheye-product-lens", ".fisheye-hint"],
+      visible: [".fisheye-stage"],
+    }),
     exit: { click: "#fisheye-category-lens", state: "overview" },
-    returned: { ...profileInitialContracts.fisheye, interactive: ["#fisheye-product-lens"] },
+    returned: profileInitialContracts.fisheye,
   },
   {
-    name: "matrix uses the matrix itself for focus and return",
+    name: "matrix exposes one return to matrix",
     path: "/models/?model=paper-field&section=semantic-information&variant=11&view=focus",
     objectId: "11",
     profile: "matrix",
     initial: profileInitialContracts.matrix,
     enter: { click: ".matrix-row__label", state: "focus" },
-    focus: { hidden: [".matrix-toolbar", ".matrix-restaurant"], visible: [".matrix-board"] },
-    exit: { click: ".matrix-row[data-active=\"true\"] .matrix-row__label", state: "overview" },
+    focus: returnExpectation({
+      toolbar: ".matrix-toolbar",
+      button: "#matrix-overview",
+      text: "← 返回矩陣",
+      hidden: [".matrix-restaurant", "#matrix-previous-row", "#matrix-next-row", ".matrix-location"],
+      visible: [".matrix-board"],
+    }),
+    exit: { click: "#matrix-overview", state: "overview" },
     returned: profileInitialContracts.matrix,
   },
   {
-    name: "paper field removes the duplicate paper toolbar",
+    name: "paper field exposes one return to overview",
     path: "/models/?model=paper-field&section=semantic-information&variant=12&view=focus",
     objectId: "12",
     profile: "paper",
     initial: profileInitialContracts.paper,
     enter: { click: ".paper-category__header", state: "focus" },
-    focus: { hidden: [".paper-toolbar", ".paper-restaurant"], visible: [".paper-viewport"] },
-    exit: { click: ".paper-category[data-focused=\"true\"] .paper-category__header", state: "overview" },
+    focus: returnExpectation({
+      toolbar: ".paper-toolbar",
+      button: "#paper-overview",
+      text: "← 返回全覽",
+      hidden: [".paper-restaurant", "#paper-previous", "#paper-next", ".paper-location"],
+      visible: [".paper-viewport"],
+    }),
+    exit: { click: "#paper-overview", state: "overview" },
     returned: profileInitialContracts.paper,
   },
   {
-    name: "static loupe floats only its direct lens controls",
+    name: "static loupe keeps only direct lens controls",
     path: "/models/?model=paper-field&section=stopped-lenses&variant=13&view=focus",
     objectId: "13",
     profile: "loupe",
@@ -302,23 +340,24 @@ const interactionCases = [
     },
   },
   {
-    name: "landscape paper keeps only a compact reading return",
+    name: "landscape paper exposes one return to overview",
     path: "/models/?model=landscape-paper&section=core&variant=18&view=focus",
     objectId: "18",
     profile: "landscape-camera",
     initial: profileInitialContracts["landscape-camera"],
     enter: { click: ".paper-category__header", state: "focus" },
-    focus: {
+    focus: returnExpectation({
+      toolbar: ".paper-toolbar",
+      button: "#landscape-overview",
+      text: "← 返回全覽",
       hidden: [".paper-restaurant", ".paper-location", "#landscape-previous", "#landscape-next"],
-      visible: [".paper-toolbar", "#landscape-overview", ".landscape-viewport"],
-      absolute: [".paper-toolbar"],
-      interactive: ["#landscape-overview"],
-    },
+      visible: [".landscape-viewport"],
+    }),
     exit: { click: "#landscape-overview", state: "overview" },
     returned: profileInitialContracts["landscape-camera"],
   },
   {
-    name: "proportional landscape keeps compact continuous navigation",
+    name: "proportional landscape remains continuous navigation",
     path: "/models/?model=landscape-paper&section=core&variant=18A&view=focus",
     objectId: "18A",
     profile: "landscape-continuous",
@@ -330,105 +369,116 @@ const interactionCases = [
     },
   },
   {
-    name: "focus-geometry landscape removes the toolbar because the active category resets directly",
+    name: "focus geometry exposes a fixed return to overview",
     path: "/models/?model=landscape-paper&section=focus-geometry&variant=22D&view=focus",
     objectId: "22D",
     profile: "landscape-focus",
     initial: profileInitialContracts["landscape-focus"],
     enter: { click: ".paper-category__header", state: "focus" },
-    focus: { hidden: [".paper-toolbar", ".paper-restaurant"], visible: [".landscape-viewport"] },
-    exit: { click: ".paper-category[data-focused=\"true\"] .paper-category__header", state: "overview" },
+    focus: returnExpectation({
+      toolbar: ".paper-toolbar",
+      button: ".paper-toolbar > button:first-child",
+      text: "← 返回全覽",
+      hidden: [".paper-restaurant", ".paper-location", ".paper-toolbar > button:nth-child(2)", ".paper-toolbar > button:nth-child(3)"],
+      visible: [".landscape-viewport"],
+    }),
+    exit: { click: ".paper-toolbar > button:first-child", state: "overview" },
     returned: profileInitialContracts["landscape-focus"],
   },
   {
-    name: "rigid sheet keeps its own camera return",
+    name: "rigid sheet keeps a human return label",
     path: "/models/?model=landscape-paper&section=stopped-routes&variant=19&view=focus",
     objectId: "19",
     profile: "rigid-sheet",
     initial: profileInitialContracts["rigid-sheet"],
     enter: { click: ".paper-category__header", state: "focus" },
-    focus: {
+    focus: returnExpectation({
+      toolbar: ".paper-toolbar",
+      button: "#rigid-overview",
+      text: "← 返回全覽",
       hidden: [".paper-restaurant", ".paper-location", "#rigid-previous", "#rigid-next"],
-      visible: [".paper-toolbar", "#rigid-overview", "#rigid-minimap", "#rigid-stage"],
-      absolute: [".paper-toolbar"],
-      interactive: ["#rigid-overview"],
-    },
+      visible: ["#rigid-minimap", "#rigid-stage"],
+    }),
     exit: { click: "#rigid-overview", state: "overview" },
     returned: profileInitialContracts["rigid-sheet"],
   },
   {
-    name: "trifold keeps its own folded-panel return",
+    name: "trifold keeps a human return label",
     path: "/models/?model=landscape-paper&section=stopped-routes&variant=20&view=focus",
     objectId: "20",
     profile: "trifold",
     initial: profileInitialContracts.trifold,
     enter: { click: ".paper-category__header", state: "focus" },
-    focus: {
+    focus: returnExpectation({
+      toolbar: ".paper-toolbar",
+      button: "#trifold-overview",
+      text: "← 返回全覽",
       hidden: [".paper-restaurant", ".paper-location", "#trifold-previous", "#trifold-next"],
-      visible: [".paper-toolbar", "#trifold-overview", "#trifold-stage"],
-      absolute: [".paper-toolbar"],
-      interactive: ["#trifold-overview"],
-    },
+      visible: ["#trifold-stage"],
+    }),
     exit: { click: "#trifold-overview", state: "overview" },
     returned: profileInitialContracts.trifold,
   },
   {
-    name: "two-column window keeps its own window return",
+    name: "two column window keeps a human return label",
     path: "/models/?model=landscape-paper&section=stopped-routes&variant=21&view=focus",
     objectId: "21",
     profile: "two-column",
     initial: profileInitialContracts["two-column"],
     enter: { click: ".paper-category__header", state: "focus" },
-    focus: {
+    focus: returnExpectation({
+      toolbar: ".paper-toolbar",
+      button: "#window-overview",
+      text: "← 返回全覽",
       hidden: [".paper-restaurant", ".paper-location", "#window-previous", "#window-next"],
-      visible: [".paper-toolbar", "#window-overview", "#window-map", "#window-stage"],
-      absolute: [".paper-toolbar"],
-      interactive: ["#window-overview"],
-    },
+      visible: ["#window-map", "#window-stage"],
+    }),
     exit: { click: "#window-overview", state: "overview" },
     returned: profileInitialContracts["two-column"],
   },
   {
-    name: "vertical landscape keeps a return because category taps do not exit reading",
+    name: "vertical landscape keeps a horizontal return label",
     path: "/models/?model=landscape-paper&section=vertical-writing&variant=24&view=focus",
     objectId: "24",
     profile: "landscape-camera",
     initial: profileInitialContracts["landscape-camera"],
     enter: { click: ".paper-category__header", state: "focus" },
-    focus: {
+    focus: returnExpectation({
+      toolbar: ".paper-toolbar",
+      button: "#vertical-overview",
+      text: "← 返回全覽",
       hidden: [".paper-restaurant", ".paper-location", "#vertical-previous", "#vertical-next"],
-      visible: [".paper-toolbar", "#vertical-overview", ".landscape-viewport"],
-      absolute: [".paper-toolbar"],
-      interactive: ["#vertical-overview"],
-    },
+      visible: [".landscape-viewport"],
+    }),
     exit: { click: "#vertical-overview", state: "overview" },
     returned: profileInitialContracts["landscape-camera"],
   },
   {
-    name: "menu volume keeps only a layer-to-overview return",
+    name: "menu volume keeps one return to overview",
     path: "/models/?model=depth-projection&section=dimension-reset&variant=25B&view=focus",
     objectId: "25B",
     profile: "volume",
     initial: profileInitialContracts.volume,
     enter: { click: "#volume-layer-picker button", state: "focus" },
-    focus: {
+    focus: returnExpectation({
+      toolbar: ".depth-toolbar",
+      button: "#volume-overview",
+      text: "← 返回全覽",
       hidden: [".depth-restaurant", ".depth-toolbar__status", "#volume-previous", "#volume-next"],
-      visible: [".depth-toolbar", "#volume-overview", "#volume-layer-picker", "#volume-stage"],
-      absolute: [".depth-toolbar"],
-      interactive: ["#volume-overview"],
-    },
+      visible: ["#volume-layer-picker", "#volume-stage"],
+    }),
     exit: { click: "#volume-overview", state: "overview" },
     returned: profileInitialContracts.volume,
   },
   {
-    name: "projection removes restaurant identity but preserves axis controls",
+    name: "projection removes restaurant identity but preserves data choices",
     path: "/models/?model=depth-projection&section=projection-lens&variant=25P&view=focus",
     objectId: "25P",
     profile: "projection",
     initial: profileInitialContracts.projection,
   },
   {
-    name: "parallax removes restaurant identity but preserves the direct stage",
+    name: "parallax removes restaurant identity but preserves direct stage",
     path: "/models/?model=depth-projection&section=parallax-volume&variant=26&view=focus",
     objectId: "26",
     profile: "parallax",
@@ -446,6 +496,8 @@ const selectorsFor = (expectation = {}) => [...new Set([
   ...(expectation.visible ?? []),
   ...(expectation.absolute ?? []),
   ...(expectation.interactive ?? []),
+  ...Object.keys(expectation.expectedText ?? {}),
+  ...Object.keys(expectation.expectedAriaLabel ?? {}),
 ])];
 
 const snapshotExpression = (objectId, selectors) => `(() => {
@@ -490,6 +542,7 @@ const snapshotExpression = (objectId, selectors) => `(() => {
       hitSelf: Boolean(hit && (hit === element || element.contains(hit))),
       disabled: Boolean(element.matches?.(':disabled') || element.getAttribute('aria-disabled') === 'true'),
       text: element.textContent?.trim() ?? '',
+      ariaLabel: element.getAttribute('aria-label'),
     } : null;
   }
   return {
@@ -611,6 +664,16 @@ const checkExpectation = (snapshot, expectation, label) => {
       if (style.width < 30 || style.height < 30) {
         failures.push(`${label}: interactive ${selector} is ${Math.round(style.width)}×${Math.round(style.height)}, below the 30px review floor`);
       }
+    }
+  }
+  for (const [selector, expectedText] of Object.entries(expectation.expectedText ?? {})) {
+    const actual = snapshot.styles[selector]?.text;
+    if (actual !== expectedText) failures.push(`${label}: ${selector} text ${JSON.stringify(actual)} !== ${JSON.stringify(expectedText)}`);
+  }
+  for (const [selector, expectedAriaLabel] of Object.entries(expectation.expectedAriaLabel ?? {})) {
+    const actual = snapshot.styles[selector]?.ariaLabel;
+    if (actual !== expectedAriaLabel) {
+      failures.push(`${label}: ${selector} aria-label ${JSON.stringify(actual)} !== ${JSON.stringify(expectedAriaLabel)}`);
     }
   }
   return failures;
@@ -798,7 +861,7 @@ try {
   await writeFile(new URL("model-live-presentation-results.json", outputDir), `${JSON.stringify(report, null, 2)}\n`);
   if (failures.length) throw new Error(`Model live-presentation browser review failed:\n- ${failures.join("\n- ")}`);
   socket.close();
-  console.log(`Model live-presentation browser review: ${modelLivePresentationEntries.length} mapped objects and real pointer interactions pass.`);
+  console.log(`Model live-presentation browser review: ${modelLivePresentationEntries.length} mapped objects and human-readable return controls pass.`);
 } catch (error) {
   if (browserStderr.trim()) console.error(browserStderr.trim());
   throw error;
