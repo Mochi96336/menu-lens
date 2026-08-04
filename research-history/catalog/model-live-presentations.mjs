@@ -25,10 +25,7 @@ const freezePresentation = (presentation) => Object.freeze({
   css: `${basePresentationCss(presentation.id)}\n${presentation.css ?? ""}`,
 });
 
-const compactReturnCss = ({ profile, phone, toolbar, returnSelector }) => `
-  [data-model-live-presentation="${profile}"] ${phone} {
-    position: relative !important;
-  }
+const compactReturnCss = ({ profile, toolbar, returnSelector }) => `
   [data-model-live-presentation="${profile}"] ${toolbar} {
     display: none !important;
     min-height: 0 !important;
@@ -37,14 +34,17 @@ const compactReturnCss = ({ profile, phone, toolbar, returnSelector }) => `
     background: transparent !important;
   }
   [data-model-live-presentation="${profile}"][data-model-live-presentation-state="focus"] ${toolbar} {
-    position: absolute !important;
-    top: .55rem !important;
-    left: .55rem !important;
-    right: auto !important;
-    z-index: 60 !important;
-    display: block !important;
-    width: auto !important;
+    position: relative !important;
+    inset: auto !important;
+    z-index: 40 !important;
+    display: flex !important;
+    width: 100% !important;
+    min-height: 3.15rem !important;
+    align-items: center !important;
     margin: 0 !important;
+    padding: .45rem .55rem !important;
+    border-bottom: 1px solid var(--line) !important;
+    background: var(--surface-strong) !important;
   }
   [data-model-live-presentation="${profile}"] ${toolbar} > * {
     display: none !important;
@@ -57,10 +57,8 @@ const compactReturnCss = ({ profile, phone, toolbar, returnSelector }) => `
     justify-content: center !important;
     padding: .35rem .62rem !important;
     border: 1px solid var(--line-strong) !important;
-    background: rgb(255 253 248 / 96%) !important;
+    background: var(--surface-strong) !important;
     color: var(--ink) !important;
-    box-shadow: 0 .2rem .7rem rgb(38 31 24 / 12%) !important;
-    backdrop-filter: blur(8px);
     font-size: .74rem !important;
     font-weight: 700 !important;
     line-height: 1.2 !important;
@@ -136,7 +134,6 @@ const presentations = Object.freeze({
       }
       ${compactReturnCss({
         profile: "multiscale",
-        phone: ".multiscale-screen",
         toolbar: ".workspace-topbar",
         returnSelector: "#collapse-all",
       })}
@@ -159,10 +156,12 @@ const presentations = Object.freeze({
     css: `
       ${compactReturnCss({
         profile: "spread",
-        phone: ".spread-phone",
         toolbar: ".spread-toolbar",
         returnSelector: "#spread-overview",
       })}
+      [data-model-live-presentation="spread"] .spread-hint {
+        display: none !important;
+      }
       ${overviewOnlyRestaurantCss({ profile: "spread", restaurant: ".spread-restaurant" })}
     `,
   }),
@@ -178,7 +177,6 @@ const presentations = Object.freeze({
     css: `
       ${compactReturnCss({
         profile: "ribbon",
-        phone: ".ribbon-phone",
         toolbar: ".ribbon-scale-bar",
         returnSelector: "#ribbon-overview",
       })}
@@ -204,7 +202,6 @@ const presentations = Object.freeze({
       }
       ${compactReturnCss({
         profile: "fisheye",
-        phone: ".fisheye-phone",
         toolbar: ".fisheye-lens-switch",
         returnSelector: "#fisheye-category-lens",
       })}
@@ -222,7 +219,6 @@ const presentations = Object.freeze({
     css: `
       ${compactReturnCss({
         profile: "matrix",
-        phone: ".matrix-phone",
         toolbar: ".matrix-toolbar",
         returnSelector: "#matrix-overview",
       })}
@@ -240,10 +236,12 @@ const presentations = Object.freeze({
     css: `
       ${compactReturnCss({
         profile: "paper",
-        phone: ".paper-phone",
         toolbar: ".paper-toolbar",
         returnSelector: ".paper-toolbar > button:first-child",
       })}
+      [data-model-live-presentation="paper"] .paper-hint {
+        display: none !important;
+      }
       ${overviewOnlyRestaurantCss({ profile: "paper", restaurant: ".paper-restaurant" })}
     `,
   }),
@@ -271,10 +269,12 @@ const presentations = Object.freeze({
     css: `
       ${compactReturnCss({
         profile: "landscape-camera",
-        phone: ".paper-phone",
         toolbar: ".paper-toolbar",
         returnSelector: ".paper-toolbar > button:first-child",
       })}
+      [data-model-live-presentation="landscape-camera"] .paper-hint {
+        display: none !important;
+      }
       ${overviewOnlyRestaurantCss({ profile: "landscape-camera", restaurant: ".paper-restaurant" })}
     `,
   }),
@@ -303,10 +303,12 @@ const presentations = Object.freeze({
     css: `
       ${compactReturnCss({
         profile: "landscape-focus",
-        phone: ".paper-phone",
         toolbar: ".paper-toolbar",
         returnSelector: ".paper-toolbar > button:first-child",
       })}
+      [data-model-live-presentation="landscape-focus"] .paper-hint {
+        display: none !important;
+      }
       ${overviewOnlyRestaurantCss({ profile: "landscape-focus", restaurant: ".paper-restaurant" })}
     `,
   }),
@@ -322,10 +324,12 @@ const presentations = Object.freeze({
     css: `
       ${compactReturnCss({
         profile: "rigid-sheet",
-        phone: ".paper-phone",
         toolbar: ".paper-toolbar",
         returnSelector: "#rigid-overview",
       })}
+      [data-model-live-presentation="rigid-sheet"] .paper-hint {
+        display: none !important;
+      }
       ${overviewOnlyRestaurantCss({ profile: "rigid-sheet", restaurant: ".paper-restaurant" })}
     `,
   }),
@@ -341,10 +345,12 @@ const presentations = Object.freeze({
     css: `
       ${compactReturnCss({
         profile: "trifold",
-        phone: ".paper-phone",
         toolbar: ".paper-toolbar",
         returnSelector: "#trifold-overview",
       })}
+      [data-model-live-presentation="trifold"] .paper-hint {
+        display: none !important;
+      }
       ${overviewOnlyRestaurantCss({ profile: "trifold", restaurant: ".paper-restaurant" })}
     `,
   }),
@@ -360,10 +366,12 @@ const presentations = Object.freeze({
     css: `
       ${compactReturnCss({
         profile: "two-column",
-        phone: ".paper-phone",
         toolbar: ".paper-toolbar",
         returnSelector: "#window-overview",
       })}
+      [data-model-live-presentation="two-column"] .paper-hint {
+        display: none !important;
+      }
       ${overviewOnlyRestaurantCss({ profile: "two-column", restaurant: ".paper-restaurant" })}
     `,
   }),
@@ -379,7 +387,6 @@ const presentations = Object.freeze({
     css: `
       ${compactReturnCss({
         profile: "volume",
-        phone: ".depth-phone",
         toolbar: ".depth-toolbar",
         returnSelector: "#volume-overview",
       })}
