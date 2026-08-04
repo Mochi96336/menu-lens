@@ -1,28 +1,75 @@
-import { readFile } from "node:fs/promises";
-import { root } from "./load-catalog.mjs";
+import { access, readFile } from "node:fs/promises";
+import { loadArchiveCatalog, root } from "./load-catalog.mjs";
 
-const index = await readFile(new URL("research-history/index.html", root), "utf8");
-const indexRenderer = await readFile(new URL("research-history/index.mjs", root), "utf8");
-const modelPage = await readFile(new URL("research-history/models/index.html", root), "utf8");
-const modelRenderer = await readFile(new URL("research-history/model-page.mjs", root), "utf8");
-const modelHumanization = await readFile(new URL("research-history/model-page-humanized.mjs", root), "utf8");
-const conceptVignette = await readFile(new URL("research-history/model-concept-vignette.mjs", root), "utf8");
-const routeDiagram = await readFile(new URL("research-history/model-route-diagram.mjs", root), "utf8");
-const routeDiagramCss = await readFile(new URL("research-history/model-route-diagram.css", root), "utf8");
-const routeOverlayCss = await readFile(new URL("research-history/model-route-overlay.css", root), "utf8");
-const modelWorkbenchCss = await readFile(new URL("research-history/model-page-workbench.css", root), "utf8");
-const modelPageCss = await readFile(new URL("research-history/model-page.css", root), "utf8");
-const liveSurface = await readFile(new URL("research-history/model-live-surface.mjs", root), "utf8");
-const liveBoard = await readFile(new URL("research-history/model-live-board.mjs", root), "utf8");
-const inspector = await readFile(new URL("research-history/model-object-inspector.mjs", root), "utf8");
-const surfacePool = await readFile(new URL("research-history/model-surface-pool.mjs", root), "utf8");
-const previewGenerator = await readFile(new URL("scripts/archive/generate-model-previews.mjs", root), "utf8");
-const packageJson = JSON.parse(await readFile(new URL("package.json", root), "utf8"));
+const catalog = await loadArchiveCatalog();
+const archiveRoot = new URL("research-history/", root);
+
+const requiredPaths = new Set([
+  "index.html",
+  "archive-index.css",
+  "history.css",
+  "prototype-registry.js",
+  "model-page.css",
+  "model-page-workbench.css",
+  "model-live-surface.mjs",
+  "model-page-state.mjs",
+  "model-surface-pool.mjs",
+  "model-live-board.mjs",
+  "model-object-inspector.mjs",
+  "model-page.mjs",
+  "model-page-humanized.mjs",
+  "models/index.html",
+  "catalog/index.mjs",
+  "catalog/extensions.mjs",
+  "catalog/landscape-ablations.mjs",
+  "catalog/closure-intakes.mjs",
+  "catalog/all-extensions.mjs",
+  "catalog/presentation-models.mjs",
+  "catalog/render-index.mjs",
+  "originals/manifest.json",
+]);
+
+for (const object of catalog.objects) {
+  if (object.entrypoint) requiredPaths.add(object.entrypoint);
+  if (object.reviewDocument) requiredPaths.add(object.reviewDocument);
+  if (object.evidencePath) requiredPaths.add(object.evidencePath);
+  for (const asset of [...object.assets.styles, ...object.assets.scripts]) requiredPaths.add(asset);
+}
+
+await Promise.all([...requiredPaths].map((path) => access(new URL(path, archiveRoot))));
+
+const [
+  index,
+  renderer,
+  loader,
+  modelPage,
+  modelRenderer,
+  modelHumanization,
+  liveSurface,
+  pageState,
+  surfacePool,
+  liveBoard,
+  inspector,
+] = await Promise.all([
+  readFile(new URL("index.html", archiveRoot), "utf8"),
+  readFile(new URL("catalog/render-index.mjs", archiveRoot), "utf8"),
+  readFile(new URL("scripts/archive/load-catalog.mjs", root), "utf8"),
+  readFile(new URL("models/index.html", archiveRoot), "utf8"),
+  readFile(new URL("model-page.mjs", archiveRoot), "utf8"),
+  readFile(new URL("model-page-humanized.mjs", archiveRoot), "utf8"),
+  readFile(new URL("model-live-surface.mjs", archiveRoot), "utf8"),
+  readFile(new URL("model-page-state.mjs", archiveRoot), "utf8"),
+  readFile(new URL("model-surface-pool.mjs", archiveRoot), "utf8"),
+  readFile(new URL("model-live-board.mjs", archiveRoot), "utf8"),
+  readFile(new URL("model-object-inspector.mjs", archiveRoot), "utf8"),
+]);
 
 for (const contract of [
-  '<script type="module" src="./index.mjs"></script>',
-  'id="catalog-list"',
-  'id="family-count"',
+  '<script src="./prototype-registry.js"></script>',
+  '<script type="module" src="./catalog/render-index.mjs"></script>',
+  'id="archive-objects"',
+  'id="archive-families"',
+  'id="archive-originals"',
   'id="object-count"',
   'id="executable-count"',
   'id="study-count"',
@@ -56,7 +103,7 @@ for (const contract of [
 }
 
 if (!modelHumanization.includes('import "./model-page.mjs";')) {
-  throw new Error("Humanized Model bootstrap must extend the canonical renderer.");
+  throw new Error("Humanized Model bootstrap must extend the canonical coordinator.");
 }
 
 for (const obsolete of [
@@ -76,69 +123,44 @@ for (const obsolete of [
 
 for (const contract of [
   "buildArchiveCatalog",
-  "archiveExtensions",
-  "archiveLegacyOverrides",
-  "objectLabel",
-  "dispositionLabels",
-  "evidenceLabels",
-  "renderFilters",
-  "renderCatalog",
-]) {
-  if (!indexRenderer.includes(contract)) throw new Error(`Archive renderer is missing v2 contract: ${contract}`);
-}
-
-for (const contract of [
+  "designModels",
+  "presentationNotes",
   "createModelPageState",
   "createModelSurfacePool",
   "createModelLiveBoard",
   "createModelObjectInspector",
-  "createModelRouteDiagram",
-  "createModelConceptVignette",
-  "syncSurface",
-  "renderConcept",
-  "renderBoard",
-  "renderInspector",
-  "historyMode",
+  "board.render",
 ]) {
-  if (!modelRenderer.includes(contract)) throw new Error(`Design model renderer is missing refactor contract: ${contract}`);
+  if (!modelRenderer.includes(contract)) throw new Error(`Design model coordinator is missing contract: ${contract}`);
 }
 
-for (const contract of ["createModelConceptVignette", "dataset.sectionId", "presentation.sections"]){
-  if (!conceptVignette.includes(contract)) throw new Error(`Concept vignette is missing contract: ${contract}`);
-}
-for (const contract of ["createModelRouteDiagram", "onPreview", "onPreviewEnd", "aria-selected"]){
-  if (!routeDiagram.includes(contract)) throw new Error(`Route diagram is missing contract: ${contract}`);
-}
-for (const contract of ["model-route", "model-route-node", "model-route-edge"]){
-  if (!routeDiagramCss.includes(contract)) throw new Error(`Route diagram CSS is missing contract: ${contract}`);
-}
-for (const contract of ["model-route-overlay", "pointer-events: none"]){
-  if (!routeOverlayCss.includes(contract)) throw new Error(`Route overlay CSS is missing contract: ${contract}`);
-}
-for (const contract of ["model-live-board", "model-live-card", "model-pooled-surface"]){
-  if (!modelWorkbenchCss.includes(contract)) throw new Error(`Workbench CSS is missing contract: ${contract}`);
-}
-for (const contract of ["model-page", "model-masthead", "model-workbench"]){
-  if (!modelPageCss.includes(contract)) throw new Error(`Model page CSS is missing contract: ${contract}`);
-}
-for (const contract of ["createModelLiveSurface", "model-live-frame", "modelLivePresentationFor"]){
-  if (!liveSurface.includes(contract)) throw new Error(`Live surface is missing contract: ${contract}`);
-}
-for (const contract of ["createModelLiveBoard", "syncSurface", "model-live-card__select"]){
-  if (!liveBoard.includes(contract)) throw new Error(`Live board is missing contract: ${contract}`);
-}
-for (const contract of ["createModelObjectInspector", "renderSummary", "renderRelations", "renderRecords"]){
-  if (!inspector.includes(contract)) throw new Error(`Inspector is missing contract: ${contract}`);
-}
-for (const contract of ["createModelSurfacePool", "acquire", "release"]){
-  if (!surfacePool.includes(contract)) throw new Error(`Surface pool is missing contract: ${contract}`);
-}
-for (const contract of ["generate-model-previews", "Page.captureScreenshot", "390"]){
-  if (!previewGenerator.includes(contract)) throw new Error(`Preview generator is missing contract: ${contract}`);
+for (const [source, contracts, label] of [
+  [liveSurface, ["defaultTargetSelectors", "isolateTarget", "model-live-ready", "ResizeObserver", "waitForImages"], "live surface"],
+  [pageState, ["createModelPageState", "replaceFromLocation", "commitUrl", "viewMode"], "page state"],
+  [surfacePool, ["createModelSurfacePool", "prune", "destroy"], "surface pool"],
+  [liveBoard, ["createModelLiveBoard", "syncSection", "viewMode", "render"], "live board"],
+  [inspector, ["createModelObjectInspector", "renderRelations", "renderRecords", "setTab"], "object inspector"],
+]) {
+  for (const contract of contracts) {
+    if (!source.includes(contract)) throw new Error(`${label} module is missing contract: ${contract}`);
+  }
 }
 
-if (!packageJson.scripts?.build?.includes("build-static.mjs")) {
-  throw new Error("Build script must generate the static archive.");
+for (const source of [renderer, loader, modelRenderer]) {
+  if (!source.includes("archiveExtensions") || !source.includes("all-extensions.mjs")) {
+    throw new Error("Browser renderers and Node loader must consume catalog/all-extensions.mjs.");
+  }
 }
 
-console.log("Archive entrypoints validator: index and humanized Model viewer expose the required v2 contracts.");
+for (const object of catalog.objects.filter((item) => item.entrypoint)) {
+  const literalHref = `href="./${object.entrypoint.replace(/index\.html$/, "")}`;
+  if (index.includes(literalHref)) {
+    throw new Error(`Archive index must not hand-maintain catalog link ${literalHref}`);
+  }
+}
+
+if (renderer.includes('review.href = `../')) {
+  throw new Error("Archive review links must remain relative to the published research-history root.");
+}
+
+console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the humanized pooled-surface Model workbench.`);
