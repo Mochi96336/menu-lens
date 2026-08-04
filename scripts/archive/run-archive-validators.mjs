@@ -4,6 +4,7 @@ await import("./validate-index-renderer.mjs");
 await import("./validate-home-model-entry.mjs");
 await import("./validate-study-presentations.mjs");
 await import("./validate-model-diagram-presentations.mjs");
+await import("./validate-model-classification.mjs");
 await import("./validate-model-diagram-dom.mjs");
 await import("./validate-model-page-renderer.mjs");
 await import("./validate-model-live-stage.mjs");
