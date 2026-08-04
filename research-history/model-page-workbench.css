@@ -1,5 +1,9 @@
 /* Wide live-model workbench: model context, operation board, active-object inspector. */
 
+html:has(body.model-page) {
+  scroll-behavior: auto;
+}
+
 .model-page [hidden] {
   display: none !important;
 }

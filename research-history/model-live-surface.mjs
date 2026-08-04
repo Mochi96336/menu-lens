@@ -1,3 +1,5 @@
+import { modelLivePresentationFor } from "./catalog/model-live-presentations.mjs";
+
 const defaultTargetSelectors = Object.freeze([
   "#prototype",
   "#comparison",
@@ -84,6 +86,78 @@ const ensureDocumentStyle = (documentRoot) => {
   ].join("\n");
 };
 
+const ensurePresentationStyle = (documentRoot) => {
+  let style = documentRoot.querySelector("#model-live-presentation-style");
+  if (!style) {
+    style = documentRoot.createElement("style");
+    style.id = "model-live-presentation-style";
+    documentRoot.head.append(style);
+  }
+  return style;
+};
+
+const resolvePresentationState = (state, target, source) => {
+  if (state.activeSelectors?.length) {
+    const active = state.activeSelectors.some((selector) =>
+      target.matches(selector) || Boolean(target.querySelector(selector)));
+    return active ? "focus" : "overview";
+  }
+  const rawValue = source?.getAttribute(state.attribute) ?? state.fallback ?? "default";
+  return state.map?.[rawValue] ?? rawValue;
+};
+
+const applyPresentation = ({
+  documentRoot,
+  target,
+  presentation,
+  onStateChange,
+}) => {
+  const style = ensurePresentationStyle(documentRoot);
+  style.textContent = presentation?.css ?? "";
+
+  delete target.dataset.modelLivePresentation;
+  delete target.dataset.modelLivePresentationState;
+  if (!presentation) return { cleanup: () => {}, state: null };
+
+  target.dataset.modelLivePresentation = presentation.id;
+  if (!presentation.state) return { cleanup: () => {}, state: null };
+
+  const source = presentation.state.selector
+    ? (target.matches(presentation.state.selector)
+        ? target
+        : target.querySelector(presentation.state.selector))
+    : target;
+  let currentState = null;
+  const syncState = (notify = true) => {
+    const nextState = resolvePresentationState(presentation.state, target, source);
+    if (nextState === currentState) return;
+    currentState = nextState;
+    target.dataset.modelLivePresentationState = nextState;
+    if (notify) onStateChange?.(nextState);
+  };
+  syncState(false);
+
+  const PresentationObserver = documentRoot.defaultView?.MutationObserver
+    ?? globalThis.MutationObserver;
+  const observerRoot = presentation.state.activeSelectors?.length ? target : source;
+  if (!observerRoot || typeof PresentationObserver !== "function") {
+    return { cleanup: () => {}, state: currentState };
+  }
+
+  const attributeFilter = presentation.state.attributes
+    ?? (presentation.state.attribute ? [presentation.state.attribute] : undefined);
+  const observer = new PresentationObserver(() => syncState(true));
+  observer.observe(observerRoot, {
+    attributes: true,
+    subtree: Boolean(presentation.state.activeSelectors?.length),
+    ...(attributeFilter ? { attributeFilter } : {}),
+  });
+  return {
+    cleanup: () => observer.disconnect(),
+    get state() { return currentState; },
+  };
+};
+
 const makeFallback = (documentRoot) => {
   const fallback = documentRoot.createElement("div");
   fallback.className = "model-live-fallback";
@@ -124,9 +198,12 @@ export const createModelLiveSurface = (root, options = {}) => {
 
   let objectKey = null;
   let source = null;
+  let presentation = null;
   let loadVersion = 0;
   let measurementVersion = 0;
   let resizeObserver = null;
+  let presentationCleanup = () => {};
+  let presentationTarget = null;
   let activeTarget = null;
   let activeSelector = null;
   let stageHeight = modelLiveStageHeightFor(390);
@@ -168,6 +245,19 @@ export const createModelLiveSurface = (root, options = {}) => {
     setState("ready");
   };
 
+  const resetPresentation = () => {
+    presentationCleanup();
+    presentationCleanup = () => {};
+    if (presentationTarget) {
+      delete presentationTarget.dataset.modelLivePresentation;
+      delete presentationTarget.dataset.modelLivePresentationState;
+    }
+    presentationTarget = null;
+    frame.contentDocument?.querySelector("#model-live-presentation-style")?.replaceChildren();
+    delete root.dataset.livePresentation;
+    delete root.dataset.livePresentationState;
+  };
+
   const measure = async (expectedVersion = loadVersion) => {
     const measurement = ++measurementVersion;
     if (expectedVersion !== loadVersion || !frame.contentWindow || !frame.contentDocument) return false;
@@ -183,6 +273,24 @@ export const createModelLiveSurface = (root, options = {}) => {
     frame.hidden = false;
     ensureDocumentStyle(frameDocument);
     isolateTarget(activeTarget);
+
+    if (presentationTarget !== activeTarget) {
+      resetPresentation();
+      const applied = applyPresentation({
+        documentRoot: frameDocument,
+        target: activeTarget,
+        presentation,
+        onStateChange: (nextState) => {
+          root.dataset.livePresentationState = nextState;
+          queueMicrotask(() => measure().catch(() => {}));
+        },
+      });
+      presentationCleanup = applied.cleanup;
+      presentationTarget = activeTarget;
+      if (presentation) root.dataset.livePresentation = presentation.id;
+      if (applied.state) root.dataset.livePresentationState = applied.state;
+    }
+
     await frameDocument.fonts?.ready;
     await waitForImages(activeTarget);
 
@@ -209,8 +317,10 @@ export const createModelLiveSurface = (root, options = {}) => {
 
   const connectResizeObserver = () => {
     resizeObserver?.disconnect();
-    if (!activeTarget || typeof ResizeObserver !== "function") return;
-    resizeObserver = new ResizeObserver(() => {
+    const SurfaceResizeObserver = frame.contentWindow?.ResizeObserver
+      ?? globalThis.ResizeObserver;
+    if (!activeTarget || typeof SurfaceResizeObserver !== "function") return;
+    resizeObserver = new SurfaceResizeObserver(() => {
       measure().catch(() => {});
     });
     resizeObserver.observe(activeTarget);
@@ -221,6 +331,7 @@ export const createModelLiveSurface = (root, options = {}) => {
     try {
       activeTarget = null;
       activeSelector = null;
+      presentationTarget = null;
       await measure(expectedVersion);
       if (expectedVersion === loadVersion) connectResizeObserver();
     } catch (error) {
@@ -241,6 +352,11 @@ export const createModelLiveSurface = (root, options = {}) => {
     image.src = previewSrc;
     image.alt = previewAlt;
 
+    const nextPresentation = modelLivePresentationFor(key);
+    const presentationChanged = presentation?.id !== nextPresentation?.id;
+    presentation = nextPresentation;
+    if (presentationChanged) resetPresentation();
+
     const sourceChanged = source !== src || objectKey !== key;
     objectKey = key;
     source = src;
@@ -249,6 +365,7 @@ export const createModelLiveSurface = (root, options = {}) => {
       resizeObserver?.disconnect();
       resizeObserver = null;
       measurementVersion += 1;
+      resetPresentation();
       frame.removeAttribute("src");
       delete root.dataset.liveContentHeight;
       delete root.dataset.liveOverflow;
@@ -260,6 +377,7 @@ export const createModelLiveSurface = (root, options = {}) => {
       measurementVersion += 1;
       resizeObserver?.disconnect();
       resizeObserver = null;
+      resetPresentation();
       activeTarget = null;
       activeSelector = null;
       delete root.dataset.liveError;
@@ -282,6 +400,7 @@ export const createModelLiveSurface = (root, options = {}) => {
     loadVersion += 1;
     measurementVersion += 1;
     resizeObserver?.disconnect();
+    resetPresentation();
     frame.src = "about:blank";
     root.replaceChildren();
   };
