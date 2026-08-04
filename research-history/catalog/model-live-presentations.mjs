@@ -26,6 +26,10 @@ const freezePresentation = (presentation) => Object.freeze({
 });
 
 const compactReturnCss = ({ profile, toolbar, returnSelector }) => `
+  [data-model-live-presentation="${profile}"][data-model-live-presentation-state="focus"] :has(> ${toolbar}) {
+    position: relative !important;
+    padding-top: 3.15rem !important;
+  }
   [data-model-live-presentation="${profile}"] ${toolbar} {
     display: none !important;
     min-height: 0 !important;
@@ -34,8 +38,8 @@ const compactReturnCss = ({ profile, toolbar, returnSelector }) => `
     background: transparent !important;
   }
   [data-model-live-presentation="${profile}"][data-model-live-presentation-state="focus"] ${toolbar} {
-    position: relative !important;
-    inset: auto !important;
+    position: absolute !important;
+    inset: 0 0 auto 0 !important;
     z-index: 40 !important;
     display: flex !important;
     width: 100% !important;
