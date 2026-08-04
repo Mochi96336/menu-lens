@@ -1,5 +1,8 @@
 import { readFile } from "node:fs/promises";
-import { modelRouteContracts } from "../../research-history/catalog/model-route-contracts.mjs";
+import {
+  modelRouteContracts,
+  modelRouteObjectOwnerById,
+} from "../../research-history/catalog/model-route-contracts.mjs";
 import {
   conceptRouteCases,
   modelRouteBrowserCases,
@@ -8,6 +11,19 @@ import {
 import { root } from "./load-catalog.mjs";
 
 const canonicalModelIds = modelRouteContracts.map((contract) => contract.id);
+
+const semanticClassificationDecisions = Object.freeze({
+  "14": "multiscale-focus",
+  "17": "horizontal-navigation",
+  "17A": "horizontal-navigation",
+});
+
+for (const [objectId, expectedModelId] of Object.entries(semanticClassificationDecisions)) {
+  const actualModelId = modelRouteObjectOwnerById[objectId];
+  if (actualModelId !== expectedModelId) {
+    throw new Error(`${objectId} must remain in ${expectedModelId}; received ${actualModelId ?? "no owner"}.`);
+  }
+}
 
 for (const contract of modelRouteContracts) {
   const canonicalSectionIds = contract.model.sections.map((section) => section.id);

@@ -66,6 +66,8 @@ export const modelRouteContractById = Object.freeze(Object.fromEntries(
   modelRouteContracts.map((contract) => [contract.id, contract]),
 ));
 
+export const modelRouteObjectOwnerById = Object.freeze(Object.fromEntries(objectModelOwners));
+
 export const getModelRouteContract = (modelId) => {
   const contract = modelRouteContractById[modelId];
   if (!contract) throw new Error(`Unknown model route contract ${modelId}.`);
