@@ -211,36 +211,25 @@ export const createModelRouteDiagram = ({
 
   const revealSelected = (button = selectedButton) => {
     if (!button) return;
+    let remainingPasses = 4;
     const reveal = () => {
-      const viewportWidth = Number(root.clientWidth) || 0;
+      if (!button.isConnected || !root.isConnected) return;
+      const rootRect = root.getBoundingClientRect();
+      const buttonRect = button.getBoundingClientRect();
+      const viewportWidth = Number(root.clientWidth) || rootRect.width || 0;
       const maxScroll = Math.max(0, (Number(root.scrollWidth) || 0) - viewportWidth);
-      const visibleStart = Number(root.scrollLeft) || 0;
-      const edgeInset = 16;
-      let target = visibleStart;
-
-      if (typeof root.getBoundingClientRect === "function"
-        && typeof button.getBoundingClientRect === "function") {
-        const rootRect = root.getBoundingClientRect();
-        const buttonRect = button.getBoundingClientRect();
-        if (buttonRect.left < rootRect.left + edgeInset) {
-          target += buttonRect.left - rootRect.left - edgeInset;
-        } else if (buttonRect.right > rootRect.right - edgeInset) {
-          target += buttonRect.right - rootRect.right + edgeInset;
-        }
-      } else {
-        const tabStart = Number(button.offsetLeft) || 0;
-        const tabEnd = tabStart + (Number(button.offsetWidth) || 0);
-        const visibleEnd = visibleStart + viewportWidth;
-        if (tabStart < visibleStart + edgeInset) target = tabStart - edgeInset;
-        else if (tabEnd > visibleEnd - edgeInset) target = tabEnd - viewportWidth + edgeInset;
-      }
-
+      const centerDelta = (buttonRect.left + buttonRect.right - rootRect.left - rootRect.right) / 2;
+      const target = (Number(root.scrollLeft) || 0) + centerDelta;
       root.scrollLeft = Math.min(maxScroll, Math.max(0, target));
       syncOverflow();
+
+      remainingPasses -= 1;
+      if (remainingPasses > 0 && typeof requestAnimationFrame === "function") {
+        requestAnimationFrame(reveal);
+      }
     };
-    if (typeof requestAnimationFrame === "function") {
-      requestAnimationFrame(() => requestAnimationFrame(reveal));
-    } else reveal();
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(reveal);
+    else reveal();
   };
 
   const setCurrentCopy = (section, presentation) => {
