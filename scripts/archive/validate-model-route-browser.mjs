@@ -31,7 +31,7 @@ const modelCases = Object.freeze([
     section: "spread",
     variant: "08",
     kind: "sequence",
-    nodeCount: 4,
+    nodeCount: 5,
     vignetteType: "horizontal",
     vignetteVariant: "spread",
     objectIds: ["08", "08A"],
@@ -63,8 +63,8 @@ const modelCases = Object.freeze([
     title: "Multi-scale Focus",
     section: "model",
     variant: "06",
-    kind: "sequence",
-    nodeCount: 2,
+    kind: "branch",
+    nodeCount: 3,
     vignetteType: "scale",
     vignetteVariant: "focus",
     objectIds: ["06"],
@@ -351,34 +351,34 @@ try {
 
   await evaluate(client, `document.querySelector('[data-section-id="spread"]').focus()`);
   await pressKey(client, "ArrowRight", "ArrowRight");
-  await waitFor(client, `document.activeElement?.dataset.sectionId === 'ribbon'`, "ArrowRight roving focus");
+  await waitFor(client, `document.activeElement?.dataset.sectionId === 'weighted-strip'`, "ArrowRight roving focus");
   await settle(client);
   const arrow = await evaluate(client, stateExpression);
   addFailure(failures, "keyboard preview", arrow, [
     [arrow.selectedId === "spread", "selection remains Spread"],
-    [arrow.focusedId === "ribbon", "focus moves to Ribbon"],
+    [arrow.focusedId === "weighted-strip", "focus moves to Weighted Strip"],
     [arrow.rovingCount === 1, "single roving tab"],
-    [arrow.vignetteVariant === "ribbon" && arrow.vignettePreview === "true", "focused concept preview"],
+    [arrow.conceptLabel === "Count-weighted viewport" && arrow.vignettePreview === "true", "focused concept preview"],
     [arrow.currentLabel === committedSpread.currentLabel && arrow.routeNote === committedSpread.routeNote, "committed route copy"],
   ]);
 
   await evaluate(client, "document.activeElement.click()");
-  await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'ribbon'`, "focused route activation commits Ribbon");
+  await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'weighted-strip'`, "focused route activation commits Weighted Strip");
   await settle(client);
-  const committedRibbon = await evaluate(client, stateExpression);
-  addFailure(failures, "keyboard commit", committedRibbon, [
-    [committedRibbon.selectedId === "ribbon", "Ribbon selected"],
-    [committedRibbon.selectedFocused, "focus retained"],
-    [committedRibbon.vignetteVariant === "ribbon" && committedRibbon.vignettePreview === "false", "Ribbon committed"],
-    [JSON.stringify(committedRibbon.objectIds) === JSON.stringify(["09", "09A"]), "Ribbon objects"],
-    [committedRibbon.url.includes("section=ribbon"), "Ribbon URL"],
+  const committedWeightedStrip = await evaluate(client, stateExpression);
+  addFailure(failures, "keyboard commit", committedWeightedStrip, [
+    [committedWeightedStrip.selectedId === "weighted-strip", "Weighted Strip selected"],
+    [committedWeightedStrip.selectedFocused, "focus retained"],
+    [committedWeightedStrip.conceptLabel === "Count-weighted viewport" && committedWeightedStrip.vignettePreview === "false", "Weighted Strip committed"],
+    [JSON.stringify(committedWeightedStrip.objectIds) === JSON.stringify(["17", "17A"]), "Weighted Strip objects"],
+    [committedWeightedStrip.url.includes("section=weighted-strip"), "Weighted Strip URL"],
   ]);
-  results.push({ name: "keyboard-route", state: committedRibbon });
+  results.push({ name: "keyboard-route", state: committedWeightedStrip });
 
   await evaluate(client, "history.back()");
   await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'spread'`, "history back to Spread");
   await evaluate(client, "history.forward()");
-  await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'ribbon'`, "history forward to Ribbon");
+  await waitFor(client, `document.querySelector('#section-tabs button[aria-selected="true"]')?.dataset.sectionId === 'weighted-strip'`, "history forward to Weighted Strip");
 
   await setViewport(client, 320);
   await client.send("Page.navigate", {

@@ -574,6 +574,17 @@
   }
 }
 
+@media (min-width: 521px) {
+  .model-section-tabs--route[data-route-model="horizontal-navigation"] .model-route__canvas--layout-compact-sequence > button {
+    width: min(5.5rem, 18%);
+    min-width: 4rem;
+  }
+
+  .model-section-tabs--route[data-route-model="horizontal-navigation"] .model-route__label {
+    font-size: .78rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .model-concept-vignette *,
   .model-section-tabs--route * {

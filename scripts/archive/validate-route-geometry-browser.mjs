@@ -25,10 +25,10 @@ const cases = Object.freeze([
   {
     model: "horizontal-navigation",
     section: "spread",
-    mobileSection: "fisheye",
+    mobileSection: "weighted-strip",
     layout: "compact-sequence",
-    desktopMaxWidth: 1000,
-    directLines: 3,
+    desktopMaxWidth: 1160,
+    directLines: 4,
   },
   {
     model: "paper-field",
@@ -49,10 +49,10 @@ const cases = Object.freeze([
   {
     model: "multiscale-focus",
     section: "model",
-    mobileSection: "necessary-corrections",
-    layout: "compact-sequence",
-    desktopMaxWidth: 620,
-    directLines: 1,
+    mobileSection: "folded-topology",
+    layout: "balanced-rail",
+    desktopMaxWidth: 720,
+    drops: 2,
   },
   {
     model: "depth-projection",
