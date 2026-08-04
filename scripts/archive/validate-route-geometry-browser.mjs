@@ -1,6 +1,7 @@
 import { access, mkdir, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
+import { routeGeometryCases as cases } from "./model-route-browser-cases.mjs";
 
 const baseUrl = process.env.MODEL_PREVIEW_BASE_URL ?? "http://127.0.0.1:4173";
 const outputDir = new URL("../../browser-review/", import.meta.url);
@@ -13,56 +14,6 @@ const browserCandidates = [
   "/usr/bin/chromium-browser",
 ].filter(Boolean);
 
-const cases = Object.freeze([
-  {
-    model: "complete-document",
-    section: "baseline",
-    mobileSection: "ledger-density",
-    layout: "compact-sequence",
-    desktopMaxWidth: 620,
-    directLines: 1,
-  },
-  {
-    model: "horizontal-navigation",
-    section: "spread",
-    mobileSection: "weighted-strip",
-    layout: "compact-sequence",
-    desktopMaxWidth: 1160,
-    directLines: 4,
-  },
-  {
-    model: "paper-field",
-    section: "semantic-information",
-    mobileSection: "elastic-geometry",
-    layout: "balanced-rail",
-    desktopMaxWidth: 720,
-    drops: 2,
-  },
-  {
-    model: "landscape-paper",
-    section: "core",
-    mobileSection: "stopped-routes",
-    layout: "balanced-rail",
-    desktopMaxWidth: 1100,
-    drops: 5,
-  },
-  {
-    model: "multiscale-focus",
-    section: "model",
-    mobileSection: "folded-topology",
-    layout: "balanced-rail",
-    desktopMaxWidth: 720,
-    drops: 2,
-  },
-  {
-    model: "depth-projection",
-    section: "projection-lens",
-    mobileSection: "parallax-volume",
-    layout: "parallel-rail",
-    desktopMaxWidth: 780,
-    drops: 3,
-  },
-]);
 
 const findBrowser = async () => {
   for (const candidate of browserCandidates) {

@@ -1,4 +1,4 @@
-import { designModels } from "../../research-history/catalog/presentation-models.mjs";
+import { modelRouteContracts } from "../../research-history/catalog/model-route-contracts.mjs";
 import {
   modelDiagramKinds,
   modelDiagramMotifs,
@@ -7,7 +7,6 @@ import {
   modelVignetteVariants,
 } from "../../research-history/catalog/model-diagram-presentations.mjs";
 
-const modelById = new Map(designModels.map((model) => [model.id, model]));
 const allowedModelFields = new Set(["kind", "signature", "statement", "motif", "routeLayout", "edges", "sections"]);
 const allowedRouteLayoutFields = new Set(["type", "rootId", "railY", "maxWidth"]);
 const allowedSectionFields = new Set(["label", "conceptLabel", "note", "position", "vignette"]);
@@ -33,15 +32,8 @@ const requireIncreasing = (values, minimumGap, label) => {
   }
 };
 
-const presentationIds = Object.keys(modelDiagramPresentations);
-const canonicalModelIds = designModels.map((model) => model.id);
-if (JSON.stringify(presentationIds) !== JSON.stringify(canonicalModelIds)) {
-  throw new Error(`Diagram presentations must cover every design model in canonical order: ${canonicalModelIds.join(", ")}.`);
-}
-
-for (const [modelId, presentation] of Object.entries(modelDiagramPresentations)) {
-  const model = modelById.get(modelId);
-  if (!model) throw new Error(`Diagram presentation references unknown model ${modelId}.`);
+for (const contract of modelRouteContracts) {
+  const { id: modelId, model, diagram: presentation } = contract;
 
   for (const field of Object.keys(presentation)) {
     if (!allowedModelFields.has(field)) throw new Error(`${modelId} diagram has unsupported field ${field}.`);
@@ -60,11 +52,7 @@ for (const [modelId, presentation] of Object.entries(modelDiagramPresentations))
     throw new Error(`${modelId}.sections must be an object keyed by canonical section ID.`);
   }
 
-  const canonicalSectionIds = model.sections.map((section) => section.id);
-  const presentedSectionIds = Object.keys(presentation.sections);
-  if (JSON.stringify(presentedSectionIds) !== JSON.stringify(canonicalSectionIds)) {
-    throw new Error(`${modelId} diagram sections must preserve canonical section order: ${canonicalSectionIds.join(", ")}.`);
-  }
+  const canonicalSectionIds = contract.sections.map((section) => section.id);
 
   const seenEdges = new Set();
   for (const [index, edge] of presentation.edges.entries()) {
@@ -232,4 +220,4 @@ for (const [modelId, presentation] of Object.entries(modelDiagramPresentations))
   }
 }
 
-console.log(`Model diagram presentations: ${presentationIds.length} complete model contracts verified.`);
+console.log(`Model diagram presentations: ${modelRouteContracts.length} complete model contracts verified.`);
