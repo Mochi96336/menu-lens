@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { root } from "./load-catalog.mjs";
 
 const html = await readFile(new URL("research-history/models/index.html", root), "utf8");
+const humanizedRenderer = await readFile(new URL("research-history/model-page-humanized.mjs", root), "utf8");
 const overlayCss = await readFile(new URL("research-history/model-route-overlay.css", root), "utf8");
 const routeRenderer = await readFile(new URL("research-history/model-route-diagram.mjs", root), "utf8");
 const requiredIds = [
@@ -92,8 +93,11 @@ for (const contract of [
 ]) {
   if (!routeRenderer.includes(contract)) throw new Error(`Route renderer is missing responsive identity: ${contract}`);
 }
-if (!html.includes('<script type="module" src="../model-page.mjs"')) {
-  throw new Error("Model page must use the canonical model-page renderer.");
+if (!html.includes('<script type="module" src="../model-page-humanized.mjs"')) {
+  throw new Error("Model page must load the humanized Model bootstrap.");
+}
+if (!humanizedRenderer.includes('import "./model-page.mjs";')) {
+  throw new Error("Humanized Model bootstrap must retain the canonical model-page renderer.");
 }
 
-console.log(`Model diagram DOM: ${requiredIds.length} required nodes, large concept-first desktop pairing, adaptive right-column routes, responsive stacking, marker-centred sequence axes, visibly connected open route nodes, mobile copy deduplication, and compact object controls verified.`);
+console.log(`Model diagram DOM: ${requiredIds.length} required nodes, large concept-first desktop pairing, adaptive right-column routes, responsive stacking, marker-centred sequence axes, visibly connected open route nodes, mobile copy deduplication, compact object controls, and canonical renderer delegation verified.`);

@@ -96,6 +96,38 @@ const ensurePresentationStyle = (documentRoot) => {
   return style;
 };
 
+const findPresentationElement = (target, selector) =>
+  target.matches(selector) ? target : target.querySelector(selector);
+
+const applyPresentationMutations = (target, presentation) => {
+  const restorers = [];
+  for (const mutation of presentation?.mutations ?? []) {
+    const element = findPresentationElement(target, mutation.selector);
+    if (!element) continue;
+
+    if (Object.hasOwn(mutation, "text")) {
+      const previousText = element.textContent;
+      element.textContent = mutation.text;
+      restorers.push(() => { element.textContent = previousText; });
+    }
+
+    for (const [name, value] of Object.entries(mutation.attributes ?? {})) {
+      const hadAttribute = element.hasAttribute(name);
+      const previousValue = element.getAttribute(name);
+      if (value === null) element.removeAttribute(name);
+      else element.setAttribute(name, String(value));
+      restorers.push(() => {
+        if (hadAttribute) element.setAttribute(name, previousValue ?? "");
+        else element.removeAttribute(name);
+      });
+    }
+  }
+
+  return () => {
+    restorers.reverse().forEach((restore) => restore());
+  };
+};
+
 const resolvePresentationState = (state, target, source) => {
   if (state.activeSelectors?.length) {
     const active = state.activeSelectors.some((selector) =>
@@ -120,12 +152,11 @@ const applyPresentation = ({
   if (!presentation) return { cleanup: () => {}, state: null };
 
   target.dataset.modelLivePresentation = presentation.id;
-  if (!presentation.state) return { cleanup: () => {}, state: null };
+  const cleanupMutations = applyPresentationMutations(target, presentation);
+  if (!presentation.state) return { cleanup: cleanupMutations, state: null };
 
   const source = presentation.state.selector
-    ? (target.matches(presentation.state.selector)
-        ? target
-        : target.querySelector(presentation.state.selector))
+    ? findPresentationElement(target, presentation.state.selector)
     : target;
   let currentState = null;
   const syncState = (notify = true) => {
@@ -141,7 +172,7 @@ const applyPresentation = ({
     ?? globalThis.MutationObserver;
   const observerRoot = presentation.state.activeSelectors?.length ? target : source;
   if (!observerRoot || typeof PresentationObserver !== "function") {
-    return { cleanup: () => {}, state: currentState };
+    return { cleanup: cleanupMutations, state: currentState };
   }
 
   const attributeFilter = presentation.state.attributes
@@ -153,7 +184,10 @@ const applyPresentation = ({
     ...(attributeFilter ? { attributeFilter } : {}),
   });
   return {
-    cleanup: () => observer.disconnect(),
+    cleanup: () => {
+      observer.disconnect();
+      cleanupMutations();
+    },
     get state() { return currentState; },
   };
 };

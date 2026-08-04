@@ -7,14 +7,28 @@ const freezeState = (state) => state
     })
   : null;
 
+const freezeMutation = (mutation) => Object.freeze({
+  ...mutation,
+  attributes: mutation.attributes ? Object.freeze({ ...mutation.attributes }) : undefined,
+});
+
+const basePresentationCss = (profile) => `
+  [data-model-live-presentation="${profile}"] .phone-status {
+    display: none !important;
+  }
+`;
+
 const freezePresentation = (presentation) => Object.freeze({
   ...presentation,
   state: freezeState(presentation.state),
+  mutations: Object.freeze((presentation.mutations ?? []).map(freezeMutation)),
+  css: `${basePresentationCss(presentation.id)}\n${presentation.css ?? ""}`,
 });
 
-const compactReturnCss = ({ profile, phone, toolbar, returnSelector }) => `
-  [data-model-live-presentation="${profile}"] ${phone} {
+const compactReturnCss = ({ profile, toolbar, returnSelector }) => `
+  [data-model-live-presentation="${profile}"][data-model-live-presentation-state="focus"] :has(> ${toolbar}) {
     position: relative !important;
+    padding-top: 3.15rem !important;
   }
   [data-model-live-presentation="${profile}"] ${toolbar} {
     display: none !important;
@@ -25,24 +39,35 @@ const compactReturnCss = ({ profile, phone, toolbar, returnSelector }) => `
   }
   [data-model-live-presentation="${profile}"][data-model-live-presentation-state="focus"] ${toolbar} {
     position: absolute !important;
-    top: 2.55rem !important;
-    right: .55rem !important;
+    inset: 0 0 auto 0 !important;
     z-index: 40 !important;
-    display: block !important;
-    width: auto !important;
+    display: flex !important;
+    width: 100% !important;
+    min-height: 3.15rem !important;
+    align-items: center !important;
     margin: 0 !important;
+    padding: .45rem .55rem !important;
+    border-bottom: 1px solid var(--line) !important;
+    background: var(--surface-strong) !important;
   }
   [data-model-live-presentation="${profile}"] ${toolbar} > * {
     display: none !important;
   }
   [data-model-live-presentation="${profile}"] ${returnSelector} {
-    display: block !important;
-    min-height: 2rem !important;
-    padding: .3rem .55rem !important;
+    display: inline-flex !important;
+    min-width: 2.25rem !important;
+    min-height: 2.25rem !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: .35rem .62rem !important;
     border: 1px solid var(--line-strong) !important;
-    background: rgb(255 253 248 / 94%) !important;
-    box-shadow: 0 .2rem .7rem rgb(38 31 24 / 12%) !important;
-    backdrop-filter: blur(8px);
+    background: var(--surface-strong) !important;
+    color: var(--ink) !important;
+    font-size: .74rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    writing-mode: horizontal-tb !important;
+    white-space: nowrap !important;
   }
 `;
 
@@ -52,7 +77,7 @@ const compactNavigatorCss = ({ profile, phone, toolbar, hiddenSelector }) => `
   }
   [data-model-live-presentation="${profile}"] ${toolbar} {
     position: absolute !important;
-    top: 2.55rem !important;
+    top: .55rem !important;
     right: .55rem !important;
     z-index: 40 !important;
     display: grid !important;
@@ -85,6 +110,12 @@ const overviewOnlyRestaurantCss = ({ profile, restaurant }) => `
   }
 `;
 
+const returnMutation = (selector, text) => ({
+  selector,
+  text,
+  attributes: { "aria-label": text.replace(/^←\s*/, "") },
+});
+
 const presentations = Object.freeze({
   multiscale: freezePresentation({
     id: "multiscale",
@@ -94,6 +125,10 @@ const presentations = Object.freeze({
       fallback: "false",
       map: { false: "overview", true: "focus" },
     },
+    mutations: [
+      returnMutation("#collapse-all", "← 返回全部分類"),
+      { selector: ".workspace-topbar", attributes: { "aria-label": "返回全部分類" } },
+    ],
     css: `
       [data-model-live-presentation="multiscale"] .multiscale-screen {
         position: relative !important;
@@ -101,32 +136,13 @@ const presentations = Object.freeze({
       [data-model-live-presentation="multiscale"][data-model-live-presentation-state="focus"] .multiscale-screen > header {
         display: none !important;
       }
-      [data-model-live-presentation="multiscale"] .workspace-topbar {
-        display: none !important;
-        min-height: 0 !important;
-        padding: 0 !important;
-        border: 0 !important;
-        background: transparent !important;
-      }
-      [data-model-live-presentation="multiscale"][data-model-live-presentation-state="focus"] .workspace-topbar {
-        position: absolute !important;
-        top: 2.55rem !important;
-        right: .55rem !important;
-        z-index: 40 !important;
-        display: block !important;
-        width: auto !important;
-      }
+      ${compactReturnCss({
+        profile: "multiscale",
+        toolbar: ".workspace-topbar",
+        returnSelector: "#collapse-all",
+      })}
       [data-model-live-presentation="multiscale"] #scale-label {
         display: none !important;
-      }
-      [data-model-live-presentation="multiscale"] #collapse-all {
-        display: block !important;
-        min-height: 2rem !important;
-        padding: .3rem .55rem !important;
-        border: 1px solid var(--line-strong) !important;
-        background: rgb(255 253 248 / 94%) !important;
-        box-shadow: 0 .2rem .7rem rgb(38 31 24 / 12%) !important;
-        backdrop-filter: blur(8px);
       }
     `,
   }),
@@ -137,8 +153,17 @@ const presentations = Object.freeze({
       attribute: "data-mode",
       fallback: "overview",
     },
+    mutations: [
+      returnMutation("#spread-overview", "← 返回全部分類"),
+      { selector: ".spread-toolbar", attributes: { "aria-label": "返回全部分類" } },
+    ],
     css: `
-      [data-model-live-presentation="spread"] .spread-toolbar {
+      ${compactReturnCss({
+        profile: "spread",
+        toolbar: ".spread-toolbar",
+        returnSelector: "#spread-overview",
+      })}
+      [data-model-live-presentation="spread"] .spread-hint {
         display: none !important;
       }
       ${overviewOnlyRestaurantCss({ profile: "spread", restaurant: ".spread-restaurant" })}
@@ -152,10 +177,10 @@ const presentations = Object.freeze({
       fallback: "overview",
       map: { overview: "overview", reading: "focus" },
     },
+    mutations: [returnMutation("#ribbon-overview", "← 返回全部料理")],
     css: `
       ${compactReturnCss({
         profile: "ribbon",
-        phone: ".ribbon-phone",
         toolbar: ".ribbon-scale-bar",
         returnSelector: "#ribbon-overview",
       })}
@@ -170,27 +195,21 @@ const presentations = Object.freeze({
       fallback: "category",
       map: { category: "overview", product: "focus" },
     },
+    mutations: [
+      returnMutation("#fisheye-category-lens", "← 返回分類"),
+      { selector: ".fisheye-lens-switch", attributes: { "aria-label": "返回分類" } },
+    ],
     css: `
-      [data-model-live-presentation="fisheye"] .fisheye-toolbar {
+      [data-model-live-presentation="fisheye"] .fisheye-toolbar,
+      [data-model-live-presentation="fisheye"] .fisheye-hint {
         display: none !important;
       }
+      ${compactReturnCss({
+        profile: "fisheye",
+        toolbar: ".fisheye-lens-switch",
+        returnSelector: "#fisheye-category-lens",
+      })}
       ${overviewOnlyRestaurantCss({ profile: "fisheye", restaurant: ".fisheye-restaurant" })}
-      [data-model-live-presentation="fisheye"] .fisheye-lens-switch {
-        align-self: flex-end !important;
-        width: max-content !important;
-        min-height: 0 !important;
-        margin: .3rem .55rem .15rem !important;
-        padding: .2rem !important;
-        border: 1px solid var(--line) !important;
-        background: var(--surface) !important;
-      }
-      [data-model-live-presentation="fisheye"] .fisheye-lens-switch > span {
-        display: none !important;
-      }
-      [data-model-live-presentation="fisheye"] .fisheye-lens-switch button {
-        min-height: 2rem !important;
-        padding-block: .3rem !important;
-      }
     `,
   }),
   matrix: freezePresentation({
@@ -200,10 +219,13 @@ const presentations = Object.freeze({
       attribute: "data-mode",
       fallback: "overview",
     },
+    mutations: [returnMutation("#matrix-overview", "← 返回矩陣")],
     css: `
-      [data-model-live-presentation="matrix"] .matrix-toolbar {
-        display: none !important;
-      }
+      ${compactReturnCss({
+        profile: "matrix",
+        toolbar: ".matrix-toolbar",
+        returnSelector: "#matrix-overview",
+      })}
       ${overviewOnlyRestaurantCss({ profile: "matrix", restaurant: ".matrix-restaurant" })}
     `,
   }),
@@ -214,8 +236,14 @@ const presentations = Object.freeze({
       attribute: "data-scale",
       fallback: "overview",
     },
+    mutations: [returnMutation(".paper-toolbar > button:first-child", "← 返回全覽")],
     css: `
-      [data-model-live-presentation="paper"] .paper-toolbar {
+      ${compactReturnCss({
+        profile: "paper",
+        toolbar: ".paper-toolbar",
+        returnSelector: ".paper-toolbar > button:first-child",
+      })}
+      [data-model-live-presentation="paper"] .paper-hint {
         display: none !important;
       }
       ${overviewOnlyRestaurantCss({ profile: "paper", restaurant: ".paper-restaurant" })}
@@ -241,13 +269,16 @@ const presentations = Object.freeze({
       fallback: "overview",
       map: { overview: "overview", reading: "focus", focus: "focus" },
     },
+    mutations: [returnMutation(".paper-toolbar > button:first-child", "← 返回全覽")],
     css: `
       ${compactReturnCss({
         profile: "landscape-camera",
-        phone: ".paper-phone",
         toolbar: ".paper-toolbar",
         returnSelector: ".paper-toolbar > button:first-child",
       })}
+      [data-model-live-presentation="landscape-camera"] .paper-hint {
+        display: none !important;
+      }
       ${overviewOnlyRestaurantCss({ profile: "landscape-camera", restaurant: ".paper-restaurant" })}
     `,
   }),
@@ -272,8 +303,14 @@ const presentations = Object.freeze({
       ],
       attributes: ["data-focused", "data-active"],
     },
+    mutations: [returnMutation(".paper-toolbar > button:first-child", "← 返回全覽")],
     css: `
-      [data-model-live-presentation="landscape-focus"] .paper-toolbar {
+      ${compactReturnCss({
+        profile: "landscape-focus",
+        toolbar: ".paper-toolbar",
+        returnSelector: ".paper-toolbar > button:first-child",
+      })}
+      [data-model-live-presentation="landscape-focus"] .paper-hint {
         display: none !important;
       }
       ${overviewOnlyRestaurantCss({ profile: "landscape-focus", restaurant: ".paper-restaurant" })}
@@ -287,13 +324,16 @@ const presentations = Object.freeze({
       fallback: "overview",
       map: { overview: "overview", reading: "focus" },
     },
+    mutations: [returnMutation("#rigid-overview", "← 返回全覽")],
     css: `
       ${compactReturnCss({
         profile: "rigid-sheet",
-        phone: ".paper-phone",
         toolbar: ".paper-toolbar",
         returnSelector: "#rigid-overview",
       })}
+      [data-model-live-presentation="rigid-sheet"] .paper-hint {
+        display: none !important;
+      }
       ${overviewOnlyRestaurantCss({ profile: "rigid-sheet", restaurant: ".paper-restaurant" })}
     `,
   }),
@@ -305,13 +345,16 @@ const presentations = Object.freeze({
       fallback: "overview",
       map: { overview: "overview", focus: "focus" },
     },
+    mutations: [returnMutation("#trifold-overview", "← 返回全覽")],
     css: `
       ${compactReturnCss({
         profile: "trifold",
-        phone: ".paper-phone",
         toolbar: ".paper-toolbar",
         returnSelector: "#trifold-overview",
       })}
+      [data-model-live-presentation="trifold"] .paper-hint {
+        display: none !important;
+      }
       ${overviewOnlyRestaurantCss({ profile: "trifold", restaurant: ".paper-restaurant" })}
     `,
   }),
@@ -323,13 +366,16 @@ const presentations = Object.freeze({
       fallback: "overview",
       map: { overview: "overview", reading: "focus" },
     },
+    mutations: [returnMutation("#window-overview", "← 返回全覽")],
     css: `
       ${compactReturnCss({
         profile: "two-column",
-        phone: ".paper-phone",
         toolbar: ".paper-toolbar",
         returnSelector: "#window-overview",
       })}
+      [data-model-live-presentation="two-column"] .paper-hint {
+        display: none !important;
+      }
       ${overviewOnlyRestaurantCss({ profile: "two-column", restaurant: ".paper-restaurant" })}
     `,
   }),
@@ -341,10 +387,10 @@ const presentations = Object.freeze({
       fallback: "overview",
       map: { overview: "overview", layer: "focus" },
     },
+    mutations: [returnMutation("#volume-overview", "← 返回全覽")],
     css: `
       ${compactReturnCss({
         profile: "volume",
-        phone: ".depth-phone",
         toolbar: ".depth-toolbar",
         returnSelector: "#volume-overview",
       })}

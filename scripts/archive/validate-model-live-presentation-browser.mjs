@@ -107,7 +107,7 @@ for (const model of designModels) {
   }
 }
 
-const routePath = ({ modelId, sectionId, objectId, view = "all" }) => {
+const routePath = ({ modelId, sectionId, objectId, view = "focus" }) => {
   const params = new URLSearchParams({
     model: modelId,
     section: sectionId,
@@ -118,337 +118,241 @@ const routePath = ({ modelId, sectionId, objectId, view = "all" }) => {
   return `/models/?${params}`;
 };
 
-const profileInitialContracts = Object.freeze({
-  multiscale: {
-    hidden: [".workspace-topbar"],
-    visible: [".multiscale-screen > header", ".scale-map"],
-  },
-  spread: {
-    hidden: [".spread-toolbar"],
-    visible: [".spread-restaurant", ".spread-map"],
-  },
-  ribbon: {
-    hidden: [".ribbon-scale-bar"],
-    visible: [".ribbon-restaurant", ".ribbon-viewport"],
-  },
-  fisheye: {
-    hidden: [".fisheye-toolbar"],
-    visible: [".fisheye-restaurant", ".fisheye-lens-switch", ".fisheye-stage"],
-  },
-  matrix: {
-    hidden: [".matrix-toolbar"],
-    visible: [".matrix-restaurant", ".matrix-board"],
-  },
-  paper: {
-    hidden: [".paper-toolbar"],
-    visible: [".paper-restaurant", ".paper-viewport"],
-  },
-  loupe: {
-    hidden: [".paper-restaurant", ".paper-location"],
-    visible: [".paper-toolbar", "#loupe-center", "#loupe-viewport"],
-    absolute: [".paper-toolbar"],
-    interactive: ["#loupe-center", ".paper-toolbar button:not(:disabled)"],
-  },
-  "landscape-camera": {
-    hidden: [".paper-toolbar"],
-    visible: [".paper-restaurant", ".landscape-viewport"],
-  },
-  "landscape-continuous": {
-    hidden: [".paper-restaurant", ".paper-location"],
-    visible: [".paper-toolbar", ".landscape-viewport"],
-    absolute: [".paper-toolbar"],
-    interactive: [".paper-toolbar button:not(:disabled)"],
-  },
-  "landscape-focus": {
-    hidden: [".paper-toolbar"],
-    visible: [".paper-restaurant", ".landscape-viewport"],
-  },
-  "rigid-sheet": {
-    hidden: [".paper-toolbar"],
-    visible: [".paper-restaurant", "#rigid-minimap", "#rigid-stage"],
-  },
-  trifold: {
-    hidden: [".paper-toolbar"],
-    visible: [".paper-restaurant", "#trifold-stage"],
-  },
-  "two-column": {
-    hidden: [".paper-toolbar"],
-    visible: [".paper-restaurant", "#window-map", "#window-stage"],
-  },
-  volume: {
-    hidden: [".depth-toolbar"],
-    visible: [".depth-restaurant", "#volume-layer-picker", "#volume-stage"],
-  },
-  projection: {
-    hidden: [".projection-restaurant"],
-    visible: [".projection-controls", ".projection-plot"],
-  },
-  parallax: {
-    hidden: [".parallax-restaurant"],
-    visible: [".parallax-stage"],
-  },
+const pathForObject = (objectId, view = "focus") => {
+  const route = routeByObjectId.get(objectId);
+  if (!route) throw new Error(`No Design Model route owns ${objectId}.`);
+  return routePath({ ...route, objectId, view });
+};
+
+const profileContracts = Object.freeze({
+  multiscale: Object.freeze({ stage: ".scale-map", restaurant: ".multiscale-screen > header" }),
+  spread: Object.freeze({ stage: ".spread-map", restaurant: ".spread-restaurant", hint: ".spread-hint" }),
+  ribbon: Object.freeze({ stage: ".ribbon-viewport", restaurant: ".ribbon-restaurant", hint: ".ribbon-hint" }),
+  fisheye: Object.freeze({ stage: ".fisheye-stage", restaurant: ".fisheye-restaurant", hint: ".fisheye-hint" }),
+  matrix: Object.freeze({ stage: ".matrix-board", restaurant: ".matrix-restaurant", hint: ".matrix-hint" }),
+  paper: Object.freeze({ stage: ".paper-viewport", restaurant: ".paper-restaurant", hint: ".paper-hint" }),
+  loupe: Object.freeze({ stage: "#loupe-viewport", restaurant: ".paper-restaurant", hint: ".paper-hint" }),
+  "landscape-camera": Object.freeze({ stage: ".landscape-viewport", restaurant: ".paper-restaurant", hint: ".paper-hint" }),
+  "landscape-continuous": Object.freeze({ stage: ".landscape-viewport", restaurant: ".paper-restaurant", hint: ".paper-hint" }),
+  "landscape-focus": Object.freeze({ stage: ".landscape-viewport", restaurant: ".paper-restaurant", hint: ".paper-hint" }),
+  "rigid-sheet": Object.freeze({ stage: "#rigid-stage", restaurant: ".paper-restaurant", hint: ".paper-hint" }),
+  trifold: Object.freeze({ stage: "#trifold-stage", restaurant: ".paper-restaurant", hint: ".paper-hint" }),
+  "two-column": Object.freeze({ stage: "#window-stage", restaurant: ".paper-restaurant", hint: ".paper-hint" }),
+  volume: Object.freeze({ stage: "#volume-stage", restaurant: ".depth-restaurant", hint: ".depth-hint" }),
+  projection: Object.freeze({ stage: ".projection-plot", restaurant: ".projection-restaurant", hint: ".projection-hint" }),
+  parallax: Object.freeze({ stage: ".parallax-stage", restaurant: ".parallax-restaurant", hint: ".parallax-hint" }),
 });
+
+const documentSurfaceCases = Object.freeze([
+  Object.freeze({ objectId: "01", restaurant: ".restaurant-name" }),
+  Object.freeze({ objectId: "05C", restaurant: ".restaurant-name" }),
+  Object.freeze({ objectId: "07", restaurant: ".atlas-restaurant", hint: ".atlas-hint" }),
+]);
 
 const initialCoverageGroups = new Map();
 for (const entry of modelLivePresentationEntries) {
   const route = routeByObjectId.get(entry.objectId);
-  if (!route) throw new Error(`No Design Model route owns presentation object ${entry.objectId}.`);
-  const contract = profileInitialContracts[entry.profileId];
-  if (!contract) throw new Error(`No initial browser contract exists for profile ${entry.profileId}.`);
+  const contract = profileContracts[entry.profileId];
+  if (!route) throw new Error(`No route owns mapped object ${entry.objectId}.`);
+  if (!contract) throw new Error(`No browser contract exists for profile ${entry.profileId}.`);
   const groupKey = `${route.modelId}/${route.sectionId}`;
   if (!initialCoverageGroups.has(groupKey)) initialCoverageGroups.set(groupKey, { ...route, entries: [] });
   initialCoverageGroups.get(groupKey).entries.push({ ...entry, contract });
 }
 
-const interactionViewports = ["320", "390", "desktop"];
-const interactionCases = [
-  {
-    name: "complete document keeps natural header flow",
-    path: "/models/?model=complete-document&section=baseline&variant=01&view=focus",
-    objectId: "01",
-    profile: null,
-    initial: { visible: [".restaurant-name"] },
-  },
-  {
-    name: "multiscale keeps only a compact focus return",
-    path: "/models/?model=multiscale-focus&section=model&variant=06&view=focus",
+const interactionCases = Object.freeze([
+  Object.freeze({
+    name: "multiscale returns to categories",
     objectId: "06",
-    profile: "multiscale",
-    initial: profileInitialContracts.multiscale,
-    enter: { click: ".scale-category > button", state: "focus" },
-    focus: {
-      hidden: [".multiscale-screen > header", "#scale-label"],
-      visible: [".workspace-topbar", "#collapse-all", ".scale-map"],
-      absolute: [".workspace-topbar"],
-      interactive: ["#collapse-all"],
-    },
-    exit: { click: "#collapse-all", state: "overview" },
-    returned: profileInitialContracts.multiscale,
-  },
-  {
-    name: "spread removes the duplicate location toolbar",
-    path: "/models/?model=horizontal-navigation&section=spread&variant=08&view=focus",
+    enter: ".scale-category > button",
+    state: "focus",
+    toolbar: ".workspace-topbar",
+    returnButton: "#collapse-all",
+    returnText: "← 返回分類",
+    returnAria: "返回分類",
+    exitState: "overview",
+  }),
+  Object.freeze({
+    name: "spread returns to categories",
     objectId: "08",
-    profile: "spread",
-    initial: profileInitialContracts.spread,
-    enter: { click: ".spread-category__focus", state: "focus" },
-    focus: { hidden: [".spread-toolbar", ".spread-restaurant"], visible: [".spread-map"] },
-    exit: { click: ".spread-category[data-focused=\"true\"] .spread-category__focus", state: "overview" },
-    returned: profileInitialContracts.spread,
-  },
-  {
-    name: "ribbon turns the scale bar into a reading-only return",
-    path: "/models/?model=horizontal-navigation&section=ribbon&variant=09&view=focus",
+    enter: ".spread-category__focus",
+    state: "focus",
+    toolbar: ".spread-toolbar",
+    returnButton: "#spread-overview",
+    returnText: "← 返回分類",
+    returnAria: "返回分類",
+    exitState: "overview",
+  }),
+  Object.freeze({
+    name: "ribbon returns to menu",
     objectId: "09",
-    profile: "ribbon",
-    initial: profileInitialContracts.ribbon,
-    enter: { click: ".ribbon-product summary", state: "focus" },
-    focus: {
-      hidden: [".ribbon-restaurant", "#ribbon-reading", ".ribbon-location", "#ribbon-previous", "#ribbon-next"],
-      visible: [".ribbon-scale-bar", "#ribbon-overview", ".ribbon-viewport"],
-      absolute: [".ribbon-scale-bar"],
-      interactive: ["#ribbon-overview"],
-    },
-    exit: { click: "#ribbon-overview", state: "overview" },
-    returned: profileInitialContracts.ribbon,
-  },
-  {
-    name: "fisheye keeps its compact lens switch without the location bar",
-    path: "/models/?model=horizontal-navigation&section=fisheye&variant=10&view=focus",
+    enter: ".ribbon-product summary",
+    state: "focus",
+    toolbar: ".ribbon-scale-bar",
+    returnButton: "#ribbon-overview",
+    returnText: "← 返回菜單",
+    returnAria: "返回菜單",
+    exitState: "overview",
+  }),
+  Object.freeze({
+    name: "fisheye returns to category",
     objectId: "10",
-    profile: "fisheye",
-    initial: { ...profileInitialContracts.fisheye, interactive: ["#fisheye-product-lens"] },
-    enter: { click: "#fisheye-product-lens", state: "focus" },
-    focus: {
-      hidden: [".fisheye-toolbar", ".fisheye-restaurant"],
-      visible: [".fisheye-lens-switch", ".fisheye-stage"],
-      interactive: ["#fisheye-category-lens"],
-    },
-    exit: { click: "#fisheye-category-lens", state: "overview" },
-    returned: { ...profileInitialContracts.fisheye, interactive: ["#fisheye-product-lens"] },
-  },
-  {
-    name: "matrix uses the matrix itself for focus and return",
-    path: "/models/?model=paper-field&section=semantic-information&variant=11&view=focus",
+    enter: ".fisheye-product[data-category-focused=\"true\"] summary",
+    state: "focus",
+    toolbar: ".fisheye-lens-switch",
+    returnButton: "#fisheye-category-lens",
+    returnText: "← 返回分類",
+    returnAria: "返回分類",
+    exitState: "overview",
+  }),
+  Object.freeze({
+    name: "matrix returns to matrix",
     objectId: "11",
-    profile: "matrix",
-    initial: profileInitialContracts.matrix,
-    enter: { click: ".matrix-row__label", state: "focus" },
-    focus: { hidden: [".matrix-toolbar", ".matrix-restaurant"], visible: [".matrix-board"] },
-    exit: { click: ".matrix-row[data-active=\"true\"] .matrix-row__label", state: "overview" },
-    returned: profileInitialContracts.matrix,
-  },
-  {
-    name: "paper field removes the duplicate paper toolbar",
-    path: "/models/?model=paper-field&section=semantic-information&variant=12&view=focus",
+    enter: ".matrix-row__label",
+    state: "focus",
+    toolbar: ".matrix-toolbar",
+    returnButton: "#matrix-overview",
+    returnText: "← 返回矩陣",
+    returnAria: "返回矩陣",
+    exitState: "overview",
+  }),
+  Object.freeze({
+    name: "paper returns to overview",
     objectId: "12",
-    profile: "paper",
-    initial: profileInitialContracts.paper,
-    enter: { click: ".paper-category__header", state: "focus" },
-    focus: { hidden: [".paper-toolbar", ".paper-restaurant"], visible: [".paper-viewport"] },
-    exit: { click: ".paper-category[data-focused=\"true\"] .paper-category__header", state: "overview" },
-    returned: profileInitialContracts.paper,
-  },
-  {
-    name: "static loupe floats only its direct lens controls",
-    path: "/models/?model=paper-field&section=stopped-lenses&variant=13&view=focus",
-    objectId: "13",
-    profile: "loupe",
-    initial: profileInitialContracts.loupe,
-    enter: { click: "#loupe-next" },
-    focus: {
-      ...profileInitialContracts.loupe,
-      interactive: ["#loupe-center", "#loupe-previous", "#loupe-next"],
-    },
-  },
-  {
-    name: "landscape paper keeps only a compact reading return",
-    path: "/models/?model=landscape-paper&section=core&variant=18&view=focus",
+    enter: ".paper-category__header",
+    state: "focus",
+    toolbar: ".paper-toolbar",
+    returnButton: "#paper-overview",
+    returnText: "← 返回全覽",
+    returnAria: "返回全覽",
+    exitState: "overview",
+    cleanControl: ".paper-category__header",
+  }),
+  Object.freeze({
+    name: "landscape returns to overview",
     objectId: "18",
-    profile: "landscape-camera",
-    initial: profileInitialContracts["landscape-camera"],
-    enter: { click: ".paper-category__header", state: "focus" },
-    focus: {
-      hidden: [".paper-restaurant", ".paper-location", "#landscape-previous", "#landscape-next"],
-      visible: [".paper-toolbar", "#landscape-overview", ".landscape-viewport"],
-      absolute: [".paper-toolbar"],
-      interactive: ["#landscape-overview"],
-    },
-    exit: { click: "#landscape-overview", state: "overview" },
-    returned: profileInitialContracts["landscape-camera"],
-  },
-  {
-    name: "proportional landscape keeps compact continuous navigation",
-    path: "/models/?model=landscape-paper&section=core&variant=18A&view=focus",
-    objectId: "18A",
-    profile: "landscape-continuous",
-    initial: profileInitialContracts["landscape-continuous"],
-    enter: { click: "#proportional-next" },
-    focus: {
-      ...profileInitialContracts["landscape-continuous"],
-      interactive: ["#proportional-previous", "#proportional-next"],
-    },
-  },
-  {
-    name: "focus-geometry landscape removes the toolbar because the active category resets directly",
-    path: "/models/?model=landscape-paper&section=focus-geometry&variant=22D&view=focus",
+    enter: ".paper-category__header",
+    state: "focus",
+    toolbar: ".paper-toolbar",
+    returnButton: "#landscape-overview",
+    returnText: "← 返回全覽",
+    returnAria: "返回全覽",
+    exitState: "overview",
+    cleanControl: ".paper-category__header",
+  }),
+  Object.freeze({
+    name: "focus geometry returns to overview",
     objectId: "22D",
-    profile: "landscape-focus",
-    initial: profileInitialContracts["landscape-focus"],
-    enter: { click: ".paper-category__header", state: "focus" },
-    focus: { hidden: [".paper-toolbar", ".paper-restaurant"], visible: [".landscape-viewport"] },
-    exit: { click: ".paper-category[data-focused=\"true\"] .paper-category__header", state: "overview" },
-    returned: profileInitialContracts["landscape-focus"],
-  },
-  {
-    name: "rigid sheet keeps its own camera return",
-    path: "/models/?model=landscape-paper&section=stopped-routes&variant=19&view=focus",
-    objectId: "19",
-    profile: "rigid-sheet",
-    initial: profileInitialContracts["rigid-sheet"],
-    enter: { click: ".paper-category__header", state: "focus" },
-    focus: {
-      hidden: [".paper-restaurant", ".paper-location", "#rigid-previous", "#rigid-next"],
-      visible: [".paper-toolbar", "#rigid-overview", "#rigid-minimap", "#rigid-stage"],
-      absolute: [".paper-toolbar"],
-      interactive: ["#rigid-overview"],
-    },
-    exit: { click: "#rigid-overview", state: "overview" },
-    returned: profileInitialContracts["rigid-sheet"],
-  },
-  {
-    name: "trifold keeps its own folded-panel return",
-    path: "/models/?model=landscape-paper&section=stopped-routes&variant=20&view=focus",
-    objectId: "20",
-    profile: "trifold",
-    initial: profileInitialContracts.trifold,
-    enter: { click: ".paper-category__header", state: "focus" },
-    focus: {
-      hidden: [".paper-restaurant", ".paper-location", "#trifold-previous", "#trifold-next"],
-      visible: [".paper-toolbar", "#trifold-overview", "#trifold-stage"],
-      absolute: [".paper-toolbar"],
-      interactive: ["#trifold-overview"],
-    },
-    exit: { click: "#trifold-overview", state: "overview" },
-    returned: profileInitialContracts.trifold,
-  },
-  {
-    name: "two-column window keeps its own window return",
-    path: "/models/?model=landscape-paper&section=stopped-routes&variant=21&view=focus",
-    objectId: "21",
-    profile: "two-column",
-    initial: profileInitialContracts["two-column"],
-    enter: { click: ".paper-category__header", state: "focus" },
-    focus: {
-      hidden: [".paper-restaurant", ".paper-location", "#window-previous", "#window-next"],
-      visible: [".paper-toolbar", "#window-overview", "#window-map", "#window-stage"],
-      absolute: [".paper-toolbar"],
-      interactive: ["#window-overview"],
-    },
-    exit: { click: "#window-overview", state: "overview" },
-    returned: profileInitialContracts["two-column"],
-  },
-  {
-    name: "vertical landscape keeps a return because category taps do not exit reading",
-    path: "/models/?model=landscape-paper&section=vertical-writing&variant=24&view=focus",
+    enter: ".paper-category__header",
+    state: "focus",
+    toolbar: ".paper-toolbar",
+    returnButton: ".paper-toolbar > button:first-child",
+    returnText: "← 返回全覽",
+    returnAria: "返回全覽",
+    exitState: "overview",
+    cleanControl: ".paper-category__header",
+  }),
+  Object.freeze({
+    name: "vertical landscape returns to overview",
     objectId: "24",
-    profile: "landscape-camera",
-    initial: profileInitialContracts["landscape-camera"],
-    enter: { click: ".paper-category__header", state: "focus" },
-    focus: {
-      hidden: [".paper-restaurant", ".paper-location", "#vertical-previous", "#vertical-next"],
-      visible: [".paper-toolbar", "#vertical-overview", ".landscape-viewport"],
-      absolute: [".paper-toolbar"],
-      interactive: ["#vertical-overview"],
-    },
-    exit: { click: "#vertical-overview", state: "overview" },
-    returned: profileInitialContracts["landscape-camera"],
-  },
-  {
-    name: "menu volume keeps only a layer-to-overview return",
-    path: "/models/?model=depth-projection&section=dimension-reset&variant=25B&view=focus",
+    enter: ".paper-category__header",
+    state: "focus",
+    toolbar: ".paper-toolbar",
+    returnButton: "#vertical-overview",
+    returnText: "← 返回全覽",
+    returnAria: "返回全覽",
+    exitState: "overview",
+    cleanControl: ".paper-category__header",
+  }),
+  Object.freeze({
+    name: "proportional landscape keeps located navigation",
+    objectId: "18A",
+    enter: "#proportional-next",
+    continuous: true,
+    toolbar: ".paper-toolbar",
+    interactive: ["#proportional-previous", "#proportional-next"],
+    visible: [".paper-location", "#proportional-location-title", "#proportional-location-meta"],
+  }),
+  Object.freeze({
+    name: "rigid sheet keeps one return",
+    objectId: "19",
+    viewports: ["390"],
+    enter: ".paper-category__header",
+    state: "focus",
+    toolbar: ".paper-toolbar",
+    returnButton: "#rigid-overview",
+    returnText: "← 返回全覽",
+    returnAria: "返回全覽",
+    exitState: "overview",
+  }),
+  Object.freeze({
+    name: "trifold keeps one return",
+    objectId: "20",
+    viewports: ["390"],
+    enter: ".paper-category__header",
+    state: "focus",
+    toolbar: ".paper-toolbar",
+    returnButton: "#trifold-overview",
+    returnText: "← 返回全覽",
+    returnAria: "返回全覽",
+    exitState: "overview",
+  }),
+  Object.freeze({
+    name: "two column keeps one return",
+    objectId: "21",
+    viewports: ["390"],
+    enter: ".paper-category__header",
+    state: "focus",
+    toolbar: ".paper-toolbar",
+    returnButton: "#window-overview",
+    returnText: "← 返回全覽",
+    returnAria: "返回全覽",
+    exitState: "overview",
+  }),
+  Object.freeze({
+    name: "volume keeps one return",
     objectId: "25B",
-    profile: "volume",
-    initial: profileInitialContracts.volume,
-    enter: { click: "#volume-layer-picker button", state: "focus" },
-    focus: {
-      hidden: [".depth-restaurant", ".depth-toolbar__status", "#volume-previous", "#volume-next"],
-      visible: [".depth-toolbar", "#volume-overview", "#volume-layer-picker", "#volume-stage"],
-      absolute: [".depth-toolbar"],
-      interactive: ["#volume-overview"],
-    },
-    exit: { click: "#volume-overview", state: "overview" },
-    returned: profileInitialContracts.volume,
-  },
-  {
-    name: "projection removes restaurant identity but preserves axis controls",
-    path: "/models/?model=depth-projection&section=projection-lens&variant=25P&view=focus",
-    objectId: "25P",
-    profile: "projection",
-    initial: profileInitialContracts.projection,
-  },
-  {
-    name: "parallax removes restaurant identity but preserves the direct stage",
-    path: "/models/?model=depth-projection&section=parallax-volume&variant=26&view=focus",
-    objectId: "26",
-    profile: "parallax",
-    initial: profileInitialContracts.parallax,
-  },
-];
+    viewports: ["390"],
+    enter: "#volume-layer-picker button",
+    state: "focus",
+    toolbar: ".depth-toolbar",
+    returnButton: "#volume-overview",
+    returnText: "← 返回全覽",
+    returnAria: "返回全覽",
+    exitState: "overview",
+  }),
+]);
 
 const objectRootExpression = (objectId) => `
   [...document.querySelectorAll('.model-pooled-surface')]
     .find((candidate) => candidate.dataset.objectId === ${JSON.stringify(objectId)})
 `;
 
-const selectorsFor = (expectation = {}) => [...new Set([
-  ...(expectation.hidden ?? []),
-  ...(expectation.visible ?? []),
-  ...(expectation.absolute ?? []),
-  ...(expectation.interactive ?? []),
-])];
+const surfaceReadyExpression = (objectId) => `(() => {
+  const root = ${objectRootExpression(objectId)};
+  const frame = root?.querySelector('iframe.model-live-frame');
+  return document.readyState === 'complete'
+    && root?.dataset.liveState === 'ready'
+    && frame
+    && !frame.hidden
+    && frame.contentDocument?.readyState === 'complete'
+    && Boolean(frame.contentDocument.querySelector('#model-live-humanization-style'));
+})()`;
 
-const snapshotExpression = (objectId, selectors) => `(() => {
+const presentationStateExpression = (objectId, state) => `(() => {
+  const root = ${objectRootExpression(objectId)};
+  return root?.dataset.livePresentationState === ${JSON.stringify(state)};
+})()`;
+
+const centerSurfaceExpression = (objectId) => `(async () => {
+  const root = ${objectRootExpression(objectId)};
+  if (!root) return false;
+  root.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'auto' });
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  return true;
+})()`;
+
+const snapshotExpression = (objectId, selectors = []) => `(() => {
   const root = ${objectRootExpression(objectId)};
   const frame = root?.querySelector('iframe.model-live-frame');
   const documentRoot = frame?.contentDocument;
@@ -490,37 +394,44 @@ const snapshotExpression = (objectId, selectors) => `(() => {
       hitSelf: Boolean(hit && (hit === element || element.contains(hit))),
       disabled: Boolean(element.matches?.(':disabled') || element.getAttribute('aria-disabled') === 'true'),
       text: element.textContent?.trim() ?? '',
+      ariaLabel: element.getAttribute('aria-label'),
+      ariaLive: element.getAttribute('aria-live'),
     } : null;
   }
+
+  const forbiddenPattern = /(聚焦這個分類|恢復原比例|inline detail|菜單尺度|閱讀尺度|返回全部分類|返回全部料理)/i;
+  const forbiddenControls = [...(documentRoot?.querySelectorAll('button[aria-label], summary[aria-label], [role=button][aria-label], [title]') ?? [])]
+    .map((element) => ({
+      tag: element.tagName,
+      id: element.id,
+      ariaLabel: element.getAttribute('aria-label'),
+      title: element.getAttribute('title'),
+    }))
+    .filter((entry) => forbiddenPattern.test((entry.ariaLabel ?? '') + ' ' + (entry.title ?? '')));
+  const noisyLiveRegions = [...(documentRoot?.querySelectorAll('[aria-live]:not([aria-live="off"])') ?? [])]
+    .map((element) => ({ id: element.id, className: element.className, text: element.textContent?.trim() ?? '' }))
+    .filter((entry) => forbiddenPattern.test(entry.text));
+
+  const proportionalViewport = documentRoot?.querySelector('#proportional-viewport');
+  const firstProportionalColumn = documentRoot?.querySelector('.proportional-column');
+  const firstColumnRect = firstProportionalColumn?.getBoundingClientRect();
+  const proportionalRect = proportionalViewport?.getBoundingClientRect();
+
   return {
-    state: root?.dataset.liveState ?? null,
     profile: root?.dataset.livePresentation ?? null,
     presentationState: root?.dataset.livePresentationState ?? null,
+    humanizationStyle: Boolean(documentRoot?.querySelector('#model-live-humanization-style')),
+    showAllText: document.querySelector('#show-all')?.textContent?.trim() ?? null,
     styles,
+    forbiddenControls,
+    noisyLiveRegions,
+    proportional: proportionalViewport ? {
+      scrollLeft: proportionalViewport.scrollLeft,
+      firstColumnIntersects: Boolean(firstColumnRect && proportionalRect
+        && firstColumnRect.right > proportionalRect.left
+        && firstColumnRect.left < proportionalRect.right),
+    } : null,
   };
-})()`;
-
-const presentationStateExpression = (objectId, state) => `(() => {
-  const root = ${objectRootExpression(objectId)};
-  return root?.dataset.livePresentationState === ${JSON.stringify(state)};
-})()`;
-
-const surfaceReadyExpression = (objectId) => `(() => {
-  const root = ${objectRootExpression(objectId)};
-  const frame = root?.querySelector('iframe.model-live-frame');
-  return document.readyState === 'complete'
-    && root?.dataset.liveState === 'ready'
-    && frame
-    && !frame.hidden
-    && frame.contentDocument?.readyState === 'complete';
-})()`;
-
-const centerSurfaceExpression = (objectId) => `(async () => {
-  const root = ${objectRootExpression(objectId)};
-  if (!root) return false;
-  root.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'auto' });
-  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-  return true;
 })()`;
 
 const pointerPointExpression = (objectId, selector) => `(() => {
@@ -581,39 +492,39 @@ const pointerClick = async (client, objectId, selector) => {
   return { ok: true, point };
 };
 
-const checkExpectation = (snapshot, expectation, label) => {
-  const failures = [];
-  for (const selector of expectation.hidden ?? []) {
-    const style = snapshot.styles[selector];
-    if (!style) failures.push(`${label}: ${selector} is missing instead of intentionally hidden`);
-    else if (style.rendered) failures.push(`${label}: ${selector} should be hidden`);
+const requireHidden = (snapshot, selector, failures, label) => {
+  const style = snapshot.styles[selector];
+  if (!style) failures.push(`${label}: ${selector} is missing`);
+  else if (style.rendered) failures.push(`${label}: ${selector} should be hidden`);
+};
+
+const requireVisible = (snapshot, selector, failures, label) => {
+  const style = snapshot.styles[selector];
+  if (!style) failures.push(`${label}: ${selector} is missing`);
+  else if (!style.rendered) failures.push(`${label}: ${selector} should be visible`);
+  else if (!style.intersectsViewport) failures.push(`${label}: ${selector} is outside the iframe viewport`);
+};
+
+const requireInteractive = (snapshot, selector, failures, label) => {
+  const style = snapshot.styles[selector];
+  requireVisible(snapshot, selector, failures, label);
+  if (!style) return;
+  if (!style.centerInViewport) failures.push(`${label}: ${selector} center is outside the iframe viewport`);
+  if (!style.hitSelf) failures.push(`${label}: ${selector} is covered at its center`);
+  if (style.pointerEvents === "none") failures.push(`${label}: ${selector} has pointer-events none`);
+  if (style.disabled) failures.push(`${label}: ${selector} is disabled`);
+  if (style.width < 30 || style.height < 30) {
+    failures.push(`${label}: ${selector} is ${Math.round(style.width)}×${Math.round(style.height)}, below the 30px floor`);
   }
-  for (const selector of expectation.visible ?? []) {
-    const style = snapshot.styles[selector];
-    if (!style) failures.push(`${label}: ${selector} is missing`);
-    else if (!style.rendered) failures.push(`${label}: ${selector} should be rendered`);
-    else if (!style.intersectsViewport) failures.push(`${label}: ${selector} is rendered outside the iframe viewport`);
+};
+
+const checkLanguage = (snapshot, failures, label) => {
+  if (snapshot.forbiddenControls.length) {
+    failures.push(`${label}: stale control language ${JSON.stringify(snapshot.forbiddenControls)}`);
   }
-  for (const selector of expectation.absolute ?? []) {
-    const style = snapshot.styles[selector];
-    if (!style) failures.push(`${label}: ${selector} is missing`);
-    else if (style.position !== "absolute") failures.push(`${label}: ${selector} should be out of flow, got ${style.position}`);
+  if (snapshot.noisyLiveRegions.length) {
+    failures.push(`${label}: stale live-region language ${JSON.stringify(snapshot.noisyLiveRegions)}`);
   }
-  for (const selector of expectation.interactive ?? []) {
-    const style = snapshot.styles[selector];
-    if (!style) failures.push(`${label}: interactive ${selector} is missing`);
-    else {
-      if (!style.rendered) failures.push(`${label}: interactive ${selector} is not rendered`);
-      if (!style.centerInViewport) failures.push(`${label}: interactive ${selector} center is outside the iframe viewport`);
-      if (!style.hitSelf) failures.push(`${label}: interactive ${selector} is covered at its center point`);
-      if (style.pointerEvents === "none") failures.push(`${label}: interactive ${selector} has pointer-events none`);
-      if (style.disabled) failures.push(`${label}: interactive ${selector} is disabled`);
-      if (style.width < 30 || style.height < 30) {
-        failures.push(`${label}: interactive ${selector} is ${Math.round(style.width)}×${Math.round(style.height)}, below the 30px review floor`);
-      }
-    }
-  }
-  return failures;
 };
 
 const navigate = async (client, path, viewport) => {
@@ -650,7 +561,7 @@ const browserProcess = spawn(browser, [
   "--disable-dev-shm-usage",
   "--remote-allow-origins=*",
   `--remote-debugging-port=${debugPort}`,
-  `--user-data-dir=/tmp/menu-lens-live-presentation-${process.pid}`,
+  `--user-data-dir=/tmp/menu-lens-live-humanization-${process.pid}`,
   "about:blank",
 ], { stdio: ["ignore", "pipe", "pipe"] });
 let browserStderr = "";
@@ -662,7 +573,7 @@ try {
     `http://127.0.0.1:${debugPort}/json/new?${encodeURIComponent("about:blank")}`,
     { method: "PUT" },
   );
-  if (!targetResponse.ok) throw new Error(`Could not create model presentation target: ${targetResponse.status}`);
+  if (!targetResponse.ok) throw new Error(`Could not create browser target: ${targetResponse.status}`);
   const target = await targetResponse.json();
   const socket = new WebSocket(target.webSocketDebuggerUrl);
   await new Promise((resolve, reject) => {
@@ -681,25 +592,42 @@ try {
     screenHeight: 1100,
   });
 
-  const initialCoverage = [];
-  const interactions = [];
   const failures = [];
+  const initialCoverage = [];
+  const documentCoverage = [];
+  const interactions = [];
 
   for (const group of initialCoverageGroups.values()) {
     const path = routePath({
       modelId: group.modelId,
       sectionId: group.sectionId,
       objectId: group.entries[0].objectId,
+      view: "all",
     });
     const url = await navigate(client, path, "390");
     for (const entry of group.entries) {
-      await waitFor(client, surfaceReadyExpression(entry.objectId), `${entry.objectId} mapped live surface`);
+      await waitFor(client, surfaceReadyExpression(entry.objectId), `${entry.objectId} mapped surface`);
       await evaluate(client, centerSurfaceExpression(entry.objectId));
       await nextPaint(client);
-      const snapshot = await evaluate(client, snapshotExpression(entry.objectId, selectorsFor(entry.contract)));
+      const selectors = [
+        ".phone-status",
+        entry.contract.restaurant,
+        entry.contract.stage,
+        ...(entry.contract.hint ? [entry.contract.hint] : []),
+      ];
+      const snapshot = await evaluate(client, snapshotExpression(entry.objectId, selectors));
       const caseFailures = [];
-      if (snapshot.profile !== entry.profileId) caseFailures.push(`profile ${JSON.stringify(snapshot.profile)} !== ${JSON.stringify(entry.profileId)}`);
-      caseFailures.push(...checkExpectation(snapshot, entry.contract, "initial"));
+      if (snapshot.profile !== entry.profileId) {
+        caseFailures.push(`profile ${JSON.stringify(snapshot.profile)} !== ${JSON.stringify(entry.profileId)}`);
+      }
+      if (!snapshot.humanizationStyle) caseFailures.push("humanization style is missing");
+      requireHidden(snapshot, ".phone-status", caseFailures, "initial");
+      requireHidden(snapshot, entry.contract.restaurant, caseFailures, "initial");
+      requireVisible(snapshot, entry.contract.stage, caseFailures, "initial");
+      if (entry.contract.hint && snapshot.styles[entry.contract.hint]) {
+        requireHidden(snapshot, entry.contract.hint, caseFailures, "initial");
+      }
+      checkLanguage(snapshot, caseFailures, "initial");
       initialCoverage.push({
         objectId: entry.objectId,
         profile: entry.profileId,
@@ -711,69 +639,154 @@ try {
     }
   }
 
-  for (const viewport of interactionViewports) {
-    for (const testCase of interactionCases) {
-      const url = await navigate(client, testCase.path, viewport);
-      await waitFor(client, surfaceReadyExpression(testCase.objectId), `${testCase.name} ${viewport} live surface`);
+  for (const documentCase of documentSurfaceCases) {
+    const url = await navigate(client, pathForObject(documentCase.objectId), "390");
+    await waitFor(client, surfaceReadyExpression(documentCase.objectId), `${documentCase.objectId} document surface`);
+    await evaluate(client, centerSurfaceExpression(documentCase.objectId));
+    await nextPaint(client);
+    const selectors = [
+      ".phone-status",
+      documentCase.restaurant,
+      ...(documentCase.hint ? [documentCase.hint] : []),
+    ];
+    const snapshot = await evaluate(client, snapshotExpression(documentCase.objectId, selectors));
+    const caseFailures = [];
+    if (snapshot.profile !== null) caseFailures.push(`document profile should remain null, got ${snapshot.profile}`);
+    requireHidden(snapshot, ".phone-status", caseFailures, "document");
+    requireVisible(snapshot, documentCase.restaurant, caseFailures, "document");
+    if (documentCase.hint) requireHidden(snapshot, documentCase.hint, caseFailures, "document");
+    checkLanguage(snapshot, caseFailures, "document");
+    documentCoverage.push({
+      objectId: documentCase.objectId,
+      path: `${url.pathname}${url.search}`,
+      snapshot,
+      failures: caseFailures,
+    });
+    failures.push(...caseFailures.map((failure) => `document ${documentCase.objectId}: ${failure}`));
+  }
+
+  for (const testCase of interactionCases) {
+    const viewports = testCase.viewports ?? ["320", "390", "desktop"];
+    for (const viewport of viewports) {
+      const url = await navigate(client, pathForObject(testCase.objectId), viewport);
+      await waitFor(client, surfaceReadyExpression(testCase.objectId), `${testCase.name} ${viewport} surface`);
       await evaluate(client, centerSurfaceExpression(testCase.objectId));
       await nextPaint(client);
 
+      const contract = profileContracts[
+        modelLivePresentationEntries.find(({ objectId }) => objectId === testCase.objectId)?.profileId
+      ];
+      const selectors = [
+        ".phone-status",
+        contract.restaurant,
+        contract.stage,
+        testCase.toolbar,
+        testCase.returnButton,
+        ...(testCase.interactive ?? []),
+        ...(testCase.visible ?? []),
+        ...(testCase.cleanControl ? [testCase.cleanControl] : []),
+      ].filter(Boolean);
       const caseFailures = [];
-      const initial = await evaluate(client, snapshotExpression(testCase.objectId, selectorsFor(testCase.initial)));
-      if (initial.profile !== testCase.profile) caseFailures.push(`initial: profile ${JSON.stringify(initial.profile)} !== ${JSON.stringify(testCase.profile)}`);
-      caseFailures.push(...checkExpectation(initial, testCase.initial, "initial"));
+      const initial = await evaluate(client, snapshotExpression(testCase.objectId, selectors));
+      if (initial.showAllText !== "回模型列表") {
+        caseFailures.push(`outer action ${JSON.stringify(initial.showAllText)} !== "回模型列表"`);
+      }
+      requireHidden(initial, ".phone-status", caseFailures, "initial");
+      requireHidden(initial, contract.restaurant, caseFailures, "initial");
+      requireVisible(initial, contract.stage, caseFailures, "initial");
+      checkLanguage(initial, caseFailures, "initial");
 
-      let focus = null;
-      let focusScreenshot = null;
-      if (testCase.enter) {
-        const click = await pointerClick(client, testCase.objectId, testCase.enter.click);
-        if (!click.ok) {
-          caseFailures.push(`enter: ${click.reason}`);
-        } else {
-          if (testCase.enter.state) {
-            await waitFor(
-              client,
-              presentationStateExpression(testCase.objectId, testCase.enter.state),
-              `${testCase.name} ${viewport} enter ${testCase.enter.state}`,
-            );
-          }
-          await nextPaint(client);
-          focus = await evaluate(client, snapshotExpression(testCase.objectId, selectorsFor(testCase.focus)));
-          caseFailures.push(...checkExpectation(focus, testCase.focus, "focus"));
-          if (viewport === "390") {
-            focusScreenshot = await captureScreenshot(client, `model-live-${slugify(testCase.name)}-390-focus.png`);
+      if (testCase.objectId === "18A") {
+        requireVisible(initial, testCase.toolbar, caseFailures, "initial");
+        for (const selector of testCase.visible) requireVisible(initial, selector, caseFailures, "initial");
+        if (initial.proportional?.scrollLeft > 1) {
+          caseFailures.push(`initial: proportional landscape starts at scrollLeft ${initial.proportional.scrollLeft}`);
+        }
+        if (!initial.proportional?.firstColumnIntersects) {
+          caseFailures.push("initial: first proportional column is clipped outside the viewport");
+        }
+      } else {
+        requireHidden(initial, testCase.toolbar, caseFailures, "initial");
+      }
+
+      const enter = await pointerClick(client, testCase.objectId, testCase.enter);
+      if (!enter.ok) {
+        caseFailures.push(`enter: ${enter.reason}`);
+      } else if (testCase.state) {
+        await waitFor(
+          client,
+          presentationStateExpression(testCase.objectId, testCase.state),
+          `${testCase.name} ${viewport} ${testCase.state}`,
+        );
+      }
+      await nextPaint(client);
+
+      const focused = await evaluate(client, snapshotExpression(testCase.objectId, selectors));
+      requireHidden(focused, ".phone-status", caseFailures, "focus");
+      requireHidden(focused, contract.restaurant, caseFailures, "focus");
+      requireVisible(focused, contract.stage, caseFailures, "focus");
+      checkLanguage(focused, caseFailures, "focus");
+
+      if (testCase.continuous) {
+        requireVisible(focused, testCase.toolbar, caseFailures, "focus");
+        for (const selector of testCase.visible) requireVisible(focused, selector, caseFailures, "focus");
+        for (const selector of testCase.interactive) requireInteractive(focused, selector, caseFailures, "focus");
+        const metaText = focused.styles["#proportional-location-meta"]?.text;
+        if (!/^\d+ \/ 3$/.test(metaText ?? "")) {
+          caseFailures.push(`focus: proportional location ${JSON.stringify(metaText)} should be a compact position`);
+        }
+      } else if (enter.ok) {
+        requireVisible(focused, testCase.toolbar, caseFailures, "focus");
+        requireInteractive(focused, testCase.returnButton, caseFailures, "focus");
+        const returnStyle = focused.styles[testCase.returnButton];
+        if (returnStyle?.text !== testCase.returnText) {
+          caseFailures.push(`focus: return text ${JSON.stringify(returnStyle?.text)} !== ${JSON.stringify(testCase.returnText)}`);
+        }
+        if (returnStyle?.ariaLabel !== testCase.returnAria) {
+          caseFailures.push(`focus: return aria-label ${JSON.stringify(returnStyle?.ariaLabel)} !== ${JSON.stringify(testCase.returnAria)}`);
+        }
+        if (testCase.cleanControl) {
+          const ariaLabel = focused.styles[testCase.cleanControl]?.ariaLabel ?? "";
+          if (/(聚焦|原比例|focus|scale|camera)/i.test(ariaLabel)) {
+            caseFailures.push(`focus: ${testCase.cleanControl} keeps internal aria-label ${JSON.stringify(ariaLabel)}`);
           }
         }
       }
 
+      let screenshot = null;
+      if (viewport === "390") {
+        screenshot = await captureScreenshot(client, `model-live-${slugify(testCase.name)}-390-focus.png`);
+      }
+
       let returned = null;
-      if (testCase.exit && !caseFailures.some((failure) => failure.startsWith("enter:"))) {
-        const click = await pointerClick(client, testCase.objectId, testCase.exit.click);
-        if (!click.ok) {
-          caseFailures.push(`return: ${click.reason}`);
+      if (!testCase.continuous && enter.ok) {
+        const exit = await pointerClick(client, testCase.objectId, testCase.returnButton);
+        if (!exit.ok) {
+          caseFailures.push(`return: ${exit.reason}`);
         } else {
-          if (testCase.exit.state) {
-            await waitFor(
-              client,
-              presentationStateExpression(testCase.objectId, testCase.exit.state),
-              `${testCase.name} ${viewport} return ${testCase.exit.state}`,
-            );
-          }
+          await waitFor(
+            client,
+            presentationStateExpression(testCase.objectId, testCase.exitState),
+            `${testCase.name} ${viewport} ${testCase.exitState}`,
+          );
           await nextPaint(client);
-          returned = await evaluate(client, snapshotExpression(testCase.objectId, selectorsFor(testCase.returned)));
-          caseFailures.push(...checkExpectation(returned, testCase.returned, "returned"));
+          returned = await evaluate(client, snapshotExpression(testCase.objectId, selectors));
+          requireHidden(returned, testCase.toolbar, caseFailures, "returned");
+          requireHidden(returned, contract.restaurant, caseFailures, "returned");
+          requireVisible(returned, contract.stage, caseFailures, "returned");
+          checkLanguage(returned, caseFailures, "returned");
         }
       }
 
       interactions.push({
         name: testCase.name,
+        objectId: testCase.objectId,
         viewport,
         path: `${url.pathname}${url.search}`,
-        objectId: testCase.objectId,
         initial,
-        focus,
+        focused,
         returned,
-        focusScreenshot,
+        screenshot,
         failures: caseFailures,
       });
       failures.push(...caseFailures.map((failure) => `${testCase.name}/${viewport}: ${failure}`));
@@ -790,15 +803,18 @@ try {
     baseUrl,
     generatedAt: new Date().toISOString(),
     mappedObjectCount: modelLivePresentationEntries.length,
+    documentSurfaceCases,
     initialCoverage,
-    interactionViewports,
+    documentCoverage,
     interactions,
     failures,
   };
   await writeFile(new URL("model-live-presentation-results.json", outputDir), `${JSON.stringify(report, null, 2)}\n`);
-  if (failures.length) throw new Error(`Model live-presentation browser review failed:\n- ${failures.join("\n- ")}`);
+  if (failures.length) {
+    throw new Error(`Model live-presentation browser review failed:\n- ${failures.join("\n- ")}`);
+  }
   socket.close();
-  console.log(`Model live-presentation browser review: ${modelLivePresentationEntries.length} mapped objects and real pointer interactions pass.`);
+  console.log(`Model live-presentation browser review: ${modelLivePresentationEntries.length} spatial objects and document surfaces pass shared humanization checks.`);
 } catch (error) {
   if (browserStderr.trim()) console.error(browserStderr.trim());
   throw error;

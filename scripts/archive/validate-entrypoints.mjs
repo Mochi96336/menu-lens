@@ -17,6 +17,7 @@ const requiredPaths = new Set([
   "model-live-board.mjs",
   "model-object-inspector.mjs",
   "model-page.mjs",
+  "model-page-humanized.mjs",
   "models/index.html",
   "catalog/index.mjs",
   "catalog/extensions.mjs",
@@ -43,6 +44,7 @@ const [
   loader,
   modelPage,
   modelRenderer,
+  modelHumanization,
   liveSurface,
   pageState,
   surfacePool,
@@ -54,6 +56,7 @@ const [
   readFile(new URL("scripts/archive/load-catalog.mjs", root), "utf8"),
   readFile(new URL("models/index.html", archiveRoot), "utf8"),
   readFile(new URL("model-page.mjs", archiveRoot), "utf8"),
+  readFile(new URL("model-page-humanized.mjs", archiveRoot), "utf8"),
   readFile(new URL("model-live-surface.mjs", archiveRoot), "utf8"),
   readFile(new URL("model-page-state.mjs", archiveRoot), "utf8"),
   readFile(new URL("model-surface-pool.mjs", archiveRoot), "utf8"),
@@ -82,7 +85,7 @@ for (const contract of [
   '<link rel="stylesheet" href="../model-page.css" />',
   '<link rel="stylesheet" href="../model-page-workbench.css" />',
   '<script src="../prototype-registry.js"></script>',
-  '<script type="module" src="../model-page.mjs"></script>',
+  '<script type="module" src="../model-page-humanized.mjs"></script>',
   'id="model-select"',
   'id="section-tabs"',
   'id="model-object-title"',
@@ -97,6 +100,10 @@ for (const contract of [
   'id="inspector-panel-records"',
 ]) {
   if (!modelPage.includes(contract)) throw new Error(`Design model page is missing refactor contract: ${contract}`);
+}
+
+if (!modelHumanization.includes('import "./model-page.mjs";')) {
+  throw new Error("Humanized Model bootstrap must extend the canonical coordinator.");
 }
 
 for (const obsolete of [
@@ -156,4 +163,4 @@ if (renderer.includes('review.href = `../')) {
   throw new Error("Archive review links must remain relative to the published research-history root.");
 }
 
-console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the wide canonical pooled-surface model workbench.`);
+console.log(`Archive entrypoints: ${requiredPaths.size} paths verified, including the humanized pooled-surface Model workbench.`);
