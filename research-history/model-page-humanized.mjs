@@ -85,6 +85,10 @@ const humanizationCss = `
     backdrop-filter: none !important;
   }
 
+  [data-model-live-presentation="landscape-continuous"] #proportional-viewport {
+    scroll-snap-type: none !important;
+  }
+
   [data-model-live-presentation="landscape-continuous"] #proportional-previous {
     grid-area: previous !important;
   }
