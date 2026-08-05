@@ -45,6 +45,9 @@ assert.match(
 );
 assert.match(bootstrap, /html\.model-live-document[\s\S]*overflow-y: hidden/);
 assert.match(bootstrap, /html\.model-live-document \.atlas-scroll[\s\S]*overflow-y: visible/);
+assert.match(bootstrap, /outerHumanizationCss/);
+assert.match(bootstrap, /data-model-live-document-flow/);
+assert.match(bootstrap, /--model-live-document-height/);
 assert.match(bootstrap, /frame\.setAttribute\("scrolling", "no"\)/);
 assert.match(bootstrap, /root\.dataset\.liveLayout = "document"/);
 assert.match(bootstrap, /root\.dataset\.liveNaturalHeight/);
