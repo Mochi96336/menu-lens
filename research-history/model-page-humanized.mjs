@@ -31,6 +31,12 @@ const controlLanguageSelectors = Object.freeze([
   ".depth-toolbar[aria-label]",
 ]);
 
+const outerHumanizationCss = `
+  iframe.model-live-frame[data-model-live-document-flow="true"] {
+    height: var(--model-live-document-height) !important;
+  }
+`;
+
 const humanizationCss = `
   .phone-status {
     display: none !important;
@@ -155,6 +161,16 @@ const humanizationCss = `
   }
 `;
 
+const ensureOuterHumanizationStyle = () => {
+  let style = document.querySelector("#model-live-outer-humanization-style");
+  if (!style) {
+    style = document.createElement("style");
+    style.id = "model-live-outer-humanization-style";
+    document.head.append(style);
+  }
+  if (style.textContent !== outerHumanizationCss) style.textContent = outerHumanizationCss;
+};
+
 const surfaceRootFor = (frame) =>
   frame.closest(".model-pooled-surface, [data-object-id]");
 
@@ -196,6 +212,7 @@ const restoreFixedStage = (frame, documentRoot) => {
   root?.dataset && (root.dataset.liveLayout = "fixed");
   documentRoot.documentElement.classList.remove("model-live-document");
   frame.setAttribute("scrolling", "auto");
+  frame.style.removeProperty("--model-live-document-height");
 
   if (frame.dataset.modelLiveDocumentFlow !== "true") return;
   delete frame.dataset.modelLiveDocumentFlow;
@@ -237,8 +254,12 @@ const syncDocumentFlow = (frame, documentRoot, objectId) => {
     Math.ceil(target.getBoundingClientRect().height),
   );
   const naturalHeight = Math.max(1, targetHeight + borderHeight);
+  const stageHeight = Number(root.dataset.liveStageHeight);
 
-  setPixelHeight(frame, "height", naturalHeight);
+  if (Number.isFinite(stageHeight) && stageHeight > 0) {
+    setPixelHeight(frame, "height", stageHeight);
+  }
+  frame.style.setProperty("--model-live-document-height", `${naturalHeight}px`);
   setPixelHeight(shell, "height", naturalHeight);
   setPixelHeight(shell, "min-height", naturalHeight);
   setPixelHeight(fallback, "height", naturalHeight);
@@ -403,6 +424,7 @@ const attachFrame = (frame) => {
   if (frame.contentDocument?.readyState === "complete") applyHumanization(frame);
 };
 
+ensureOuterHumanizationStyle();
 const board = document.querySelector("#all-live-board");
 if (board) {
   board.querySelectorAll("iframe.model-live-frame").forEach(attachFrame);
