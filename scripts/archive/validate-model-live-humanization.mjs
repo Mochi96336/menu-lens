@@ -68,7 +68,7 @@ assert.match(browserReview, /captureScreenshot/, "390px focused states should le
 
 assert.match(stageBrowserReview, /documentCases/, "Live-stage browser review must include explicit document routes.");
 assert.match(stageBrowserReview, /liveLayout === "document"/);
-assert.match(stageBrowserReview, /scrolling === "no"/);
+assert.match(stageBrowserReview, /surface\.scrolling !== "no"/);
 assert.match(stageBrowserReview, /\.atlas-product summary/);
 assert.match(stageBrowserReview, /document-natural-flow/);
 
