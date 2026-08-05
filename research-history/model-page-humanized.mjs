@@ -2,6 +2,9 @@ import "./model-page.mjs";
 
 const frameState = new WeakMap();
 
+const documentObjectIds = new Set(["01", "05", "05A", "05B", "05C", "07"]);
+const liveTargetSelectors = Object.freeze(["#prototype", "#comparison", "#study", "#studies"]);
+
 const returnControls = Object.freeze([
   Object.freeze({ selector: "#collapse-all", text: "← 返回分類", ariaLabel: "返回分類" }),
   Object.freeze({ selector: "#spread-overview", text: "← 返回分類", ariaLabel: "返回分類" }),
@@ -55,6 +58,32 @@ const humanizationCss = `
   .projection-hint,
   .parallax-hint {
     display: none !important;
+  }
+
+  html.model-live-document,
+  html.model-live-document body {
+    overflow-y: hidden !important;
+  }
+
+  html.model-live-document .atlas-phone {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  html.model-live-document .atlas-root,
+  html.model-live-document .atlas-layout {
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+    overflow: visible !important;
+  }
+
+  html.model-live-document .atlas-scroll {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+    overscroll-behavior: auto !important;
   }
 
   [data-model-live-presentation="landscape-continuous"] .paper-phone {
@@ -126,8 +155,25 @@ const humanizationCss = `
   }
 `;
 
+const surfaceRootFor = (frame) =>
+  frame.closest(".model-pooled-surface, [data-object-id]");
+
 const objectIdFor = (frame) =>
-  frame.closest(".model-pooled-surface, [data-object-id]")?.dataset.objectId ?? null;
+  surfaceRootFor(frame)?.dataset.objectId ?? null;
+
+const liveTargetFor = (frame, documentRoot) => {
+  const root = surfaceRootFor(frame);
+  const recordedSelector = root?.dataset.liveRoot;
+  if (recordedSelector) {
+    const recordedTarget = documentRoot.querySelector(recordedSelector);
+    if (recordedTarget) return recordedTarget;
+  }
+  for (const selector of liveTargetSelectors) {
+    const target = documentRoot.querySelector(selector);
+    if (target) return target;
+  }
+  return null;
+};
 
 const setText = (element, text) => {
   if (element && element.textContent?.trim() !== text) element.textContent = text;
@@ -135,6 +181,72 @@ const setText = (element, text) => {
 
 const setAttribute = (element, name, value) => {
   if (element && element.getAttribute(name) !== value) element.setAttribute(name, value);
+};
+
+const setPixelHeight = (element, property, height) => {
+  if (!element) return;
+  const current = Number.parseFloat(element.style.getPropertyValue(property));
+  if (!Number.isFinite(current) || Math.abs(current - height) > .5) {
+    element.style.setProperty(property, `${height}px`);
+  }
+};
+
+const restoreFixedStage = (frame, documentRoot) => {
+  const root = surfaceRootFor(frame);
+  root?.dataset && (root.dataset.liveLayout = "fixed");
+  documentRoot.documentElement.classList.remove("model-live-document");
+  frame.setAttribute("scrolling", "auto");
+
+  if (frame.dataset.modelLiveDocumentFlow !== "true") return;
+  delete frame.dataset.modelLiveDocumentFlow;
+  delete root?.dataset.liveNaturalHeight;
+
+  const stageHeight = Number(root?.dataset.liveStageHeight);
+  if (!Number.isFinite(stageHeight) || stageHeight <= 0) return;
+  const shell = frame.closest(".model-live-surface");
+  const fallback = shell?.querySelector(".model-live-fallback");
+  setPixelHeight(frame, "height", stageHeight);
+  setPixelHeight(shell, "height", stageHeight);
+  setPixelHeight(shell, "min-height", stageHeight);
+  setPixelHeight(fallback, "height", stageHeight);
+  if (root) {
+    root.dataset.liveHeight = String(stageHeight);
+    root.dataset.liveOverflow = String(Number(root.dataset.liveContentHeight) > stageHeight);
+  }
+};
+
+const syncDocumentFlow = (frame, documentRoot, objectId) => {
+  if (!documentObjectIds.has(objectId)) {
+    restoreFixedStage(frame, documentRoot);
+    return;
+  }
+
+  const root = surfaceRootFor(frame);
+  const shell = frame.closest(".model-live-surface");
+  const fallback = shell?.querySelector(".model-live-fallback");
+  const target = liveTargetFor(frame, documentRoot);
+  if (!root || !shell || !target) return;
+
+  documentRoot.documentElement.classList.add("model-live-document");
+  frame.dataset.modelLiveDocumentFlow = "true";
+  frame.setAttribute("scrolling", "no");
+
+  const borderHeight = Math.max(2, Math.ceil(frame.offsetHeight - frame.clientHeight));
+  const targetHeight = Math.max(
+    target.scrollHeight,
+    Math.ceil(target.getBoundingClientRect().height),
+  );
+  const naturalHeight = Math.max(1, targetHeight + borderHeight);
+
+  setPixelHeight(frame, "height", naturalHeight);
+  setPixelHeight(shell, "height", naturalHeight);
+  setPixelHeight(shell, "min-height", naturalHeight);
+  setPixelHeight(fallback, "height", naturalHeight);
+
+  root.dataset.liveLayout = "document";
+  root.dataset.liveHeight = String(naturalHeight);
+  root.dataset.liveNaturalHeight = String(naturalHeight);
+  root.dataset.liveOverflow = "false";
 };
 
 const sanitizeControlLanguage = (value) => String(value ?? "")
@@ -214,9 +326,14 @@ const applyHumanization = (frame) => {
   const documentRoot = frame.contentDocument;
   if (!documentRoot?.documentElement) return;
 
-  frameState.get(frame)?.observer?.disconnect();
+  const previousState = frameState.get(frame);
+  previousState?.observer?.disconnect();
+  previousState?.contentResizeObserver?.disconnect();
+  previousState?.frameResizeObserver?.disconnect();
+
   const objectId = objectIdFor(frame);
   let pending = false;
+  let lastFrameWidth = frame.getBoundingClientRect().width;
 
   const sync = () => {
     pending = false;
@@ -225,6 +342,7 @@ const applyHumanization = (frame) => {
     syncControlLanguage(documentRoot);
     syncQuietLiveRegions(documentRoot, objectId);
     syncProportionalLandscape(documentRoot, objectId);
+    syncDocumentFlow(frame, documentRoot, objectId);
   };
 
   const queueSync = () => {
@@ -245,6 +363,7 @@ const applyHumanization = (frame) => {
       "aria-label",
       "aria-live",
       "title",
+      "open",
       "data-focused",
       "data-active",
       "data-mode",
@@ -252,7 +371,29 @@ const applyHumanization = (frame) => {
       "data-lens",
     ],
   });
-  frameState.set(frame, { observer });
+
+  let contentResizeObserver = null;
+  const FrameContentResizeObserver = documentRoot.defaultView?.ResizeObserver;
+  const liveTarget = liveTargetFor(frame, documentRoot);
+  if (documentObjectIds.has(objectId)
+    && liveTarget
+    && typeof FrameContentResizeObserver === "function") {
+    contentResizeObserver = new FrameContentResizeObserver(queueSync);
+    contentResizeObserver.observe(liveTarget);
+  }
+
+  let frameResizeObserver = null;
+  if (documentObjectIds.has(objectId) && typeof ResizeObserver === "function") {
+    frameResizeObserver = new ResizeObserver(([entry]) => {
+      const nextWidth = entry?.contentRect?.width ?? frame.getBoundingClientRect().width;
+      if (Math.abs(nextWidth - lastFrameWidth) <= .5) return;
+      lastFrameWidth = nextWidth;
+      queueSync();
+    });
+    frameResizeObserver.observe(frame);
+  }
+
+  frameState.set(frame, { observer, contentResizeObserver, frameResizeObserver });
 };
 
 const attachFrame = (frame) => {
