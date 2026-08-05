@@ -13,6 +13,10 @@ const browserReview = await readFile(
   new URL("./validate-model-live-presentation-browser.mjs", import.meta.url),
   "utf8",
 );
+const stageBrowserReview = await readFile(
+  new URL("./validate-model-live-stage-browser.mjs", import.meta.url),
+  "utf8",
+);
 
 assert.match(bootstrap, /import "\.\/model-page\.mjs"/, "Humanization must extend the canonical Model page renderer.");
 assert.match(bootstrap, /\.phone-status\s*\{\s*display: none/s, "Every Model live preview should remove the fake phone status row.");
@@ -34,6 +38,21 @@ assert.match(bootstrap, /上一個分類欄/);
 assert.match(bootstrap, /grid-template-areas: "previous location next"/);
 assert.match(bootstrap, /MutationObserver/, "Dynamic prototype labels must remain sanitized after state changes.");
 
+assert.match(
+  bootstrap,
+  /documentObjectIds = new Set\(\["01", "05", "05A", "05B", "05C", "07"\]\)/,
+  "Only the document family and market document baseline should use natural flow.",
+);
+assert.match(bootstrap, /html\.model-live-document[\s\S]*overflow-y: hidden/);
+assert.match(bootstrap, /html\.model-live-document \.atlas-scroll[\s\S]*overflow-y: visible/);
+assert.match(bootstrap, /frame\.setAttribute\("scrolling", "no"\)/);
+assert.match(bootstrap, /root\.dataset\.liveLayout = "document"/);
+assert.match(bootstrap, /root\.dataset\.liveNaturalHeight/);
+assert.match(bootstrap, /root\.dataset\.liveOverflow = "false"/);
+assert.match(bootstrap, /contentResizeObserver\.observe\(liveTarget\)/);
+assert.match(bootstrap, /frameResizeObserver\.observe\(frame\)/);
+assert.match(bootstrap, /"open"/, "Inline document details must trigger a natural-height resync.");
+
 assert.match(modelPage, /<button id="show-all" type="button" hidden>回模型列表<\/button>/);
 assert.match(modelPage, /src="\.\.\/model-page-humanized\.mjs"/);
 assert.doesNotMatch(modelPage, />返回整組<|>返回群組</);
@@ -47,4 +66,10 @@ assert.match(browserReview, /← 返回菜單/);
 assert.match(browserReview, /回模型列表/);
 assert.match(browserReview, /captureScreenshot/, "390px focused states should leave visual evidence.");
 
-console.log("Model live humanization validator: shared chrome, language, and continuous navigation are explicit and browser-reviewed.");
+assert.match(stageBrowserReview, /documentCases/, "Live-stage browser review must include explicit document routes.");
+assert.match(stageBrowserReview, /liveLayout === "document"/);
+assert.match(stageBrowserReview, /scrolling === "no"/);
+assert.match(stageBrowserReview, /\.atlas-product summary/);
+assert.match(stageBrowserReview, /document-natural-flow/);
+
+console.log("Model live humanization validator: shared chrome, natural document flow, language, and continuous navigation are explicit and browser-reviewed.");
