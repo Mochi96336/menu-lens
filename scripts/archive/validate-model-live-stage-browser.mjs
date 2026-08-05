@@ -159,6 +159,9 @@ const snapshotExpression = (objectId) => `(() => {
   const frameRect = frame?.getBoundingClientRect();
   const shellRect = shell?.getBoundingClientRect();
   const targetRect = target?.getBoundingClientRect();
+  const rootOverflowY = documentRoot ? getComputedStyle(documentRoot.documentElement).overflowY : null;
+  const bodyOverflowY = documentRoot?.body ? getComputedStyle(documentRoot.body).overflowY : null;
+  const overflowCanScroll = (value) => !['hidden', 'clip'].includes(value);
   return root && frame && shell ? {
     objectId: root.dataset.objectId,
     state: root.dataset.liveState,
@@ -176,8 +179,12 @@ const snapshotExpression = (objectId) => `(() => {
     frameHidden: frame.hidden,
     fallbackHidden: fallback?.hidden ?? true,
     documentClass: Boolean(documentRoot?.documentElement.classList.contains('model-live-document')),
+    rootOverflowY,
+    bodyOverflowY,
     documentScrollable: Boolean(documentRoot)
-      && documentRoot.documentElement.scrollHeight > frame.contentWindow.innerHeight + 1,
+      && documentRoot.documentElement.scrollHeight > frame.contentWindow.innerHeight + 1
+      && overflowCanScroll(rootOverflowY)
+      && overflowCanScroll(bodyOverflowY),
   } : null;
 })()`;
 
@@ -206,7 +213,12 @@ const validateReadySurface = (surface, viewport) => {
     if (surface.scrolling !== "no") failures.push(`document scrolling ${surface.scrolling} !== no`);
     if (!surface.documentClass) failures.push("document class is missing");
     if (surface.documentScrollable) failures.push("document iframe remains vertically scrollable");
-    if (surface.overflow) failures.push("document layout still reports overflow");
+    if (!["hidden", "clip"].includes(surface.rootOverflowY)) {
+      failures.push(`document root overflow ${surface.rootOverflowY} is scrollable`);
+    }
+    if (!["hidden", "clip"].includes(surface.bodyOverflowY)) {
+      failures.push(`document body overflow ${surface.bodyOverflowY} is scrollable`);
+    }
     if (!Number.isFinite(surface.naturalHeight) || surface.naturalHeight <= 0) {
       failures.push(`invalid natural height ${surface.naturalHeight}`);
     }
@@ -322,6 +334,9 @@ try {
           }
           const documentRoot = frame.contentDocument;
           const target = documentRoot.querySelector(root.dataset.liveRoot || '#prototype');
+          const rootOverflowY = getComputedStyle(documentRoot.documentElement).overflowY;
+          const bodyOverflowY = getComputedStyle(documentRoot.body).overflowY;
+          const overflowCanScroll = (value) => !['hidden', 'clip'].includes(value);
           return {
             objectId: root.dataset.objectId ?? card.dataset.objectId,
             state: 'ready',
@@ -339,7 +354,11 @@ try {
             frameHidden: frame.hidden,
             fallbackHidden: fallback.hidden,
             documentClass: documentRoot.documentElement.classList.contains('model-live-document'),
-            documentScrollable: documentRoot.documentElement.scrollHeight > frame.contentWindow.innerHeight + 1,
+            rootOverflowY,
+            bodyOverflowY,
+            documentScrollable: documentRoot.documentElement.scrollHeight > frame.contentWindow.innerHeight + 1
+              && overflowCanScroll(rootOverflowY)
+              && overflowCanScroll(bodyOverflowY),
           };
         });
       })()`);
