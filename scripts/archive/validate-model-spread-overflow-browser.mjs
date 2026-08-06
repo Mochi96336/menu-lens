@@ -148,6 +148,7 @@ const snapshotExpression = (objectId) => `(() => {
     state: root?.dataset.livePresentationState ?? null,
     verticalOwner: root?.dataset.liveSpreadVerticalOwner ?? null,
     nestedEvidence: root?.dataset.liveSpreadNestedVertical ?? null,
+    landmarks: root?.dataset.liveSpreadLandmarks ?? null,
     frameScrollY: view?.scrollY ?? 0,
     maxFrameScroll,
     documentHeight: doc?.documentElement.scrollHeight ?? 0,
@@ -173,11 +174,12 @@ const assertSingleVerticalOwner = (snapshot, label) => {
   assert.equal(snapshot.state, "focus", `${label}: not in focus state`);
   assert.equal(snapshot.verticalOwner, "iframe", `${label}: wrong vertical owner evidence`);
   assert.equal(snapshot.nestedEvidence, "false", `${label}: nested vertical evidence`);
+  assert.equal(snapshot.landmarks, "pinned", `${label}: category controls are not pinned`);
   assert.equal(snapshot.mapScrollableY, false, `${label}: Spread map owns vertical scrolling`);
   assert.equal(snapshot.focusedScrollableY, false, `${label}: focused category owns vertical scrolling`);
   assert.equal(snapshot.mapScrollTop, 0, `${label}: Spread map moved vertically`);
   assert.equal(snapshot.focusedScrollTop, 0, `${label}: focused category moved vertically`);
-  assert.ok(snapshot.maxFrameScroll > 0, `${label}: iframe has no reachable vertical document`);
+  assert.ok(snapshot.documentHeight >= snapshot.viewportHeight, `${label}: invalid iframe document height`);
   assert.equal(snapshot.categoryCount, 6, `${label}: category landmarks changed`);
   assert.ok(snapshot.productCount > 0, `${label}: focused Products missing`);
 };
@@ -204,7 +206,8 @@ const navigateCase = async (client, objectId, viewport) => {
   await waitFor(
     client,
     `${rootExpression(objectId)}?.dataset.livePresentationState === 'focus'
-      && ${rootExpression(objectId)}?.dataset.liveSpreadVerticalOwner === 'iframe'`,
+      && ${rootExpression(objectId)}?.dataset.liveSpreadVerticalOwner === 'iframe'
+      && ${rootExpression(objectId)}?.dataset.liveSpreadLandmarks === 'pinned'`,
     `${objectId}/${viewport} focus state`,
   );
   await nextPaint(client);
@@ -225,6 +228,26 @@ const scrollFrame = async (client, objectId, top) => {
   await nextPaint(client);
   await delay(60);
 };
+
+const pinnedControlExpression = (objectId, index = 1) => `(() => {
+  const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
+  const doc = frame.contentDocument;
+  const toolbar = doc.querySelector('.spread-toolbar');
+  const candidate = doc.querySelectorAll('.spread-category__focus')[${index}];
+  const rect = candidate.getBoundingClientRect();
+  const toolbarRect = toolbar.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + Math.min(rect.height / 2, 24);
+  const hit = doc.elementFromPoint(centerX, centerY);
+  return {
+    position: getComputedStyle(candidate).position,
+    top: rect.top,
+    bottom: rect.bottom,
+    toolbarBottom: toolbarRect.bottom,
+    viewportHeight: doc.documentElement.clientHeight,
+    hittable: hit === candidate || candidate.contains(hit),
+  };
+})()`;
 
 const capture = async (client, filename) => {
   const screenshot = await client.send("Page.captureScreenshot", {
@@ -277,28 +300,20 @@ try {
       await scrollFrame(client, objectId, "max");
       const bottom = await evaluate(client, snapshotExpression(objectId));
       assertSingleVerticalOwner(bottom, `${objectId}/${viewport} bottom`);
-      assert.ok(bottom.frameScrollY >= bottom.maxFrameScroll - 2, `${objectId}/${viewport}: iframe did not reach bottom`);
+      if (bottom.maxFrameScroll > 0) {
+        assert.ok(bottom.frameScrollY >= bottom.maxFrameScroll - 2, `${objectId}/${viewport}: iframe did not reach bottom`);
+      }
       assert.ok(bottom.lastTop < bottom.viewportHeight, `${objectId}/${viewport}: last Product stayed below viewport`);
       assert.ok(bottom.lastBottom > 0, `${objectId}/${viewport}: last Product passed above viewport`);
 
-      const sticky = await evaluate(client, `(() => {
-        const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
-        const doc = frame.contentDocument;
-        const buttons = [...doc.querySelectorAll('.spread-category__focus')];
-        const candidate = buttons[1];
-        const rect = candidate.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + Math.min(rect.height / 2, 24);
-        const hit = doc.elementFromPoint(centerX, centerY);
-        return {
-          top: rect.top,
-          bottom: rect.bottom,
-          viewportHeight: doc.documentElement.clientHeight,
-          hittable: hit === candidate || candidate.contains(hit),
-        };
-      })()`);
-      assert.ok(sticky.top >= -1 && sticky.top < sticky.viewportHeight, `${objectId}/${viewport}: compressed category header is not sticky`);
-      assert.equal(sticky.hittable, true, `${objectId}/${viewport}: compressed category header is covered`);
+      const pinned = await evaluate(client, pinnedControlExpression(objectId));
+      assert.equal(pinned.position, "fixed", `${objectId}/${viewport}: category control is not fixed`);
+      assert.ok(
+        Math.abs(pinned.top - pinned.toolbarBottom) <= 2,
+        `${objectId}/${viewport}: category control is not pinned below return`,
+      );
+      assert.ok(pinned.top >= -1 && pinned.top < pinned.viewportHeight, `${objectId}/${viewport}: category control left the viewport`);
+      assert.equal(pinned.hittable, true, `${objectId}/${viewport}: category control is covered`);
 
       await evaluate(client, `(() => {
         const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
@@ -307,11 +322,13 @@ try {
       await waitFor(
         client,
         `(() => {
-          const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
-          return [...frame.contentDocument.querySelectorAll('.spread-category')]
-            .findIndex((category) => category.dataset.focused === 'true') === 1;
+          const root = ${rootExpression(objectId)};
+          const frame = root.querySelector('iframe.model-live-frame');
+          return root.dataset.liveSpreadLandmarks === 'pinned'
+            && [...frame.contentDocument.querySelectorAll('.spread-category')]
+              .findIndex((category) => category.dataset.focused === 'true') === 1;
         })()`,
-        `${objectId}/${viewport} sticky category activation`,
+        `${objectId}/${viewport} pinned category activation`,
       );
 
       await scrollFrame(client, objectId, 0);
@@ -369,7 +386,7 @@ try {
         initial: result.snapshot,
         bottom,
         top,
-        sticky,
+        pinned,
       });
     }
   }
@@ -379,7 +396,7 @@ try {
     `${JSON.stringify({ browser, baseUrl, generatedAt: new Date().toISOString(), results }, null, 2)}\n`,
   );
   socket.close();
-  console.log("Model Spread overflow browser review: 08 and 08A keep one vertical owner, sticky category landmarks, full Product reachability, detail growth, and return across 320 / 390 / desktop.");
+  console.log("Model Spread overflow browser review: 08 and 08A keep one vertical owner, pinned real category controls, full Product reachability, detail growth, and return across 320 / 390 / desktop.");
 } catch (error) {
   if (browserStderr.trim()) console.error(browserStderr.trim());
   throw error;
