@@ -1,6 +1,7 @@
 import { access, mkdir, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
+import { modelRouteBrowserCases as modelCases } from "./model-route-browser-cases.mjs";
 
 const baseUrl = process.env.MODEL_PREVIEW_BASE_URL ?? "http://127.0.0.1:4173";
 const outputDir = new URL("../../browser-review/", import.meta.url);
@@ -13,74 +14,6 @@ const browserCandidates = [
   "/usr/bin/chromium-browser",
 ].filter(Boolean);
 
-const modelCases = Object.freeze([
-  {
-    model: "complete-document",
-    title: "Complete Document",
-    section: "baseline",
-    variant: "01",
-    kind: "sequence",
-    nodeCount: 2,
-    vignetteType: "document",
-    vignetteVariant: "baseline",
-    objectIds: ["01"],
-  },
-  {
-    model: "horizontal-navigation",
-    title: "Horizontal Navigation",
-    section: "spread",
-    variant: "08",
-    kind: "sequence",
-    nodeCount: 5,
-    vignetteType: "horizontal",
-    vignetteVariant: "spread",
-    objectIds: ["08", "08A"],
-  },
-  {
-    model: "paper-field",
-    title: "Paper Field",
-    section: "semantic-information",
-    variant: "12A",
-    kind: "field",
-    nodeCount: 3,
-    vignetteType: "paper-field",
-    vignetteVariant: "semantic",
-    objectIds: ["11", "12", "12A", "12A-S1"],
-  },
-  {
-    model: "landscape-paper",
-    title: "Landscape Paper",
-    section: "core",
-    variant: "18",
-    kind: "branch",
-    nodeCount: 6,
-    vignetteType: "landscape",
-    vignetteVariant: "core",
-    objectIds: ["18", "18A"],
-  },
-  {
-    model: "multiscale-focus",
-    title: "Multi-scale Focus",
-    section: "model",
-    variant: "06",
-    kind: "branch",
-    nodeCount: 3,
-    vignetteType: "scale",
-    vignetteVariant: "focus",
-    objectIds: ["06"],
-  },
-  {
-    model: "depth-projection",
-    title: "Depth and Projection",
-    section: "projection-lens",
-    variant: "25P",
-    kind: "parallel",
-    nodeCount: 3,
-    vignetteType: "depth",
-    vignetteVariant: "projection",
-    objectIds: ["25P", "25P-L1", "25P-S1"],
-  },
-]);
 
 const findBrowser = async () => {
   for (const candidate of browserCandidates) {

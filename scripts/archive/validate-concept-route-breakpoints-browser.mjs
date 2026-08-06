@@ -1,6 +1,7 @@
 import { access, mkdir, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
+import { conceptRouteCases as cases } from "./model-route-browser-cases.mjs";
 
 const baseUrl = process.env.MODEL_PREVIEW_BASE_URL ?? "http://127.0.0.1:4173";
 const outputDir = new URL("../../browser-review/", import.meta.url);
@@ -13,14 +14,6 @@ const browserCandidates = [
   "/usr/bin/chromium-browser",
 ].filter(Boolean);
 
-const cases = Object.freeze([
-  ["complete-document", "baseline"],
-  ["horizontal-navigation", "spread"],
-  ["paper-field", "semantic-information"],
-  ["landscape-paper", "core"],
-  ["multiscale-focus", "model"],
-  ["depth-projection", "projection-lens"],
-].map(([model, section]) => ({ model, section })));
 
 const widths = Object.freeze([1792, 1280, 1024, 768, 390, 320]);
 

@@ -3,7 +3,7 @@ import { archiveExtensions } from "./catalog/all-extensions.mjs";
 import { archiveLegacyOverrides } from "./catalog/legacy-overrides.mjs";
 import { designModels, modelById, presentationNotes } from "./catalog/presentation-models.mjs";
 import { studyPresentations } from "./catalog/study-presentations.mjs";
-import { modelDiagramPresentations } from "./catalog/model-diagram-presentations.mjs";
+import { modelRouteContractById } from "./catalog/model-route-contracts.mjs";
 import { createModelPageState, sectionForObject } from "./model-page-state.mjs";
 import { createModelSurfacePool } from "./model-surface-pool.mjs";
 import { createModelLiveBoard } from "./model-live-board.mjs";
@@ -223,7 +223,7 @@ const shortSectionLabels = Object.freeze({
 });
 
 const sectionTabLabel = (section) => shortSectionLabels[section.id] ?? section.title;
-const diagramPresentationFor = (model) => modelDiagramPresentations[model.id] ?? null;
+const diagramPresentationFor = (model) => modelRouteContractById[model.id]?.diagram ?? null;
 let previewSection = null;
 
 const vignette = createModelConceptVignette({ root: elements.modelConceptVignette });
