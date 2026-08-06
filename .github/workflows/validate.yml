@@ -49,6 +49,7 @@ jobs:
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           BROWSER_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
           test -n "$BROWSER_BIN"
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-model-spread-overflow-browser.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/generate-model-previews.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/capture-model-page-review.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-homepage-browser.mjs
@@ -59,7 +60,6 @@ jobs:
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-concept-route-breakpoints-browser.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-model-live-stage-browser.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-model-document-flow-browser.mjs
-          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-model-spread-overflow-browser.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-model-live-presentation-browser.mjs
 
       - name: Upload static build
