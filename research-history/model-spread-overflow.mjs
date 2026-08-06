@@ -123,8 +123,9 @@ const applySpreadOverflow = (frame) => {
     geometryRequest = null;
     const focusedCategory = spreadMap.querySelector('.spread-category[data-focused="true"]');
     if (focusedCategory !== lastFocusedCategory) {
+      const previousFocusedCategory = lastFocusedCategory;
       lastFocusedCategory = focusedCategory;
-      if (focusedCategory) {
+      if (focusedCategory && previousFocusedCategory) {
         view.scrollTo({ top: 0, left: view.scrollX, behavior: "auto" });
       }
     }
