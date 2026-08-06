@@ -72,6 +72,11 @@ const humanizationCss = `
     touch-action: pan-x !important;
   }
 
+  html.model-live-document .phone-screen {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
   html.model-live-document .atlas-phone {
     height: auto !important;
     min-height: 0 !important;
