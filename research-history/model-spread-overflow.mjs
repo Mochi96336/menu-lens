@@ -40,10 +40,11 @@ const spreadModelCss = `
     position: fixed !important;
     top: 3.15rem !important;
     left: var(--model-spread-header-left) !important;
-    z-index: 60 !important;
+    z-index: var(--model-spread-header-z, 60) !important;
     width: var(--model-spread-header-width) !important;
     max-width: none !important;
     align-self: start !important;
+    pointer-events: auto !important;
     background: rgb(255 253 248 / 96%) !important;
     backdrop-filter: blur(8px);
   }
@@ -91,6 +92,7 @@ const applySpreadOverflow = (frame) => {
       const button = category.querySelector(".spread-category__focus");
       button?.style.removeProperty("--model-spread-header-left");
       button?.style.removeProperty("--model-spread-header-width");
+      button?.style.removeProperty("--model-spread-header-z");
     }
   };
 
@@ -125,7 +127,7 @@ const applySpreadOverflow = (frame) => {
     for (const category of currentCategories) {
       category.style.removeProperty("--model-spread-header-height");
     }
-    const measurements = currentCategories.map((category) => {
+    const measurements = currentCategories.map((category, index) => {
       const button = category.querySelector(".spread-category__focus");
       const categoryRect = category.getBoundingClientRect();
       const buttonRect = button?.getBoundingClientRect();
@@ -135,6 +137,7 @@ const applySpreadOverflow = (frame) => {
         left: categoryRect.left,
         width: categoryRect.width,
         height: Math.max(1, buttonRect?.height ?? 0),
+        zIndex: 60 + index,
       };
     });
 
@@ -150,6 +153,10 @@ const applySpreadOverflow = (frame) => {
       measurement.button?.style.setProperty(
         "--model-spread-header-width",
         `${measurement.width}px`,
+      );
+      measurement.button?.style.setProperty(
+        "--model-spread-header-z",
+        String(measurement.zIndex),
       );
     }
     presentationRoot.classList.remove("model-spread-measuring");
