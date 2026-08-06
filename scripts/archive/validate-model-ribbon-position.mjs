@@ -26,10 +26,12 @@ assert.match(ribbonPosition, /--model-ribbon-handle-width/);
 assert.match(ribbonPosition, /role", "slider"/);
 assert.match(ribbonPosition, /aria-controls", "ribbon-viewport"/);
 assert.match(ribbonPosition, /aria-valuetext/);
+assert.match(ribbonPosition, /aria-disabled", "false"/);
 assert.match(ribbonPosition, /scrollbar-width: none/);
 assert.match(ribbonPosition, /::-webkit-scrollbar/);
 assert.match(ribbonPosition, /scrollToClientX/);
 assert.match(ribbonPosition, /viewport\.scrollWidth - viewport\.clientWidth/);
+assert.match(ribbonPosition, /scrollTo\(\{ left: \(handleLeft \/ travel\) \* maximum, behavior: "auto" \}\)/);
 assert.match(ribbonPosition, /event\.stopImmediatePropagation\(\)/);
 assert.match(ribbonPosition, /pointerdown/);
 assert.match(ribbonPosition, /pointermove/);
@@ -37,6 +39,7 @@ assert.match(ribbonPosition, /PageDown/);
 assert.match(ribbonPosition, /Home/);
 assert.match(ribbonPosition, /End/);
 assert.match(ribbonPosition, /liveRibbonNativeScrollbar/);
+assert.match(ribbonPosition, /viewport\.dataset\.scale === "reading"[\s\S]*\? "hidden"[\s\S]*: "inactive"/);
 assert.match(ribbonPosition, /liveRibbonHandleLeft/);
 assert.match(ribbonPosition, /liveRibbonHandleWidth/);
 assert.match(ribbonPosition, /ResizeObserver/);
@@ -63,12 +66,20 @@ assert.match(ribbonBrowserReview, /Input\.dispatchKeyEvent/);
 assert.match(ribbonBrowserReview, /prefers-reduced-motion/);
 assert.match(ribbonBrowserReview, /unreachableProducts/);
 assert.match(ribbonBrowserReview, /nativeScrollbar/);
+assert.match(ribbonBrowserReview, /nativeEvidence/);
 assert.match(ribbonBrowserReview, /handleWidthRatio/);
 assert.match(ribbonBrowserReview, /handleLeftRatio/);
 assert.match(ribbonBrowserReview, /handleHittable/);
 assert.match(ribbonBrowserReview, /handleAriaDisabled/);
 assert.match(ribbonBrowserReview, /handleAriaText/);
+assert.match(ribbonBrowserReview, /dragHandleToRatio/);
+assert.match(ribbonBrowserReview, /handle enters reading/);
+assert.doesNotMatch(
+  ribbonBrowserReview,
+  /clickSelector\(client, objectId, "#ribbon-reading"\)/,
+  "The hidden research scale switch must not masquerade as user-facing browser evidence.",
+);
 assert.match(ribbonBrowserReview, /#ribbon-overview/);
 assert.match(ribbonBrowserReview, /captureScreenshot/);
 
-console.log("Model Ribbon position validator: 09 / 09A expose one directly mapped minimap handle, hide native scrollbar chrome only after readiness, and retain complete Ribbon reachability.");
+console.log("Model Ribbon position validator: 09 / 09A expose one operable, directly mapped minimap handle, hide native scrollbar chrome only while reading after readiness, and retain complete Ribbon reachability.");
