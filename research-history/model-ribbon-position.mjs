@@ -152,10 +152,12 @@ const applyRibbonPosition = (frame) => {
         ? `菜單位置 ${Math.round(progress * 100)}%${locationText ? ` · ${locationText}` : ""}`
         : `全店尺度 · ${count} 道料理`,
     );
-    handle.setAttribute("aria-disabled", String(viewport.dataset.scale !== "reading"));
+    handle.setAttribute("aria-disabled", "false");
 
     root.dataset.liveRibbonHandle = "ready";
-    root.dataset.liveRibbonNativeScrollbar = "hidden";
+    root.dataset.liveRibbonNativeScrollbar = viewport.dataset.scale === "reading"
+      ? "hidden"
+      : "inactive";
     root.dataset.liveRibbonScrollLeft = String(Math.round(current * 100) / 100);
     root.dataset.liveRibbonMaxScroll = String(Math.round(maximum * 100) / 100);
     root.dataset.liveRibbonHandleLeft = String(Math.round(leftRatio * 100000) / 100000);
@@ -169,7 +171,7 @@ const applyRibbonPosition = (frame) => {
     const travel = Math.max(0, minimapRect.width - handleRect.width);
     if (maximum <= 0 || travel <= 0) return;
     const handleLeft = clamp(clientX - minimapRect.left - offset, 0, travel);
-    viewport.scrollLeft = (handleLeft / travel) * maximum;
+    viewport.scrollTo({ left: (handleLeft / travel) * maximum, behavior: "auto" });
     queueSync();
   };
 
