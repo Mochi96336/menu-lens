@@ -138,6 +138,7 @@ assert.match(source, /restorers\.reverse\(\)/, "Presentation label mutations sho
 assert.match(source, /MutationObserver/, "Presentation state should follow prototype state changes.");
 
 assert.match(humanizationSource, /documentObjectIds = new Set\(\["01", "05", "05A", "05B", "05C", "07"\]\)/);
+assert.match(humanizationSource, /html\.model-live-document \.phone-screen[\s\S]*min-height: 0/);
 assert.match(humanizationSource, /frame\.setAttribute\("scrolling", "no"\)/);
 assert.match(humanizationSource, /root\.dataset\.liveLayout = "document"/);
 assert.match(humanizationSource, /root\.dataset\.liveNaturalHeight/);
@@ -174,7 +175,8 @@ assert.match(documentFlowReview, /Input\.dispatchMouseEvent/);
 assert.match(documentFlowReview, /Input\.dispatchTouchEvent/);
 assert.match(documentFlowReview, /Input\.dispatchKeyEvent/);
 assert.match(documentFlowReview, /waitForOuterMovement/);
-assert.match(documentFlowReview, /frame\.contentWindow\.scrollY === 0/);
+assert.match(documentFlowReview, /frameBefore/);
+assert.match(documentFlowReview, /Math\.abs\(frame\.contentWindow\.scrollY - \$\{frameBefore\}\)/);
 assert.match(documentFlowReview, /07 detail collapse left stale document metadata/);
 assert.match(documentFlowReview, /\["05", "05A", "05B", "05C"\]/);
 
