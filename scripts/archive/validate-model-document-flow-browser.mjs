@@ -133,6 +133,7 @@ const snapshotExpression = (objectId) => `(() => {
     frameHeight: frameRect.height,
     shellHeight: shell.getBoundingClientRect().height,
     targetHeight: Math.max(target.scrollHeight, Math.ceil(targetRect.height)),
+    borderHeight: Math.max(0, frame.offsetHeight - frame.clientHeight),
     frameScrollY: frame.contentWindow.scrollY,
     parentScrollY: window.scrollY,
     scrolling: frame.getAttribute('scrolling'),
@@ -148,8 +149,11 @@ const assertDocumentSnapshot = (snapshot, label) => {
   assert.equal(snapshot.documentOverflow, "false", `${label}: document overflow metadata`);
   assert.ok(snapshot.documentContentHeight > 0, `${label}: document content height`);
   assert.ok(
-    Math.abs(snapshot.documentContentHeight - snapshot.targetHeight) <= 1,
-    `${label}: document content metadata ${snapshot.documentContentHeight} != target ${snapshot.targetHeight}`,
+    Math.abs(
+      snapshot.naturalHeight
+        - (snapshot.documentContentHeight + snapshot.borderHeight)
+    ) <= 1,
+    `${label}: document content metadata does not reconstruct natural height`,
   );
   assert.ok(
     Math.abs(snapshot.naturalHeight - snapshot.frameHeight) <= 1,
