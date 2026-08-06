@@ -33,6 +33,12 @@ assert.match(spreadCleanup, /model-spread-measuring/);
 assert.match(spreadCleanup, /liveSpreadVerticalOwner/);
 assert.match(spreadCleanup, /liveSpreadNestedVertical/);
 assert.match(spreadCleanup, /liveSpreadLandmarks/);
+assert.match(spreadCleanup, /let lastFocusedCategory/);
+assert.match(spreadCleanup, /focusedCategory !== lastFocusedCategory/);
+assert.match(
+  spreadCleanup,
+  /view\.scrollTo\(\{ top: 0, left: view\.scrollX, behavior: "auto" \}\)/,
+);
 assert.match(spreadCleanup, /spreadMap\.addEventListener\("scroll", queueGeometry/);
 assert.match(spreadCleanup, /view\.addEventListener\("resize", queueGeometry/);
 assert.match(spreadCleanup, /attributeFilter: \["data-mode", "data-focused", "open"\]/);
