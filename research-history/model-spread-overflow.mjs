@@ -82,6 +82,7 @@ const applySpreadOverflow = (frame) => {
   if (!spreadMap || !presentationRoot) return;
 
   let geometryRequest = null;
+  let lastFocusedCategory = spreadMap.querySelector('.spread-category[data-focused="true"]');
   const categories = () => [...spreadMap.querySelectorAll(".spread-category")];
 
   const clearPinnedGeometry = () => {
@@ -120,6 +121,14 @@ const applySpreadOverflow = (frame) => {
 
   const syncPinnedGeometry = () => {
     geometryRequest = null;
+    const focusedCategory = spreadMap.querySelector('.spread-category[data-focused="true"]');
+    if (focusedCategory !== lastFocusedCategory) {
+      lastFocusedCategory = focusedCategory;
+      if (focusedCategory) {
+        view.scrollTo({ top: 0, left: view.scrollX, behavior: "auto" });
+      }
+    }
+
     if (spreadMap.dataset.mode !== "focus") {
       clearPinnedGeometry();
       syncEvidence();
