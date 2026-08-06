@@ -16,7 +16,8 @@ const spreadModelCss = `
   }
 
   [data-model-live-presentation="spread"][data-model-live-presentation-state="focus"] .spread-map {
-    flex: 1 0 auto !important;
+    flex: 0 0 auto !important;
+    height: auto !important;
     min-height: calc(100vh - 3.15rem) !important;
     align-items: stretch !important;
     overflow-x: auto !important;
@@ -27,7 +28,7 @@ const spreadModelCss = `
 
   [data-model-live-presentation="spread"][data-model-live-presentation-state="focus"] .spread-category {
     height: auto !important;
-    grid-template-rows: var(--model-spread-header-height, auto) minmax(0, 1fr) !important;
+    grid-template-rows: var(--model-spread-header-height, auto) auto !important;
     overflow: clip !important;
   }
 
