@@ -17,6 +17,10 @@ const stageBrowserReview = await readFile(
   new URL("./validate-model-live-stage-browser.mjs", import.meta.url),
   "utf8",
 );
+const documentFlowReview = await readFile(
+  new URL("./validate-model-document-flow-browser.mjs", import.meta.url),
+  "utf8",
+);
 
 assert.match(bootstrap, /import "\.\/model-page\.mjs"/, "Humanization must extend the canonical Model page renderer.");
 assert.match(bootstrap, /\.phone-status\s*\{\s*display: none/s, "Every Model live preview should remove the fake phone status row.");
@@ -44,6 +48,7 @@ assert.match(
   "Only the document family and market document baseline should use natural flow.",
 );
 assert.match(bootstrap, /html\.model-live-document[\s\S]*overflow-y: hidden/);
+assert.match(bootstrap, /html\.model-live-document[\s\S]*touch-action: pan-x/);
 assert.match(bootstrap, /html\.model-live-document \.atlas-scroll[\s\S]*overflow-y: visible/);
 assert.match(bootstrap, /outerHumanizationCss/);
 assert.match(bootstrap, /data-model-live-document-flow/);
@@ -51,9 +56,21 @@ assert.match(bootstrap, /--model-live-document-height/);
 assert.match(bootstrap, /frame\.setAttribute\("scrolling", "no"\)/);
 assert.match(bootstrap, /root\.dataset\.liveLayout = "document"/);
 assert.match(bootstrap, /root\.dataset\.liveNaturalHeight/);
-assert.match(bootstrap, /root\.dataset\.liveOverflow = "false"/);
+assert.match(bootstrap, /root\.dataset\.liveDocumentContentHeight/);
+assert.match(bootstrap, /root\.dataset\.liveDocumentOverflow = "false"/);
+assert.doesNotMatch(
+  bootstrap,
+  /root\.dataset\.liveOverflow = "false"/,
+  "Document flow must not race the base fixed-stage overflow metadata.",
+);
+assert.match(bootstrap, /requestFrame\.call\(documentRoot\.defaultView, sync\)/);
 assert.match(bootstrap, /contentResizeObserver\.observe\(liveTarget\)/);
 assert.match(bootstrap, /frameResizeObserver\.observe\(frame\)/);
+assert.match(bootstrap, /installDocumentInputForwarding/);
+assert.match(bootstrap, /addEventListener\("wheel"/);
+assert.match(bootstrap, /addEventListener\("pointermove"/);
+assert.match(bootstrap, /addEventListener\("keydown"/);
+assert.match(bootstrap, /parentView\.scrollBy/);
 assert.match(bootstrap, /"open"/, "Inline document details must trigger a natural-height resync.");
 
 assert.match(modelPage, /<button id="show-all" type="button" hidden>回模型列表<\/button>/);
@@ -75,4 +92,17 @@ assert.match(stageBrowserReview, /surface\.scrolling !== "no"/);
 assert.match(stageBrowserReview, /\.atlas-product summary/);
 assert.match(stageBrowserReview, /document-natural-flow/);
 
-console.log("Model live humanization validator: shared chrome, natural document flow, language, and continuous navigation are explicit and browser-reviewed.");
+assert.match(documentFlowReview, /stableDocumentSnapshot/);
+assert.match(documentFlowReview, /liveDocumentContentHeight/);
+assert.match(documentFlowReview, /Input\.dispatchMouseEvent/);
+assert.match(documentFlowReview, /type: "mouseWheel"/);
+assert.match(documentFlowReview, /Input\.dispatchTouchEvent/);
+assert.match(documentFlowReview, /Input\.dispatchKeyEvent/);
+assert.match(documentFlowReview, /PageDown/);
+assert.match(documentFlowReview, /ArrowDown/);
+assert.match(documentFlowReview, /Space/);
+assert.match(documentFlowReview, /window\.scrollY/);
+assert.match(documentFlowReview, /frame\.contentWindow\.scrollY === 0/);
+assert.match(documentFlowReview, /\["05", "05A", "05B", "05C"\]/);
+
+console.log("Model live humanization validator: shared chrome, stable document metadata, real outer-page input forwarding, language, and continuous navigation are explicit and browser-reviewed.");
