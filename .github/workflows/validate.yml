@@ -59,6 +59,7 @@ jobs:
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-concept-route-breakpoints-browser.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-model-live-stage-browser.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-model-document-flow-browser.mjs
+          BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-model-spread-overflow-browser.mjs
           BROWSER_BIN="$BROWSER_BIN" node scripts/archive/validate-model-live-presentation-browser.mjs
 
       - name: Upload static build
