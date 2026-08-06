@@ -49,6 +49,7 @@ assert.match(
 );
 assert.match(bootstrap, /html\.model-live-document[\s\S]*overflow-y: hidden/);
 assert.match(bootstrap, /html\.model-live-document[\s\S]*touch-action: pan-x/);
+assert.match(bootstrap, /html\.model-live-document \.phone-screen[\s\S]*min-height: 0/);
 assert.match(bootstrap, /html\.model-live-document \.atlas-scroll[\s\S]*overflow-y: visible/);
 assert.match(bootstrap, /outerHumanizationCss/);
 assert.match(bootstrap, /data-model-live-document-flow/);
@@ -102,7 +103,8 @@ assert.match(documentFlowReview, /PageDown/);
 assert.match(documentFlowReview, /ArrowDown/);
 assert.match(documentFlowReview, /Space/);
 assert.match(documentFlowReview, /window\.scrollY/);
-assert.match(documentFlowReview, /frame\.contentWindow\.scrollY === 0/);
+assert.match(documentFlowReview, /frameBefore/);
+assert.match(documentFlowReview, /Math\.abs\(frame\.contentWindow\.scrollY - \$\{frameBefore\}\)/);
 assert.match(documentFlowReview, /\["05", "05A", "05B", "05C"\]/);
 
 console.log("Model live humanization validator: shared chrome, stable document metadata, real outer-page input forwarding, language, and continuous navigation are explicit and browser-reviewed.");
