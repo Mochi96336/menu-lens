@@ -187,11 +187,14 @@ const applyRibbonPosition = (frame) => {
   const enterReadingForPointer = (clientX) => {
     pendingOverviewClientX = clientX;
     readingButton.click();
+    sync();
+    pointerOffset = handle.getBoundingClientRect().width / 2;
+    scrollToClientX(clientX, pointerOffset);
     afterReadingLayout(() => {
       if (pendingOverviewClientX === null) return;
-      const handleRect = handle.getBoundingClientRect();
-      pointerOffset = handleRect.width / 2;
-      scrollToClientX(pendingOverviewClientX, pointerOffset);
+      const latestClientX = pendingOverviewClientX;
+      pointerOffset = handle.getBoundingClientRect().width / 2;
+      scrollToClientX(latestClientX, pointerOffset);
       pendingOverviewClientX = null;
     });
   };
@@ -218,6 +221,7 @@ const applyRibbonPosition = (frame) => {
     if (event.pointerId !== activePointerId) return;
     event.preventDefault();
     event.stopImmediatePropagation();
+    if (pendingOverviewClientX !== null) pendingOverviewClientX = event.clientX;
     if (viewport.dataset.scale === "reading") scrollToClientX(event.clientX);
   };
 
@@ -225,9 +229,9 @@ const applyRibbonPosition = (frame) => {
     if (event.pointerId !== activePointerId) return;
     event.preventDefault();
     event.stopImmediatePropagation();
+    if (pendingOverviewClientX !== null) pendingOverviewClientX = event.clientX;
     if (viewport.dataset.scale === "reading") scrollToClientX(event.clientX);
     activePointerId = null;
-    pendingOverviewClientX = null;
     if (handle.hasPointerCapture(event.pointerId)) handle.releasePointerCapture(event.pointerId);
     handle.classList.remove("is-model-ribbon-dragging");
     queueSync();
@@ -260,7 +264,6 @@ const applyRibbonPosition = (frame) => {
 
   const onLostPointerCapture = () => {
     activePointerId = null;
-    pendingOverviewClientX = null;
     handle.classList.remove("is-model-ribbon-dragging");
   };
 
