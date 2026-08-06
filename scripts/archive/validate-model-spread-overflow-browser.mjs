@@ -246,19 +246,57 @@ const pinnedControlExpression = (objectId, index = 1) => `(() => {
   const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
   const doc = frame.contentDocument;
   const toolbar = doc.querySelector('.spread-toolbar');
-  const candidate = doc.querySelectorAll('.spread-category__focus')[${index}];
+  const controls = [...doc.querySelectorAll('.spread-category__focus')];
+  const candidate = controls[${index}];
   const rect = candidate.getBoundingClientRect();
   const toolbarRect = toolbar.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + Math.min(rect.height / 2, 24);
   const hit = doc.elementFromPoint(centerX, centerY);
+  const hitControl = hit?.closest?.('.spread-category__focus') ?? null;
+  const style = getComputedStyle(candidate);
+  const map = doc.querySelector('#spread-map');
+  const mapRect = map.getBoundingClientRect();
   return {
-    position: getComputedStyle(candidate).position,
+    index: ${index},
+    position: style.position,
+    pointerEvents: style.pointerEvents,
+    visibility: style.visibility,
+    opacity: style.opacity,
+    zIndex: style.zIndex,
+    left: rect.left,
+    right: rect.right,
+    width: rect.width,
     top: rect.top,
     bottom: rect.bottom,
+    height: rect.height,
+    centerX,
+    centerY,
     toolbarBottom: toolbarRect.bottom,
+    viewportWidth: doc.documentElement.clientWidth,
     viewportHeight: doc.documentElement.clientHeight,
+    mapLeft: mapRect.left,
+    mapRight: mapRect.right,
+    mapTop: mapRect.top,
+    mapBottom: mapRect.bottom,
+    mapScrollLeft: map.scrollLeft,
+    hitTag: hit?.tagName ?? null,
+    hitClass: hit?.className ?? null,
+    hitText: hit?.textContent?.trim()?.slice(0, 80) ?? null,
+    hitControlIndex: controls.indexOf(hitControl),
     hittable: hit === candidate || candidate.contains(hit),
+    controls: controls.map((control, controlIndex) => {
+      const controlRect = control.getBoundingClientRect();
+      return {
+        controlIndex,
+        left: controlRect.left,
+        right: controlRect.right,
+        top: controlRect.top,
+        bottom: controlRect.bottom,
+        width: controlRect.width,
+        zIndex: getComputedStyle(control).zIndex,
+      };
+    }),
   };
 })()`;
 
@@ -327,7 +365,11 @@ try {
         `${objectId}/${viewport}: category control is not pinned below return`,
       );
       assert.ok(pinned.top >= -1 && pinned.top < pinned.viewportHeight, `${objectId}/${viewport}: category control left the viewport`);
-      assert.equal(pinned.hittable, true, `${objectId}/${viewport}: category control is covered`);
+      assert.equal(
+        pinned.hittable,
+        true,
+        `${objectId}/${viewport}: category control is covered: ${JSON.stringify(pinned)}`,
+      );
 
       await revealProduct(client, objectId, "last");
       const bottom = await evaluate(client, snapshotExpression(objectId));
