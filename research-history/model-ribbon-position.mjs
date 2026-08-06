@@ -116,6 +116,10 @@ const applyRibbonPosition = (frame) => {
   presentationRoot.dataset.modelRibbonHandleReady = "true";
 
   let syncRequest = null;
+  let overviewSettleRequest = null;
+  let overviewSettleFrames = 0;
+  let overviewStableFrames = 0;
+  let overviewGeometryKey = null;
   let activePointerId = null;
   let pointerOffset = 0;
   let pendingOverviewClientX = null;
@@ -175,6 +179,50 @@ const applyRibbonPosition = (frame) => {
     queueSync();
   };
 
+  const queueOverviewSettle = () => {
+    if (overviewSettleRequest !== null || pendingOverviewClientX === null) return;
+    overviewSettleRequest = view.requestAnimationFrame(settleOverviewPointer);
+  };
+
+  const settleOverviewPointer = () => {
+    overviewSettleRequest = null;
+    if (pendingOverviewClientX === null) {
+      root.dataset.liveRibbonPointerSettled = "true";
+      return;
+    }
+
+    sync();
+    const handleRect = handle.getBoundingClientRect();
+    const minimapRect = minimap.getBoundingClientRect();
+    const geometryKey = [
+      viewport.scrollWidth,
+      viewport.clientWidth,
+      Math.round(minimapRect.width * 100) / 100,
+      Math.round(handleRect.width * 100) / 100,
+    ].join(":");
+    overviewStableFrames = geometryKey === overviewGeometryKey
+      ? overviewStableFrames + 1
+      : 0;
+    overviewGeometryKey = geometryKey;
+    overviewSettleFrames += 1;
+
+    pointerOffset = handleRect.width / 2;
+    scrollToClientX(pendingOverviewClientX, pointerOffset);
+    root.dataset.liveRibbonPointerSettled = "false";
+
+    const stableLongEnough = overviewSettleFrames >= 12 && overviewStableFrames >= 3;
+    if (stableLongEnough || overviewSettleFrames >= 24) {
+      pendingOverviewClientX = null;
+      overviewSettleFrames = 0;
+      overviewStableFrames = 0;
+      overviewGeometryKey = null;
+      root.dataset.liveRibbonPointerSettled = "true";
+      queueSync();
+      return;
+    }
+    queueOverviewSettle();
+  };
+
   const afterReadingLayout = (callback) => {
     view.requestAnimationFrame(() => {
       view.requestAnimationFrame(() => {
@@ -186,17 +234,15 @@ const applyRibbonPosition = (frame) => {
 
   const enterReadingForPointer = (clientX) => {
     pendingOverviewClientX = clientX;
+    overviewSettleFrames = 0;
+    overviewStableFrames = 0;
+    overviewGeometryKey = null;
+    root.dataset.liveRibbonPointerSettled = "false";
     readingButton.click();
     sync();
     pointerOffset = handle.getBoundingClientRect().width / 2;
     scrollToClientX(clientX, pointerOffset);
-    afterReadingLayout(() => {
-      if (pendingOverviewClientX === null) return;
-      const latestClientX = pendingOverviewClientX;
-      pointerOffset = handle.getBoundingClientRect().width / 2;
-      scrollToClientX(latestClientX, pointerOffset);
-      pendingOverviewClientX = null;
-    });
+    queueOverviewSettle();
   };
 
   const onPointerDown = (event) => {
@@ -221,7 +267,10 @@ const applyRibbonPosition = (frame) => {
     if (event.pointerId !== activePointerId) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    if (pendingOverviewClientX !== null) pendingOverviewClientX = event.clientX;
+    if (pendingOverviewClientX !== null) {
+      pendingOverviewClientX = event.clientX;
+      queueOverviewSettle();
+    }
     if (viewport.dataset.scale === "reading") scrollToClientX(event.clientX);
   };
 
@@ -229,7 +278,10 @@ const applyRibbonPosition = (frame) => {
     if (event.pointerId !== activePointerId) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    if (pendingOverviewClientX !== null) pendingOverviewClientX = event.clientX;
+    if (pendingOverviewClientX !== null) {
+      pendingOverviewClientX = event.clientX;
+      queueOverviewSettle();
+    }
     if (viewport.dataset.scale === "reading") scrollToClientX(event.clientX);
     activePointerId = null;
     if (handle.hasPointerCapture(event.pointerId)) handle.releasePointerCapture(event.pointerId);
@@ -300,7 +352,10 @@ const applyRibbonPosition = (frame) => {
   frameState.set(frame, {
     cleanup: () => {
       if (syncRequest !== null) view.cancelAnimationFrame(syncRequest);
+      if (overviewSettleRequest !== null) view.cancelAnimationFrame(overviewSettleRequest);
       syncRequest = null;
+      overviewSettleRequest = null;
+      pendingOverviewClientX = null;
       observer.disconnect();
       resizeObserver?.disconnect();
       handle.removeEventListener("pointerdown", onPointerDown, true);
