@@ -23,11 +23,18 @@ assert.match(modelPage, /model-spread-overflow\.mjs/);
 assert.match(spreadCleanup, /new Set\(\["08", "08A"\]\)/);
 assert.match(spreadCleanup, /data-model-live-presentation-state="focus"/);
 assert.match(spreadCleanup, /\.spread-phone[\s\S]*height: auto/);
+assert.match(spreadCleanup, /\.spread-toolbar[\s\S]*position: fixed/);
 assert.match(spreadCleanup, /\.spread-map[\s\S]*overflow-y: clip/);
 assert.match(spreadCleanup, /\.spread-category\[data-focused="true"\][\s\S]*overflow: visible/);
-assert.match(spreadCleanup, /\.spread-category__focus[\s\S]*position: sticky/);
+assert.match(spreadCleanup, /\.spread-category__focus[\s\S]*position: fixed/);
+assert.match(spreadCleanup, /--model-spread-header-left/);
+assert.match(spreadCleanup, /--model-spread-header-width/);
+assert.match(spreadCleanup, /model-spread-measuring/);
 assert.match(spreadCleanup, /liveSpreadVerticalOwner/);
 assert.match(spreadCleanup, /liveSpreadNestedVertical/);
+assert.match(spreadCleanup, /liveSpreadLandmarks/);
+assert.match(spreadCleanup, /spreadMap\.addEventListener\("scroll", queueGeometry/);
+assert.match(spreadCleanup, /view\.addEventListener\("resize", queueGeometry/);
 assert.match(spreadCleanup, /attributeFilter: \["data-mode", "data-focused", "open"\]/);
 assert.doesNotMatch(
   spreadCleanup,
@@ -54,4 +61,4 @@ assert.match(spreadBrowserReview, /inline detail expands iframe document/);
 assert.match(spreadBrowserReview, /#spread-overview/);
 assert.match(spreadBrowserReview, /captureScreenshot/);
 
-console.log("Model Spread overflow validator: 08 / 08A use one iframe vertical owner with sticky category landmarks, complete Product reachability, and Model-only cleanup.");
+console.log("Model Spread overflow validator: 08 / 08A use one iframe vertical owner with pinned real category controls, complete Product reachability, and Model-only cleanup.");
