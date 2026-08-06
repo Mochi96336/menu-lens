@@ -120,8 +120,12 @@ const applySpreadOverflow = (frame) => {
       return;
     }
 
+    const currentCategories = categories();
     presentationRoot.classList.add("model-spread-measuring");
-    const measurements = categories().map((category) => {
+    for (const category of currentCategories) {
+      category.style.removeProperty("--model-spread-header-height");
+    }
+    const measurements = currentCategories.map((category) => {
       const button = category.querySelector(".spread-category__focus");
       const categoryRect = category.getBoundingClientRect();
       const buttonRect = button?.getBoundingClientRect();
