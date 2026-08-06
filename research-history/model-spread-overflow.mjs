@@ -169,6 +169,12 @@ const applySpreadOverflow = (frame) => {
     geometryRequest = view.requestAnimationFrame(syncPinnedGeometry);
   };
 
+  const onTransitionEnd = (event) => {
+    if (!event.target?.matches?.(".spread-category")) return;
+    if (event.propertyName && event.propertyName !== "flex-basis") return;
+    queueGeometry();
+  };
+
   queueGeometry();
   const FrameMutationObserver = view.MutationObserver ?? MutationObserver;
   const observer = new FrameMutationObserver(queueGeometry);
@@ -177,13 +183,23 @@ const applySpreadOverflow = (frame) => {
     subtree: true,
     attributeFilter: ["data-mode", "data-focused", "open"],
   });
+
+  let categoryResizeObserver = null;
+  if (typeof view.ResizeObserver === "function") {
+    categoryResizeObserver = new view.ResizeObserver(queueGeometry);
+    for (const category of categories()) categoryResizeObserver.observe(category);
+  }
+
   spreadMap.addEventListener("scroll", queueGeometry, { passive: true });
+  spreadMap.addEventListener("transitionend", onTransitionEnd);
   view.addEventListener("resize", queueGeometry, { passive: true });
 
   frameState.set(frame, {
     cleanup: () => {
       observer.disconnect();
+      categoryResizeObserver?.disconnect();
       spreadMap.removeEventListener("scroll", queueGeometry);
+      spreadMap.removeEventListener("transitionend", onTransitionEnd);
       view.removeEventListener("resize", queueGeometry);
       if (geometryRequest !== null) view.cancelAnimationFrame(geometryRequest);
       geometryRequest = null;
