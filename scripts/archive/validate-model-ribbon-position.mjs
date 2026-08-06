@@ -25,6 +25,7 @@ assert.match(ribbonPosition, /--model-ribbon-handle-left/);
 assert.match(ribbonPosition, /--model-ribbon-handle-width/);
 assert.match(ribbonPosition, /role", "slider"/);
 assert.match(ribbonPosition, /aria-controls", "ribbon-viewport"/);
+assert.match(ribbonPosition, /aria-valuetext/);
 assert.match(ribbonPosition, /scrollbar-width: none/);
 assert.match(ribbonPosition, /::-webkit-scrollbar/);
 assert.match(ribbonPosition, /scrollToClientX/);
@@ -64,6 +65,9 @@ assert.match(ribbonBrowserReview, /unreachableProducts/);
 assert.match(ribbonBrowserReview, /nativeScrollbar/);
 assert.match(ribbonBrowserReview, /handleWidthRatio/);
 assert.match(ribbonBrowserReview, /handleLeftRatio/);
+assert.match(ribbonBrowserReview, /handleHittable/);
+assert.match(ribbonBrowserReview, /handleAriaDisabled/);
+assert.match(ribbonBrowserReview, /handleAriaText/);
 assert.match(ribbonBrowserReview, /#ribbon-overview/);
 assert.match(ribbonBrowserReview, /captureScreenshot/);
 
