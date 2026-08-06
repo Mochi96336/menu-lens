@@ -69,6 +69,7 @@ const humanizationCss = `
   html.model-live-document,
   html.model-live-document body {
     overflow-y: hidden !important;
+    touch-action: pan-x !important;
   }
 
   html.model-live-document .atlas-phone {
@@ -217,6 +218,8 @@ const restoreFixedStage = (frame, documentRoot) => {
   if (frame.dataset.modelLiveDocumentFlow !== "true") return;
   delete frame.dataset.modelLiveDocumentFlow;
   delete root?.dataset.liveNaturalHeight;
+  delete root?.dataset.liveDocumentContentHeight;
+  delete root?.dataset.liveDocumentOverflow;
 
   const stageHeight = Number(root?.dataset.liveStageHeight);
   if (!Number.isFinite(stageHeight) || stageHeight <= 0) return;
@@ -267,7 +270,92 @@ const syncDocumentFlow = (frame, documentRoot, objectId) => {
   root.dataset.liveLayout = "document";
   root.dataset.liveHeight = String(naturalHeight);
   root.dataset.liveNaturalHeight = String(naturalHeight);
-  root.dataset.liveOverflow = "false";
+  root.dataset.liveDocumentContentHeight = String(targetHeight);
+  root.dataset.liveDocumentOverflow = "false";
+};
+
+const documentScrollKeyDelta = (event, parentView) => {
+  switch (event.key) {
+    case "ArrowDown": return 48;
+    case "ArrowUp": return -48;
+    case "PageDown": return Math.max(240, Math.round(parentView.innerHeight * .82));
+    case "PageUp": return -Math.max(240, Math.round(parentView.innerHeight * .82));
+    case " ": return (event.shiftKey ? -1 : 1)
+      * Math.max(240, Math.round(parentView.innerHeight * .82));
+    default: return 0;
+  }
+};
+
+const installDocumentInputForwarding = (frame, documentRoot, objectId) => {
+  if (!documentObjectIds.has(objectId)) return () => {};
+  const parentView = frame.ownerDocument.defaultView;
+  if (!parentView) return () => {};
+
+  const scrollParentBy = (deltaY) => {
+    if (!Number.isFinite(deltaY) || Math.abs(deltaY) < .5) return;
+    parentView.scrollBy({ top: deltaY, left: 0, behavior: "auto" });
+  };
+
+  const onWheel = (event) => {
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    const unit = event.deltaMode === 1
+      ? 16
+      : event.deltaMode === 2
+        ? parentView.innerHeight
+        : 1;
+    scrollParentBy(event.deltaY * unit);
+    event.preventDefault();
+  };
+
+  let activePointerId = null;
+  let lastPointerY = 0;
+  const onPointerDown = (event) => {
+    if (!event.isPrimary || !["touch", "pen"].includes(event.pointerType)) return;
+    activePointerId = event.pointerId;
+    lastPointerY = event.clientY;
+    event.target?.setPointerCapture?.(event.pointerId);
+  };
+  const onPointerMove = (event) => {
+    if (event.pointerId !== activePointerId) return;
+    const deltaY = lastPointerY - event.clientY;
+    lastPointerY = event.clientY;
+    scrollParentBy(deltaY);
+    event.preventDefault();
+  };
+  const releasePointer = (event) => {
+    if (event.pointerId !== activePointerId) return;
+    activePointerId = null;
+  };
+
+  const onKeyDown = (event) => {
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+    const target = event.target instanceof documentRoot.defaultView.Element
+      ? event.target
+      : null;
+    if (target?.closest("input, textarea, select, [contenteditable=true]")) return;
+    if (event.key === " "
+      && target?.closest("button, summary, a[href], [role=button], [role=link]")) return;
+    const deltaY = documentScrollKeyDelta(event, parentView);
+    if (!deltaY) return;
+    scrollParentBy(deltaY);
+    event.preventDefault();
+  };
+
+  documentRoot.addEventListener("wheel", onWheel, { passive: false, capture: true });
+  documentRoot.addEventListener("pointerdown", onPointerDown, { capture: true });
+  documentRoot.addEventListener("pointermove", onPointerMove, { passive: false, capture: true });
+  documentRoot.addEventListener("pointerup", releasePointer, { capture: true });
+  documentRoot.addEventListener("pointercancel", releasePointer, { capture: true });
+  documentRoot.addEventListener("keydown", onKeyDown, { capture: true });
+
+  return () => {
+    documentRoot.removeEventListener("wheel", onWheel, { capture: true });
+    documentRoot.removeEventListener("pointerdown", onPointerDown, { capture: true });
+    documentRoot.removeEventListener("pointermove", onPointerMove, { capture: true });
+    documentRoot.removeEventListener("pointerup", releasePointer, { capture: true });
+    documentRoot.removeEventListener("pointercancel", releasePointer, { capture: true });
+    documentRoot.removeEventListener("keydown", onKeyDown, { capture: true });
+  };
 };
 
 const sanitizeControlLanguage = (value) => String(value ?? "")
@@ -351,13 +439,18 @@ const applyHumanization = (frame) => {
   previousState?.observer?.disconnect();
   previousState?.contentResizeObserver?.disconnect();
   previousState?.frameResizeObserver?.disconnect();
+  previousState?.cleanupInputForwarding?.();
+  previousState?.cancelPendingSync?.();
 
   const objectId = objectIdFor(frame);
+  const cleanupInputForwarding = installDocumentInputForwarding(frame, documentRoot, objectId);
   let pending = false;
+  let syncRequest = null;
   let lastFrameWidth = frame.getBoundingClientRect().width;
 
   const sync = () => {
     pending = false;
+    syncRequest = null;
     ensureHumanizationStyle(documentRoot);
     syncReturnControls(documentRoot);
     syncControlLanguage(documentRoot);
@@ -369,7 +462,20 @@ const applyHumanization = (frame) => {
   const queueSync = () => {
     if (pending) return;
     pending = true;
-    queueMicrotask(sync);
+    const requestFrame = documentRoot.defaultView?.requestAnimationFrame;
+    if (typeof requestFrame === "function") {
+      syncRequest = requestFrame.call(documentRoot.defaultView, sync);
+    } else {
+      queueMicrotask(sync);
+    }
+  };
+
+  const cancelPendingSync = () => {
+    if (syncRequest !== null) {
+      documentRoot.defaultView?.cancelAnimationFrame?.(syncRequest);
+    }
+    syncRequest = null;
+    pending = false;
   };
 
   sync();
@@ -414,7 +520,13 @@ const applyHumanization = (frame) => {
     frameResizeObserver.observe(frame);
   }
 
-  frameState.set(frame, { observer, contentResizeObserver, frameResizeObserver });
+  frameState.set(frame, {
+    observer,
+    contentResizeObserver,
+    frameResizeObserver,
+    cleanupInputForwarding,
+    cancelPendingSync,
+  });
 };
 
 const attachFrame = (frame) => {
