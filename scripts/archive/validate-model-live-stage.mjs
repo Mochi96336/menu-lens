@@ -118,6 +118,10 @@ const stageBrowserReview = await readFile(
   new URL("./validate-model-live-stage-browser.mjs", import.meta.url),
   "utf8",
 );
+const documentFlowReview = await readFile(
+  new URL("./validate-model-document-flow-browser.mjs", import.meta.url),
+  "utf8",
+);
 const presentationBrowserReview = await readFile(
   new URL("./validate-model-live-presentation-browser.mjs", import.meta.url),
   "utf8",
@@ -125,8 +129,8 @@ const presentationBrowserReview = await readFile(
 
 assert.match(source, /frame\.setAttribute\("scrolling", "auto"\)/, "The base live surface should start as an internally scrollable fixed stage.");
 assert.doesNotMatch(source, /frame\.style\.height\s*=\s*`\$\{height\}px`/, "Core measurement should not resize every model indiscriminately.");
-assert.match(source, /root\.dataset\.liveContentHeight/, "Natural content height should remain observable.");
-assert.match(source, /root\.dataset\.liveOverflow/, "Stage overflow should remain observable.");
+assert.match(source, /root\.dataset\.liveContentHeight/, "Fixed-stage content height should remain observable.");
+assert.match(source, /root\.dataset\.liveOverflow/, "Fixed-stage overflow should remain observable.");
 assert.match(source, /fallback\.style\.position\s*=\s*"absolute"/, "Loading fallback must not double the stage height.");
 assert.match(source, /modelLivePresentationFor\(key\)/, "Each live object should resolve its own profile.");
 assert.match(source, /applyPresentationMutations/, "Presentation-only labels should be applied inside the live iframe.");
@@ -137,8 +141,13 @@ assert.match(humanizationSource, /documentObjectIds = new Set\(\["01", "05", "05
 assert.match(humanizationSource, /frame\.setAttribute\("scrolling", "no"\)/);
 assert.match(humanizationSource, /root\.dataset\.liveLayout = "document"/);
 assert.match(humanizationSource, /root\.dataset\.liveNaturalHeight/);
+assert.match(humanizationSource, /root\.dataset\.liveDocumentContentHeight/);
+assert.match(humanizationSource, /root\.dataset\.liveDocumentOverflow/);
+assert.doesNotMatch(humanizationSource, /root\.dataset\.liveOverflow = "false"/);
+assert.match(humanizationSource, /requestFrame\.call\(documentRoot\.defaultView, sync\)/);
 assert.match(humanizationSource, /contentResizeObserver\.observe\(liveTarget\)/);
 assert.match(humanizationSource, /frameResizeObserver\.observe\(frame\)/);
+assert.match(humanizationSource, /installDocumentInputForwarding/);
 assert.match(humanizationSource, /restoreFixedStage/, "A reused surface must be able to return to the fixed-stage contract.");
 
 assert.match(presentationSource, /assign\("multiscale", \["06"\]\)/);
@@ -158,7 +167,18 @@ assert.match(stageBrowserReview, /model-document-/);
 assert.match(stageBrowserReview, /documentScrollable/);
 assert.match(stageBrowserReview, /fixedOverflowSurfaceCount/);
 assert.match(stageBrowserReview, /naturalDocumentSurfaceCount/);
+
+assert.match(documentFlowReview, /stableDocumentSnapshot/);
+assert.match(documentFlowReview, /liveDocumentContentHeight/);
+assert.match(documentFlowReview, /Input\.dispatchMouseEvent/);
+assert.match(documentFlowReview, /Input\.dispatchTouchEvent/);
+assert.match(documentFlowReview, /Input\.dispatchKeyEvent/);
+assert.match(documentFlowReview, /waitForOuterMovement/);
+assert.match(documentFlowReview, /frame\.contentWindow\.scrollY === 0/);
+assert.match(documentFlowReview, /07 detail collapse left stale document metadata/);
+assert.match(documentFlowReview, /\["05", "05A", "05B", "05C"\]/);
+
 assert.match(browserReview, /root\.dataset\.liveStageHeight/g);
 assert.match(browserReview, /root\.dataset\.liveContentHeight/g);
 
-console.log("Model live-stage validator: spatial prototypes retain fixed stages while document prototypes use measured outer-page flow.");
+console.log("Model live-stage validator: spatial prototypes retain fixed stages while document prototypes use stable measured outer-page flow with real input forwarding.");
