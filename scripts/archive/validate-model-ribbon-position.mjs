@@ -13,6 +13,10 @@ const ribbonBrowserReview = await readFile(
   new URL("./validate-model-ribbon-position-browser.mjs", import.meta.url),
   "utf8",
 );
+const rapidDragReview = await readFile(
+  new URL("./validate-model-ribbon-rapid-drag-browser.mjs", import.meta.url),
+  "utf8",
+);
 const canonicalRibbonCss = await readFile(
   new URL("../../research-history/horizontal-ribbon.css", import.meta.url),
   "utf8",
@@ -42,12 +46,18 @@ assert.match(ribbonPosition, /liveRibbonNativeScrollbar/);
 assert.match(ribbonPosition, /viewport\.dataset\.scale === "reading"[\s\S]*\? "hidden"[\s\S]*: "inactive"/);
 assert.match(ribbonPosition, /liveRibbonHandleLeft/);
 assert.match(ribbonPosition, /liveRibbonHandleWidth/);
+assert.match(ribbonPosition, /liveRibbonPointerSettled/);
+assert.match(ribbonPosition, /queueOverviewSettle/);
+assert.match(ribbonPosition, /settleOverviewPointer/);
+assert.match(ribbonPosition, /overviewSettleFrames >= 12/);
+assert.match(ribbonPosition, /overviewStableFrames >= 3/);
+assert.match(ribbonPosition, /overviewSettleFrames >= 24/);
 assert.match(ribbonPosition, /ResizeObserver/);
 assert.match(ribbonPosition, /MutationObserver/);
 assert.doesNotMatch(
   ribbonPosition,
-  /spread-|08A|#spread/,
-  "Ribbon position cleanup must not absorb Spread work.",
+  /debugRibbon|spread-|08A|#spread/,
+  "Ribbon position cleanup must not contain debug state or absorb Spread work.",
 );
 
 assert.match(canonicalRibbonCss, /\.ribbon-viewport\[data-scale="reading"\] \{ overflow-x: auto; \}/);
@@ -82,4 +92,14 @@ assert.doesNotMatch(
 assert.match(ribbonBrowserReview, /#ribbon-overview/);
 assert.match(ribbonBrowserReview, /captureScreenshot/);
 
-console.log("Model Ribbon position validator: 09 / 09A expose one operable, directly mapped minimap handle, hide native scrollbar chrome only while reading after readiness, and retain complete Ribbon reachability.");
+assert.match(rapidDragReview, /variant: "09A"/);
+assert.match(rapidDragReview, /viewport: "390"/);
+assert.match(rapidDragReview, /type: "mousePressed"/);
+assert.match(rapidDragReview, /type: "mouseMoved"/);
+assert.match(rapidDragReview, /type: "mouseReleased"/);
+assert.match(rapidDragReview, /liveRibbonPointerSettled === 'true'/);
+assert.match(rapidDragReview, /handleCenterTop - targetX/);
+assert.match(rapidDragReview, /actualProgress - expectedProgress/);
+assert.match(rapidDragReview, /model-ribbon-rapid-overview-drag-09A-390\.png/);
+
+console.log("Model Ribbon position validator: 09 / 09A expose one operable, directly mapped minimap handle, stabilize rapid overview drags across reading layout changes, hide native scrollbar chrome only while reading after readiness, and retain complete Ribbon reachability.");
