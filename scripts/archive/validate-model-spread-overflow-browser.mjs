@@ -229,6 +229,19 @@ const scrollFrame = async (client, objectId, top) => {
   await delay(60);
 };
 
+const revealProduct = async (client, objectId, edge) => {
+  await evaluate(client, `(() => {
+    const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
+    const products = [...frame.contentDocument.querySelectorAll(
+      '.spread-category[data-focused="true"] .spread-product'
+    )];
+    const target = ${JSON.stringify(edge)} === 'last' ? products.at(-1) : products[0];
+    target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'auto' });
+  })()`);
+  await nextPaint(client);
+  await delay(60);
+};
+
 const pinnedControlExpression = (objectId, index = 1) => `(() => {
   const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
   const doc = frame.contentDocument;
@@ -298,13 +311,14 @@ try {
       const result = await navigateCase(client, objectId, viewport);
 
       await scrollFrame(client, objectId, "max");
-      const bottom = await evaluate(client, snapshotExpression(objectId));
-      assertSingleVerticalOwner(bottom, `${objectId}/${viewport} bottom`);
-      if (bottom.maxFrameScroll > 0) {
-        assert.ok(bottom.frameScrollY >= bottom.maxFrameScroll - 2, `${objectId}/${viewport}: iframe did not reach bottom`);
+      const displaced = await evaluate(client, snapshotExpression(objectId));
+      assertSingleVerticalOwner(displaced, `${objectId}/${viewport} displaced`);
+      if (displaced.maxFrameScroll > 0) {
+        assert.ok(
+          displaced.frameScrollY >= displaced.maxFrameScroll - 2,
+          `${objectId}/${viewport}: iframe did not reach its displaced state`,
+        );
       }
-      assert.ok(bottom.lastTop < bottom.viewportHeight, `${objectId}/${viewport}: last Product stayed below viewport`);
-      assert.ok(bottom.lastBottom > 0, `${objectId}/${viewport}: last Product passed above viewport`);
 
       const pinned = await evaluate(client, pinnedControlExpression(objectId));
       assert.equal(pinned.position, "fixed", `${objectId}/${viewport}: category control is not fixed`);
@@ -314,6 +328,12 @@ try {
       );
       assert.ok(pinned.top >= -1 && pinned.top < pinned.viewportHeight, `${objectId}/${viewport}: category control left the viewport`);
       assert.equal(pinned.hittable, true, `${objectId}/${viewport}: category control is covered`);
+
+      await revealProduct(client, objectId, "last");
+      const bottom = await evaluate(client, snapshotExpression(objectId));
+      assertSingleVerticalOwner(bottom, `${objectId}/${viewport} last Product`);
+      assert.ok(bottom.lastTop < bottom.viewportHeight, `${objectId}/${viewport}: last Product stayed below viewport`);
+      assert.ok(bottom.lastBottom > 0, `${objectId}/${viewport}: last Product stayed above viewport`);
 
       await evaluate(client, `(() => {
         const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
@@ -384,6 +404,7 @@ try {
         viewport,
         path: result.path,
         initial: result.snapshot,
+        displaced,
         bottom,
         top,
         pinned,
@@ -396,7 +417,7 @@ try {
     `${JSON.stringify({ browser, baseUrl, generatedAt: new Date().toISOString(), results }, null, 2)}\n`,
   );
   socket.close();
-  console.log("Model Spread overflow browser review: 08 and 08A keep one vertical owner, pinned real category controls, full Product reachability, detail growth, and return across 320 / 390 / desktop.");
+  console.log("Model Spread overflow browser review: 08 and 08A keep one vertical owner, pinned real category controls, directly reachable first and last Products, detail growth, and return across 320 / 390 / desktop.");
 } catch (error) {
   if (browserStderr.trim()) console.error(browserStderr.trim());
   throw error;
