@@ -17,7 +17,7 @@ const spreadModelCss = `
 
   [data-model-live-presentation="spread"][data-model-live-presentation-state="focus"] .spread-map {
     flex: 0 0 auto !important;
-    height: auto !important;
+    height: max(calc(100vh - 3.15rem), var(--model-spread-map-height, 0px)) !important;
     min-height: calc(100vh - 3.15rem) !important;
     align-items: stretch !important;
     overflow-x: auto !important;
@@ -87,6 +87,7 @@ const applySpreadOverflow = (frame) => {
   const clearPinnedGeometry = () => {
     presentationRoot.classList.remove("model-spread-measuring");
     delete presentationRoot.dataset.modelSpreadPinned;
+    spreadMap.style.removeProperty("--model-spread-map-height");
     for (const category of categories()) {
       category.style.removeProperty("--model-spread-header-height");
       const button = category.querySelector(".spread-category__focus");
@@ -112,6 +113,9 @@ const applySpreadOverflow = (frame) => {
     root.dataset.liveSpreadLandmarks = spreadMap.dataset.mode === "focus"
       ? presentationRoot.dataset.modelSpreadPinned === "true" ? "pinned" : "pending"
       : "inline";
+    root.dataset.liveSpreadMapHeight = spreadMap.dataset.mode === "focus"
+      ? String(Math.ceil(spreadMap.getBoundingClientRect().height))
+      : "0";
   };
 
   const syncPinnedGeometry = () => {
@@ -124,6 +128,7 @@ const applySpreadOverflow = (frame) => {
 
     const currentCategories = categories();
     presentationRoot.classList.add("model-spread-measuring");
+    spreadMap.style.removeProperty("--model-spread-map-height");
     for (const category of currentCategories) {
       category.style.removeProperty("--model-spread-header-height");
     }
@@ -137,9 +142,14 @@ const applySpreadOverflow = (frame) => {
         left: categoryRect.left,
         width: categoryRect.width,
         height: Math.max(1, buttonRect?.height ?? 0),
+        contentHeight: Math.max(category.scrollHeight, Math.ceil(categoryRect.height)),
         zIndex: 60 + index,
       };
     });
+    const mapHeight = Math.max(
+      Math.max(1, view.innerHeight - 51),
+      ...measurements.map((measurement) => measurement.contentHeight),
+    );
 
     for (const measurement of measurements) {
       measurement.category.style.setProperty(
@@ -159,6 +169,7 @@ const applySpreadOverflow = (frame) => {
         String(measurement.zIndex),
       );
     }
+    spreadMap.style.setProperty("--model-spread-map-height", `${mapHeight}px`);
     presentationRoot.classList.remove("model-spread-measuring");
     presentationRoot.dataset.modelSpreadPinned = "true";
     syncEvidence();
