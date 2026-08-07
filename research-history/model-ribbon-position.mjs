@@ -2,10 +2,11 @@ const ribbonObjectIds = new Set(["09", "09A"]);
 const frameState = new WeakMap();
 
 const ribbonModelCss = `
-  [data-model-live-presentation="ribbon"][data-model-ribbon-handle-ready="true"] .ribbon-phone {
-    box-sizing: border-box !important;
-    height: 100% !important;
-    min-height: 0 !important;
+  [data-model-live-presentation="ribbon"][data-model-ribbon-handle-ready="true"] .ribbon-scale-bar {
+    position: fixed !important;
+    inset: 0 0 auto 0 !important;
+    z-index: 80 !important;
+    width: 100% !important;
   }
 
   [data-model-live-presentation="ribbon"][data-model-ribbon-handle-ready="true"] .ribbon-minimap {
