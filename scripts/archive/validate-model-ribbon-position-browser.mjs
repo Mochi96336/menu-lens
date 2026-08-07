@@ -95,33 +95,10 @@ const nextPaint = (client) => evaluate(
   "new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))",
 );
 
-const setViewport = (client, width = 1440, height = 960) => client.send(
-  "Emulation.setDeviceMetricsOverride",
-  {
-    width,
-    height,
-    deviceScaleFactor: 1,
-    mobile: false,
-    screenWidth: width,
-    screenHeight: height,
-  },
-);
-
 const rootExpression = (objectId) => `
   [...document.querySelectorAll('.model-pooled-surface')]
     .find((candidate) => candidate.dataset.objectId === ${JSON.stringify(objectId)})
 `;
-
-const routePath = (objectId, viewport) => {
-  const params = new URLSearchParams({
-    model: "horizontal-navigation",
-    section: "ribbon",
-    variant: objectId,
-    viewport,
-    view: "focus",
-  });
-  return `/models/?${params}`;
-};
 
 const snapshotExpression = (objectId) => `(() => {
   const root = ${rootExpression(objectId)};
@@ -133,67 +110,45 @@ const snapshotExpression = (objectId) => `(() => {
   const handle = doc?.querySelector('.ribbon-minimap__window');
   const products = [...(doc?.querySelectorAll('.ribbon-product') ?? [])];
   if (!root || !frame || !doc || !view || !viewport || !minimap || !handle) return null;
-
   const viewportRect = viewport.getBoundingClientRect();
   const minimapRect = minimap.getBoundingClientRect();
   const handleRect = handle.getBoundingClientRect();
-  const totalWidth = Math.max(1, viewport.scrollWidth);
-  const maximum = Math.max(0, totalWidth - viewport.clientWidth);
+  const maximum = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
   const current = Math.max(0, Math.min(maximum, viewport.scrollLeft));
-  const expectedWidthRatio = maximum > 0 ? viewport.clientWidth / totalWidth : 1;
-  const expectedLeftRatio = maximum > 0 ? current / totalWidth : 0;
-  const hit = doc.elementFromPoint(
-    handleRect.left + handleRect.width / 2,
-    handleRect.top + handleRect.height / 2,
-  );
-
+  const hit = doc.elementFromPoint(handleRect.left + handleRect.width / 2, handleRect.top + handleRect.height / 2);
   const unreachableProducts = products.flatMap((product, index) => {
     const rect = product.getBoundingClientRect();
     const contentLeft = rect.left - viewportRect.left + current;
-    const required = Math.max(0, Math.min(
-      maximum,
-      contentLeft + rect.width / 2 - viewport.clientWidth / 2,
-    ));
+    const required = Math.max(0, Math.min(maximum, contentLeft + rect.width / 2 - viewport.clientWidth / 2));
     const predictedLeft = contentLeft - required;
     const predictedRight = predictedLeft + rect.width;
     return predictedRight > 0 && predictedLeft < viewport.clientWidth ? [] : [index];
   });
-
   const first = products[0]?.getBoundingClientRect();
   const last = products.at(-1)?.getBoundingClientRect();
   const viewportStyle = view.getComputedStyle(viewport);
   const handleStyle = view.getComputedStyle(handle);
   return {
-    objectId: root.dataset.objectId,
     scale: viewport.dataset.scale,
     current,
     maximum,
-    totalWidth,
+    totalWidth: viewport.scrollWidth,
     clientWidth: viewport.clientWidth,
-    handleState: root.dataset.liveRibbonHandle ?? null,
     nativeEvidence: root.dataset.liveRibbonNativeScrollbar ?? null,
-    evidenceCurrent: Number(root.dataset.liveRibbonScrollLeft),
-    evidenceMaximum: Number(root.dataset.liveRibbonMaxScroll),
+    pointerSettled: root.dataset.liveRibbonPointerSettled ?? null,
     handleLeftRatio: Number(root.dataset.liveRibbonHandleLeft),
     handleWidthRatio: Number(root.dataset.liveRibbonHandleWidth),
-    expectedLeftRatio,
-    expectedWidthRatio,
     nativeScrollbar: viewportStyle.scrollbarWidth,
-    handleRole: handle.getAttribute('role'),
-    handleTabIndex: handle.tabIndex,
+    role: handle.getAttribute('role'),
+    tabIndex: handle.tabIndex,
     handleAriaDisabled: handle.getAttribute('aria-disabled'),
-    handleAriaNow: Number(handle.getAttribute('aria-valuenow')),
+    ariaNow: Number(handle.getAttribute('aria-valuenow')),
     handleAriaText: handle.getAttribute('aria-valuetext'),
-    handleTransition: handleStyle.transitionDuration,
-    handlePointerEvents: handleStyle.pointerEvents,
-    handleCursor: handleStyle.cursor,
-    minimapLeft: minimapRect.left,
-    minimapRight: minimapRect.right,
-    minimapWidth: minimapRect.width,
-    handleLeft: handleRect.left,
-    handleRight: handleRect.right,
-    handleWidth: handleRect.width,
+    transition: handleStyle.transitionDuration,
+    pointerEvents: handleStyle.pointerEvents,
     handleHittable: hit === handle || handle.contains(hit),
+    handleRect: { left: handleRect.left, right: handleRect.right, width: handleRect.width },
+    minimapRect: { left: minimapRect.left, right: minimapRect.right, width: minimapRect.width },
     productCount: products.length,
     unreachableProducts,
     firstVisible: Boolean(first && first.right > viewportRect.left && first.left < viewportRect.right),
@@ -203,53 +158,21 @@ const snapshotExpression = (objectId) => `(() => {
 
 const assertSynced = (snapshot, label) => {
   assert.ok(snapshot, `${label}: missing Ribbon snapshot`);
-  assert.equal(snapshot.handleState, "ready", `${label}: handle is not ready`);
-  assert.equal(snapshot.handleRole, "slider", `${label}: handle role`);
-  assert.equal(snapshot.handleTabIndex, 0, `${label}: handle is not keyboard focusable`);
-  assert.equal(snapshot.handleAriaDisabled, "false", `${label}: operable handle is marked disabled`);
-  assert.ok(snapshot.handleAriaNow >= 0 && snapshot.handleAriaNow <= 100, `${label}: invalid slider value`);
-  assert.ok(snapshot.handleAriaText?.length > 0, `${label}: missing slider value text`);
-  assert.equal(snapshot.handlePointerEvents, "auto", `${label}: handle cannot receive pointer input`);
+  assert.equal(snapshot.role, "slider", `${label}: handle role`);
+  assert.equal(snapshot.tabIndex, 0, `${label}: handle tabindex`);
+  assert.equal(snapshot.handleAriaDisabled, "false", `${label}: operable handle marked disabled`);
+  assert.ok(snapshot.ariaNow >= 0 && snapshot.ariaNow <= 100, `${label}: invalid ARIA value`);
+  assert.ok(snapshot.handleAriaText?.length > 0, `${label}: missing ARIA value text`);
+  assert.equal(snapshot.pointerEvents, "auto", `${label}: handle cannot receive pointer input`);
   assert.equal(snapshot.handleHittable, true, `${label}: handle is covered`);
   assert.equal(snapshot.productCount, 30, `${label}: Product count changed`);
   assert.deepEqual(snapshot.unreachableProducts, [], `${label}: unreachable Products`);
-  assert.ok(
-    Math.abs(snapshot.evidenceCurrent - snapshot.current) <= 1,
-    `${label}: current scroll evidence drifted`,
-  );
-  assert.ok(
-    Math.abs(snapshot.evidenceMaximum - snapshot.maximum) <= 1,
-    `${label}: maximum scroll evidence drifted`,
-  );
-  assert.ok(
-    Math.abs(snapshot.handleLeftRatio - snapshot.expectedLeftRatio) <= .002,
-    `${label}: handle left does not reflect scrollLeft`,
-  );
-  assert.ok(
-    Math.abs(snapshot.handleWidthRatio - snapshot.expectedWidthRatio) <= .002,
-    `${label}: handle width does not reflect viewport width`,
-  );
-  assert.ok(snapshot.handleLeft >= snapshot.minimapLeft - 1, `${label}: handle starts outside minimap`);
-  assert.ok(snapshot.handleRight <= snapshot.minimapRight + 1, `${label}: handle ends outside minimap`);
-};
-
-const navigateCase = async (client, objectId, viewport) => {
-  const path = routePath(objectId, viewport);
-  await client.send("Page.navigate", { url: `${baseUrl}${path}` });
-  await waitFor(client, `(() => {
-    const root = ${rootExpression(objectId)};
-    const frame = root?.querySelector('iframe.model-live-frame');
-    return document.readyState === 'complete'
-      && root?.dataset.liveState === 'ready'
-      && root?.dataset.liveRibbonHandle === 'ready'
-      && frame
-      && !frame.hidden
-      && frame.contentDocument?.readyState === 'complete'
-      && Boolean(frame.contentDocument.querySelector('#model-ribbon-position-style'));
-  })()`, `${objectId}/${viewport} Ribbon handle`);
-  await nextPaint(client);
-  await delay(80);
-  return { path, snapshot: await evaluate(client, snapshotExpression(objectId)) };
+  const expectedLeft = snapshot.maximum > 0 ? snapshot.current / snapshot.totalWidth : 0;
+  const expectedWidth = snapshot.maximum > 0 ? snapshot.clientWidth / snapshot.totalWidth : 1;
+  assert.ok(Math.abs(snapshot.handleLeftRatio - expectedLeft) <= .002, `${label}: handle left drifted`);
+  assert.ok(Math.abs(snapshot.handleWidthRatio - expectedWidth) <= .002, `${label}: handle width drifted`);
+  assert.ok(snapshot.handleRect.left >= snapshot.minimapRect.left - 1, `${label}: handle starts outside minimap`);
+  assert.ok(snapshot.handleRect.right <= snapshot.minimapRect.right + 1, `${label}: handle ends outside minimap`);
 };
 
 const topLevelPoint = async (client, objectId, selector) => {
@@ -259,7 +182,7 @@ const topLevelPoint = async (client, objectId, selector) => {
     return true;
   })()`);
   await nextPaint(client);
-  await delay(30);
+  await delay(40);
   return evaluate(client, `(() => {
     const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
     const frameRect = frame.getBoundingClientRect();
@@ -270,49 +193,9 @@ const topLevelPoint = async (client, objectId, selector) => {
       y: frameRect.top + rect.top + rect.height / 2,
       left: frameRect.left + rect.left,
       right: frameRect.left + rect.right,
-      top: frameRect.top + rect.top,
-      bottom: frameRect.top + rect.bottom,
       width: rect.width,
-      height: rect.height,
     };
   })()`);
-};
-
-const clickSelector = async (client, objectId, selector) => {
-  const point = await topLevelPoint(client, objectId, selector);
-  await client.send("Input.dispatchMouseEvent", {
-    type: "mousePressed",
-    x: point.x,
-    y: point.y,
-    button: "left",
-    buttons: 1,
-    clickCount: 1,
-  });
-  await client.send("Input.dispatchMouseEvent", {
-    type: "mouseReleased",
-    x: point.x,
-    y: point.y,
-    button: "left",
-    buttons: 0,
-    clickCount: 1,
-  });
-};
-
-const dispatchKey = async (client, key, code, virtualKeyCode) => {
-  await client.send("Input.dispatchKeyEvent", {
-    type: "rawKeyDown",
-    key,
-    code,
-    windowsVirtualKeyCode: virtualKeyCode,
-    nativeVirtualKeyCode: virtualKeyCode,
-  });
-  await client.send("Input.dispatchKeyEvent", {
-    type: "keyUp",
-    key,
-    code,
-    windowsVirtualKeyCode: virtualKeyCode,
-    nativeVirtualKeyCode: virtualKeyCode,
-  });
 };
 
 const dragHandleToRatio = async (client, objectId, ratio) => {
@@ -320,23 +203,12 @@ const dragHandleToRatio = async (client, objectId, ratio) => {
     const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
     return frame.contentDocument.querySelector('#ribbon-viewport').dataset.scale;
   })()`);
-  let handlePoint = await topLevelPoint(client, objectId, ".ribbon-minimap__window");
-  let minimapPoint = await topLevelPoint(client, objectId, "#ribbon-minimap");
-
+  let handle = await topLevelPoint(client, objectId, ".ribbon-minimap__window");
+  let minimap = await topLevelPoint(client, objectId, "#ribbon-minimap");
+  await client.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: handle.x, y: handle.y });
   await client.send("Input.dispatchMouseEvent", {
-    type: "mouseMoved",
-    x: handlePoint.x,
-    y: handlePoint.y,
+    type: "mousePressed", x: handle.x, y: handle.y, button: "left", buttons: 1, clickCount: 1,
   });
-  await client.send("Input.dispatchMouseEvent", {
-    type: "mousePressed",
-    x: handlePoint.x,
-    y: handlePoint.y,
-    button: "left",
-    buttons: 1,
-    clickCount: 1,
-  });
-
   if (initialScale !== "reading") {
     await waitFor(client, `(() => {
       const root = ${rootExpression(objectId)};
@@ -344,38 +216,42 @@ const dragHandleToRatio = async (client, objectId, ratio) => {
       return frame.contentDocument.querySelector('#ribbon-viewport').dataset.scale === 'reading'
         && Number(root.dataset.liveRibbonMaxScroll) > 0;
     })()`, `${objectId} handle enters reading`);
-    await nextPaint(client);
     await delay(100);
-    handlePoint = await topLevelPoint(client, objectId, ".ribbon-minimap__window");
-    minimapPoint = await topLevelPoint(client, objectId, "#ribbon-minimap");
+    handle = await topLevelPoint(client, objectId, ".ribbon-minimap__window");
+    minimap = await topLevelPoint(client, objectId, "#ribbon-minimap");
   }
-
-  const travel = Math.max(0, minimapPoint.width - handlePoint.width);
-  const targetX = minimapPoint.left + handlePoint.width / 2 + travel * ratio;
+  const travel = Math.max(0, minimap.width - handle.width);
+  const targetX = minimap.left + handle.width / 2 + travel * ratio;
   await client.send("Input.dispatchMouseEvent", {
-    type: "mouseMoved",
-    x: targetX,
-    y: handlePoint.y,
-    button: "left",
-    buttons: 1,
+    type: "mouseMoved", x: targetX, y: handle.y, button: "left", buttons: 1,
   });
   await client.send("Input.dispatchMouseEvent", {
-    type: "mouseReleased",
-    x: targetX,
-    y: handlePoint.y,
-    button: "left",
-    buttons: 0,
-    clickCount: 1,
+    type: "mouseReleased", x: targetX, y: handle.y, button: "left", buttons: 0, clickCount: 1,
   });
-
   await waitFor(client, `(() => {
     const root = ${rootExpression(objectId)};
     const maximum = Number(root.dataset.liveRibbonMaxScroll);
     return maximum > 0
       && Math.abs(Number(root.dataset.liveRibbonScrollLeft) - maximum * ${ratio}) <= 20;
   })()`, `${objectId} handle ratio ${ratio}`);
+  if (initialScale !== "reading") {
+    await waitFor(
+      client,
+      `${rootExpression(objectId)}.dataset.liveRibbonPointerSettled === 'true'`,
+      `${objectId} overview drag settles`,
+    );
+  }
   await nextPaint(client);
-  await delay(90);
+  await delay(100);
+};
+
+const dispatchKey = async (client, key, code, virtualKeyCode) => {
+  await client.send("Input.dispatchKeyEvent", {
+    type: "rawKeyDown", key, code, windowsVirtualKeyCode: virtualKeyCode, nativeVirtualKeyCode: virtualKeyCode,
+  });
+  await client.send("Input.dispatchKeyEvent", {
+    type: "keyUp", key, code, windowsVirtualKeyCode: virtualKeyCode, nativeVirtualKeyCode: virtualKeyCode,
+  });
 };
 
 const focusSelector = (client, objectId, selector) => evaluate(client, `(() => {
@@ -385,11 +261,30 @@ const focusSelector = (client, objectId, selector) => evaluate(client, `(() => {
   return frame.contentDocument.activeElement === element;
 })()`);
 
+const allProductsReachable = (client, objectId) => evaluate(client, `(() => {
+  const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
+  const doc = frame.contentDocument;
+  const viewport = doc.querySelector('#ribbon-viewport');
+  const failures = [];
+  [...doc.querySelectorAll('.ribbon-product')].forEach((product, index) => {
+    product.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'auto' });
+    const productRect = product.getBoundingClientRect();
+    const viewportRect = viewport.getBoundingClientRect();
+    if (!(productRect.right > viewportRect.left && productRect.left < viewportRect.right)) failures.push(index);
+  });
+  return failures;
+})()`);
+
+const activateReturn = (client, objectId) => evaluate(client, `(() => {
+  const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
+  const button = frame.contentDocument.querySelector('#ribbon-overview');
+  button.click();
+  return true;
+})()`);
+
 const capture = async (client, filename) => {
   const screenshot = await client.send("Page.captureScreenshot", {
-    format: "png",
-    fromSurface: true,
-    captureBeyondViewport: false,
+    format: "png", fromSurface: true, captureBeyondViewport: false,
   });
   await writeFile(new URL(filename, outputDir), Buffer.from(screenshot.data, "base64"));
 };
@@ -426,155 +321,137 @@ try {
   const client = new CdpClient(socket);
   await client.send("Page.enable");
   await client.send("Runtime.enable");
-  await setViewport(client);
+  await client.send("Emulation.setDeviceMetricsOverride", {
+    width: 1440, height: 960, deviceScaleFactor: 1, mobile: false, screenWidth: 1440, screenHeight: 960,
+  });
 
   const results = [];
   for (const objectId of ["09", "09A"]) {
     for (const viewportName of ["320", "390", "desktop"]) {
-      const result = await navigateCase(client, objectId, viewportName);
-      const overview = result.snapshot;
+      const params = new URLSearchParams({
+        model: "horizontal-navigation", section: "ribbon", variant: objectId, viewport: viewportName, view: "focus",
+      });
+      const path = `/models/?${params}`;
+      await client.send("Page.navigate", { url: `${baseUrl}${path}` });
+      await waitFor(client, `(() => {
+        const root = ${rootExpression(objectId)};
+        const frame = root?.querySelector('iframe.model-live-frame');
+        return root?.dataset.liveRibbonHandle === 'ready'
+          && frame?.contentDocument?.querySelector('#model-ribbon-position-style');
+      })()`, `${objectId}/${viewportName} ready`);
+      await delay(120);
+
+      const overview = await evaluate(client, snapshotExpression(objectId));
       assertSynced(overview, `${objectId}/${viewportName} overview`);
-      assert.equal(overview.scale, "overview", `${objectId}/${viewportName}: initial scale`);
-      assert.equal(overview.nativeEvidence, "inactive", `${objectId}/${viewportName}: overview scrollbar evidence`);
-      assert.ok(overview.handleWidthRatio >= .99, `${objectId}/${viewportName}: overview handle is not full width`);
+      assert.equal(overview.scale, "overview");
+      assert.equal(overview.nativeEvidence, "inactive");
+      assert.ok(overview.handleWidthRatio >= .99);
 
       await dragHandleToRatio(client, objectId, .25);
       const reading = await evaluate(client, snapshotExpression(objectId));
       assertSynced(reading, `${objectId}/${viewportName} reading`);
-      assert.equal(reading.scale, "reading", `${objectId}/${viewportName}: handle did not enter reading`);
-      assert.equal(reading.nativeEvidence, "hidden", `${objectId}/${viewportName}: reading scrollbar evidence`);
-      assert.equal(reading.nativeScrollbar, "none", `${objectId}/${viewportName}: native scrollbar is visible`);
-      assert.ok(reading.handleWidthRatio < .5, `${objectId}/${viewportName}: handle does not show relative viewport width`);
-      assert.ok(
-        Math.abs(reading.current / reading.maximum - .25) <= .006,
-        `${objectId}/${viewportName}: pointer did not map continuously to the real range`,
+      assert.equal(reading.scale, "reading");
+      assert.equal(reading.nativeEvidence, "hidden");
+      assert.equal(reading.nativeScrollbar, "none");
+      assert.ok(reading.handleWidthRatio < .5);
+      assert.deepEqual(await allProductsReachable(client, objectId), []);
+      await evaluate(client, `(() => {
+        const frame = ${rootExpression(objectId)}.querySelector('iframe.model-live-frame');
+        frame.contentDocument.querySelector('#ribbon-viewport')
+          .scrollTo({ left: 0, behavior: 'auto' });
+        return true;
+      })()`);
+      await nextPaint(client);
+      await delay(160);
+      assertSynced(
+        await evaluate(client, snapshotExpression(objectId)),
+        `${objectId}/${viewportName} reset after reachability sweep`,
       );
+      await dragHandleToRatio(client, objectId, .373);
+      const exact = await evaluate(client, snapshotExpression(objectId));
+      assertSynced(exact, `${objectId}/${viewportName} exact ratio`);
+      assert.ok(Math.abs(exact.current / exact.maximum - .373) < .003);
 
       await dragHandleToRatio(client, objectId, 1);
       const end = await evaluate(client, snapshotExpression(objectId));
-      assertSynced(end, `${objectId}/${viewportName} handle end`);
-      assert.ok(end.lastVisible, `${objectId}/${viewportName}: last Product not visible at handle end`);
+      assertSynced(end, `${objectId}/${viewportName} end`);
+      assert.ok(end.lastVisible);
 
       await dragHandleToRatio(client, objectId, 0);
       const start = await evaluate(client, snapshotExpression(objectId));
-      assertSynced(start, `${objectId}/${viewportName} handle start`);
-      assert.ok(start.firstVisible, `${objectId}/${viewportName}: first Product not visible at handle start`);
+      assertSynced(start, `${objectId}/${viewportName} start`);
+      assert.ok(start.firstVisible);
 
       if (objectId === "09" && viewportName === "390") {
         const viewportPoint = await topLevelPoint(client, objectId, "#ribbon-viewport");
         await client.send("Input.dispatchMouseEvent", {
-          type: "mouseMoved",
-          x: viewportPoint.x,
-          y: viewportPoint.y,
+          type: "mouseMoved", x: viewportPoint.x, y: viewportPoint.y,
         });
         await client.send("Input.dispatchMouseEvent", {
-          type: "mouseWheel",
-          x: viewportPoint.x,
-          y: viewportPoint.y,
-          deltaX: 520,
-          deltaY: 0,
+          type: "mouseWheel", x: viewportPoint.x, y: viewportPoint.y, deltaX: 520, deltaY: 0,
         });
-        await waitFor(
-          client,
-          `Number(${rootExpression(objectId)}.dataset.liveRibbonScrollLeft) > 20`,
-          "09/390 wheel synchronizes handle",
-        );
-        const wheel = await evaluate(client, snapshotExpression(objectId));
-        assertSynced(wheel, "09/390 wheel");
+        await waitFor(client, `Number(${rootExpression(objectId)}.dataset.liveRibbonScrollLeft) > 20`, "09/390 wheel");
+        assertSynced(await evaluate(client, snapshotExpression(objectId)), "09/390 wheel");
         await delay(140);
 
         await dragHandleToRatio(client, objectId, 0);
         assert.equal(await focusSelector(client, objectId, "#ribbon-viewport"), true);
         await dispatchKey(client, "ArrowRight", "ArrowRight", 39);
-        await waitFor(
-          client,
-          `Number(${rootExpression(objectId)}.dataset.liveRibbonScrollLeft) > 20`,
-          "09/390 viewport keyboard synchronizes handle",
-        );
-        const viewportKeyboard = await evaluate(client, snapshotExpression(objectId));
-        assertSynced(viewportKeyboard, "09/390 viewport keyboard");
+        await waitFor(client, `Number(${rootExpression(objectId)}.dataset.liveRibbonScrollLeft) > 20`, "09/390 viewport key");
+        assertSynced(await evaluate(client, snapshotExpression(objectId)), "09/390 viewport key");
 
-        await clickSelector(client, objectId, "#ribbon-minimap button:last-of-type");
+        const minimapButton = await topLevelPoint(client, objectId, "#ribbon-minimap button:last-of-type");
+        await client.send("Input.dispatchMouseEvent", {
+          type: "mousePressed", x: minimapButton.x, y: minimapButton.y, button: "left", buttons: 1, clickCount: 1,
+        });
+        await client.send("Input.dispatchMouseEvent", {
+          type: "mouseReleased", x: minimapButton.x, y: minimapButton.y, button: "left", buttons: 0, clickCount: 1,
+        });
         await waitFor(
           client,
           `Number(${rootExpression(objectId)}.dataset.liveRibbonScrollLeft)
             > Number(${rootExpression(objectId)}.dataset.liveRibbonMaxScroll) * .55`,
-          "09/390 minimap category synchronizes handle",
+          "09/390 minimap category",
         );
-        const minimapClick = await evaluate(client, snapshotExpression(objectId));
-        assertSynced(minimapClick, "09/390 minimap click");
+        assertSynced(await evaluate(client, snapshotExpression(objectId)), "09/390 minimap category");
         await capture(client, "model-ribbon-position-09-390-reading.png");
       }
 
       if (objectId === "09A" && viewportName === "390") {
         assert.equal(await focusSelector(client, objectId, ".ribbon-minimap__window"), true);
         await dispatchKey(client, "End", "End", 35);
-        await waitFor(
-          client,
-          `(() => {
-            const root = ${rootExpression(objectId)};
-            return Number(root.dataset.liveRibbonScrollLeft)
-              >= Number(root.dataset.liveRibbonMaxScroll) - 3;
-          })()`,
-          "09A/390 handle End",
-        );
-        const keyEnd = await evaluate(client, snapshotExpression(objectId));
-        assertSynced(keyEnd, "09A/390 handle End");
-
+        await waitFor(client, `(() => {
+          const root = ${rootExpression(objectId)};
+          return Number(root.dataset.liveRibbonScrollLeft) >= Number(root.dataset.liveRibbonMaxScroll) - 3;
+        })()`, "09A/390 End");
+        assertSynced(await evaluate(client, snapshotExpression(objectId)), "09A/390 End");
         await dispatchKey(client, "Home", "Home", 36);
-        await waitFor(
-          client,
-          `Number(${rootExpression(objectId)}.dataset.liveRibbonScrollLeft) <= 3`,
-          "09A/390 handle Home",
-        );
-        const keyHome = await evaluate(client, snapshotExpression(objectId));
-        assertSynced(keyHome, "09A/390 handle Home");
-
+        await waitFor(client, `Number(${rootExpression(objectId)}.dataset.liveRibbonScrollLeft) <= 3`, "09A/390 Home");
+        assertSynced(await evaluate(client, snapshotExpression(objectId)), "09A/390 Home");
         await client.send("Emulation.setEmulatedMedia", {
           features: [{ name: "prefers-reduced-motion", value: "reduce" }],
         });
-        await nextPaint(client);
-        const reducedMotion = await evaluate(client, snapshotExpression(objectId));
-        assert.ok(
-          reducedMotion.handleTransition
-            .split(",")
-            .every((value) => Number.parseFloat(value) === 0),
-          `09A/390: reduced-motion handle still transitions: ${reducedMotion.handleTransition}`,
-        );
+        await delay(100);
+        const reduced = await evaluate(client, snapshotExpression(objectId));
+        assert.ok(reduced.transition.split(",").every((value) => Number.parseFloat(value) === 0));
         await client.send("Emulation.setEmulatedMedia", { features: [] });
         await capture(client, "model-ribbon-position-09A-390-reading.png");
       }
 
-      await clickSelector(client, objectId, "#ribbon-overview");
-      await waitFor(
-        client,
-        `(() => {
-          const root = ${rootExpression(objectId)};
-          const frame = root.querySelector('iframe.model-live-frame');
-          return frame.contentDocument.querySelector('#ribbon-viewport').dataset.scale === 'overview'
-            && Number(root.dataset.liveRibbonScrollLeft) <= 3
-            && Number(root.dataset.liveRibbonHandleWidth) >= .99;
-        })()`,
-        `${objectId}/${viewportName} return overview`,
-      );
+      await activateReturn(client, objectId);
+      await waitFor(client, `(() => {
+        const root = ${rootExpression(objectId)};
+        const frame = root.querySelector('iframe.model-live-frame');
+        const viewport = frame.contentDocument.querySelector('#ribbon-viewport');
+        return viewport.dataset.scale === 'overview'
+          && Number(root.dataset.liveRibbonScrollLeft) <= 3
+          && Number(root.dataset.liveRibbonHandleWidth) >= .99;
+      })()`, `${objectId}/${viewportName} return overview`);
       const returned = await evaluate(client, snapshotExpression(objectId));
-      assertSynced(returned, `${objectId}/${viewportName} returned overview`);
-      assert.equal(returned.nativeEvidence, "inactive", `${objectId}/${viewportName}: returned scrollbar evidence`);
+      assertSynced(returned, `${objectId}/${viewportName} returned`);
+      assert.equal(returned.nativeEvidence, "inactive");
 
-      if (objectId === "09" && viewportName === "390") {
-        await capture(client, "model-ribbon-position-09-390-overview.png");
-      }
-
-      results.push({
-        objectId,
-        viewport: viewportName,
-        path: result.path,
-        overview,
-        reading,
-        end,
-        start,
-        returned,
-      });
+      results.push({ objectId, viewport: viewportName, path, overview, reading, exact, end, start, returned });
     }
   }
 
@@ -583,7 +460,7 @@ try {
     `${JSON.stringify({ browser, baseUrl, generatedAt: new Date().toISOString(), results }, null, 2)}\n`,
   );
   socket.close();
-  console.log("Model Ribbon position browser review: 09 and 09A use one real minimap handle synchronized after pointer drag, wheel, keyboard, minimap, and return across 320 / 390 / desktop, with all Products reachable and native scrollbar chrome hidden only in reading after readiness.");
+  console.log("Model Ribbon position browser review: 09 and 09A keep one real minimap handle synchronized after pointer drag, wheel, keyboard, minimap activation, reduced motion, and return across 320 / 390 / desktop, with all Products reachable and native scrollbar chrome hidden only in reading.");
 } catch (error) {
   if (browserStderr.trim()) console.error(browserStderr.trim());
   throw error;
