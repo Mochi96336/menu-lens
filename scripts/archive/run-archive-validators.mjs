@@ -10,6 +10,7 @@ await import("./validate-model-page-renderer.mjs");
 await import("./validate-model-live-stage.mjs");
 await import("./validate-model-live-humanization.mjs");
 await import("./validate-model-spread-overflow.mjs");
+await import("./validate-model-ribbon-position.mjs");
 await import("./validate-objects.mjs");
 await import("./validate-presentation-models.mjs");
 await import("./run-legacy-research-validator.mjs");
