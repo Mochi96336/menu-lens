@@ -11,6 +11,7 @@ const ribbonModelCss = `
 
   [data-model-live-presentation="ribbon"][data-model-ribbon-handle-ready="true"] .ribbon-minimap {
     box-sizing: border-box !important;
+    margin-top: 3.15rem !important;
     height: 3.1rem !important;
     padding-bottom: .76rem !important;
   }
